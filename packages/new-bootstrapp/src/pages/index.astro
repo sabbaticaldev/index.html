@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/layout.astro';
+import { Bootstrapp } from '../bootstrapp.js';
+---
+<Layout title="Bootstrapp">
+    <Bootstrapp client:only="lit">
+        <app-projects></app-projects>
+    </Bootstrapp>
+</Layout>

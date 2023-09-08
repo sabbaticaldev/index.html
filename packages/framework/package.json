@@ -1,0 +1,26 @@
+{
+  "name": "bootstrapp",
+  "type": "module",
+  "version": "0.0.3",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "preversion": "npm run build",
+    "postversion": "git push --follow-tags"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "typescript": "^4.6.2"
+  },
+  "peerDependencies": {
+    "lit": "^2.8.0"
+  }
+}

@@ -1,0 +1,37 @@
+---
+  import Layout from '../layouts/layout.astro';
+  import { Bootstrapp } from '../bootstrapp.js';
+
+  let { page } = Astro.params;
+  
+  export function getStaticPaths() {
+    return [
+      { params: { page: 'analytics' }},
+      { params: { page: 'audience' }},
+      { params: { page: 'botfactory' }},
+      { params: { page: 'calendar' }},
+      { params: { page: 'cms' }},
+      { params: { page: 'design' }},
+      { params: { page: 'documents' }},
+      { params: { page: 'pagebuilder' }},
+      { params: { page: 'projects' }},
+      { params: { page: 'workspace' }}
+    ];
+  }
+---
+  
+<Layout title={page}>
+  <Bootstrapp client:only="lit">
+    { page === 'analytics' && <app-analytics></app-analytics> }
+    { page === 'audience' && <app-audience></app-audience> }
+    { page === 'botfactory' && <app-bot-factory></app-bot-factory> }
+    { page === 'calendar' && <app-calendar></app-calendar> }
+    { page === 'cms' && <app-cms></app-cms> }
+    { page === 'design' && <app-design></app-design> }
+    { page === 'documents' && <app-documents></app-documents> }
+    { page === 'pagebuilder' && <app-page-builder></app-page-builder> }
+    { page === 'projects' && <app-projects></app-projects> }
+    { page === 'workspace' && <app-workspace></app-workspace> }
+  </Bootstrapp>
+</Layout>
+  

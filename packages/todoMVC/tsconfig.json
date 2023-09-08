@@ -1,0 +1,8 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "moduleResolution": "NodeNext",
+    "strictNullChecks": true,
+    "allowJs": true
+  }
+}
