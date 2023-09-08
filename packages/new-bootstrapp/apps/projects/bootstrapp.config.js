@@ -1,11 +1,13 @@
-import { define } from "bootstrapp";
+import { ReactiveRecord, defineView, defineController } from "bootstrapp";
 import tailwind from "../../src/assets/base.css";
 import { unsafeCSS } from "lit";
-import { TaskController } from "./controllers/task.controller.js";
-import { Task } from "./models/task.model.js";
-TaskController;
-const appState = Task;
-const controllers = { task: TaskController };
+import TaskController from "./controllers/task.controller.js";
+import Task from "./models/task.model.js";
+import Board from "./models/board.model.js";
+
+const appState = new ReactiveRecord(Board);
+console.log({ appState });
+const controllers = { task: defineController(TaskController) };
 const style = unsafeCSS(tailwind);
 
 const views = import.meta.glob("./views/**/*.{js,ts}", {
@@ -13,7 +15,7 @@ const views = import.meta.glob("./views/**/*.{js,ts}", {
 });
 
 Object.values(views).map((module) =>
-  define(module.default, {
+  defineView(module.default, {
     appState,
     style,
     controllers,
@@ -36,8 +38,10 @@ export default {
       type: Boolean,
     },
   },
-  render: ({ html, boards }) => {
-    const boardsList = boards?.map((board) => {
+  controller: "board",
+  render: ({ html, list }) => {
+    console.log({ list });
+    const boardsList = list?.map((board) => {
       return html`<project-board .board=${board}></project-board>`;
     });
 

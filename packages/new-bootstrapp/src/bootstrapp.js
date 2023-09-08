@@ -1,6 +1,6 @@
 import { html, unsafeCSS } from "lit";
-import { define } from "bootstrapp";
-import appState from "./app/models/app.model.js";
+import { defineView, defineController, ReactiveRecord } from "bootstrapp";
+import AppModel from "./app/models/app.model.js";
 import tailwind from "./assets/base.css";
 const style = unsafeCSS(tailwind);
 
@@ -13,20 +13,36 @@ const apps = Object.values(
   })
 ).map((module) => module.default);
 
-appState.setState("apps", apps);
+const appsModels = Object.values(
+  import.meta.glob("../apps/**/models/*.@(js|ts)", {
+    eager: true,
+  })
+).map((module) => module.default);
+
+const appState = new ReactiveRecord(AppModel);
+
+apps.forEach((app) => {
+  appState.add(app.name.toLowerCase(), app);
+});
 
 function bootstrapp() {
   const views = import.meta.glob("./app/views/**/*.{js,ts}", {
     eager: true,
   });
 
+  const appsControllers = Object.values(
+    import.meta.glob("../apps/**/controllers/*.@(js|ts)", {
+      eager: true,
+    })
+  ).map((module) => module.default);
+
   const controllers = Object.values(
     import.meta.glob("./app/controllers/**/*.{js,ts}", {
       eager: true,
     })
   ).reduce((acc, module) => {
-    const collection = module.default.collection;
-    acc[collection] = module.default;
+    const modelName = module.default.modelName;
+    acc[modelName] = defineController(module.default, { modelName });
     return acc;
   }, {});
 
@@ -36,7 +52,7 @@ function bootstrapp() {
 
   return {
     components: Object.values(views).map((module) =>
-      define(module.default, {
+      defineView(module.default, {
         appState,
         style,
         controllers,
@@ -44,7 +60,7 @@ function bootstrapp() {
     ),
 
     apps: apps.map((app) => {
-      define(app, {
+      defineView(app, {
         appState,
         style,
         controllers,
@@ -52,9 +68,10 @@ function bootstrapp() {
     }),
   };
 }
+
 export const components = bootstrapp();
 
-export const Bootstrapp = define(
+export const Bootstrapp = defineView(
   {
     tag: "bootstr-app",
     render: function () {

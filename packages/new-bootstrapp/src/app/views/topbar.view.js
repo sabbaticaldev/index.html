@@ -12,38 +12,27 @@
 export default {
   tag: "app-topbar",
   props: {
-    apps: {
+    list: {
       type: Array,
       scope: "app",
     },
   },
-  render({ apps: appsProps, html }) {
-    /**
-     * @param {App} app
-     * @returns {boolean}
-     */
-    const filterFunc = (app) => !app.secondary;
-
-    /**
-     * @param {App} a
-     * @param {App} b
-     * @returns {number}
-     */
-    const sortFunc = (a, b) => {
+  controller: "app",
+  render({ list, html }) {
+    const sortFn = (a, b) => {
       if (a.index !== undefined && b.index === undefined) return -1;
       if (b.index !== undefined && a.index === undefined) return 1;
       if (a.index !== undefined && b.index !== undefined)
         return a.index - b.index;
       return 0;
     };
-
-    const apps = appsProps?.filter(filterFunc).sort(sortFunc) || [];
+    const apps = list?.filter((app) => !app.secondary).sort(sortFn) || [];
 
     /**
      * @param {App} app
      * @returns {any} - TemplateResult
      */
-    const mapFunc = (app) => html`
+    const mapFn = (app) => html`
       <a
         href="/${app.name.toLowerCase()}"
         class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white  data-[active]:bg-gray-900 data-[active]:text-white"
@@ -54,7 +43,7 @@ export default {
       >
     `;
 
-    const appMenu = apps.map(mapFunc);
+    const appMenu = apps.map(mapFn);
 
     return html`
       <nav class="bg-gray-800">
