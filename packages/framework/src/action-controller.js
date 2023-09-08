@@ -1,14 +1,12 @@
 import { ReactiveController } from './reactive-controller';
 
 export default class ActionController extends ReactiveController {
-
   constructor(host, appState) {
     super(appState);
     this.appState = appState;
     this.host = host;
     this.host.addController(this);
     this.constructor.subscribers.push(host);
-    console.log(this.constructor.subscribers);
     const collectionName = this.constructor.collection;
 
     Object.defineProperty(this.host, 'list', {

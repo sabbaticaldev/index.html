@@ -136,8 +136,7 @@ class QueryStringStrategy extends StorageStrategy {
   list() {
     if (this.isServer) return [];
     const params = new URLSearchParams(window.location.search);
-    const index = this.get(this.name+'list', { params, noSuffix: true });
-    console.log({index});
+    const index = this.get(this.name+'list', { params, noSuffix: true });    
     return Array.isArray(index) ? index.map(key => this.get(key, { params })) : [];
   }
   

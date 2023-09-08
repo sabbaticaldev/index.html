@@ -19,7 +19,7 @@ class ReactiveRecord {
       const id = key;
       const storedValue = this.state.get(id);
       if (storedValue === null || storedValue === undefined) {
-        this.state.add(id, data[key]);        
+        this.state.add(id, data[key]);   
       }
     }
   }
