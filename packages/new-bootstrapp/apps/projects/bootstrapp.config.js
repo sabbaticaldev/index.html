@@ -6,7 +6,6 @@ import Task from "./models/task.model.js";
 import Board from "./models/board.model.js";
 
 const appState = new ReactiveRecord(Board);
-console.log({ appState });
 const controllers = { task: defineController(TaskController) };
 const style = unsafeCSS(tailwind);
 
@@ -40,7 +39,6 @@ export default {
   },
   controller: "board",
   render: ({ html, list }) => {
-    console.log({ list });
     const boardsList = list?.map((board) => {
       return html`<project-board .board=${board}></project-board>`;
     });
