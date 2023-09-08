@@ -1,11 +1,6 @@
 export default {
   tag: "todo-item",
   props: {
-    collection: {
-      type: Array,
-      defaultValue: [],
-      scope: "app",
-    },
     todo: {
       type: Object,
       defaultValue: {},

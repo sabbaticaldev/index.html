@@ -1,44 +1,74 @@
-import { html, unsafeCSS } from "lit";
-import { define } from "bootstrapp";
-import TodoModel from "./app/models/todo.model.js";
-import { TodoController } from "./app/controllers/todo.controller.js";
+import { unsafeCSS } from "lit";
+import { defineView, defineController } from "bootstrapp";
 import tailwind from "./assets/base.css";
 import { ReactiveRecord } from "bootstrapp";
 
-export const Todo = new ReactiveRecord(TodoModel);
 const style = unsafeCSS(tailwind);
 
-// This function will process each module's default export.
-// Update this function to transform the module's export as you need.
+const classifyFile = ([path, module]) => {
+  const nameMatch = /\/([\w\-_]+)\.(view|controller|model)\./.exec(path);
+  if (!nameMatch) return null;
 
-function bootstrapp() {
-  const views = import.meta.glob("./app/views/**/*.{js,ts}", {
-    eager: true,
-  });
+  const name = nameMatch[1];
+  const type = nameMatch[2];
+  return { name, type, module: module.default };
+};
 
-  let components = [];
+const reduceFiles = (acc, file) => {
+  if (file) {
+    acc[file.type][file.name] = file.module;
+  }
+  return acc;
+};
 
-  // Process each module and collect the processed objects
-  Object.values(views).forEach((module) => {
-    const view = module.default;
-    const component = define(view, {
-      appState: Todo,
-      style,
-      controllers: { todo: TodoController },
-    });
-    components.push(component);
-  });
-  return components;
-}
+const defineControllers = (controllers) => {
+  return Object.fromEntries(
+    Object.entries(controllers).map(([name, module]) => [
+      name,
+      defineController(module),
+    ])
+  );
+};
 
-export const components = bootstrapp();
+const defineModels = (models) => {
+  return Object.fromEntries(
+    Object.entries(models).map(([name, module]) => [
+      name,
+      new ReactiveRecord(module),
+    ])
+  );
+};
 
-export const Bootstrapp = define(
-  {
-    tag: "start-bootstrapp",
-    render: function () {
-      return html`<todo-app class="p-4"></todo-app>`;
-    },
-  },
-  { style }
-);
+const defineViews = (views, controllers, models) => {
+  return Object.fromEntries(
+    Object.entries(views).map(([name, view]) => {
+      const controllerName = view.controller || name;
+      const modelName = view.modelName || controllerName;
+      return [
+        name,
+        defineView(view, {
+          appState: models[modelName],
+          style,
+          controllers: { [controllerName]: controllers[controllerName] },
+        }),
+      ];
+    })
+  );
+};
+
+const bootstrapp = (files) => {
+  const categorized = Object.entries(files)
+    .map(classifyFile)
+    .reduce(reduceFiles, { view: {}, controller: {}, model: {} });
+
+  const controllers = defineControllers(categorized.controller);
+  const models = defineModels(categorized.model);
+  const views = defineViews(categorized.view, controllers, models);
+
+  return { views, controllers, models };
+};
+
+const files = import.meta.glob("./app/**/*.{js,ts}", { eager: true });
+
+const { views } = bootstrapp(files);
+export default views.index;
