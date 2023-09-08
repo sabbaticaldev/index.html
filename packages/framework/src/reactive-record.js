@@ -10,13 +10,14 @@ class ReactiveRecord {
    */
   
   constructor({ data, name, adapter } = {}) {    
-    this.name = name;    
+    this.name = name;
     const store = adapter && Adapters[adapter] || Adapters['memory'];
     this.state = new store(name);
-
+    
     // Load initial state from storage
     for (const key in data) {
-      const id = key;
+      const obj = data[key];
+      const id = obj.id || key;
       const storedValue = this.state.get(id);
       if (storedValue === null || storedValue === undefined) {
         this.state.add(id, data[key]);   

@@ -2,8 +2,8 @@
  * @interface
  */
 class StorageStrategy {
-  constructor(name) {
-    this.name = name;
+  constructor(modelName) {
+    this.modelName = modelName;
     this.isServer = typeof window === 'undefined';
   }
 
@@ -36,9 +36,9 @@ class StorageStrategy {
    */
   add(key, value) {
     this._set(key, value);
-    const index = this.get(this.name+"list", { noSuffix: true }) || [];
+    const index = this.get(this.modelName+"list", { noSuffix: true }) || []; 
     index.push(key);
-    this._set(this.name+"list", index, { noSuffix: true });
+    this._set(this.modelName+"list", index, { noSuffix: true });
   }
 
   /**
@@ -55,8 +55,8 @@ class StorageStrategy {
 }
 
 class InMemoryStrategy extends StorageStrategy {
-  constructor() {
-    super();
+  constructor(name) {
+    super(name);
     /** @type {Record<string, any>} */
     this.storage = {};
   }
@@ -66,7 +66,7 @@ class InMemoryStrategy extends StorageStrategy {
   }
 
   list() {
-    const index = this.get('todolist') || [];
+    const index = this.get(this.modelName+'list', { noSuffix: true });    
     return  Array.isArray(index) ? index.map(key => this.get(key)) : [];
   }
 
@@ -87,7 +87,7 @@ class LocalStorageStrategy extends StorageStrategy {
 
   list() {
     if (this.isServer) return [];
-    const index = this.get('todolist');
+    const index = this.get(this.modelName+'list', { noSuffix: true });    
     return Array.isArray(index) ? index.map(key => this.get(key)) : [];
   }
 
@@ -111,7 +111,7 @@ class SessionStorageStrategy extends StorageStrategy {
 
   list() {
     if (this.isServer) return [];
-    const index = this.get('todolist') || [];
+    const index = this.get(this.modelName+'list', { noSuffix: true });    
     return  Array.isArray(index) ? index.map(key => this.get(key)) : [];
   }
 
@@ -129,14 +129,14 @@ class SessionStorageStrategy extends StorageStrategy {
 class QueryStringStrategy extends StorageStrategy {
   get(key, { params, noSuffix } = {}) {
     if (this.isServer) return null;
-    const value = (params || new URLSearchParams(window.location.search))?.get(noSuffix ? key : this.name + key);    
+    const value = (params || new URLSearchParams(window.location.search))?.get(noSuffix ? key : this.modelName + key);    
     return value ? JSON.parse(decodeURIComponent(value)) : null;
   }
 
   list() {
     if (this.isServer) return [];
     const params = new URLSearchParams(window.location.search);
-    const index = this.get(this.name+'list', { params, noSuffix: true });    
+    const index = this.get(this.modelName+'list', { params, noSuffix: true });    
     return Array.isArray(index) ? index.map(key => this.get(key, { params })) : [];
   }
   
@@ -144,7 +144,7 @@ class QueryStringStrategy extends StorageStrategy {
   _set(key, value, { noSuffix } = {}) {
     if (this.isServer) return;
     const params = new URLSearchParams(window.location.search);
-    const idx = noSuffix ? key : this.name + key;
+    const idx = noSuffix ? key : this.modelName + key;
     params.set(idx, encodeURIComponent(JSON.stringify(value)), { noSuffix });
     window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
   }
@@ -154,14 +154,14 @@ class QueryStringStrategy extends StorageStrategy {
    */  
   remove(key) {
     if (this.isServer) return;
-    const id = this.name+key;
+    const id = this.modelName+key;
     const params = new URLSearchParams(window.location.search);
-    const index = this.get(this.name + "list", { params, noSuffix: true });
+    const index = this.get(this.modelName + "list", { params, noSuffix: true });
     const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];
     // Remove the record
     params.delete(id);
     // update the index
-    params.set(this.name + "list", encodeURIComponent(JSON.stringify(updatedIndex)));
+    params.set(this.modelName + "list", encodeURIComponent(JSON.stringify(updatedIndex)));
 
     // Update the URL without refreshing the page
     window.history.replaceState({}, '', `${window.location.pathname}?${params}`);

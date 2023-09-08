@@ -1,14 +1,15 @@
 import ActionController from "../action-controller";
 
-export default function defineController(methodsObject) {
+export default function defineController(controller, convention) {
   return class DynamicController extends ActionController {
-    constructor(host, appState) {
-      super(host, appState);
-      Object.keys(methodsObject).forEach((methodName) => {
-        this[methodName] =
-          typeof methodsObject[methodName] === "function"
-            ? methodsObject[methodName].bind(this)
-            : methodsObject[methodName];
+    constructor(host, config) {
+      super(host, config);
+      this.modelName = convention?.modelName;
+      Object.keys(controller).forEach((prop) => {
+        this[prop] =
+          typeof controller[prop] === "function"
+            ? controller[prop].bind(this)
+            : controller[prop];
       });
     }
   };

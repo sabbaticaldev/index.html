@@ -7,19 +7,16 @@ export default class ActionController extends ReactiveController {
     this.host = host;
     this.host.addController(this);
     this.constructor.subscribers.push(host);
-    const collectionName = this.constructor.collection;
-
     Object.defineProperty(this.host, 'list', {
       get: () => {
-        this.subscribe("teste", (teste) => this.host.requestUpdate());
-        return this.appState.list(collectionName);
+        return this.appState.list(this.modelName);
         
       },
       // TODO: create list.by_*dynamic_field*("teste") like list.by_tag("LLaMa")
       set: (id, newList) => {
         // Set logic
-        this.appState.set(collectionName, newList);
-        this.notify(collectionName, newList);
+        this.appState.set(this.modelName, newList);
+        this.notify(this.modelName, newList);
         
         // Request an update to the LitElement component
         if (this.host instanceof LitElement) {
