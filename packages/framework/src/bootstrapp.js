@@ -1,6 +1,6 @@
-import defineController from "./define/controller";
-import defineView from "./define/view";
-import ReactiveRecord from "./reactive-record";
+import defineController from "./mvc/controller";
+import defineView from "./mvc/view";
+import ReactiveRecord from "./reactivity/reactive-record";
 
 const classifyFile = ([path, module]) => {
   const nameMatch = /\/([\w\-_]+)\.(view|controller|model)\./.exec(path);
@@ -13,7 +13,8 @@ const classifyFile = ([path, module]) => {
 
 const reduceFiles = (acc, file) => {
   if (file) {
-    acc[file.type][file.name] = file.module;
+    const fileName = file?.module?.tag || file.name; //if is a view and have a tag, it is preferred
+    acc[file.type][fileName] = file.module;
   }
   return acc;
 };
@@ -53,7 +54,7 @@ const defineViews = (views, { controllers, models, style }) => {
   );
 };
 
-const bootstrapp = ({ files, style }) => {
+const bootstrapp = ({ files, style, onLoad, bootstrappTag = "app-index" }) => {
   const categorized = Object.entries(files)
     .map(classifyFile)
     .reduce(reduceFiles, { view: {}, controller: {}, model: {} });
@@ -61,8 +62,11 @@ const bootstrapp = ({ files, style }) => {
   const controllers = defineControllers(categorized.controller);
   const models = defineModels(categorized.model);
   const views = defineViews(categorized.view, { controllers, models, style });
-
-  return views.index;
+  
+  if(onLoad) {
+    onLoad(models);
+  }
+  return views[bootstrappTag];
 };
 
 

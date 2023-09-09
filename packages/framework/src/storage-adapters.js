@@ -4,7 +4,7 @@
 class StorageStrategy {
   constructor(modelName) {
     this.modelName = modelName;
-    this.isServer = typeof window === 'undefined';
+    this.isServer = typeof window === "undefined";
   }
 
   /**
@@ -46,7 +46,7 @@ class StorageStrategy {
    * @param {any} value
    */
   edit(key, value) {
-    if (typeof value === 'object' && value !== null) {
+    if (typeof value === "object" && value !== null) {
       const record = this.get(key) || {};
       value = {...record, ...value};
     }
@@ -66,7 +66,7 @@ class InMemoryStrategy extends StorageStrategy {
   }
 
   list() {
-    const index = this.get(this.modelName+'list', { noSuffix: true });    
+    const index = this.get(this.modelName+"list", { noSuffix: true });    
     return  Array.isArray(index) ? index.map(key => this.get(key)) : [];
   }
 
@@ -82,12 +82,12 @@ class InMemoryStrategy extends StorageStrategy {
 class LocalStorageStrategy extends StorageStrategy {
   get(key) {
     if (this.isServer) return null;
-    return JSON.parse(localStorage.getItem(key) || '{}');
+    return JSON.parse(localStorage.getItem(key) || "{}");
   }
 
   list() {
     if (this.isServer) return [];
-    const index = this.get(this.modelName+'list', { noSuffix: true });    
+    const index = this.get(this.modelName+"list", { noSuffix: true });    
     return Array.isArray(index) ? index.map(key => this.get(key)) : [];
   }
 
@@ -111,7 +111,7 @@ class SessionStorageStrategy extends StorageStrategy {
 
   list() {
     if (this.isServer) return [];
-    const index = this.get(this.modelName+'list', { noSuffix: true });    
+    const index = this.get(this.modelName+"list", { noSuffix: true });    
     return  Array.isArray(index) ? index.map(key => this.get(key)) : [];
   }
 
@@ -136,7 +136,7 @@ class QueryStringStrategy extends StorageStrategy {
   list() {
     if (this.isServer) return [];
     const params = new URLSearchParams(window.location.search);
-    const index = this.get(this.modelName+'list', { params, noSuffix: true });    
+    const index = this.get(this.modelName+"list", { params, noSuffix: true });    
     return Array.isArray(index) ? index.map(key => this.get(key, { params })) : [];
   }
   
@@ -146,7 +146,7 @@ class QueryStringStrategy extends StorageStrategy {
     const params = new URLSearchParams(window.location.search);
     const idx = noSuffix ? key : this.modelName + key;
     params.set(idx, encodeURIComponent(JSON.stringify(value)), { noSuffix });
-    window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
+    window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
   }
 
   /**
@@ -164,15 +164,15 @@ class QueryStringStrategy extends StorageStrategy {
     params.set(this.modelName + "list", encodeURIComponent(JSON.stringify(updatedIndex)));
 
     // Update the URL without refreshing the page
-    window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
+    window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
   }
 }
 
 const Adapters = {
-  'memory': InMemoryStrategy,
-  'url': QueryStringStrategy,
-  'sessionStorage': SessionStorageStrategy,
-  'localStorage': LocalStorageStrategy
+  "memory": InMemoryStrategy,
+  "url": QueryStringStrategy,
+  "sessionStorage": SessionStorageStrategy,
+  "localStorage": LocalStorageStrategy
 };
 
 export default Adapters;
