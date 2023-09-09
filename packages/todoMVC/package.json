@@ -12,6 +12,10 @@
   "dependencies": {
     "@astrojs/starlight": "^0.9.0",
     "@astrojs/tailwind": "^5.0.0",
+    "@vaadin/button": "^24.1.7",
+    "@vaadin/checkbox": "^24.1.7",
+    "@vaadin/list-box": "^24.1.7",
+    "@vaadin/text-field": "^24.1.7",
     "astro": "^3.0.8",
     "bootstrapp": "workspace:^",
     "sharp": "^0.32.5",
