@@ -98,6 +98,10 @@ class LocalStorageStrategy extends StorageStrategy {
 
   remove(key) {
     if (this.isServer) return;
+    const indexKey = this.modelName + "list";
+    const index = this.get(indexKey, { noSuffix: true });
+    const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];    
+    this._set(this.modelName+"list", updatedIndex, { noSuffix: true });
     localStorage.removeItem(key);
   }
 }
@@ -120,8 +124,13 @@ class SessionStorageStrategy extends StorageStrategy {
     sessionStorage.setItem(key, JSON.stringify(value));
   }
 
+
   remove(key) {
     if (this.isServer) return;
+    const indexKey = this.modelName + "list";
+    const index = this.get(indexKey, { noSuffix: true });
+    const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];  
+    this._set(this.modelName+"list", updatedIndex, { noSuffix: true });
     sessionStorage.removeItem(key);
   }
 }
@@ -158,12 +167,8 @@ class QueryStringStrategy extends StorageStrategy {
     const params = new URLSearchParams(window.location.search);
     const index = this.get(this.modelName + "list", { params, noSuffix: true });
     const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];
-    // Remove the record
     params.delete(id);
-    // update the index
     params.set(this.modelName + "list", encodeURIComponent(JSON.stringify(updatedIndex)));
-
-    // Update the URL without refreshing the page
     window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
   }
 }
