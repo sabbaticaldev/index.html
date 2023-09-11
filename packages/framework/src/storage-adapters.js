@@ -5,20 +5,18 @@ class StorageStrategy {
   constructor(modelName) {
     this.modelName = modelName;
     this.isServer = typeof window === "undefined";
+    /** @type {Record<string, any>} */
+    this.storage = {};
   }
 
   /**
    * @param {string} key
    * @returns {any}
    */
-  get(key) {}
-
-
-  /**
-   * @returns {any[]}
-   */
-  list() {
-    return [];
+  get(key) {
+    if (this.isServer) return null;
+    const value = this.storage.getItem(key);
+    return value ? JSON.parse(value) : null;
   }
 
   /**
@@ -28,8 +26,6 @@ class StorageStrategy {
    */
   _set(key, value, {config}) {}
 
-
-
   /**
    * @param {string} key
    * @param {any} value
@@ -37,6 +33,7 @@ class StorageStrategy {
   add(key, value) {
     this._set(key, value);
     const index = this.get(this.modelName+"list", { noSuffix: true }) || []; 
+    console.log(index, this.modelName+"list");
     index.push(key);
     this._set(this.modelName+"list", index, { noSuffix: true });
   }
@@ -52,22 +49,29 @@ class StorageStrategy {
     }
     this._set(key, value);
   }
+
+  /**
+   * @returns {any[]}
+   */
+  list() {
+    if (this.isServer) return [];
+    const index = this.get(this.modelName+"list", { noSuffix: true });    
+    return Array.isArray(index) ? index.map(key => this.get(key)) : [];
+  }
+
+  remove(key) {
+    if (this.isServer) return;
+    const indexKey = this.modelName + "list";
+    const index = this.get(indexKey, { noSuffix: true });
+    const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];    
+    this._set(this.modelName+"list", updatedIndex, { noSuffix: true });
+    this.storage.removeItem(key);
+  }
 }
 
 class InMemoryStrategy extends StorageStrategy {
-  constructor(name) {
-    super(name);
-    /** @type {Record<string, any>} */
-    this.storage = {};
-  }
-
   get(key) {
     return this.storage[key];
-  }
-
-  list() {
-    const index = this.get(this.modelName+"list", { noSuffix: true });    
-    return  Array.isArray(index) ? index.map(key => this.get(key)) : [];
   }
 
   _set(key, value) {
@@ -80,58 +84,35 @@ class InMemoryStrategy extends StorageStrategy {
 }
 
 class LocalStorageStrategy extends StorageStrategy {
-  get(key) {
-    if (this.isServer) return null;
-    return JSON.parse(localStorage.getItem(key) || "{}");
-  }
-
-  list() {
-    if (this.isServer) return [];
-    const index = this.get(this.modelName+"list", { noSuffix: true });    
-    return Array.isArray(index) ? index.map(key => this.get(key)) : [];
+  constructor(name) {
+    super(name);
+    /** @type {Record<string, any>} */
+    this.storage = localStorage;
   }
 
   _set(key, value) {
     if (this.isServer) return;
-    localStorage.setItem(key, JSON.stringify(value));
-  }
-
-  remove(key) {
-    if (this.isServer) return;
-    const indexKey = this.modelName + "list";
-    const index = this.get(indexKey, { noSuffix: true });
-    const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];    
-    this._set(this.modelName+"list", updatedIndex, { noSuffix: true });
-    localStorage.removeItem(key);
+    this.storage.setItem(key, JSON.stringify(value));
   }
 }
 
 class SessionStorageStrategy extends StorageStrategy {
-  get(key) {
-    if (this.isServer) return null;
-    const entry = sessionStorage.getItem(key);
-    return entry ? JSON.parse(entry) : null;
+
+  constructor(name) {
+    super(name);
+    /** @type {Record<string, any>} */
+    this.storage = sessionStorage;
   }
 
-  list() {
-    if (this.isServer) return [];
-    const index = this.get(this.modelName+"list", { noSuffix: true });    
-    return  Array.isArray(index) ? index.map(key => this.get(key)) : [];
+  get(key) {
+    if (this.isServer) return null;
+    const entry = this.storage.getItem(key);
+    return entry ? JSON.parse(entry) : null;
   }
 
   _set(key, value) {
     if (this.isServer) return;
-    sessionStorage.setItem(key, JSON.stringify(value));
-  }
-
-
-  remove(key) {
-    if (this.isServer) return;
-    const indexKey = this.modelName + "list";
-    const index = this.get(indexKey, { noSuffix: true });
-    const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];  
-    this._set(this.modelName+"list", updatedIndex, { noSuffix: true });
-    sessionStorage.removeItem(key);
+    this.storage.setItem(key, JSON.stringify(value));
   }
 }
 
