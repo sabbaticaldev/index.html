@@ -1,4 +1,4 @@
-import Adapters from "../storage-adapters";
+import Storage from "../mvc/storage-controller";
 
 /**
  * Class representing an active record.
@@ -11,7 +11,7 @@ class ReactiveRecord {
   
   constructor({ data, name, adapter } = {}) {    
     this.name = name;
-    const store = adapter && Adapters[adapter] || Adapters["memory"];
+    const store = adapter && Storage[adapter] || Storage["memory"];
     this.state = new store(name);
     
     // Load initial state from storage
@@ -19,6 +19,7 @@ class ReactiveRecord {
       const obj = data[key];
       const id = obj.id || key;
       const storedValue = this.state.get(id);
+      console.log(this.state);
       if (storedValue === null || storedValue === undefined) {
         this.state.add(id, data[key]);   
       }

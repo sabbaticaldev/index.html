@@ -10,19 +10,9 @@ export default class ActionController extends ReactiveController {
     const get = () =>  this.appState.list(this.modelName);
     Object.defineProperty(this.host, "list", { get });
   }
-  
-  
-  generateId() {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-    return Array.from({ length: 5 })
-      .map(() => chars[Math.floor(Math.random() * chars.length)])
-      .join("");
-  }
-  
 
   add = (record) => {
-    const id = this.generateId();
-    this.appState.add(id, record);
+    this.appState.add(record);
     ActionController.notifyAll();
     return true; 
   };
