@@ -7,23 +7,22 @@ export default class ActionController extends ReactiveController {
     this.host = host;
     this.host.addController(this);
     this.constructor.subscribers.push(host);
-    const get = () =>  this.appState.list(this.modelName);
+    const get = async () => await this.appState.list(this.modelName);
     Object.defineProperty(this.host, "list", { get });
   }
 
-  add = (record) => {
-    this.appState.add(record);
-    ActionController.notifyAll();
-    return true; 
-  };
-
-  edit = (id, updates) => {
-    this.appState.edit(id, updates);
+  add = async (record) => {
+    await this.appState.add(record);    
     ActionController.notifyAll();    
   };
 
-  remove = (id) => {
-    this.appState.remove(id);
+  edit = async (id, updates) => {
+    await this.appState.edit(id, updates);
+    ActionController.notifyAll();    
+  };
+
+  remove = async (id) => {
+    await this.appState.remove(id);
     ActionController.notifyAll();    
   };
 }

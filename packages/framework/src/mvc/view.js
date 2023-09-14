@@ -1,4 +1,5 @@
 import { LitElement, html } from "lit";
+import { until } from "lit/directives/until.js";
 import { customElement } from "lit/decorators.js";
 
 function jQuery(selector) {
@@ -41,14 +42,14 @@ export default function defineView(component, config = {}) {
   } = component;
   
   const { controllers = {}, appState, style } = config;
-  
+  const filterActionControllerProps = (key) => !(["list", "record"].includes(key)); // this property is managed by the Action Controller
+
   class ReactionView extends LitElement {
     // Define the properties for LitElement
-    static properties = Object.entries(props)
-      .filter(([key, prop]) => 
-        !( ["list", "record"].includes(key) && prop.scope === "app" ) // this property is managed by the Action Controller
-      )
-      .reduce((acc, [key, prop]) => {
+    static properties = Object.keys(props)
+      .filter(filterActionControllerProps)
+      .reduce((acc, key) => {
+        const prop = props[key];
         acc[key] = {
           type: prop.type,
           noAccessor: !!prop.readonly,
@@ -60,15 +61,17 @@ export default function defineView(component, config = {}) {
     constructor() {
       super();
       this.html = html;
-  
+      this.until = until;
       if (controller && controllers[controller]) {
         this.controller = new controllers[controller](this, appState);
       }
   
       const propKeys = Object.keys(props);
-      const stateKeys = propKeys.filter(key => !props[key].readonly);
-  
-      for (const key of stateKeys) {
+      const stateKeys = propKeys.filter(key => !props[key].readonly);      
+      stateKeys.filter(filterActionControllerProps).forEach((key)=> {        
+        if(props[key].defaultValue) {
+          this[key] = props[key].defaultValue;
+        }
         const setterName = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
         this[setterName] = (newValue) => {
           if (appState && props[key].scope === "app") {
@@ -78,7 +81,7 @@ export default function defineView(component, config = {}) {
             this[key] = newValue;
           }
         };
-      }
+      });
     }
   
     disconnectedCallback() {

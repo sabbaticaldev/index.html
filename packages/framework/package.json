@@ -22,5 +22,8 @@
   },
   "peerDependencies": {
     "lit": "^2.8.0"
+  },
+  "dependencies": {
+    "idb-keyval": "^6.2.1"
   }
 }
