@@ -23,12 +23,11 @@ export class ReactiveController {
      * @param {function} callback 
      */
   async subscribe(key, callback) {
-    console.log("WHATS GOING ON");
     if (!this.subscribers[key]) {
       this.subscribers[key] = [];
     }
     this.subscribers[key].push(callback);    
-    callback(!console.log(key, await this.appState.get(key)) && await this.appState.get(key)); // Get initial value if exists
+    callback(await this.appState.get(key)); // Get initial value if exists
   }
 
   /**

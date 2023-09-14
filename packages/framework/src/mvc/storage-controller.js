@@ -11,11 +11,11 @@ const generateId = () => {
  * @interface
  */
 class StorageStrategy {
-  constructor(modelName) {
-    this.modelName = modelName;
+  constructor(name) {
+    this.modelName = name;
     this.isServer = typeof window === "undefined";
     /** @type {Record<string, any>} */
-    this.storage = {};
+    this.storage = {};    
   }
 
   /**
@@ -117,19 +117,17 @@ class StorageStrategy {
 }
 
 class InMemoryStrategy extends StorageStrategy {
-  constructor(modelName) {
-    super(modelName);
-    this.modelName = modelName;
+  constructor(name) {
+    super(name);
     this.data = {};
     /** @type {Record<string, any>} */
     this.storage = {
       getItem: async (key) => Promise.resolve(this.data[key]),
       setItem: async (key, value) => {  
         this.data[key] = value;
-        console.log({key});
         Promise.resolve({key});
       },
-      removeItem: async (key) =>  {        
+      removeItem: async (key) =>  {
         delete this.data[key];
         Promise.resolve({key});
       }
@@ -164,8 +162,7 @@ class SessionStorageStrategy extends StorageStrategy {
 
 class QueryStringStrategy extends StorageStrategy {
   constructor(name) {
-    super(name);
-    // differently to InMemoryStrategy, here we implement the same API as sessionStorage/localStorage so it reuses the same logic from parent StorageStrategy
+    super(name);    
     /** @type {Record<string, any>} */
     this.storage = {
       getItem: async (key) => {
