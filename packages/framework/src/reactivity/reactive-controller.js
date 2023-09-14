@@ -22,12 +22,13 @@ export class ReactiveController {
      * @param {string} key 
      * @param {function} callback 
      */
-  subscribe(key, callback) {
+  async subscribe(key, callback) {
+    console.log("WHATS GOING ON");
     if (!this.subscribers[key]) {
       this.subscribers[key] = [];
     }
     this.subscribers[key].push(callback);    
-    callback(this.appState.get(key)); // Get initial value if exists
+    callback(!console.log(key, await this.appState.get(key)) && await this.appState.get(key)); // Get initial value if exists
   }
 
   /**
@@ -61,6 +62,7 @@ export class ReactiveController {
     
   static notifyAll() {
     for (const subscriber of ReactiveController.subscribers) {
+      console.log({subscriber});
       if (subscriber && typeof subscriber.requestUpdate === "function") {
         subscriber.requestUpdate();
       }

@@ -1,4 +1,4 @@
-import { set, get, del } from "idb-keyval";
+import { set, get, del, createStore } from "idb-keyval";
 
 const generateId = () => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -46,12 +46,30 @@ class StorageStrategy {
    * @param {any} value
    */
   async add(value) {
-    const id = this.modelName+generateId();
+    const id = value?.id || this.modelName+generateId();
     this._set(id, { ...(value|| {}), id });
     const index = await this.get(this.modelName+"list") || [];
     this._set(this.modelName+"list", [...(index || []), id]);
   }
 
+
+  /**
+   * @param {any[]} values
+   */
+  async addBulk(values) {
+    if (this.isServer || !values || !values.length) return;
+    
+    const ids = values.map(() => this.modelName + generateId());
+    await Promise.all(ids.map(async (id, idx) => await this._set(ids[idx], { 
+      ...(values[idx] || {}),
+      id: ids[idx]
+    })));
+
+    const currentIndex = await this.get(this.modelName + "list") || [];
+    await this._set(this.modelName + "list", [...currentIndex, ...ids]);
+  }
+
+  
   /**
    * @param {string} key
    * @param {any} value
@@ -64,6 +82,19 @@ class StorageStrategy {
     }
     await this._set(key, newValue);
   }
+  /**
+   * @param {Record<string, any>[]} records
+   */
+  async editBulk(records) {
+    if (this.isServer || !records || !records.length) return;
+    
+    await Promise.all(records.map(async record => {
+      const currentRecord = await this.get(record.id) || {};
+      const newValue = { ...currentRecord, ...record };
+      return this._set(record.id, newValue);
+    }));
+  }
+
 
   /**
    * @returns {any[]}
@@ -89,16 +120,18 @@ class InMemoryStrategy extends StorageStrategy {
   constructor(modelName) {
     super(modelName);
     this.modelName = modelName;
+    this.data = {};
     /** @type {Record<string, any>} */
     this.storage = {
-      getItem: async (key) => Promise.resolve(this.storage[key]),
+      getItem: async (key) => Promise.resolve(this.data[key]),
       setItem: async (key, value) => {  
-        this.storage[key] = value;
-        Promise.resolve(localStorage.setItem(key, value));
+        this.data[key] = value;
+        console.log({key});
+        Promise.resolve({key});
       },
       removeItem: async (key) =>  {        
-        delete this.storage[key];
-        Promise.resolve(localStorage.removeItem(key));
+        delete this.data[key];
+        Promise.resolve({key});
       }
       
     };
@@ -158,20 +191,21 @@ class QueryStringStrategy extends StorageStrategy {
 }
 
 
+const customStore = createStore("bootstrapp", "kv");
 class IndexedDBStrategy extends StorageStrategy {
   constructor(name) {
     super(name);
     this.storage = {
       getItem: async (key) => {
-        const value = await get(key);
+        const value = await get(key, customStore);
         return value ? JSON.parse(decodeURIComponent(value)) : null;
       },
   
       setItem: async (key, value) => {
-        return set(key, encodeURIComponent(JSON.stringify(value)));
+        return set(key, encodeURIComponent(JSON.stringify(value)), customStore);
       },
       removeItem: async (key) => {
-        return del(key);        
+        return del(key, customStore);
       }
     };
   }

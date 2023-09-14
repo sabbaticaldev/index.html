@@ -23,7 +23,7 @@ const defineControllers = (controllers) => {
   return Object.fromEntries(
     Object.entries(controllers).map(([name, module]) => [
       name,
-      defineController(module),
+      defineController(module, {modelName: name}),
     ])
   );
 };
@@ -59,13 +59,16 @@ const bootstrapp = ({ files, style, onLoad, bootstrappTag = "app-index" }) => {
     .map(classifyFile)
     .reduce(reduceFiles, { view: {}, controller: {}, model: {} });
 
-  const controllers = defineControllers(categorized.controller);
-  const models = defineModels(categorized.model);
-  const views = defineViews(categorized.view, { controllers, models, style });
+  const controllers = defineControllers(categorized.controller) || {};
+  const models = defineModels(categorized.model)  || {};
   
   if(onLoad) {
     onLoad(models);
   }
+  
+  const views = defineViews(categorized.view, { controllers, models, style });
+  
+  
   return views[bootstrappTag];
 };
 

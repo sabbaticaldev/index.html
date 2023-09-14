@@ -74,7 +74,7 @@ export default function defineView(component, config = {}) {
         }
         const setterName = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
         this[setterName] = (newValue) => {
-          if (appState && props[key].scope === "app") {
+          if (appState) {
             appState.setState(key, newValue);
           }
           else {
