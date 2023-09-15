@@ -3,16 +3,19 @@ import { ReactiveController } from "../reactivity/reactive-controller";
 export default function defineController(controller, convention) {
   return class ActionController extends ReactiveController {
     constructor(host, appState) {
-      super(appState);
+      super(host, appState);
       this.appState = appState;
       this.host = host;
       this.host.addController(this);
-      this.constructor.subscribers.push(host);
-      const get = async () => {
-        return await this.appState.list(this.modelName);
-      };
-      // TODO: create set() function to update on the subscribe
-      Object.defineProperty(this.host, "list", { get });
+      if(host.reactive) {
+        this.constructor.subscribers.push(host);
+        const get = async () => {
+          return await this.appState.list(this.modelName);
+        };
+        // TODO: create set() function to update on the subscribe
+        Object.defineProperty(this.host, "list", { get });
+      }
+      
       this.modelName = convention?.modelName;
       Object.keys(controller).forEach((prop) => {
         this[prop] =

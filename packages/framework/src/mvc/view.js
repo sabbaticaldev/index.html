@@ -62,6 +62,7 @@ export default function defineView(component, config = {}) {
       super();
       this.html = html;
       this.until = until;
+      this.reactive = !!(props.list || props.record);
       if (controller && controllers[controller]) {
         this.controller = new controllers[controller](this, appState);
       }
@@ -74,12 +75,7 @@ export default function defineView(component, config = {}) {
         }
         const setterName = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
         this[setterName] = (newValue) => {
-          if (appState) {
-            appState.setState(key, newValue);
-          }
-          else {
-            this[key] = newValue;
-          }
+          this[key] = newValue;          
         };
       });
     }

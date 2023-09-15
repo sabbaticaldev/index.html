@@ -195,11 +195,11 @@ class IndexedDBStrategy extends StorageStrategy {
     this.storage = {
       getItem: async (key) => {
         const value = await get(key, customStore);
-        return value ? JSON.parse(decodeURIComponent(value)) : null;
+        return value ? JSON.parse(value) : null;
       },
   
       setItem: async (key, value) => {
-        return set(key, encodeURIComponent(JSON.stringify(value)), customStore);
+        return set(key, JSON.stringify(value), customStore);
       },
       removeItem: async (key) => {
         return del(key, customStore);
