@@ -17,7 +17,7 @@ class ReactiveRecord {
     if(data) {
       const storedValue = await this.storage.get(name+"list");
       if (!storedValue) {
-        this.storage.addBulk(data);
+        this.storage.addMany(data);
       }
     }
   }
@@ -35,12 +35,12 @@ class ReactiveRecord {
   }
 
 
-  async addBulk(values) {
-    return await this.storage.addBulk(values);
+  async addMany(values) {
+    return await this.storage.addMany(values);
   }
 
-  async editBulk(records) {
-    return await this.storage.editBulk(records);      
+  async editMany(records) {
+    return await this.storage.editMany(records);      
   }
 
   async remove(id) {

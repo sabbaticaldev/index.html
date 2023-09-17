@@ -31,8 +31,8 @@ export default function defineController(controller, convention) {
     };
 
 
-    addBulk = async (records) => {
-      await this.appState.addBulk(records);
+    addMany = async (records) => {
+      await this.appState.addMany(records);
       console.log("notify all");
       ActionController.notifyAll();
     };
@@ -43,8 +43,8 @@ export default function defineController(controller, convention) {
     };
 
 
-    editBulk = async (updates) => {
-      await this.appState.editBulk([updates]);
+    editMany = async (updates) => {
+      await this.appState.editMany([updates]);
       ActionController.notifyAll();    
     };
 

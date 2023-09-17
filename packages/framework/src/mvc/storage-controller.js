@@ -56,7 +56,7 @@ class StorageStrategy {
   /**
    * @param {any[]} values
    */
-  async addBulk(values) {
+  async addMany(values) {
     if (this.isServer || !values || !values.length) return;
     
     const ids = values.map(() => this.modelName + generateId());
@@ -85,7 +85,7 @@ class StorageStrategy {
   /**
    * @param {Record<string, any>[]} records
    */
-  async editBulk(records) {
+  async editMany(records) {
     if (this.isServer || !records || !records.length) return;
     
     await Promise.all(records.map(async record => {

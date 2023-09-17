@@ -1,6 +1,8 @@
 import { LitElement, html } from "lit";
 import { until } from "lit/directives/until.js";
 import { customElement } from "lit/decorators.js";
+import i18n from "../view/i18n.js";
+
 
 function jQuery(selector) {
   const elements = document.querySelectorAll(selector);
@@ -36,6 +38,7 @@ export default function defineView(component, config = {}) {
   const {
     controller,
     tag,
+    
     props = {},
     render,
     onLoad,
@@ -62,11 +65,21 @@ export default function defineView(component, config = {}) {
       super();
       this.html = html;
       this.until = until;
+      if(props.i18n) {
+        this.i18n = i18n(props.i18n);
+      }
       this.reactive = !!(props.list || props.record);
-      if (controller && controllers[controller]) {
-        this.controller = new controllers[controller](this, appState);
+      const ControllerClass = controller && controllers[controller];
+      if (ControllerClass) {
+        this.controller = new ControllerClass(this, appState);
       }
   
+      /*if(this.style) {
+        # TODO: Implement adoptedStyleSheets to have smaller bundler
+        this.attachShadow({ mode: "open" });
+        this.shadowRoot.adoptedStyleSheets = [this.style];
+      }*/
+
       const propKeys = Object.keys(props);
       const stateKeys = propKeys.filter(key => !props[key].readonly);      
       stateKeys.filter(filterActionControllerProps).forEach((key)=> {        
