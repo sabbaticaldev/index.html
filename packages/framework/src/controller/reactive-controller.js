@@ -113,8 +113,7 @@ export function defineController(controller, convention) {
         Object.defineProperty(this.host, "list", { get });
       }
       if (events) {
-        Object.keys(events).forEach((eventKey) => {
-          console.log("What the fuck is going on?");
+        Object.keys(events).forEach((eventKey) => {          
           ReactiveController.register(eventKey, events[eventKey]);
         });
       }
