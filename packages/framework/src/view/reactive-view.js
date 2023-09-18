@@ -65,6 +65,7 @@ export default function defineView(component, config = {}) {
       super();
       this.html = html;
       this.until = until;
+      this.event = dispatchEvent;
       if(props.i18n) {
         this.i18n = i18n(props.i18n);
       }
@@ -72,13 +73,8 @@ export default function defineView(component, config = {}) {
       const ControllerClass = controller && controllers[controller];
       if (ControllerClass) {
         this.controller = new ControllerClass(this, appState);
+        this.event = this.controller.dispatchEvent.bind(this.controller);        
       }
-  
-      /*if(this.style) {
-        # TODO: Implement adoptedStyleSheets to have smaller bundler
-        this.attachShadow({ mode: "open" });
-        this.shadowRoot.adoptedStyleSheets = [this.style];
-      }*/
 
       const propKeys = Object.keys(props);
       const stateKeys = propKeys.filter(key => !props[key].readonly);      
