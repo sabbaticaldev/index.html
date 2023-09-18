@@ -1,6 +1,6 @@
-import defineController from "./mvc/controller";
-import defineView from "./mvc/view";
-import ReactiveRecord from "./reactivity/reactive-record";
+import { defineController } from "./controller/reactive-controller.js";
+import defineView from "./view/reactive-view.js";
+import ReactiveRecord from "./model/reactive-record.js";
 
 const classifyFile = ([path, module]) => {
   const nameMatch = /\/([\w\-_]+)\.(view|controller|model)\./.exec(path);

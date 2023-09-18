@@ -1,4 +1,4 @@
-import Storage from "../mvc/storage-controller";
+import Storage from "../controller/storage.controller";
 
 /**
  * Class representing an active record.

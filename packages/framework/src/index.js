@@ -1,6 +1,6 @@
-import ReactiveRecord from "./reactivity/reactive-record";
-import defineController from "./mvc/controller";
-import defineView from "./mvc/view";
+import ReactiveRecord from "./model/reactive-record";
+import { defineController } from "./controller/reactive-controller";
+import defineView from "./view/reactive-view";
 import bootstrapp from "./bootstrapp";
 
 export { defineController, defineView, ReactiveRecord, bootstrapp };
