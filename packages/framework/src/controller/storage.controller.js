@@ -50,8 +50,12 @@ class StorageStrategy {
     this._set(id, { ...(value|| {}), id });
     const index = await this.get(this.modelName+"list") || [];
     this._set(this.modelName+"list", [...(index || []), id]);
+    return { ...(value|| {}), id };
   }
 
+  length() {
+
+  }
 
   /**
    * @param {any[]} values

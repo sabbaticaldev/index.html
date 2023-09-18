@@ -65,7 +65,6 @@ export default function defineView(component, config = {}) {
       super();
       this.html = html;
       this.until = until;
-      this.event = dispatchEvent;
       if(props.i18n) {
         this.i18n = i18n(props.i18n);
       }

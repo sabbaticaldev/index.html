@@ -22,12 +22,16 @@ class ReactiveRecord {
     }
   }
 
+  get length() {
+    return this.storage.length;
+  }
+
   constructor(config) {
     this.init(config);
   }
 
   async add(value) {
-    return await this.storage.add(value);    
+    return await this.storage.add(value);
   }
 
   async edit(value) {

@@ -2,11 +2,11 @@ import { defineController } from "./controller/reactive-controller.js";
 import defineView from "./view/reactive-view.js";
 import ReactiveRecord from "./model/reactive-record.js";
 
-const defineControllers = (controllers) => {
+const defineControllers = (controllers, models) => {
   return Object.fromEntries(
     Object.entries(controllers).map(([name, module]) => [
       name,
-      defineController(module, {modelName: name}),
+      defineController(module, { modelName: name }, models),
     ])
   );
 };
@@ -63,8 +63,8 @@ const bootstrapp = ({ files, style, onLoad, bootstrappTag = "app-index" }) => {
     .map(classifyFile)
     .reduce(reduceFiles, { view: {}, controller: {}, model: {} });
 
-  const controllers = defineControllers(categorized.controller) || {};
   const models = defineModels(categorized.model)  || {};
+  const controllers = defineControllers(categorized.controller, models) || {};
   
   if(onLoad) {
     onLoad(models);
