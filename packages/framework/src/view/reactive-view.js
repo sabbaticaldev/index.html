@@ -1,7 +1,7 @@
 import { LitElement, html } from "lit";
 import { until } from "lit/directives/until.js";
 import { customElement } from "lit/decorators.js";
-import i18n from "./i18n.js";
+import i18n from "../plugins/i18n/i18n.js";
 
 
 function jQuery(selector) {
