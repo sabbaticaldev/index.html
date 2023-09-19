@@ -6,7 +6,7 @@ const defineControllers = (controllers, models) => {
   return Object.fromEntries(
     Object.entries(controllers).map(([name, module]) => [
       name,
-      defineController(module, { modelName: name }, models),
+      defineController(module, models),
     ])
   );
 };

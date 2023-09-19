@@ -1,22 +1,22 @@
 import SystemeventController from "../plugins/events/systemevent.controller.js";
 export const queue = [];
 
-export function defineController(controller, convention, models) {
+export function defineController(controller, models) {
   const { events } = controller;
   return class extends SystemeventController {
     static eventQueue = models.systemevent;
     static subscribers = [];
 
-    constructor(host, appState) {
+    constructor(host, model) {
       super(host);
       this.host = host;
       this.host.addController(this);
-      this.constructor.appState = appState;
-      this.modelName = convention?.modelName;
+      this.constructor.model = model;
+      this.modelName = model.name;
       if (host.reactive) {
         this.constructor.subscribers.push(host);
         const get = async () => {
-          return await this.constructor.appState.list(this.modelName);
+          return await this.constructor.model.list();
         };
         // TODO: remove some logic from constructor and instantiate just one of each controller (attaching the same to multiple components)
         Object.defineProperty(this.host, "list", { get });
@@ -50,7 +50,7 @@ export function defineController(controller, convention, models) {
         this.subscribers[key] = [];
       }
       this.subscribers[key].push(callback);    
-      callback(await this.appState.get(key)); 
+      callback(await this.model.get(key)); 
     }
 
     static unsubscribe(key, callback) {
@@ -64,31 +64,41 @@ export function defineController(controller, convention, models) {
       }
     }
 
-    add = async (record) => {    
-      await this.constructor.appState.add(record);
-      this.constructor.notifyAll();    
+    add = (record) => {
+      return this.constructor.model.add(record).then(result => {
+        this.constructor.notifyAll();
+        return result;
+      });
     };
 
 
     addMany = async (records) => {
-      await this.constructor.appState.addMany(records);
-      this.constructor.notifyAll();
+      return this.constructor.model.addMany(records).then(result => {
+        this.constructor.notifyAll();
+        return result;
+      });
     };
 
     edit = async (id, updates) => {
-      await this.constructor.appState.edit(id, updates);
-      this.constructor.notifyAll();    
+      return this.constructor.model.edit(id, updates).then(result => {
+        this.constructor.notifyAll();
+        return result;
+      });
     };
 
 
     editMany = async (updates) => {
-      await this.constructor.appState.editMany([updates]);
-      this.constructor.notifyAll();    
+      return this.constructor.model.editMany([updates]).then(result => {
+        this.constructor.notifyAll();
+        return result;
+      });
     };
 
     remove = async (id) => {
-      await this.constructor.appState.remove(id);
-      this.constructor.notifyAll();    
+      return this.constructor.model.remove(id).then(result => {
+        this.constructor.notifyAll();
+        return result;
+      });  
     };
   };
 }

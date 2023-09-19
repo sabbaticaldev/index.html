@@ -4,8 +4,6 @@ import UrlAdapter from "./adapters/url.js";
 import SessionStorageAdpter from "./adapters/session-storage.js";
 import LocalStorageAdapter from "./adapters/local-storage.js";
 
-
-
 const adapters = {
   "memory": MemoryAdpter,
   "indexeddb": IndexeddbAdapter,
@@ -79,7 +77,7 @@ class ReactiveRecord {
     this._set(id, { ...(value|| {}), id });
     const index = await this.get(this.name+"list") || [];
     this._set(this.name+"list", [...(index || []), id]);
-    return { ...(value|| {}), id };
+    return Promise.resolve({ ...(value|| {}), id });
   }
 
   /**
