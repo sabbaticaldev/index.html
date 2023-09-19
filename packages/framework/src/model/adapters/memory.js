@@ -1,15 +1,18 @@
 export default {
-  getItem: async (key) => Promise.resolve(this.data?.[key]),
-  setItem: async (key, value) => {
+  getItem: async function(key) {
+    if(!this.data)
+      this.data = [];
+    return Promise.resolve(this.data?.[key]);
+  },
+  setItem: async function(key, value) {
     if(!this.data) 
       this.data = [];
     this.data[key] = value;
-    Promise.resolve({key, value});
+    return Promise.resolve({key, value});
   },
-  removeItem: async (key) =>  {
+  removeItem: async function(key) {
     delete this.data[key];
-    Promise.resolve({key});
+    return Promise.resolve({key});
   }
-  
 };
   
