@@ -355,6 +355,9 @@ importers:
 
   packages/framework:
     dependencies:
+      astro:
+        specifier: ^3.0.12
+        version: 3.0.12
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.1

@@ -30,8 +30,10 @@ class ReactiveRecord {
   async init({ data, name, adapter } = {}) {
     this.name = name;
     this.isServer = typeof window === "undefined";    
-    this.storage = adapter && adapters[adapter] || adapters["memory"];
-    
+    this.adapter = adapter && adapters[adapter] || adapters["memory"];
+    if(this.adapter.createStore) {
+      this.store = this.adapter.createStore();
+    }
     // Load initial state from storage    
     if(data) {
       const storedValue = await this.list();
@@ -51,7 +53,7 @@ class ReactiveRecord {
    */
   async get(id) {
     if (this.isServer) return null;
-    const stored = await this.storage.getItem(id);
+    const stored = await this.adapter.getItem(id, this.store);
     const value = stored ? JSON.parse(stored) : null;
     return (!value || Array.isArray(value)) ? value : {...value, id };
   }
@@ -65,7 +67,7 @@ class ReactiveRecord {
 
   async _set(key, value) {
     if (this.isServer) return;
-    return this.storage.setItem(key, JSON.stringify(value));
+    return this.adapter.setItem(key, JSON.stringify(value), this.store);
   }
 
   /**
@@ -137,7 +139,7 @@ class ReactiveRecord {
     const index = await this.get(indexKey);
     const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];    
     await this._set(this.name+"list", updatedIndex);
-    return this.storage.removeItem(key);
+    return this.adapter.removeItem(key, this.store);
   }
 }
 

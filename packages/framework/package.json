@@ -21,7 +21,8 @@
     "typescript": "^4.6.2"
   },
   "peerDependencies": {
-    "lit": "^2.8.0"
+    "lit": "^2.8.0",
+    "astro": "^3.0.12"
   },
   "dependencies": {
     "idb-keyval": "^6.2.1"

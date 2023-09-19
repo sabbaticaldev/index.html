@@ -1,16 +1,19 @@
 import { set, get, del, createStore } from "idb-keyval";
 
-const customStore = createStore("bootstrapp", "kv");
 export default {
-  getItem: async (key) => {
-    const value = await get(key, customStore);
+  getItem: async (key, store) => {
+    const value = await get(key, store);
     return value ? JSON.parse(value) : null;
   },
 
-  setItem: async (key, value) => {
-    return set(key, JSON.stringify(value), customStore);
+  setItem: async (key, value, store) => {
+    return set(key, JSON.stringify(value), store);
   },
-  removeItem: async (key) => {
-    return del(key, customStore);
+  removeItem: async (key, store) => {
+    return del(key, store);
+  },
+  createStore: (storeName = "bootstrapp", tableName = "kv") => {
+    return createStore(storeName, tableName);
   }
+  
 };
