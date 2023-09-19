@@ -34,10 +34,10 @@ class ReactiveRecord {
     this.isServer = typeof window === "undefined";    
     this.storage = adapter && adapters[adapter] || adapters["memory"];
     
-    // Load initial state from storage
+    // Load initial state from storage    
     if(data) {
       const storedValue = await this.list();
-      if (!storedValue) {
+      if (!storedValue?.length) {
         this.addMany(data);
       }
     }
@@ -85,9 +85,8 @@ class ReactiveRecord {
   /**
    * @param {any[]} values
    */
-  async addMany(values) {
-    if (this.isServer || !values || !values.length) return;
-    
+  async addMany(values) {    
+    if (this.isServer || !values || !values.length) return;    
     const ids = values.map(() => this.name + generateId());
     await Promise.all(ids.map(async (id, idx) => await this._set(ids[idx], { 
       ...(values[idx] || {}),
