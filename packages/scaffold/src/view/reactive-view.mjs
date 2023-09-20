@@ -4,25 +4,14 @@ import { customElement } from "lit/decorators.js";
 import i18n from "../plugins/i18n/i18n.mjs";
 
 function dispatchEvent(key, params = {}) {
-  const eventObj = {
+  const event = {
     type: key,
     params
-  };
-  console.log("dispatched event");
+  };  
   // Send this event to the service worker for processing
   if (typeof window !== "undefined" && navigator?.serviceWorker?.controller) {
-    console.log(eventObj);
-    navigator.serviceWorker.controller.postMessage(eventObj);
+    navigator.serviceWorker.controller.postMessage(event);
   }
-}
-if(typeof window !== "undefined") {
-  navigator.serviceWorker.addEventListener("message", event => {
-    console.log("Almost there all");
-    if (event.data === "UPDATE_CONTENT") {
-      console.log("Almost there");
-    // Update your content here, e.g., fetch latest todos and render them
-    }
-  });
 }
 
 function jQuery(selector) {
@@ -107,12 +96,29 @@ export default function defineView(component, config = {}) {
           this[key] = newValue;          
         };
       });
+    
+      if(typeof window !== "undefined") {
+        this.boundServiceWorkerMessageHandler = this.handleServiceWorkerMessage.bind(this);
+        navigator.serviceWorker.addEventListener("message", this.boundServiceWorkerMessageHandler);
+      }
     }
-  
+
+    // Handler for service worker messages
+    handleServiceWorkerMessage(event) {
+      if (event.data === "REQUEST_UPDATE") {
+        // TODO: it should update only the specific element, not all elements - prototype 
+        this.requestUpdate();
+      }
+    }
+
     disconnectedCallback() {
       if (this instanceof LitElement) {
         super.disconnectedCallback();
       }
+      if(typeof window !== "undefined") {
+        navigator.serviceWorker.removeEventListener("message", this.boundServiceWorkerMessageHandler);
+      }
+
       if(this.controller && this.controller.subscriptionCallbacks?.length > 0) {
         for (const key of Object.keys(this.controller.subscriptionCallbacks)) {
           this.controller.unsubscribe(key);

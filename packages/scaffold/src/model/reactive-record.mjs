@@ -29,7 +29,6 @@ class ReactiveRecord {
    */
   async init({ data, name, adapter } = {}) {
     this.name = name;
-    this.isServer = typeof window === "undefined";    
     this.adapter = adapter && adapters[adapter] || adapters["memory"];
     if(this.adapter.createStore) {
       this.store = this.adapter.createStore();
@@ -52,7 +51,6 @@ class ReactiveRecord {
    * @returns {any}
    */
   async get(id) {
-    if (this.isServer) return null;
     const stored = await this.adapter.getItem(id, this.store);
     const value = stored ? JSON.parse(stored) : null;
     return (!value || Array.isArray(value)) ? value : {...value, id };
@@ -66,7 +64,6 @@ class ReactiveRecord {
   
 
   async _set(key, value) {
-    if (this.isServer) return;
     return this.adapter.setItem(key, JSON.stringify(value), this.store);
   }
 
@@ -77,8 +74,8 @@ class ReactiveRecord {
   async add(value) {
     const id = value?.id || this.name+generateId();
     this._set(id, { ...(value|| {}), id });
-    const index = await this.get(this.name+"list") || [];
-    this._set(this.name+"list", [...(index || []), id]);
+    const index = await this.get(this.name+"list") || [];    
+    this._set(this.name+"list", [...(index || []), id]);    
     return Promise.resolve({ ...(value|| {}), id });
   }
 
@@ -86,7 +83,7 @@ class ReactiveRecord {
    * @param {any[]} values
    */
   async addMany(values) {    
-    if (this.isServer || !values || !values.length) return;    
+    if (!values || !values.length) return;    
     const ids = values.map(() => this.name + generateId());
     await Promise.all(ids.map(async (id, idx) => await this._set(ids[idx], { 
       ...(values[idx] || {}),
@@ -115,7 +112,7 @@ class ReactiveRecord {
    * @param {Record<string, any>[]} records
    */
   async editMany(records) {
-    if (this.isServer || !records || !records.length) return;
+    if (!records || !records.length) return;
     
     await Promise.all(records.map(async record => {
       const currentRecord = await this.get(record.id) || {};
@@ -128,13 +125,11 @@ class ReactiveRecord {
    * @returns {any[]}
    */
   async list() {
-    if (this.isServer) return [];
     const index = await this.get(this.name+"list");    
     return Array.isArray(index) ? Promise.all(index.map(async (key) => await this.get(key))) : [];
   }
 
   async remove(key) {
-    if (this.isServer) return;
     const indexKey = this.name + "list";
     const index = await this.get(indexKey);
     const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];    

@@ -1,21 +1,21 @@
 import { defineControllers } from "./scaffold/controller/reactive-controller.mjs";
 import { defineModels } from "./scaffold/model/reactive-record.mjs";
-console.log({ defineControllers, defineModels });
-import models from "./models.mjs";
-const definedModels = defineModels(models);
-import controllers from "./controllers.mjs";
-const definedControllers = defineControllers(controllers, models);
-console.log({ definedControllers, definedModels });
+import modelList from "./models.mjs";
+import controllerList from "./controllers.mjs";
+const models = defineModels(modelList);
+const controllers = defineControllers(controllerList, models);
+
 // TODO: import the defineController and define the controllers, also inject the models
 // and bind the correct controller to the handler event
 let eventHandlers = {};
-
+let eventControllerMap = {};
 function handleEvent(event) {
   const { type, params } = event;
-
   if (eventHandlers[type]) {
     return Promise.all(
-      eventHandlers[type].map((handler) => handler(params)),
+      eventHandlers[type].map((handler) =>
+        handler.call(eventControllerMap[type], params),
+      ),
     ).then((results) => {
       self.clients.matchAll().then((clients) => {
         clients.forEach((client) => client.postMessage("REQUEST_UPDATE"));
@@ -26,11 +26,17 @@ function handleEvent(event) {
   return Promise.reject(new Error("No handler for event type"));
 }
 
-// Function to register handlers in the service worker itself
-function registerEventHandler(props) {
+function registerEventHandler(props, controllerName) {
   const [eventType, handler] = props;
+
   if (!eventHandlers[eventType]) {
     eventHandlers[eventType] = [];
+    if (controllers[controllerName]) {
+      eventControllerMap[eventType] = new controllers[controllerName](
+        {},
+        models[controllerName.replace("Controller", "Model")],
+      );
+    }
   }
   if (!eventHandlers[eventType].includes(handler)) {
     eventHandlers[eventType].push(handler);
@@ -40,17 +46,19 @@ function registerEventHandler(props) {
     );
   }
 }
-
 self.addEventListener("message", (event) => {
   if (event?.data.type) {
     handleEvent(event?.data);
   }
 });
 
-const api = Object.values(controllers)
-  .map((module) => {
+const api = Object.entries(controllerList)
+  .map(([controllerName, module]) => {
+    // import the events to registerEventHandler
     if (module.events) {
-      Object.entries(module.events).map(registerEventHandler);
+      Object.entries(module.events).map((props) =>
+        registerEventHandler(props, controllerName),
+      );
     }
     return module.endpoints;
   })

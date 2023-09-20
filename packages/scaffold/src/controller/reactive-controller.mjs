@@ -7,10 +7,10 @@ export function defineController(controller, models) {
     static eventQueue = models.systemevent;
     static subscribers = [];
 
-    constructor(host, model) {
+    constructor(host = {}, model) {
       super(host);
       this.host = host;
-      this.host.addController(this);
+      this.host?.addController?.(this);
       this.constructor.model = model;
       this.modelName = model.name;
       if (host.reactive) {
