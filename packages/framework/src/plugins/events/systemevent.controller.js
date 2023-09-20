@@ -42,4 +42,4 @@ export default class SystemeventController {
     const results = await this.handle(id, rest);
     return results;  // returns an array of results from all handlers for the event
   }
-}
+};
