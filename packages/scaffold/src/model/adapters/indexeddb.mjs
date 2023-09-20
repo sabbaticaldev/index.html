@@ -1,4 +1,4 @@
-import { set, get, del, createStore } from "idb-keyval";
+import { set, get, del, createStore } from "./idb-keyval.mjs";
 
 export default {
   getItem: async (key, store) => {

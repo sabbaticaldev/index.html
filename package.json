@@ -20,9 +20,11 @@
     "prettier": "^2.8.8"
   },
   "dependencies": {
+    "backend": "workspace:^",
     "eslint": "^8.19.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.0.0"
+    "eslint-plugin-prettier": "^4.0.0",
+    "scaffold": "^0.2.13"
   },
   "husky": {
     "hooks": {
@@ -30,6 +32,9 @@
     }
   },
   "lint-staged": {
-    "*.{js,json,css,md}": ["prettier --write", "git add"]
-  }  
+    "*.{js,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
 }

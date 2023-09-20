@@ -2,17 +2,33 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+const controllersMap = {};
+const modelsMap = {};
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-let controllersMap = {};
+const exportFile = (type, [name, code]) =>
+  code.replace("export default", `const ${name}${type} = `);
 
-const exportController = ([name, code]) =>
-  code.replace("export default", `const ${name}Controller = `);
+const writeToFile = (type, map, filePath) => {
+  const exports = `${Object.entries(map)
+    .map((entry) => exportFile(type, entry))
+    .join("\r\n")}
+const ${type}s = { ${Object.keys(map)
+  .map((name) => `${name}${type}`)
+  .join(", ")} };
+export default ${type}s;`;
+
+  try {
+    fs.writeFileSync(filePath, exports, "utf8");
+    console.log(`${type}s.mjs updated successfully!`);
+  } catch (error) {
+    console.error(`Error updating ${type}s.mjs:`, error);
+  }
+};
 
 const ServiceWorkerPlugin = () => ({
   name: "service-worker-plugin",
 
-  // This hook is called when the Rollup build starts
   buildStart() {
     const sourcePath = path.join(__dirname, "service-worker.mjs");
     const targetPath = path.join("./public", "service-worker.mjs");
@@ -24,31 +40,39 @@ const ServiceWorkerPlugin = () => ({
     }
   },
 
-  // This hook is called for every file in the build
   transform(code, id) {
+    if (id.includes("scaffold")) {
+      const relativePath = path.relative(
+        path.resolve(__dirname, "../../packages/scaffold/src"),
+        id,
+      );
+      const outputPath = path.join("./public/scaffold", relativePath);
+      const outputDir = path.dirname(outputPath);
+
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+
+      fs.writeFileSync(outputPath, code, "utf8");
+      console.log(`Copied scaffold file to ${outputPath}`);
+    }
     if (id.endsWith(".controller.js") || id.endsWith(".controller.ts")) {
       const name = path
         .basename(id, path.extname(id))
         .replace(".controller", "");
       controllersMap[name] = code;
+      writeToFile(
+        "Controller",
+        controllersMap,
+        path.join("./public", "controllers.mjs"),
+      );
+      return code;
+    }
 
-      // Write the controllers.js file immediately after processing a controller file
-      const controllerFilePath = path.join("./public", "controllers.mjs");
-      const controllerExports = `${Object.entries(controllersMap)
-        .map(exportController)
-        .join("\r\n")}
-const controllers = { ${Object.keys(controllersMap)
-    .map((controller) => controller + "Controller ")
-    .join(", ")} };
-export default controllers;`;
-
-      try {
-        fs.writeFileSync(controllerFilePath, controllerExports, "utf8");
-        console.log("controllers.js updated successfully!");
-      } catch (error) {
-        console.error("Error updating controllers.js:", error);
-      }
-
+    if (id.endsWith(".model.js") || id.endsWith(".model.ts")) {
+      const name = path.basename(id, path.extname(id)).replace(".model", "");
+      modelsMap[name] = code;
+      writeToFile("Model", modelsMap, path.join("./public", "models.mjs"));
       return code;
     }
   },

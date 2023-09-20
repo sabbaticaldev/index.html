@@ -2,8 +2,8 @@
   "name": "scaffold",
   "type": "module",
   "version": "0.1.0",
-  "main": "src/index.js",
-  "module": "src/index.js",
+  "main": "src/index.mjs",
+  "module": "src/index.mjs",
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
@@ -23,8 +23,5 @@
   "peerDependencies": {
     "lit": "^2.8.0",
     "astro": "^3.0.12"
-  },
-  "dependencies": {
-    "idb-keyval": "^6.2.1"
   }
 }

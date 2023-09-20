@@ -1,8 +1,29 @@
 import { LitElement, html } from "lit";
 import { until } from "lit/directives/until.js";
 import { customElement } from "lit/decorators.js";
-import i18n from "../plugins/i18n/i18n.js";
+import i18n from "../plugins/i18n/i18n.mjs";
 
+function dispatchEvent(key, params = {}) {
+  const eventObj = {
+    type: key,
+    params
+  };
+  console.log("dispatched event");
+  // Send this event to the service worker for processing
+  if (typeof window !== "undefined" && navigator?.serviceWorker?.controller) {
+    console.log(eventObj);
+    navigator.serviceWorker.controller.postMessage(eventObj);
+  }
+}
+if(typeof window !== "undefined") {
+  navigator.serviceWorker.addEventListener("message", event => {
+    console.log("Almost there all");
+    if (event.data === "UPDATE_CONTENT") {
+      console.log("Almost there");
+    // Update your content here, e.g., fetch latest todos and render them
+    }
+  });
+}
 
 function jQuery(selector) {
   const elements = document.querySelectorAll(selector);
@@ -72,7 +93,7 @@ export default function defineView(component, config = {}) {
       const ControllerClass = controller && controllers[controller];
       if (ControllerClass) {
         this.controller = new ControllerClass(this, appState);
-        this.event = this.controller.dispatchEvent.bind(this.controller);        
+        this.event = dispatchEvent;
       }
 
       const propKeys = Object.keys(props);

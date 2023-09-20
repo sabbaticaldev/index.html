@@ -1,8 +1,8 @@
-import MemoryAdpter from "./adapters/memory.js";
-import IndexeddbAdapter from "./adapters/indexeddb.js";
-import UrlAdapter from "./adapters/url.js";
-import SessionStorageAdpter from "./adapters/session-storage.js";
-import LocalStorageAdapter from "./adapters/local-storage.js";
+import MemoryAdpter from "./adapters/memory.mjs";
+import IndexeddbAdapter from "./adapters/indexeddb.mjs";
+import UrlAdapter from "./adapters/url.mjs";
+import SessionStorageAdpter from "./adapters/session-storage.mjs";
+import LocalStorageAdapter from "./adapters/local-storage.mjs";
 
 const adapters = {
   "memory": MemoryAdpter,
@@ -143,4 +143,15 @@ class ReactiveRecord {
   }
 }
 
-export default ReactiveRecord;
+
+
+const defineModels = (models) => {
+  return Object.fromEntries(
+    Object.entries(models).map(([name, module]) => [
+      name,
+      new ReactiveRecord(module),
+    ])
+  );
+};
+
+export { ReactiveRecord, defineModels };

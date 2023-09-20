@@ -1,4 +1,4 @@
-import SystemeventController from "../plugins/events/systemevent.controller.js";
+import SystemeventController from "../plugins/events/systemevent.controller.mjs";
 export const queue = [];
 
 export function defineController(controller, models) {
@@ -102,3 +102,14 @@ export function defineController(controller, models) {
     };
   };
 }
+
+
+
+export const defineControllers = (controllers, models) => {
+  return Object.fromEntries(
+    Object.entries(controllers).map(([name, module]) => [
+      name,
+      defineController(module, models),
+    ])
+  );
+};

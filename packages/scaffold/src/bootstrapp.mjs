@@ -1,24 +1,6 @@
-import { defineController } from "./controller/reactive-controller.js";
-import defineView from "./view/reactive-view.js";
-import ReactiveRecord from "./model/reactive-record.js";
-
-const defineControllers = (controllers, models) => {
-  return Object.fromEntries(
-    Object.entries(controllers).map(([name, module]) => [
-      name,
-      defineController(module, models),
-    ])
-  );
-};
-
-const defineModels = (models) => {
-  return Object.fromEntries(
-    Object.entries(models).map(([name, module]) => [
-      name,
-      new ReactiveRecord(module),
-    ])
-  );
-};
+import { defineControllers } from "./controller/reactive-controller.mjs";
+import defineView from "./view/reactive-view.mjs";
+import { defineModels } from "./model/reactive-record.mjs";
 
 const defineViews = (views, { controllers, models, style }) => {
   return Object.fromEntries(

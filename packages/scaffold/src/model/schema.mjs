@@ -289,7 +289,7 @@ const dsl = {
   ]
 };
 
-function processEntity(dsl, entity, isUpdate = false) {
+export function processEntity(dsl, entity, isUpdate = false) {
   const validationErrors = validateEntity(dsl, entity);
   if (validationErrors.length > 0) {
     throw new Error(`Validation failed with errors: ${JSON.stringify(validationErrors)}`);
