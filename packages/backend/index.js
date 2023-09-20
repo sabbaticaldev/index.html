@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let controllersMap = {};
 
 const exportController = ([name, code]) =>
-  code.replace("export default", `const ${name} = `);
+  code.replace("export default", `const ${name}Controller = `);
 
 const ServiceWorkerPlugin = () => ({
   name: "service-worker-plugin",
@@ -37,7 +37,9 @@ const ServiceWorkerPlugin = () => ({
       const controllerExports = `${Object.entries(controllersMap)
         .map(exportController)
         .join("\r\n")}
-const controllers = { ${Object.keys(controllersMap).join(", ")} };
+const controllers = { ${Object.keys(controllersMap)
+    .map((controller) => controller + "Controller ")
+    .join(", ")} };
 export default controllers;`;
 
       try {
