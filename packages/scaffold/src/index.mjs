@@ -5,7 +5,7 @@ const ws = new WebSocket("ws://127.0.0.1:3030/ws");
 
 ws.onopen = () => {
   console.log("Connected to the server");
-  // Send a registration message or any initialization message here if needed
+  ws.send(JSON.stringify({ type: "register", username: "UserA" }));  
 };
 
 ws.onmessage = (event) => {
@@ -86,8 +86,8 @@ async function call(targetUsername) {
   ws.send(
     JSON.stringify({
       type: "offer",
-      offer: offer,
-      targetUsername: targetUsername,
+      offer,
+      targetUsername,
     }),
   );
 }
