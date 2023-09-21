@@ -82,7 +82,6 @@ pc.onicecandidate = ({ candidate }) => {
 async function call(targetUsername) {
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
-  console.log("let's seee");
   ws.send(
     JSON.stringify({
       type: "offer",
