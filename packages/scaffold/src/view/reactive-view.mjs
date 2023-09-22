@@ -4,6 +4,8 @@ import { customElement } from "lit/decorators.js";
 import i18n from "../plugins/i18n/i18n.mjs";
 import url from "../model/adapters/url.mjs";
 
+const syncAdapters = { url, localStorage, sessionStorage };
+
 function dispatchEvent(key, params = {}) {
   const event = {
     type: key,
@@ -95,10 +97,8 @@ export function defineView(component, config = {}) {
         if(prop.defaultValue) {
           this[key] = prop.defaultValue;
         }
-
-        if(prop.url) {          
-          this[key] = url.getItem(key);
-          console.log(prop.url, this[key], key);
+        if(prop.sync) {
+          this[key] = syncAdapters[prop.sync].getItem(key); // you might have added a sync adapter that doesn't exist
         }
 
         if(!prop.readonly) {
@@ -107,8 +107,8 @@ export function defineView(component, config = {}) {
             //if(model?.properties[key]) {
             // TODO: do a few things only if it is a connected-to-model property
             //}
-            if(props.url) {
-              url.setItem(key, newValue);
+            if(prop.sync) {              
+              syncAdapters[prop.sync].setItem(key, newValue);
             }
             this[key] = newValue;            
           };
