@@ -1,12 +1,18 @@
-export const connect = ({
-  url = "ws://127.0.0.1:3030/ws",
-  username,
-  stunUrls = "stun:stun.l.google.com:19302",
-}) => {
-  if (!username) {
-    throw new Error("Username must be provided.");
-  }
+const generateId = () => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  return Array.from({ length: 5 })
+    .map(() => chars[Math.floor(Math.random() * chars.length)])
+    .join("");
+};
 
+export const connect = (opts = {}) => {
+  const {
+    url = "ws://127.0.0.1:3030/ws",
+    stunUrls = "stun:stun.l.google.com:19302",
+  } = opts;
+
+  const username = opts.username || generateId();
   const configuration = {
     iceServers: [{ urls: stunUrls }],
   };
@@ -163,5 +169,6 @@ export const connect = ({
   return {
     call,
     dataChannel,
+    username,
   };
 };
