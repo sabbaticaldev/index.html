@@ -1,21 +1,25 @@
+const isServer = typeof window === "undefined";
+// TODO: fix, URL adapter isn't working because service worker can't access replaceState
 export default {
-  getItem: async (key) => {
+  getItem: (key) => {
+    if(isServer) return;
     const params = new URLSearchParams(window.location.search);
-    const value = params.get(key);
-    return Promise.resolve(value ? JSON.parse(decodeURIComponent(value)) : null);        
+    return params.get(key);
   },
 
-  setItem: async (key, value) => {
+  setItem: (key, value) => {
+    if(isServer) return;
     const params = new URLSearchParams(window.location.search);
-    params.set(key, encodeURIComponent(JSON.stringify(value)));
-    window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
-    return Promise.resolve({key});
+    params.set(key, value);
+    window.history?.replaceState?.({}, "", `${window.location.pathname}?${params}`);
+    return {key};
   },
-  removeItem: async (key) => {
+  removeItem: (key) => {
+    if(isServer) return;
     const params = new URLSearchParams(window.location.search);
     params.delete(key);
-    window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
-    return Promise.resolve({key});
+    window.history.replaceState?.({}, "", `${window.location.pathname}?${params}`);
+    return {key};
   }
 };
   

@@ -1,23 +1,6 @@
 import { defineControllers } from "./controller/reactive-controller.mjs";
-import defineView from "./view/reactive-view.mjs";
+import { defineViews } from "./view/reactive-view.mjs";
 import { defineModels } from "./model/reactive-record.mjs";
-
-const defineViews = (views, { controllers, models, style }) => {
-  return Object.fromEntries(
-    Object.entries(views).map(([name, view]) => {
-      const controllerName = view.controller || name;
-      const modelName = view.modelName || controllerName;
-      return [
-        name,
-        defineView(view, {
-          appState: models[modelName],
-          style,
-          controllers: { [controllerName]: controllers[controllerName] },
-        }),
-      ];
-    })
-  );
-};
 
 const classifyFile = ([path, module]) => {
   const nameMatch = /\/([\w\-_]+)\.(view|controller|model)\./.exec(path);

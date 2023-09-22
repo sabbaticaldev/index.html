@@ -27,9 +27,10 @@ class ReactiveRecord {
    * @param {Object} [initialState={}]
    * @param {Object} [config={}]
    */
-  async init({ data, name, adapter } = {}) {
+  async init({ data, name, adapter, properties } = {}) {
     this.name = name;
     this.adapter = adapter && adapters[adapter] || adapters["memory"];
+    this.properties = properties;
     if(this.adapter.createStore) {
       this.store = this.adapter.createStore();
     }
@@ -63,7 +64,7 @@ class ReactiveRecord {
    */
   
 
-  async _set(key, value) {
+  async _set(key, value) {    
     return this.adapter.setItem(key, JSON.stringify(value), this.store);
   }
 
@@ -72,7 +73,7 @@ class ReactiveRecord {
    * @param {any} value
    */
   async add(value) {
-    const id = value?.id || this.name+generateId();
+    const id = value?.id || this.name+generateId();    
     this._set(id, { ...(value|| {}), id });
     const index = await this.get(this.name+"list") || [];    
     this._set(this.name+"list", [...(index || []), id]);    
@@ -124,7 +125,7 @@ class ReactiveRecord {
   /**
    * @returns {any[]}
    */
-  async list() {
+  async list() {    
     const index = await this.get(this.name+"list");    
     return Array.isArray(index) ? Promise.all(index.map(async (key) => await this.get(key))) : [];
   }

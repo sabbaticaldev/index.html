@@ -2,6 +2,7 @@ import { LitElement, html } from "lit";
 import { until } from "lit/directives/until.js";
 import { customElement } from "lit/decorators.js";
 import i18n from "../plugins/i18n/i18n.mjs";
+import url from "../model/adapters/url.mjs";
 
 function dispatchEvent(key, params = {}) {
   const event = {
@@ -43,18 +44,16 @@ function jQuery(selector) {
  * @param {Object} [config={}] - Additional configuration parameters.
  * @returns {typeof LitElement}
  */
-export default function defineView(component, config = {}) {
+export function defineView(component, config = {}) {
   // Destructure properties from the component configuration
   const {
-    controller,
     tag,
-    
     props = {},
     render,
     onLoad,
   } = component;
   
-  const { controllers = {}, appState, style } = config;
+  const { controller: ControllerClass, model = {}, style } = config;
   const filterActionControllerProps = (key) => !(["list", "record"].includes(key)); // this property is managed by the Action Controller
 
   class ReactionView extends LitElement {
@@ -79,22 +78,41 @@ export default function defineView(component, config = {}) {
         this.i18n = i18n(props.i18n);
       }
       this.reactive = !!(props.list || props.record);
-      const ControllerClass = controller && controllers[controller];
+      
       if (ControllerClass) {
-        this.controller = new ControllerClass(this, appState);
+        this.controller = new ControllerClass(this, model);
         this.event = dispatchEvent;
       }
-
-      const propKeys = Object.keys(props);
-      const stateKeys = propKeys.filter(key => !props[key].readonly);      
-      stateKeys.filter(filterActionControllerProps).forEach((key)=> {        
-        if(props[key].defaultValue) {
-          this[key] = props[key].defaultValue;
+      
+      let mergedProps = props;
+      if(this.reactive && model?.properties) {
+        mergedProps = { ...props, ...(model?.properties || {}) };
+      }
+      
+      const propKeys = Object.keys(mergedProps);
+      propKeys.filter(filterActionControllerProps).forEach((key)=> {
+        const prop = mergedProps[key];
+        if(prop.defaultValue) {
+          this[key] = prop.defaultValue;
         }
-        const setterName = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
-        this[setterName] = (newValue) => {
-          this[key] = newValue;          
-        };
+
+        if(prop.url) {          
+          this[key] = url.getItem(key);
+          console.log(prop.url, this[key], key);
+        }
+
+        if(!prop.readonly) {
+          const setterName = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
+          this[setterName] = (newValue) => {
+            //if(model?.properties[key]) {
+            // TODO: do a few things only if it is a connected-to-model property
+            //}
+            if(props.url) {
+              url.setItem(key, newValue);
+            }
+            this[key] = newValue;            
+          };
+        }
       });
     
       if(typeof window !== "undefined") {
@@ -135,7 +153,7 @@ export default function defineView(component, config = {}) {
       return component.template || render?.(this, this.controller) || html`<h1>Error: no render function or template.</h1>`;
     }
   }
-  
+
   ReactionView.styles = style ? [style] : undefined;
   ReactionView.props = props;
   
@@ -144,3 +162,21 @@ export default function defineView(component, config = {}) {
   
   return ReactionView;
 }
+
+
+export const defineViews = (views, { controllers, models, style }) => {
+  return Object.fromEntries(
+    Object.entries(views).map(([name, view]) => {
+      const controllerName = view.controller || name;
+      const modelName = view.model || controllerName;
+      return [
+        name,
+        defineView(view, {
+          model: models[modelName],
+          style,
+          controller: controllers[controllerName],
+        }),
+      ];
+    })
+  );
+};

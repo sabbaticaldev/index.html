@@ -66,6 +66,7 @@ export function defineController(controller, models) {
 
     add = (record) => {
       return this.constructor.model.add(record).then(result => {
+        console.log("addeddando", {record});
         this.constructor.notifyAll();
         return result;
       });
