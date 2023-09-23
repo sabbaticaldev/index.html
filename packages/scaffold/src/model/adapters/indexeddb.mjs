@@ -1,17 +1,44 @@
-function promisifyRequest(request) {
-  return new Promise((resolve, reject) => {
-    // @ts-ignore - file size hacks
-    request.oncomplete = request.onsuccess = () => resolve(request.result);
-    // @ts-ignore - file size hacks
-    request.onabort = request.onerror = () => reject(request.error);
+/**
+ * Clears all values in the store.
+ *
+ * @param {Function} [customStore=defaultGetStore()] - Method to get a custom store. Use with caution (see the docs).
+ * @returns {Promise} - Promise that resolves when the store is cleared.
+ */
+function clear(customStore = defaultGetStore()) {
+  return customStore("readwrite", (store) => {
+    store.clear();
+    return promisifyRequest(store.transaction);
   });
 }
+
+/**
+ * Create a new store or open an existing one.
+ *
+ * @param {string} [dbName="bootstrapp"] - The name of the database.
+ * @param {string} [storeName="kv"] - The name of the store.
+ * @returns {Function} - A function that accepts a transaction mode and a callback to handle the store.
+ */
 function createStore(dbName = "bootstrapp", storeName = "kv") {
   const request = indexedDB.open(dbName);
   request.onupgradeneeded = () => request.result.createObjectStore(storeName);
   const dbp = promisifyRequest(request);
   return (txMode, callback) => dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
 }
+
+/**
+ * Delete multiple keys at once.
+ *
+ * @param {Array} keys - List of keys to delete.
+ * @param {Function} [customStore=defaultGetStore()] - Method to get a custom store. Use with caution (see the docs).
+ * @returns {Promise} - Promise that resolves when the keys are deleted.
+ */
+function removeMany(keys, customStore = defaultGetStore()) {
+  return customStore("readwrite", (store) => {
+    keys.forEach((key) => store.delete(key));
+    return promisifyRequest(store.transaction);
+  });
+}
+
 let defaultGetStoreFunc;
 function defaultGetStore() {
   if (!defaultGetStoreFunc) {
@@ -99,29 +126,7 @@ function removeItem(key, customStore = defaultGetStore()) {
     return promisifyRequest(store.transaction);
   });
 }
-/**
- * Delete multiple keys at once.
- *
- * @param keys List of keys to delete.
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- */
-function delMany(keys, customStore = defaultGetStore()) {
-  return customStore("readwrite", (store) => {
-    keys.forEach((key) => store.delete(key));
-    return promisifyRequest(store.transaction);
-  });
-}
-/**
- * Clear all values in the store.
- *
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- */
-function clear(customStore = defaultGetStore()) {
-  return customStore("readwrite", (store) => {
-    store.clear();
-    return promisifyRequest(store.transaction);
-  });
-}
+
 function eachCursor(store, callback) {
   store.openCursor().onsuccess = function () {
     if (!this.result)
@@ -181,4 +186,62 @@ function entries(customStore = defaultGetStore()) {
   });
 }
 
-export { clear, createStore, setItem, getItem, removeItem, delMany, entries, getMany, keys, promisifyRequest, setMany, update, values };
+/**
+ * Get all entries in the store whose keys start with the specified prefix.
+ *
+ * @param prefix The prefix to match against keys in the store.
+ * @param customStore Method to get a custom store. Use with caution (see the docs).
+ */
+function startsWith(prefix, customStore = defaultGetStore()) {
+  return customStore("readonly", (store) => {
+    const range = IDBKeyRange.bound(prefix, prefix + "\uffff");
+    const items = [];
+
+    return new Promise((resolve, reject) => {
+      const cursorReq = store.openCursor(range);
+      cursorReq.onsuccess = function() {
+        const cursor = cursorReq.result;
+        if (cursor) {
+          items.push([cursor.key, cursor.value]);
+          cursor.continue();
+        } else {
+          resolve(items);
+        }
+      };
+      cursorReq.onerror = function() {
+        reject(cursorReq.error);
+      };
+    });
+  });
+}
+
+/**
+ * Converts an IDBRequest to a promise.
+ *
+ * @private
+ * @param {IDBRequest} request - The IDBRequest instance.
+ * @returns {Promise} - Promise that resolves with the request result or rejects with the request error.
+ */
+function promisifyRequest(request) {
+  return new Promise((resolve, reject) => {
+    request.oncomplete = request.onsuccess = () => resolve(request.result);
+    request.onabort = request.onerror = () => reject(request.error);
+  });
+}
+
+export { 
+  clear, 
+  createStore, 
+  entries, 
+  getMany, 
+  getItem,
+  keys, 
+  promisifyRequest,
+  removeItem,
+  removeMany,
+  setItem,
+  setMany, 
+  startsWith,
+  update, 
+  values 
+};

@@ -1,4 +1,4 @@
-import { setItem, removeItem, getItem, getMany, createStore } from "./adapters/indexeddb.mjs";
+import { setItem, removeItem, getItem, getMany, createStore, startsWith } from "./adapters/indexeddb.mjs";
 
 
 const generateId = () => {
@@ -18,7 +18,7 @@ class ReactiveRecord {
    */
   async init({ data, name, properties } = {}) {
     this.name = name;
-    this.adapter = { setItem, removeItem, getItem, getMany, createStore };
+    this.adapter = { setItem, removeItem, getItem, getMany, createStore, startsWith };
     this.properties = properties;
     if(this.adapter.createStore) {
       this.store = this.adapter.createStore("bootstrapp", name);
@@ -36,11 +36,9 @@ class ReactiveRecord {
     this.init(config);
   }
 
-
-
   async get(id, selectedProps) {
     const properties = selectedProps || Object.keys(this.properties);
-    const keys = properties.map(prop => `${id}_${prop}`);
+    const keys = properties.map(prop => `${prop}_${id}`);
     const values = await this.adapter.getMany(keys, this.store);
     const obj = { id };
     properties.forEach((prop, idx) => {
@@ -55,14 +53,14 @@ class ReactiveRecord {
 
   async _addToIndex(id) {
     const indexKey = this.name + "list";
-    const currentIndex = await this.adapter.getItem(indexKey, this.store) || "";    
+    const currentIndex = await this.adapter.getItem(indexKey, this.store) || "";
     const updatedIndex = currentIndex ? currentIndex + "|" + id : id;
     await this._set(indexKey, updatedIndex);
   }
 
   async _removeFromIndex(id) {
     const indexKey = this.name + "list";
-    const currentIndex = await this.adapter.getItem(indexKey, this.store) || "";
+    const currentIndex = await this.adapter.getItem(indexKey, this.store) || "";    
     const updatedIndexArray = currentIndex.split("|").filter(itemKey => itemKey !== id);
     await this._set(indexKey, updatedIndexArray.join("|"));
   }
@@ -71,7 +69,7 @@ class ReactiveRecord {
     const id = value?.id || generateId();
     const properties = Object.keys(value);
     await Promise.all(properties.map(prop => 
-      this._set(`${id}_${prop}`, value[prop])
+      this._set(`${prop}_${id}`, value[prop])
     ));
     if(!skipIndex) {
       await this._addToIndex(id);
@@ -101,11 +99,11 @@ class ReactiveRecord {
     const properties = Object.keys(value);
     const updatedProperties = Object.keys(value);
     await Promise.all(updatedProperties.map(prop => 
-      this._set(`${id}_${prop}`, value[prop])
+      this._set(`${prop}_${id}`, value[prop])
     ));
     const propertiesToDelete = properties.filter(prop => !updatedProperties.includes(prop));
     await Promise.all(propertiesToDelete.map(prop => 
-      this.adapter.removeItem(`${id}_${prop}`, this.store)
+      this.adapter.removeItem(`${prop}_${id}`, this.store)
     ));
   }
 
@@ -122,6 +120,8 @@ class ReactiveRecord {
    */  
   async list() {
     const index = await this.adapter.getItem(this.name+"list", this.store);
+    const items = await this.adapter.startsWith("title_", this.store);
+    console.log({items});
     return index ? Promise.all(index.split("|").map(async (key) => await this.get(key))) : [];
   }
 
