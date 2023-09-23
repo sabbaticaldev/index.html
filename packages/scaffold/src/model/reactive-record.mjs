@@ -40,7 +40,7 @@ class ReactiveRecord {
 
   async get(id, selectedProps) {
     const properties = selectedProps || Object.keys(this.properties);
-    const keys = properties.map(prop => `${this.name}_${id}_${prop}`);
+    const keys = properties.map(prop => `${id}_${prop}`);
     const values = await this.adapter.getMany(keys, this.store);
     const obj = { id };
     properties.forEach((prop, idx) => {
@@ -71,7 +71,7 @@ class ReactiveRecord {
     const id = value?.id || generateId();
     const properties = Object.keys(value);
     await Promise.all(properties.map(prop => 
-      this._set(`${this.name}_${id}_${prop}`, value[prop])
+      this._set(`${id}_${prop}`, value[prop])
     ));
     if(!skipIndex) {
       await this._addToIndex(id);
@@ -101,11 +101,11 @@ class ReactiveRecord {
     const properties = Object.keys(value);
     const updatedProperties = Object.keys(value);
     await Promise.all(updatedProperties.map(prop => 
-      this._set(`${this.name}_${id}_${prop}`, value[prop])
+      this._set(`${id}_${prop}`, value[prop])
     ));
     const propertiesToDelete = properties.filter(prop => !updatedProperties.includes(prop));
     await Promise.all(propertiesToDelete.map(prop => 
-      this.adapter.removeItem(`${this.name}_${id}_${prop}`, this.store)
+      this.adapter.removeItem(`${id}_${prop}`, this.store)
     ));
   }
 
@@ -126,13 +126,11 @@ class ReactiveRecord {
   }
 
   async remove(key) {
-    const propertiesKey = `${this.name}_${key}_properties`;
     const properties = Object.keys(this.properties);
     if (!properties) return;
     return Promise.all(properties.map(prop => 
-      this.adapter.removeItem(`${this.name}_${key}_${prop}`, this.store)
-    )).then(() =>
-      this.adapter.removeItem(propertiesKey, this.store).then(()=> this._removeFromIndex(key)));
+      this.adapter.removeItem(`${key}_${prop}`, this.store)
+    ));
   }
 }
 
