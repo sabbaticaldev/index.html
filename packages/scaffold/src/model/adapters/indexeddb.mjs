@@ -202,7 +202,7 @@ function startsWith(prefix, customStore = defaultGetStore()) {
       cursorReq.onsuccess = function() {
         const cursor = cursorReq.result;
         if (cursor) {
-          items.push([cursor.key, cursor.value]);
+          items.push({ id: cursor.key, [prefix]: cursor.value });
           cursor.continue();
         } else {
           resolve(items);

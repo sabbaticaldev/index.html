@@ -20,6 +20,7 @@ class ReactiveRecord {
     this.name = name;
     this.adapter = { setItem, removeItem, getItem, getMany, createStore, startsWith };
     this.properties = properties;
+    this.referenceKey = Object.keys(properties)[0];
     if(this.adapter.createStore) {
       this.store = this.adapter.createStore("bootstrapp", name);
     }
@@ -51,29 +52,15 @@ class ReactiveRecord {
     return this.adapter.setItem(key, value, this.store);
   }
 
-  async _addToIndex(id) {
-    const indexKey = this.name + "list";
-    const currentIndex = await this.adapter.getItem(indexKey, this.store) || "";
-    const updatedIndex = currentIndex ? currentIndex + "|" + id : id;
-    await this._set(indexKey, updatedIndex);
-  }
-
-  async _removeFromIndex(id) {
-    const indexKey = this.name + "list";
-    const currentIndex = await this.adapter.getItem(indexKey, this.store) || "";    
-    const updatedIndexArray = currentIndex.split("|").filter(itemKey => itemKey !== id);
-    await this._set(indexKey, updatedIndexArray.join("|"));
-  }
-
-  async add(value, skipIndex = false) {
+  async add(value) {
     const id = value?.id || generateId();
     const properties = Object.keys(value);
+    if(!properties[this.referenceKey]) {
+      properties[this.referenceKey] = "";
+    }
     await Promise.all(properties.map(prop => 
       this._set(`${prop}_${id}`, value[prop])
     ));
-    if(!skipIndex) {
-      await this._addToIndex(id);
-    }
 
     return { ...value, id };
   }
@@ -84,10 +71,6 @@ class ReactiveRecord {
     await Promise.all(values.map((value, idx) => 
       this.add({ ...value, id: ids[idx] }, true)
     ));
-
-    for (const id of ids) {
-      await this._addToIndex(id);
-    }
   }
 
   
@@ -118,11 +101,8 @@ class ReactiveRecord {
   /**
    * @returns {any[]}
    */  
-  async list() {
-    const index = await this.adapter.getItem(this.name+"list", this.store);
-    const items = await this.adapter.startsWith("title_", this.store);
-    console.log({items});
-    return index ? Promise.all(index.split("|").map(async (key) => await this.get(key))) : [];
+  async list(key) {
+    return this.adapter.startsWith(key || this.referenceKey, this.store);
   }
 
   async remove(key) {
