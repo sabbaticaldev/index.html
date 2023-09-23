@@ -1,16 +1,5 @@
-import MemoryAdpter from "./adapters/memory.mjs";
-import IndexeddbAdapter from "./adapters/indexeddb.mjs";
-import UrlAdapter from "./adapters/url.mjs";
-import SessionStorageAdpter from "./adapters/session-storage.mjs";
-import LocalStorageAdapter from "./adapters/local-storage.mjs";
+import { setItem, removeItem, getItem, getMany, createStore } from "./adapters/indexeddb.mjs";
 
-const adapters = {
-  "memory": MemoryAdpter,
-  "indexeddb": IndexeddbAdapter,
-  "url": UrlAdapter,
-  "sessionStorage": SessionStorageAdpter,
-  "localStorage": LocalStorageAdapter
-};
 
 const generateId = () => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -27,12 +16,12 @@ class ReactiveRecord {
    * @param {Object} [initialState={}]
    * @param {Object} [config={}]
    */
-  async init({ data, name, adapter, properties } = {}) {
+  async init({ data, name, properties } = {}) {
     this.name = name;
-    this.adapter = adapter && adapters[adapter] || adapters["memory"];
+    this.adapter = { setItem, removeItem, getItem, getMany, createStore };
     this.properties = properties;
     if(this.adapter.createStore) {
-      this.store = this.adapter.createStore();
+      this.store = this.adapter.createStore("bootstrapp", name);
     }
     // Load initial state from storage    
     if(data) {
