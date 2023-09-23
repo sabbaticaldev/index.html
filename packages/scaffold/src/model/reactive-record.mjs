@@ -47,95 +47,103 @@ class ReactiveRecord {
     this.init(config);
   }
 
-  /**
-   * @param {string} key
-   * @returns {any}
-   */
-  async get(id) {
-    const stored = await this.adapter.getItem(id, this.store);
-    const value = stored ? JSON.parse(stored) : null;
-    return (!value || Array.isArray(value)) ? value : {...value, id };
+
+
+  async get(id, selectedProps) {
+    const properties = selectedProps || Object.keys(this.properties);
+    const keys = properties.map(prop => `${this.name}_${id}_${prop}`);
+    const values = await this.adapter.getMany(keys, this.store);
+    const obj = { id };
+    properties.forEach((prop, idx) => {
+      obj[prop] = values[idx];
+    });
+    return obj;
   }
 
-  /**
-   * @param {string} key
-   * @param {any} value
-   * @private
-   */
-  
-
-  async _set(key, value) {    
-    return this.adapter.setItem(key, JSON.stringify(value), this.store);
+  async _set(key, value) {
+    return this.adapter.setItem(key, value, this.store);
   }
 
-  /**
-   * @param {string} key
-   * @param {any} value
-   */
-  async add(value) {
-    const id = value?.id || this.name+generateId();    
-    this._set(id, { ...(value|| {}), id });
-    const index = await this.get(this.name+"list") || [];    
-    this._set(this.name+"list", [...(index || []), id]);    
-    return Promise.resolve({ ...(value|| {}), id });
+  async _addToIndex(id) {
+    const indexKey = this.name + "list";
+    const currentIndex = await this.adapter.getItem(indexKey, this.store) || "";    
+    const updatedIndex = currentIndex ? currentIndex + "|" + id : id;
+    await this._set(indexKey, updatedIndex);
   }
 
-  /**
-   * @param {any[]} values
-   */
-  async addMany(values) {    
-    if (!values || !values.length) return;    
-    const ids = values.map(() => this.name + generateId());
-    await Promise.all(ids.map(async (id, idx) => await this._set(ids[idx], { 
-      ...(values[idx] || {}),
-      id: ids[idx]
-    })));
-
-    const currentIndex = await this.get(this.name + "list") || [];
-    await this._set(this.name + "list", [...currentIndex, ...ids]);
+  async _removeFromIndex(id) {
+    const indexKey = this.name + "list";
+    const currentIndex = await this.adapter.getItem(indexKey, this.store) || "";
+    const updatedIndexArray = currentIndex.split("|").filter(itemKey => itemKey !== id);
+    await this._set(indexKey, updatedIndexArray.join("|"));
   }
 
-  
-  /**
-   * @param {string} key
-   * @param {any} value
-   */
-  async edit(value) {
-    const key = value.id;
-    let newValue = value;
-    if (typeof value === "object" && value !== null) {
-      const record = await this.get(key) || {};      
-      newValue = {...record, ...value};
+  async add(value, skipIndex = false) {
+    const id = value?.id || generateId();
+    const properties = Object.keys(value);
+    await Promise.all(properties.map(prop => 
+      this._set(`${this.name}_${id}_${prop}`, value[prop])
+    ));
+    if(!skipIndex) {
+      await this._addToIndex(id);
     }
-    await this._set(key, newValue);
+
+    return { ...value, id };
   }
+
+  async addMany(values) {
+    if (!values || !values.length) return;
+    const ids = values.map(generateId);
+    await Promise.all(values.map((value, idx) => 
+      this.add({ ...value, id: ids[idx] }, true)
+    ));
+
+    for (const id of ids) {
+      await this._addToIndex(id);
+    }
+  }
+
+  
+  /**
+   * @param {string} key
+   * @param {any} value
+   */
+  async edit({id, ...value}) {
+    const properties = Object.keys(value);
+    const updatedProperties = Object.keys(value);
+    await Promise.all(updatedProperties.map(prop => 
+      this._set(`${this.name}_${id}_${prop}`, value[prop])
+    ));
+    const propertiesToDelete = properties.filter(prop => !updatedProperties.includes(prop));
+    await Promise.all(propertiesToDelete.map(prop => 
+      this.adapter.removeItem(`${this.name}_${id}_${prop}`, this.store)
+    ));
+  }
+
   /**
    * @param {Record<string, any>[]} records
    */
   async editMany(records) {
     if (!records || !records.length) return;
-    
-    await Promise.all(records.map(async record => {
-      const currentRecord = await this.get(record.id) || {};
-      const newValue = { ...currentRecord, ...record };
-      return this._set(record.id, newValue);
-    }));
+    await Promise.all(records.map(record => this.edit(record)));
   }
 
   /**
    * @returns {any[]}
-   */
-  async list() {    
-    const index = await this.get(this.name+"list");    
-    return Array.isArray(index) ? Promise.all(index.map(async (key) => await this.get(key))) : [];
+   */  
+  async list() {
+    const index = await this.adapter.getItem(this.name+"list", this.store);
+    return index ? Promise.all(index.split("|").map(async (key) => await this.get(key))) : [];
   }
 
   async remove(key) {
-    const indexKey = this.name + "list";
-    const index = await this.get(indexKey);
-    const updatedIndex = Array.isArray(index) && index.filter(itemKey => itemKey !== key) || [];    
-    await this._set(this.name+"list", updatedIndex);
-    return this.adapter.removeItem(key, this.store);
+    const propertiesKey = `${this.name}_${key}_properties`;
+    const properties = Object.keys(this.properties);
+    if (!properties) return;
+    return Promise.all(properties.map(prop => 
+      this.adapter.removeItem(`${this.name}_${key}_${prop}`, this.store)
+    )).then(() =>
+      this.adapter.removeItem(propertiesKey, this.store).then(()=> this._removeFromIndex(key)));
   }
 }
 

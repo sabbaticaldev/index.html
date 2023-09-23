@@ -4,6 +4,9 @@ export default {
       this.data = [];
     return Promise.resolve(this.data?.[key]);
   },
+  getMany: async (keys) => {
+    return keys.map(key => this.data?.[key]);
+  },
   setItem: async function(key, value) {
     if(!this.data) 
       this.data = [];
