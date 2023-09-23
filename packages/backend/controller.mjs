@@ -10,6 +10,7 @@ export const connect = (opts = {}) => {
   const {
     url = "ws://127.0.0.1:3030/ws",
     stunUrls = "stun:stun.l.google.com:19302",
+    ondatachannel,
   } = opts;
 
   const username = opts.username || generateId();
@@ -39,8 +40,9 @@ export const connect = (opts = {}) => {
     }
   };
 
+  rtc.ondatachannel = ondatachannel;
+
   ws.onclose = (event) => {
-    console.log("onclose called");
     if (event.wasClean) {
       console.log(
         `Connection closed cleanly, code=${event.code}, reason=${event.reason}`,
@@ -55,7 +57,6 @@ export const connect = (opts = {}) => {
   };
 
   const handleOffer = (offer, fromUsername) => {
-    console.log("handleOffer", { fromUsername });
     rtc.setRemoteDescription(new RTCSessionDescription(offer)).then(() => {
       pendingCandidates.forEach((candidate) => {
         rtc.addIceCandidate(new RTCIceCandidate(candidate));
@@ -96,13 +97,10 @@ export const connect = (opts = {}) => {
     }
   };
 
-  let dataChannel;
-  const call = async (targetUsername) => {
-    dataChannel = rtc.createDataChannel("channel");
+  const call = async (targetUsername, callback) => {
+    const dataChannel = rtc.createDataChannel("channel");
     console.log("DataChannel initial state:", dataChannel.readyState);
-    dataChannel.onmessage = (event) => {
-      console.log("Received data:", event.data);
-    };
+    dataChannel.onmessage = callback;
 
     dataChannel.onopen = () => {
       console.log("Data Channel is now open!");
@@ -149,26 +147,8 @@ export const connect = (opts = {}) => {
     return Promise.resolve(dataChannel);
   };
 
-  rtc.ondatachannel = (event) => {
-    if (!dataChannel) {
-      dataChannel = event.channel;
-    }
-
-    dataChannel.onmessage = (event) => {
-      console.log("Received data:", event.data);
-    };
-    dataChannel.onopen = () => {
-      console.log("Data Channel is now open!");
-      dataChannel.send("side, Hello Other!");
-    };
-    dataChannel.onerror = (error) => {
-      console.error("DataChannel Error:", error);
-    };
-  };
-
   return {
     call,
-    dataChannel,
     username,
   };
 };
