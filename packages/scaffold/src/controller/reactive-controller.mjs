@@ -34,7 +34,9 @@ export function defineController(controller, models) {
     }
 
     add = (record) => {
+      console.log({record});
       return this.constructor.model.add(record).then(result => {        
+        console.log("fuck off");
         return result;
       });
     };
@@ -46,8 +48,8 @@ export function defineController(controller, models) {
       });
     };
 
-    edit = async (id, updates) => {
-      return this.constructor.model.edit(id, updates);
+    edit = async (updates) => {
+      return this.constructor.model.edit(updates);
     };
 
 

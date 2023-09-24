@@ -2,7 +2,7 @@ import { setItem, removeItem, getItem, getMany, createStore, startsWith } from "
 
 
 const generateId = () => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   return Array.from({ length: 5 })
     .map(() => chars[Math.floor(Math.random() * chars.length)])
     .join("");
@@ -38,13 +38,14 @@ class ReactiveRecord {
   }
 
   async get(id, selectedProps) {
-    const properties = selectedProps || Object.keys(this.properties);
-    const keys = properties.map(prop => `${prop}_${id}`);
+    const propNames = selectedProps || Object.keys(this.properties);
+    const keys = propNames.map(prop => `${prop}_${id}`);
     const values = await this.adapter.getMany(keys, this.store);
     const obj = { id };
-    properties.forEach((prop, idx) => {
-      obj[prop] = values[idx];
-    });
+    
+    propNames.forEach((prop, idx) => {
+      obj[prop] = values[idx] || this.properties[prop]?.defaultValue;
+    });    
     return obj;
   }
 
@@ -78,15 +79,10 @@ class ReactiveRecord {
    * @param {string} key
    * @param {any} value
    */
-  async edit({id, ...value}) {
-    const properties = Object.keys(value);
+  async edit({ id, ...value }) {
     const updatedProperties = Object.keys(value);
     await Promise.all(updatedProperties.map(prop => 
       this._set(`${prop}_${id}`, value[prop])
-    ));
-    const propertiesToDelete = properties.filter(prop => !updatedProperties.includes(prop));
-    await Promise.all(propertiesToDelete.map(prop => 
-      this.adapter.removeItem(`${prop}_${id}`, this.store)
     ));
   }
 
@@ -101,15 +97,17 @@ class ReactiveRecord {
   /**
    * @returns {any[]}
    */  
-  async list(key) {
-    return this.adapter.startsWith(key || this.referenceKey, this.store);
+  async list(key, props, indexOnly = true) {
+    const items = await this.adapter.startsWith(key || this.referenceKey, this.store, indexOnly);
+    return indexOnly ? Promise.all(items.map(async (key) => await this.get(key, props))) : Promise.resolve(items);
   }
 
   async remove(key) {
     const properties = Object.keys(this.properties);
+    console.log({key});
     if (!properties) return;
-    return Promise.all(properties.map(prop => 
-      this.adapter.removeItem(`${key}_${prop}`, this.store)
+    return Promise.all(properties.map(async prop => 
+      !console.log(`${prop}_${key}`) && await this.adapter.removeItem(`${prop}_${key}`, this.store)
     ));
   }
 }

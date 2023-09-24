@@ -192,7 +192,7 @@ function entries(customStore = defaultGetStore()) {
  * @param prefix The prefix to match against keys in the store.
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function startsWith(prefix, customStore = defaultGetStore()) {
+function startsWith(prefix, customStore = defaultGetStore(), indexOnly = true) {
   return customStore("readonly", (store) => {
     const range = IDBKeyRange.bound(prefix, prefix + "\uffff");
     const items = [];
@@ -202,7 +202,8 @@ function startsWith(prefix, customStore = defaultGetStore()) {
       cursorReq.onsuccess = function() {
         const cursor = cursorReq.result;
         if (cursor) {
-          items.push({ id: cursor.key, [prefix]: cursor.value });
+          const id = cursor.key.split("_")[1];
+          items.push(indexOnly ? id : { id, [prefix]: cursor.value });
           cursor.continue();
         } else {
           resolve(items);
