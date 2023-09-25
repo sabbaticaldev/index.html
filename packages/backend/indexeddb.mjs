@@ -22,7 +22,10 @@ function createStore(dbName = "bootstrapp", storeName = "kv") {
   const request = indexedDB.open(dbName);
   request.onupgradeneeded = () => request.result.createObjectStore(storeName);
   const dbp = promisifyRequest(request);
-  return (txMode, callback) => dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
+  return (txMode, callback) =>
+    dbp.then((db) =>
+      callback(db.transaction(storeName, txMode).objectStore(storeName)),
+    );
 }
 
 /**
@@ -88,7 +91,9 @@ function setMany(entries, customStore = defaultGetStore()) {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function getMany(keys, customStore = defaultGetStore()) {
-  return customStore("readonly", (store) => Promise.all(keys.map((key) => promisifyRequest(store.get(key)))));
+  return customStore("readonly", (store) =>
+    Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
+  );
 }
 /**
  * Update a value. This lets you see the old value and update it as an atomic operation.
@@ -98,21 +103,23 @@ function getMany(keys, customStore = defaultGetStore()) {
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
 function update(key, updater, customStore = defaultGetStore()) {
-  return customStore("readwrite", (store) => 
-    // Need to create the promise manually.
-    // If I try to chain promises, the transaction closes in browsers
-    // that use a promise polyfill (IE10/11).
-    new Promise((resolve, reject) => {
-      store.get(key).onsuccess = function () {
-        try {
-          store.put(updater(this.result), key);
-          resolve(promisifyRequest(store.transaction));
-        }
-        catch (err) {
-          reject(err);
-        }
-      };
-    }));
+  return customStore(
+    "readwrite",
+    (store) =>
+      // Need to create the promise manually.
+      // If I try to chain promises, the transaction closes in browsers
+      // that use a promise polyfill (IE10/11).
+      new Promise((resolve, reject) => {
+        store.get(key).onsuccess = function () {
+          try {
+            store.put(updater(this.result), key);
+            resolve(promisifyRequest(store.transaction));
+          } catch (err) {
+            reject(err);
+          }
+        };
+      }),
+  );
 }
 /**
  * Delete a particular key from the store.
@@ -129,8 +136,7 @@ function removeItem(key, customStore = defaultGetStore()) {
 
 function eachCursor(store, callback) {
   store.openCursor().onsuccess = function () {
-    if (!this.result)
-      return;
+    if (!this.result) return;
     callback(this.result);
     this.result.continue();
   };
@@ -148,7 +154,9 @@ function keys(customStore = defaultGetStore()) {
       return promisifyRequest(store.getAllKeys());
     }
     const items = [];
-    return eachCursor(store, (cursor) => items.push(cursor.key)).then(() => items);
+    return eachCursor(store, (cursor) => items.push(cursor.key)).then(
+      () => items,
+    );
   });
 }
 /**
@@ -163,7 +171,9 @@ function values(customStore = defaultGetStore()) {
       return promisifyRequest(store.getAll());
     }
     const items = [];
-    return eachCursor(store, (cursor) => items.push(cursor.value)).then(() => items);
+    return eachCursor(store, (cursor) => items.push(cursor.value)).then(
+      () => items,
+    );
   });
 }
 /**
@@ -182,7 +192,11 @@ function entries(customStore = defaultGetStore()) {
       ]).then(([keys, values]) => keys.map((key, i) => [key, values[i]]));
     }
     const items = [];
-    return customStore("readonly", (store) => eachCursor(store, (cursor) => items.push([cursor.key, cursor.value])).then(() => items));
+    return customStore("readonly", (store) =>
+      eachCursor(store, (cursor) =>
+        items.push([cursor.key, cursor.value]),
+      ).then(() => items),
+    );
   });
 }
 
@@ -199,7 +213,7 @@ function startsWith(prefix, customStore = defaultGetStore(), indexOnly = true) {
 
     return new Promise((resolve, reject) => {
       const cursorReq = store.openCursor(range);
-      cursorReq.onsuccess = function() {
+      cursorReq.onsuccess = function () {
         const cursor = cursorReq.result;
         if (cursor) {
           const id = cursor.key.split("_")[1];
@@ -209,7 +223,7 @@ function startsWith(prefix, customStore = defaultGetStore(), indexOnly = true) {
           resolve(items);
         }
       };
-      cursorReq.onerror = function() {
+      cursorReq.onerror = function () {
         reject(cursorReq.error);
       };
     });
@@ -230,19 +244,19 @@ function promisifyRequest(request) {
   });
 }
 
-export { 
-  clear, 
-  createStore, 
-  entries, 
-  getMany, 
+export {
+  clear,
+  createStore,
+  entries,
+  getMany,
   getItem,
-  keys, 
+  keys,
   promisifyRequest,
   removeItem,
   removeMany,
   setItem,
-  setMany, 
+  setMany,
   startsWith,
-  update, 
-  values 
+  update,
+  values,
 };

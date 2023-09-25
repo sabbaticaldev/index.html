@@ -42,7 +42,7 @@ export const getTimestamp = async (id) => {
   return Number.parseInt(timestamp) + Number.parseInt(offset);
 };
 
-const getAppId = async () => {
+export const getAppId = async () => {
   const existingAppId = await getFromCache("appId");
   if (existingAppId) return existingAppId;
 
@@ -55,7 +55,7 @@ const getAppId = async () => {
   return newAppId;
 };
 
-const getUserId = async () => {
+export const getUserId = async () => {
   const existingUserId = await getFromCache("userId");
   if (existingUserId) return existingUserId;
 
@@ -63,8 +63,8 @@ const getUserId = async () => {
   return "1";
 };
 
-export const generateId = async () => {
-  const referenceTimestamp = await getFromCache("timestamp");
+export const generateId = (appId) => {
+  const referenceTimestamp = fromBase62(appId);
   if (!referenceTimestamp) {
     throw new Error(
       "Reference timestamp not set. Ensure getAppId has been called first.",
