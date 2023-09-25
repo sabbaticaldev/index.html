@@ -20,3 +20,5 @@ export const toBase62 = (num) => {
   }
   return arr.join("");
 };
+
+export default { toBase62, fromBase62 };

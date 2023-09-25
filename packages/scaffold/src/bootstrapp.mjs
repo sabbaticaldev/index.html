@@ -1,6 +1,4 @@
-import { defineControllers } from "./controller/reactive-controller.mjs";
 import { defineViews } from "./view/reactive-view.mjs";
-import { defineModels } from "./model/reactive-record.mjs";
 
 const classifyFile = ([path, module]) => {
   const nameMatch = /\/([\w\-_]+)\.(view|controller|model)\./.exec(path);
@@ -28,15 +26,12 @@ const bootstrapp = ({ files, style, onLoad, bootstrappTag = "app-index" }) => {
     .map(classifyFile)
     .reduce(reduceFiles, { view: {}, controller: {}, model: {} });
 
-  const models = defineModels(categorized.model)  || {};
-  const controllers = defineControllers(models) || {};
-  
   
   if(onLoad) {
-    onLoad(models);
+    onLoad();
   }
   
-  const views = defineViews(categorized.view, { controllers, models, style });
+  const views = defineViews(categorized.view, { style });
   
   
   return views[bootstrappTag];

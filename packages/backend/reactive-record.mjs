@@ -1,14 +1,27 @@
-import { setItem, removeItem, getItem, getMany, createStore, startsWith } from "./adapters/indexeddb.mjs";
-import { appId, generateId } from "../helpers/app.mjs";
-
+import {
+  setItem,
+  removeItem,
+  getItem,
+  getMany,
+  createStore,
+  startsWith,
+} from "./indexeddb.mjs";
+import { appId, generateId } from "./helpers.mjs";
 
 class ReactiveRecord {
   async init(properties, name) {
     this.name = name;
-    this.adapter = { setItem, removeItem, getItem, getMany, createStore, startsWith };
+    this.adapter = {
+      setItem,
+      removeItem,
+      getItem,
+      getMany,
+      createStore,
+      startsWith,
+    };
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
-    if(this.adapter.createStore) {
+    if (this.adapter.createStore) {
       this.store = this.adapter.createStore(appId, name);
     }
   }
@@ -19,18 +32,24 @@ class ReactiveRecord {
 
   async get(id, selectedProps) {
     const propNames = selectedProps || Object.keys(this.properties);
-    const keys = propNames.map(prop => `${prop}_${id}`);
+    const keys = propNames.map((prop) => `${prop}_${id}`);
     const values = await this.adapter.getMany(keys, this.store);
-    const obj = { id };    
+    const obj = { id };
     propNames.forEach((prop, idx) => {
       obj[prop] = values[idx] || this.properties[prop]?.defaultValue;
-    });    
+    });
     return obj;
   }
 
   async getMany(key, props, indexOnly = true) {
-    const items = await this.adapter.startsWith(key || this.referenceKey, this.store, indexOnly);
-    return indexOnly ? Promise.all(items.map(async (key) => await this.get(key, props))) : Promise.resolve(items);
+    const items = await this.adapter.startsWith(
+      key || this.referenceKey,
+      this.store,
+      indexOnly,
+    );
+    return indexOnly
+      ? Promise.all(items.map(async (key) => await this.get(key, props)))
+      : Promise.resolve(items);
   }
 
   async _set(key, value) {
@@ -40,12 +59,12 @@ class ReactiveRecord {
   async add(value) {
     const id = value?.id || generateId();
     const properties = Object.keys(value);
-    if(!properties[this.referenceKey]) {
+    if (!properties[this.referenceKey]) {
       properties[this.referenceKey] = "";
     }
-    await Promise.all(properties.map(prop => 
-      this._set(`${prop}_${id}`, value[prop])
-    ));
+    await Promise.all(
+      properties.map((prop) => this._set(`${prop}_${id}`, value[prop])),
+    );
 
     return { ...value, id };
   }
@@ -53,39 +72,41 @@ class ReactiveRecord {
   async addMany(values) {
     if (!values || !values.length) return;
     const ids = values.map(generateId);
-    await Promise.all(values.map((value, idx) => 
-      this.add({ ...value, id: ids[idx] }, true)
-    ));
+    await Promise.all(
+      values.map((value, idx) => this.add({ ...value, id: ids[idx] }, true)),
+    );
   }
 
   async edit({ id, ...value }) {
     const updatedProperties = Object.keys(value);
-    await Promise.all(updatedProperties.map(prop => 
-      this._set(`${prop}_${id}`, value[prop])
-    ));
+    await Promise.all(
+      updatedProperties.map((prop) => this._set(`${prop}_${id}`, value[prop])),
+    );
   }
 
   async editMany(records) {
     if (!records || !records.length) return;
-    await Promise.all(records.map(record => this.edit(record)));
+    await Promise.all(records.map((record) => this.edit(record)));
   }
 
   async remove(key) {
-    const properties = Object.keys(this.properties);    
+    const properties = Object.keys(this.properties);
     if (!properties) return;
-    return Promise.all(properties.map(async prop => await this.adapter.removeItem(`${prop}_${key}`, this.store)
-    ));
+    return Promise.all(
+      properties.map(
+        async (prop) =>
+          await this.adapter.removeItem(`${prop}_${key}`, this.store),
+      ),
+    );
   }
 }
-
-
 
 const defineModels = (models) => {
   return Object.fromEntries(
     Object.entries(models).map(([name, module]) => [
       name,
       new ReactiveRecord(module, name),
-    ])
+    ]),
   );
 };
 

@@ -1,4 +1,3 @@
-export default {
-  collection: "i18n",
+export default {  
 };
   

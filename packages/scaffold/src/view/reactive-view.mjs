@@ -4,9 +4,18 @@ import { customElement } from "lit/decorators.js";
 import i18n from "../plugins/i18n/i18n.mjs";
 import url from "../model/adapters/url.mjs";
 import CRUD from "../helpers/rest.mjs";
-import AppHelpers from "../helpers/app.mjs";
 import DateTimeHelpers from "../helpers/datetime.mjs";
+import StringHelpers from "../helpers/string.mjs";
 
+const AppHelpers = {
+  getAppId: () => localStorage.getItem("appId"),
+  getUserId: () => localStorage.getItem("userId"),
+  getTimestamp:  (id) => {
+    let timestamp = localStorage.getItem("timestamp");
+    const offset = StringHelpers.fromBase62(id);
+    return Number.parseInt(timestamp) + Number.parseInt(offset);
+  }
+};
 const syncAdapters = { url, localStorage, sessionStorage };
 
 /**
@@ -41,7 +50,7 @@ export function defineView(component, config = {}) {
   
     constructor() {
       super();
-      this.context = { html, until, i18n: i18n(props.i18n), ...CRUD, ...AppHelpers, ...DateTimeHelpers };
+      this.context = { html, until, i18n: i18n(props.i18n), ...CRUD, ...AppHelpers, ...DateTimeHelpers, ...StringHelpers };
       
       const propKeys = Object.keys(props);
       propKeys.forEach((key)=> {

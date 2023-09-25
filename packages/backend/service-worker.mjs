@@ -1,5 +1,5 @@
-import { defineControllers } from "./scaffold/controller/reactive-controller.mjs";
-import { defineModels } from "./scaffold/model/reactive-record.mjs";
+import { defineControllers } from "./reactive-controller.mjs";
+import { defineModels } from "./reactive-record.mjs";
 import modelList from "./models.mjs";
 import controllerList from "./controllers.mjs";
 
