@@ -1,35 +1,15 @@
 import { setItem, removeItem, getItem, getMany, createStore, startsWith } from "./adapters/indexeddb.mjs";
+import { appId, generateId } from "../helpers/app.mjs";
 
 
-const generateId = () => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  return Array.from({ length: 5 })
-    .map(() => chars[Math.floor(Math.random() * chars.length)])
-    .join("");
-};
-
-/**
- * Class representing an active record.
- */
 class ReactiveRecord {
-  /**
-   * @param {Object} [initialState={}]
-   * @param {Object} [config={}]
-   */
-  async init({ data, properties } = {}, name) {
+  async init(properties, name) {
     this.name = name;
     this.adapter = { setItem, removeItem, getItem, getMany, createStore, startsWith };
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
     if(this.adapter.createStore) {
-      this.store = this.adapter.createStore("bootstrapp", name);
-    }
-    // Load initial state from storage    
-    if(data) {
-      const storedValue = await this.getMany();
-      if (!storedValue?.length) {
-        this.addMany(data);
-      }
+      this.store = this.adapter.createStore(appId, name);
     }
   }
 
@@ -48,9 +28,6 @@ class ReactiveRecord {
     return obj;
   }
 
-  /**
-   * @returns {any[]}
-   */  
   async getMany(key, props, indexOnly = true) {
     const items = await this.adapter.startsWith(key || this.referenceKey, this.store, indexOnly);
     return indexOnly ? Promise.all(items.map(async (key) => await this.get(key, props))) : Promise.resolve(items);
@@ -81,11 +58,6 @@ class ReactiveRecord {
     ));
   }
 
-  
-  /**
-   * @param {string} key
-   * @param {any} value
-   */
   async edit({ id, ...value }) {
     const updatedProperties = Object.keys(value);
     await Promise.all(updatedProperties.map(prop => 
@@ -93,9 +65,6 @@ class ReactiveRecord {
     ));
   }
 
-  /**
-   * @param {Record<string, any>[]} records
-   */
   async editMany(records) {
     if (!records || !records.length) return;
     await Promise.all(records.map(record => this.edit(record)));
@@ -120,4 +89,4 @@ const defineModels = (models) => {
   );
 };
 
-export { ReactiveRecord, defineModels };
+export { defineModels };

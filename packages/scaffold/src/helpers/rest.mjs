@@ -6,27 +6,23 @@ export async function handleResponse(response) {
   
   const text = await response.text();
   if (!text) {
-    return null; // or return whatever makes sense in your context for empty responses
+    return null;
   }
   return JSON.parse(text);
 }
 
-
-// Get many records
 export async function getMany(endpoint) {
   if(!endpoint) return;
   const response = await fetch(endpoint);
   return handleResponse(response);
 }
 
-// Get a single record by ID
 export async function get(endpoint) {
   if(!endpoint) return;
   const response = await fetch(endpoint);
   return handleResponse(response);
 }
 
-// Create a new record
 export async function post(endpoint, record) {
   if(!endpoint) return;
   const response = await fetch(endpoint, {
@@ -39,7 +35,6 @@ export async function post(endpoint, record) {
   return handleResponse(response);
 }
 
-// Update a record by ID
 export async function patch(endpoint, updates) {
   if(!endpoint) return;
   const response = await fetch(endpoint, {
@@ -52,10 +47,7 @@ export async function patch(endpoint, updates) {
   return handleResponse(response);
 }
 
-// Delete a record by ID
 export async function remove(endpoint) {
-  console.log({endpoint});
-  console.trace();
   if(!endpoint) return;
   const response = await fetch(endpoint, {
     method: "DELETE",

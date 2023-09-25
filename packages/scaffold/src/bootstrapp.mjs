@@ -31,6 +31,7 @@ const bootstrapp = ({ files, style, onLoad, bootstrappTag = "app-index" }) => {
   const models = defineModels(categorized.model)  || {};
   const controllers = defineControllers(models) || {};
   
+  
   if(onLoad) {
     onLoad(models);
   }
@@ -40,7 +41,6 @@ const bootstrapp = ({ files, style, onLoad, bootstrappTag = "app-index" }) => {
   
   return views[bootstrappTag];
 };
-
 
 export default bootstrapp;
 
