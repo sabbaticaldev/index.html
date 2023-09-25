@@ -3,41 +3,9 @@ import { until } from "lit/directives/until.js";
 import { customElement } from "lit/decorators.js";
 import i18n from "../plugins/i18n/i18n.mjs";
 import url from "../model/adapters/url.mjs";
+import CRUD from "./rest.mjs";
 
 const syncAdapters = { url, localStorage, sessionStorage };
-
-function dispatchEvent(key, params = {}) {
-  const event = {
-    type: key,
-    params
-  };  
-  // Send this event to the service worker for processing
-  if (typeof window !== "undefined" && navigator?.serviceWorker?.controller) {
-    navigator.serviceWorker.controller.postMessage(event);
-  }
-}
-
-function jQuery(selector) {
-  const elements = document.querySelectorAll(selector);
-  return {
-    on: (eventName, callback) => {
-      elements.forEach(el => el.addEventListener(eventName, callback));
-      return this;
-    },
-    off: (eventName, callback) => {
-      elements.forEach(el => el.removeEventListener(eventName, callback));
-      return this;
-    },
-    attr: (attribute, value) => {
-      if (typeof value === "undefined") {
-        return elements[0].getAttribute(attribute);
-      } else {
-        elements.forEach(el => el.setAttribute(attribute, value));
-        return this;
-      }
-    }
-  };
-}
 
 /**
  * Defines and registers a custom element based on the provided configuration.
@@ -55,13 +23,10 @@ export function defineView(component, config = {}) {
     onLoad,
   } = component;
   
-  const { controller: ControllerClass, model = {}, style } = config;
-  const filterActionControllerProps = (key) => !(["list", "record"].includes(key)); // this property is managed by the Action Controller
-
+  const { style } = config;
   class ReactionView extends LitElement {
     // Define the properties for LitElement
     static properties = Object.keys(props)
-      .filter(filterActionControllerProps)
       .reduce((acc, key) => {
         const prop = props[key];
         acc[key] = {
@@ -74,29 +39,15 @@ export function defineView(component, config = {}) {
   
     constructor() {
       super();
-      this.html = html;
-      this.until = until;
-      if(props.i18n) {
-        this.i18n = i18n(props.i18n);
-      }
-      this.reactive = !!(props.list || props.record);
+      this.context = { html, until, i18n: i18n(props.i18n), ...CRUD };
       
-      if (ControllerClass) {
-        this.controller = new ControllerClass(this, model);
-        this.event = dispatchEvent;
-      }
-      
-      let mergedProps = props;
-      if(this.reactive && model?.properties) {
-        mergedProps = { ...props, ...(model?.properties || {}) };
-      }
-      
-      const propKeys = Object.keys(mergedProps);
-      propKeys.filter(filterActionControllerProps).forEach((key)=> {
-        const prop = mergedProps[key];
+      const propKeys = Object.keys(props);
+      propKeys.forEach((key)=> {
+        const prop = props[key];
         if(prop.defaultValue) {
           this[key] = prop.defaultValue;
         }
+        
         if(prop.sync) {
           this[key] = syncAdapters[prop.sync].getItem(key); // you might have added a sync adapter that doesn't exist
         }
@@ -136,12 +87,6 @@ export function defineView(component, config = {}) {
       if(typeof window !== "undefined") {
         navigator.serviceWorker.removeEventListener("message", this.boundServiceWorkerMessageHandler);
       }
-
-      if(this.controller && this.controller.subscriptionCallbacks?.length > 0) {
-        for (const key of Object.keys(this.controller.subscriptionCallbacks)) {
-          this.controller.unsubscribe(key);
-        }
-      }
     }
   
     firstUpdated() {
@@ -149,8 +94,8 @@ export function defineView(component, config = {}) {
     }
   
     render() {
-      this.$ = jQuery; // injects $ as document.querySelectorAll into the component's render() - jQuery is cool again 😎
-      return component.template || render?.(this, this.controller) || html`<h1>Error: no render function or template.</h1>`;
+      
+      return component.template || render?.(this, this.context) || html`<h1>Error: no render function or template.</h1>`;
     }
   }
 
@@ -164,17 +109,13 @@ export function defineView(component, config = {}) {
 }
 
 
-export const defineViews = (views, { controllers, models, style }) => {
+export const defineViews = (views, { style }) => {
   return Object.fromEntries(
     Object.entries(views).map(([name, view]) => {
-      const controllerName = view.controller || name;
-      const modelName = view.model || controllerName;
       return [
         name,
         defineView(view, {
-          model: models[modelName],
           style,
-          controller: controllers[controllerName],
         }),
       ];
     })

@@ -26,7 +26,7 @@ class ReactiveRecord {
     }
     // Load initial state from storage    
     if(data) {
-      const storedValue = await this.list();
+      const storedValue = await this.getMany();
       if (!storedValue?.length) {
         this.addMany(data);
       }
@@ -41,12 +41,19 @@ class ReactiveRecord {
     const propNames = selectedProps || Object.keys(this.properties);
     const keys = propNames.map(prop => `${prop}_${id}`);
     const values = await this.adapter.getMany(keys, this.store);
-    const obj = { id };
-    
+    const obj = { id };    
     propNames.forEach((prop, idx) => {
       obj[prop] = values[idx] || this.properties[prop]?.defaultValue;
     });    
     return obj;
+  }
+
+  /**
+   * @returns {any[]}
+   */  
+  async getMany(key, props, indexOnly = true) {
+    const items = await this.adapter.startsWith(key || this.referenceKey, this.store, indexOnly);
+    return indexOnly ? Promise.all(items.map(async (key) => await this.get(key, props))) : Promise.resolve(items);
   }
 
   async _set(key, value) {
@@ -94,20 +101,10 @@ class ReactiveRecord {
     await Promise.all(records.map(record => this.edit(record)));
   }
 
-  /**
-   * @returns {any[]}
-   */  
-  async list(key, props, indexOnly = true) {
-    const items = await this.adapter.startsWith(key || this.referenceKey, this.store, indexOnly);
-    return indexOnly ? Promise.all(items.map(async (key) => await this.get(key, props))) : Promise.resolve(items);
-  }
-
   async remove(key) {
-    const properties = Object.keys(this.properties);
-    console.log({key});
+    const properties = Object.keys(this.properties);    
     if (!properties) return;
-    return Promise.all(properties.map(async prop => 
-      !console.log(`${prop}_${key}`) && await this.adapter.removeItem(`${prop}_${key}`, this.store)
+    return Promise.all(properties.map(async prop => await this.adapter.removeItem(`${prop}_${key}`, this.store)
     ));
   }
 }
