@@ -3,8 +3,29 @@ import { defineModels } from "./scaffold/model/reactive-record.mjs";
 import modelList from "./models.mjs";
 import controllerList from "./controllers.mjs";
 
+function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
+  return {
+    [`GET /${modelName}`]: function () {
+      return this.getMany();
+    },
+    [`GET /${modelName}/:id`]: function ({ id }) {
+      return this.get(id);
+    },
+    [`POST /${modelName}`]: function (item) {
+      return this.add(item);
+    },
+    [`DELETE /${modelName}/:id`]: function ({ id }) {
+      return this.remove(id);
+    },
+    [`PATCH /${modelName}/:id`]: function ({ id, ...rest }) {
+      return this.edit({ id, ...rest });
+    },
+    ...endpoints,
+  };
+}
+
 const models = defineModels(modelList);
-const controllers = defineControllers(controllerList, models);
+const controllers = defineControllers(models);
 
 // Convert the endpoint string to a regular expression.
 const endpointToRegex = (endpoint) => {
@@ -18,16 +39,19 @@ const endpointToRegex = (endpoint) => {
 
 const api = Object.entries(controllerList).reduce(
   (acc, [controllerName, controller]) => {
-    if (controller.endpoints) {
-      Object.entries(controller.endpoints).forEach(([endpoint, callback]) => {
-        const regex = endpointToRegex(endpoint);
-        acc[String(endpoint)] = {
-          regex,
-          controller: controllers[controllerName],
-          callback,
-        };
-      });
-    }
+    const endpoints = getDefaultCRUDEndpoints(
+      controllerName,
+      controller.endpoints,
+    );
+
+    Object.entries(endpoints).forEach(([endpoint, callback]) => {
+      const regex = endpointToRegex(endpoint);
+      acc[String(endpoint)] = {
+        regex,
+        controller: controllers[controllerName],
+        callback,
+      };
+    });
     return acc;
   },
   {},

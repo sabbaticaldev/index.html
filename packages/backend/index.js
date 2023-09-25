@@ -7,15 +7,13 @@ const modelsMap = {};
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const exportFile = (type, [name, code]) =>
-  code.replace("export default", `const ${name}${type} = `);
+  code.replace("export default", `const ${name} = `);
 
 const writeToFile = (type, map, filePath) => {
   const exports = `${Object.entries(map)
     .map((entry) => exportFile(type, entry))
     .join("\r\n")}
-const ${type}s = { ${Object.keys(map)
-  .map((name) => `${name}${type}`)
-  .join(", ")} };
+const ${type}s = { ${Object.keys(map).join(", ")} };
 export default ${type}s;`;
 
   try {
