@@ -20,35 +20,51 @@ export const toBase62 = (num) => {
   return arr.join("");
 };
 
-export const getTimestamp = (id) => {
-  let timestamp = localStorage.getItem("timestamp");
+const CACHE_NAME = "app-data-cache";
+
+const getFromCache = async (key) => {
+  const cache = await caches.open(CACHE_NAME);
+  const response = await cache.match(key);
+  return response ? response.text() : null;
+};
+
+const setInCache = async (key, value) => {
+  const cache = await caches.open(CACHE_NAME);
+  const response = new Response(value, {
+    headers: { "Content-Type": "text/plain" },
+  });
+  await cache.put(key, response);
+};
+
+export const getTimestamp = async (id) => {
+  let timestamp = await getFromCache("timestamp");
   const offset = fromBase62(id);
   return Number.parseInt(timestamp) + Number.parseInt(offset);
 };
 
-const getAppId = () => {
-  const existingAppId = localStorage.getItem("appId");
+const getAppId = async () => {
+  const existingAppId = await getFromCache("appId");
   if (existingAppId) return existingAppId;
 
   const timestamp = Date.now();
-  localStorage.setItem("timestamp", timestamp.toString()); // Store the original timestamp for later reference
+  await setInCache("timestamp", timestamp.toString());
 
   const newAppId = toBase62(timestamp);
-  localStorage.setItem("appId", newAppId);
+  await setInCache("appId", newAppId);
 
   return newAppId;
 };
 
-const getUserId = () => {
-  const existingUserId = localStorage.getItem("userId");
+const getUserId = async () => {
+  const existingUserId = await getFromCache("userId");
   if (existingUserId) return existingUserId;
 
-  localStorage.setItem("userId", "1");
+  await setInCache("userId", "1");
   return "1";
 };
 
-export const generateId = () => {
-  const referenceTimestamp = localStorage.getItem("timestamp");
+export const generateId = async () => {
+  const referenceTimestamp = await getFromCache("timestamp");
   if (!referenceTimestamp) {
     throw new Error(
       "Reference timestamp not set. Ensure getAppId has been called first.",
@@ -59,7 +75,6 @@ export const generateId = () => {
   return toBase62(timeDifference);
 };
 
-export const appId = getAppId();
-export const userId = getUserId();
+// Rest of your code remains the same
 
-export default { appId, userId, generateId, getTimestamp };
+export default { getAppId, getUserId, generateId, getTimestamp };

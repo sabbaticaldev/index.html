@@ -6,7 +6,7 @@ import {
   createStore,
   startsWith,
 } from "./indexeddb.mjs";
-import { appId, generateId } from "./helpers.mjs";
+import { getAppId, generateId } from "./helpers.mjs";
 
 class ReactiveRecord {
   async init(properties, name) {
@@ -21,9 +21,10 @@ class ReactiveRecord {
     };
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
-    if (this.adapter.createStore) {
+    getAppId().then((appId) => {
+      console.log({ appId });
       this.store = this.adapter.createStore(appId, name);
-    }
+    });
   }
 
   constructor(config, name) {

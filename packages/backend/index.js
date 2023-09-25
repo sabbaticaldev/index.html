@@ -45,11 +45,13 @@ const ServiceWorkerPlugin = () => ({
       { source: "reactive-controller.mjs", target: "reactive-controller.mjs" },
       { source: "reactive-record.mjs", target: "reactive-record.mjs" },
       { source: "indexeddb.mjs", target: "indexeddb.mjs" },
+      { source: "helpers.mjs", target: "helpers.mjs" },
     ];
     copyFiles(filesToCopy);
   },
 
   transform(code, id) {
+    console.log({ id });
     if (id.endsWith(".controller.js") || id.endsWith(".controller.ts")) {
       const name = path
         .basename(id, path.extname(id))
