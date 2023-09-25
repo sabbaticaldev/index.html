@@ -16,7 +16,7 @@ class ReactiveRecord {
    * @param {Object} [initialState={}]
    * @param {Object} [config={}]
    */
-  async init({ data, name, properties } = {}) {
+  async init({ data, properties } = {}, name) {
     this.name = name;
     this.adapter = { setItem, removeItem, getItem, getMany, createStore, startsWith };
     this.properties = properties;
@@ -33,8 +33,8 @@ class ReactiveRecord {
     }
   }
 
-  constructor(config) {
-    this.init(config);
+  constructor(config, name) {
+    this.init(config, name);
   }
 
   async get(id, selectedProps) {
@@ -115,7 +115,7 @@ const defineModels = (models) => {
   return Object.fromEntries(
     Object.entries(models).map(([name, module]) => [
       name,
-      new ReactiveRecord(module),
+      new ReactiveRecord(module, name),
     ])
   );
 };

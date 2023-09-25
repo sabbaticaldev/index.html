@@ -29,7 +29,7 @@ const bootstrapp = ({ files, style, onLoad, bootstrappTag = "app-index" }) => {
     .reduce(reduceFiles, { view: {}, controller: {}, model: {} });
 
   const models = defineModels(categorized.model)  || {};
-  const controllers = defineControllers(categorized.controller, models) || {};
+  const controllers = defineControllers(models) || {};
   
   if(onLoad) {
     onLoad(models);

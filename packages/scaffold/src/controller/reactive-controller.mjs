@@ -1,11 +1,9 @@
 export const queue = [];
 
 export class ControllerClass {
-  constructor(controller, model, systemEventModel) {
-    this.eventQueue = systemEventModel;
+  constructor(model) {
     this.model = model;
-    this.modelName = model.name;
-    this.name = model.name.replace("Model", "Controller");
+    this.name = model.name;
   }
 
   add = (record) => {
@@ -42,11 +40,11 @@ export class ControllerClass {
   };
 };
 
-export const defineControllers = (controllers, models) => {
+export const defineControllers = (models) => {
   return Object.fromEntries(
-    Object.entries(controllers).map(([name, module]) => [
+    Object.keys(models).map((name) => [
       name,
-      new ControllerClass(module, models[name.replace("Controller", "Model")], models.systemevent),
+      new ControllerClass(models[name]),
     ])
   );
 };

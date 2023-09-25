@@ -59,7 +59,6 @@ self.addEventListener("fetch", async (event) => {
 
   if (!matchedEndpointKey) return;
 
-  console.log({ matchedEndpointKey });
   event.respondWith(
     (async () => {
       try {
@@ -87,7 +86,7 @@ self.addEventListener("fetch", async (event) => {
               console.error("Failed to parse request body", err),
             )
           : {};
-        console.log("to aqui?");
+
         const allParams = { ...pathParams, ...bodyParams, ...queryParams };
         const response = await callback.call(controller, allParams);
 
@@ -98,8 +97,6 @@ self.addEventListener("fetch", async (event) => {
               clients.forEach((client) => client.postMessage("REQUEST_UPDATE")),
             );
         }
-
-        console.log({ response, allParams });
 
         return new Response(JSON.stringify(response), {
           headers: {
