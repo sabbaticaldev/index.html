@@ -45,7 +45,7 @@ function removeMany(keys, customStore = defaultGetStore()) {
 let defaultGetStoreFunc;
 function defaultGetStore() {
   if (!defaultGetStoreFunc) {
-    defaultGetStoreFunc = createStore("keyval-store", "keyval");
+    defaultGetStoreFunc = createStore("store", "kv");
   }
   return defaultGetStoreFunc;
 }
