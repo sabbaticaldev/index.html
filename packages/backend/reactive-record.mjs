@@ -1,25 +1,11 @@
-import {
-  setItem,
-  removeItem,
-  getItem,
-  getMany,
-  createStore,
-  startsWith,
-} from "./indexeddb.mjs";
+import indexeddbAdapter from "./indexeddb.mjs";
 import { getAppId, generateId } from "./helpers.mjs";
 let oplog;
 
 class ReactiveRecord {
   async init(properties, name) {
     this.name = name;
-    this.adapter = {
-      setItem,
-      removeItem,
-      getItem,
-      getMany,
-      createStore,
-      startsWith,
-    };
+    this.adapter = indexeddbAdapter;
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
 
@@ -35,8 +21,12 @@ class ReactiveRecord {
   async logOp(key, value = null) {
     if (oplog) {
       const operationId = generateId(this.appId);
-      const flattenedKey = `${this.name}_${key}_${operationId}`;
-      await this.adapter.setItem(flattenedKey, value, oplog);
+      const propKey = `${this.name}_${key}`;
+      console.log({ propKey, key });
+      await this.adapter.setLastOp(`${propKey}_${operationId}`, value, {
+        store: oplog,
+        propKey,
+      });
     }
   }
 
@@ -67,7 +57,7 @@ class ReactiveRecord {
       properties.map(async (prop) => {
         const propKey = `${prop}_${key}`;
         this.logOp(propKey, "");
-        return await this.adapter.removeItem(propKey, this.store);
+        return await this.adapter.removeItem(propKey, { store: this.store });
       }),
     );
 
@@ -96,7 +86,7 @@ class ReactiveRecord {
     const items = await this.adapter.startsWith(
       key || this.referenceKey,
       this.store,
-      indexOnly,
+      { index: indexOnly },
     );
     return indexOnly
       ? Promise.all(items.map(async (key) => await this.get(key, props)))
@@ -105,7 +95,7 @@ class ReactiveRecord {
 
   async _set(key, value) {
     this.logOp(key, value);
-    return this.adapter.setItem(key, value, this.store);
+    return this.adapter.setItem(key, value, { store: this.store });
   }
 
   async addMany(values) {

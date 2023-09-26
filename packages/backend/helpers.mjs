@@ -42,25 +42,27 @@ export const getTimestamp = async (id) => {
   return Number.parseInt(timestamp) + Number.parseInt(offset);
 };
 
-export const getAppId = async () => {
-  const existingAppId = await getFromCache("appId");
-  if (existingAppId) return existingAppId;
+export const setAppId = async (appId) => {
+  const appIdKey = "appId-default";
+  await setInCache(appIdKey, appId);
 
   const timestamp = Date.now();
   await setInCache("timestamp", timestamp.toString());
-
-  const newAppId = toBase62(timestamp);
-  await setInCache("appId", newAppId);
-
-  return newAppId;
 };
 
-export const getUserId = async () => {
-  const existingUserId = await getFromCache("userId");
-  if (existingUserId) return existingUserId;
+export const getAppId = async () => {
+  const appIdKey = "appId-default";
+  let appId = await getFromCache(appIdKey);
 
-  await setInCache("userId", "1");
-  return "1";
+  if (!appId) {
+    const timestamp = Date.now();
+    appId = toBase62(timestamp);
+    await setAppId(appId);
+    const userIdKey = `userId-${appId}`;
+    await setInCache(userIdKey, 1);
+  }
+
+  return appId;
 };
 
 export const generateId = (appId) => {
@@ -73,6 +75,17 @@ export const generateId = (appId) => {
 
   const timeDifference = Date.now() - parseInt(referenceTimestamp, 10);
   return toBase62(timeDifference);
+};
+
+// New function
+export const getUserId = async (appId) => {
+  const userIdKey = `userId-${appId}`;
+  const existingUserId = await getFromCache(userIdKey);
+  if (existingUserId) return existingUserId;
+  const id = generateId(appId);
+  await setInCache(userIdKey, id);
+  console.log({ userIdKey, id });
+  return id;
 };
 
 // Rest of your code remains the same

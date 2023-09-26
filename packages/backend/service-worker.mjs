@@ -2,7 +2,7 @@ import { defineControllers } from "./reactive-controller.mjs";
 import { defineModels } from "./reactive-record.mjs";
 import modelList from "./models.mjs";
 import controllerList from "./controllers.mjs";
-import { getAppId, getUserId } from "./helpers.mjs";
+import { getAppId, setAppId, getUserId } from "./helpers.mjs";
 
 function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
   return {
@@ -139,11 +139,17 @@ self.addEventListener("fetch", async (event) => {
 });
 
 self.addEventListener("message", async (event) => {
-  console.log(event.data.action);
   if (event.data.action === "INIT_APP") {
-    const appId = await getAppId();
-    const userId = await getUserId();
+    let appId = event.data.appId;
+    if (appId) {
+      await setAppId(appId);
+    } else {
+      appId = await getAppId();
+    }
+
+    const userId = await getUserId(appId);
     console.log({ appId, userId });
+
     event.source.postMessage({
       action: "INIT_APP",
       appId,

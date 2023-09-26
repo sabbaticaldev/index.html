@@ -4,8 +4,8 @@
  * @param {Function} [customStore=defaultGetStore()] - Method to get a custom store. Use with caution (see the docs).
  * @returns {Promise} - Promise that resolves when the store is cleared.
  */
-function clear(customStore = defaultGetStore()) {
-  return customStore("readwrite", (store) => {
+function clear(db) {
+  return db("readwrite", (store) => {
     store.clear();
     return promisifyRequest(store.transaction);
   });
@@ -35,29 +35,23 @@ function createStore(dbName = "bootstrapp", storeName = "kv") {
  * @param {Function} [customStore=defaultGetStore()] - Method to get a custom store. Use with caution (see the docs).
  * @returns {Promise} - Promise that resolves when the keys are deleted.
  */
-function removeMany(keys, customStore = defaultGetStore()) {
-  return customStore("readwrite", (store) => {
+function removeMany(keys, db) {
+  return db("readwrite", (store) => {
     keys.forEach((key) => store.delete(key));
     return promisifyRequest(store.transaction);
   });
 }
 
-let defaultGetStoreFunc;
-function defaultGetStore() {
-  if (!defaultGetStoreFunc) {
-    defaultGetStoreFunc = createStore("store", "kv");
-  }
-  return defaultGetStoreFunc;
-}
 /**
  * Get a value by its key.
  *
  * @param key
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function getItem(key, customStore = defaultGetStore()) {
-  return customStore("readonly", (store) => promisifyRequest(store.get(key)));
+function getItem(key, db) {
+  return db("readonly", (store) => promisifyRequest(store.get(key)));
 }
+
 /**
  * Set a value with a key.
  *
@@ -65,8 +59,8 @@ function getItem(key, customStore = defaultGetStore()) {
  * @param value
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function setItem(key, value, customStore = defaultGetStore()) {
-  return customStore("readwrite", (store) => {
+function setItem(key, value, config) {
+  return config.store("readwrite", (store) => {
     store.put(value, key);
     return promisifyRequest(store.transaction);
   });
@@ -78,8 +72,8 @@ function setItem(key, value, customStore = defaultGetStore()) {
  * @param entries Array of entries, where each entry is an array of `[key, value]`.
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function setMany(entries, customStore = defaultGetStore()) {
-  return customStore("readwrite", (store) => {
+function setMany(entries, db) {
+  return db("readwrite", (store) => {
     entries.forEach((entry) => store.put(entry[1], entry[0]));
     return promisifyRequest(store.transaction);
   });
@@ -90,8 +84,8 @@ function setMany(entries, customStore = defaultGetStore()) {
  * @param keys
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function getMany(keys, customStore = defaultGetStore()) {
-  return customStore("readonly", (store) =>
+function getMany(keys, db) {
+  return db("readonly", (store) =>
     Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
   );
 }
@@ -102,8 +96,8 @@ function getMany(keys, customStore = defaultGetStore()) {
  * @param updater A callback that takes the old value and returns a new value.
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function update(key, updater, customStore = defaultGetStore()) {
-  return customStore(
+function update(key, updater, db) {
+  return db(
     "readwrite",
     (store) =>
       // Need to create the promise manually.
@@ -127,8 +121,8 @@ function update(key, updater, customStore = defaultGetStore()) {
  * @param key
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function removeItem(key, customStore = defaultGetStore()) {
-  return customStore("readwrite", (store) => {
+function removeItem(key, config) {
+  return config.store("readwrite", (store) => {
     store.delete(key);
     return promisifyRequest(store.transaction);
   });
@@ -145,10 +139,10 @@ function eachCursor(store, callback) {
 /**
  * Get all keys in the store.
  *
- * @param customStore Method to get a custom store. Use with caution (see the docs).
+ * @param db Method to get a custom store. Use with caution (see the docs).
  */
-function keys(customStore = defaultGetStore()) {
-  return customStore("readonly", (store) => {
+function keys(db) {
+  return db("readonly", (store) => {
     // Fast path for modern browsers
     if (store.getAllKeys) {
       return promisifyRequest(store.getAllKeys());
@@ -164,8 +158,8 @@ function keys(customStore = defaultGetStore()) {
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function values(customStore = defaultGetStore()) {
-  return customStore("readonly", (store) => {
+function values(db) {
+  return db("readonly", (store) => {
     // Fast path for modern browsers
     if (store.getAll) {
       return promisifyRequest(store.getAll());
@@ -181,8 +175,8 @@ function values(customStore = defaultGetStore()) {
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function entries(customStore = defaultGetStore()) {
-  return customStore("readonly", (store) => {
+function entries(db) {
+  return db("readonly", (store) => {
     // Fast path for modern browsers
     // (although, hopefully we'll get a simpler path some day)
     if (store.getAll && store.getAllKeys) {
@@ -192,7 +186,7 @@ function entries(customStore = defaultGetStore()) {
       ]).then(([keys, values]) => keys.map((key, i) => [key, values[i]]));
     }
     const items = [];
-    return customStore("readonly", (store) =>
+    return db("readonly", (store) =>
       eachCursor(store, (cursor) =>
         items.push([cursor.key, cursor.value]),
       ).then(() => items),
@@ -206,8 +200,8 @@ function entries(customStore = defaultGetStore()) {
  * @param prefix The prefix to match against keys in the store.
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  */
-function startsWith(prefix, customStore = defaultGetStore(), indexOnly = true) {
-  return customStore("readonly", (store) => {
+function startsWith(prefix, db, config = { index: true, keepKey: false }) {
+  return db("readonly", (store) => {
     const range = IDBKeyRange.bound(prefix, prefix + "\uffff");
     const items = [];
 
@@ -216,8 +210,8 @@ function startsWith(prefix, customStore = defaultGetStore(), indexOnly = true) {
       cursorReq.onsuccess = function () {
         const cursor = cursorReq.result;
         if (cursor) {
-          const id = cursor.key.split("_")[1];
-          items.push(indexOnly ? id : { id, [prefix]: cursor.value });
+          const id = config.keepKey ? cursor.key : cursor.key.split("_")[1];
+          items.push(config.index ? id : { id, [prefix]: cursor.value });
           cursor.continue();
         } else {
           resolve(items);
@@ -244,6 +238,27 @@ function promisifyRequest(request) {
   });
 }
 
+/**
+ * Removes items that start with a specific prefix and then sets a new item.
+ *
+ * @param {string} key - The key of the item to be set.
+ * @param {*} value - The value to be set.
+ * @param {Function} [customStore=defaultGetStore()] - Method to get a custom store.
+ * @returns {Promise} - Promise that resolves when the operations are done.
+ */
+async function setLastOp(key, value, config) {
+  const { store, propKey } = config;
+  // Fetch the keys that start with the prefix
+  const keys = await startsWith(propKey, store, {
+    index: true,
+    keepKey: true,
+  });
+  console.log({ propKey, key, keys });
+  // Delete those keys
+  await removeMany(keys, store);
+  setItem(key, value, { store });
+}
+
 export {
   clear,
   createStore,
@@ -254,6 +269,25 @@ export {
   promisifyRequest,
   removeItem,
   removeMany,
+  setLastOp,
+  setItem,
+  setMany,
+  startsWith,
+  update,
+  values,
+};
+
+export default {
+  clear,
+  createStore,
+  entries,
+  getMany,
+  getItem,
+  keys,
+  promisifyRequest,
+  removeItem,
+  removeMany,
+  setLastOp,
   setItem,
   setMany,
   startsWith,

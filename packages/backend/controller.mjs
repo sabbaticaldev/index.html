@@ -27,6 +27,7 @@ export const connect = (opts = {}) => {
 
   ws.onmessage = (event) => {
     const msg = JSON.parse(event.data);
+    console.log({ msg });
     switch (msg.type) {
     case "offer":
       handleOffer(msg.offer, msg.fromUsername);
