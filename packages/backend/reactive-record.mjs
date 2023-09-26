@@ -7,6 +7,7 @@ import {
   startsWith,
 } from "./indexeddb.mjs";
 import { getAppId, generateId } from "./helpers.mjs";
+let oplog;
 
 class ReactiveRecord {
   async init(properties, name) {
@@ -24,7 +25,7 @@ class ReactiveRecord {
 
     this.appId = await getAppId();
     this.store = this.adapter.createStore(`${this.appId}_${name}`, name);
-    this.oplog = this.adapter.createStore(`${this.appId}_${name}_oplog`, name);
+    oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
   }
 
   constructor(config, name) {
@@ -32,10 +33,13 @@ class ReactiveRecord {
   }
 
   async logOp(key, value = null) {
-    const operationId = generateId(this.appId);
-    const flattenedKey = `${key}_${operationId}`;
-    await this.adapter.setItem(flattenedKey, value, this.oplog);
+    if (oplog) {
+      const operationId = generateId(this.appId);
+      const flattenedKey = `${this.name}_${key}_${operationId}`;
+      await this.adapter.setItem(flattenedKey, value, oplog);
+    }
   }
+
   async add(value) {
     const id = value?.id || generateId(this.appId);
     const properties = Object.keys(value);
