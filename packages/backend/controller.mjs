@@ -1,11 +1,3 @@
-const generateId = () => {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-  return Array.from({ length: 5 })
-    .map(() => chars[Math.floor(Math.random() * chars.length)])
-    .join("");
-};
-
 export const connect = (opts = {}) => {
   const {
     url = "ws://127.0.0.1:3030/ws",
@@ -13,7 +5,7 @@ export const connect = (opts = {}) => {
     ondatachannel,
   } = opts;
 
-  const username = opts.username || generateId();
+  const username = opts.username;
   const configuration = {
     iceServers: [{ urls: stunUrls }],
   };
@@ -27,7 +19,6 @@ export const connect = (opts = {}) => {
 
   ws.onmessage = (event) => {
     const msg = JSON.parse(event.data);
-    console.log({ msg });
     switch (msg.type) {
     case "offer":
       handleOffer(msg.offer, msg.fromUsername);
@@ -98,14 +89,14 @@ export const connect = (opts = {}) => {
     }
   };
 
-  const call = async (targetUsername, callback) => {
+  const call = async (targetUsername, callback, onopenCallback) => {
     const dataChannel = rtc.createDataChannel("channel");
     console.log("DataChannel initial state:", dataChannel.readyState);
-    dataChannel.onmessage = callback;
+    dataChannel.onmessage = (event) => callback(event, dataChannel);
 
     dataChannel.onopen = () => {
       console.log("Data Channel is now open!");
-      dataChannel.send("Hello, other side!");
+      onopenCallback?.(dataChannel);
     };
 
     dataChannel.onerror = (error) => {

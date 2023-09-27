@@ -74,10 +74,15 @@ export const generateId = (appId) => {
   }
 
   const timeDifference = Date.now() - parseInt(referenceTimestamp, 10);
-  return toBase62(timeDifference);
+  let id = toBase62(timeDifference);
+
+  while (id.length < 5) {
+    id = "0" + id;
+  }
+
+  return id;
 };
 
-// New function
 export const getUserId = async (appId) => {
   const userIdKey = `userId-${appId}`;
   const existingUserId = await getFromCache(userIdKey);
@@ -87,7 +92,5 @@ export const getUserId = async (appId) => {
   console.log({ userIdKey, id });
   return id;
 };
-
-// Rest of your code remains the same
 
 export default { getAppId, getUserId, generateId, getTimestamp };

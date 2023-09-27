@@ -31,9 +31,17 @@ const { title } = Astro.props || Astro.params;
           if(event.data.action === "INIT_APP") {
             const { appId, userId } = event.data;
             if (appId && userId) {
-              console.log({appId, userId});
               localStorage.setItem("appId", appId);
               localStorage.setItem("userId", userId);
+              if (navigator.storage && navigator.storage.persist) {
+              navigator.storage.persist().then(granted => {
+                console.log(
+                  granted 
+                    ? "Storage will not be cleared except by explicit user action" 
+                    : "Storage may be cleared by the UA under storage pressure."
+                );
+              });
+            }
             }
           }
         });

@@ -1,6 +1,7 @@
 import indexeddbAdapter from "./indexeddb.mjs";
 import { getAppId, generateId } from "./helpers.mjs";
 let oplog;
+let queue;
 
 class ReactiveRecord {
   async init(properties, name) {
@@ -10,8 +11,10 @@ class ReactiveRecord {
     this.referenceKey = Object.keys(properties)[0];
 
     this.appId = await getAppId();
-    this.store = this.adapter.createStore(`${this.appId}_${name}`, name);
+    this.store = this.adapter.createStore(`${this.appId}_${name}`, "kv");
+    // TODO: create one store and reuse it globally
     oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
+    queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
   }
 
   constructor(config, name) {
@@ -22,9 +25,11 @@ class ReactiveRecord {
     if (oplog) {
       const operationId = generateId(this.appId);
       const propKey = `${this.name}_${key}`;
-      console.log({ propKey, key });
-      await this.adapter.setLastOp(`${propKey}_${operationId}`, value, {
+      await this.adapter.setItem(`${propKey}_${operationId}`, value, {
         store: oplog,
+      });
+      await this.adapter.setLastOp(`${propKey}_${operationId}`, value, {
+        store: queue,
         propKey,
       });
     }
