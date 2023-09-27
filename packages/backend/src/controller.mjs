@@ -5,16 +5,14 @@ export const events = {};
 let dataChannel;
 
 onmessage = (e) => {
-  // Process message or do something
-  if (e.data.bridge) {
-    postMessage({
-      ...e.data,
-      bridge: true,
-    });
+  if ("serviceWorker" in navigator && e.data.bridge) {
+    console.log("send message to service worker");
+    navigator.serviceWorker.controller.postMessage(e.data);
   }
 };
 
 const dispatch = (event) => {
+  console.log(event.data);
   const message = JSON.parse(event.data);
   const { type, ...payload } = message;
   const handler = events[type];
@@ -41,9 +39,8 @@ const syncRequest = async ({ appId, models }) => {
     const entries = await adapter.entries(db);
     data[model] = entries;
   }
-  console.log({ dataChannel });
   // Send the fetched data over the data channel
-  dataChannel.send({ type: "SYNC_DATA", data, appId: appId });
+  dataChannel.send(JSON.stringify({ type: "SYNC_DATA", data, appId: appId }));
 };
 
 const syncData = async ({ data, appId }) => {
@@ -52,6 +49,7 @@ const syncData = async ({ data, appId }) => {
     type: "SYNC_DATA",
     appId,
     data,
+    bridge: true,
   });
 };
 
@@ -62,6 +60,7 @@ const handleOplogWrite = async ({ model, key, value }) => {
     model,
     key,
     value,
+    bridge: true,
   });
 };
 

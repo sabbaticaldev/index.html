@@ -152,7 +152,7 @@ const messageHandlers = {
 
   SYNC_DATA: async (data, source) => {
     const { data: syncData, appId } = data;
-
+    console.log("SYNC_DATA", { data });
     for (let [model, entries] of Object.entries(syncData)) {
       const db = adapter.createStore(`${appId}_${model}`, "kv");
       await adapter.clear(db);

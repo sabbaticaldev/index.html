@@ -8,8 +8,7 @@ export const clear = (db) => {
 export const createStore = (dbName = "bootstrapp") => {
   const storeName = "kv";
   const request = indexedDB.open(dbName);
-  request.onupgradeneeded = () =>
-    !console.log({ storeName }) && request.result.createObjectStore(storeName);
+  request.onupgradeneeded = () => request.result.createObjectStore(storeName);
   const dbp = promisifyRequest(request);
   return (txMode, callback) =>
     dbp.then((db) =>
