@@ -1,6 +1,7 @@
 import adapter from "./indexeddb.mjs";
 
 export const events = {};
+
 export const Backend = {
   postMessage: (payload) => {
     if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
@@ -19,10 +20,11 @@ export const P2P = {
       dataChannel.send(JSON.stringify(payload));
     }
   },
-  dispatch: (event) => {
+  dispatch: (event, channel) => {
     const message = JSON.parse(event.data);
     const { type, ...payload } = message;
     const handler = events[type];
+    dataChannel = channel;
     if (handler) {
       handler(payload);
     } else {
