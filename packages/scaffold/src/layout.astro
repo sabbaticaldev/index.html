@@ -22,13 +22,12 @@ const { title } = Astro.props || Astro.params;
     <script>
       (async () => {
         if ("serviceWorker" in navigator) {
-          const urlParams = new URLSearchParams(window.location.search);
-          let appId = urlParams.get('appId');
           const registration = await navigator.serviceWorker.register("./service-worker.mjs", { type: 'module', scope: '/'  })            
             console.log("ServiceWorker registration successful:", registration);
             navigator.serviceWorker.addEventListener("message", async (event) => {
-            if(event.data.action === "INIT_APP") {
+            if(event.data.type === "INIT_APP") {              
               const { appId, userId } = event.data;
+              console.log("INIT_APP", { appId, userId });
               if (appId && userId) {
                 localStorage.setItem("appId", appId);
                 localStorage.setItem("userId", userId);
@@ -43,26 +42,6 @@ const { title } = Astro.props || Astro.params;
               }
             }
           });
-          // Check if the service worker is active
-          if (registration.active) {
-            registration.active.postMessage({
-              action: 'INIT_APP',
-              appId
-            });
-          } else {
-            // If the service worker is not yet active, wait for it to activate
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'activated') {
-                  newWorker.postMessage({
-                    action: 'INIT_APP',
-                    appId
-                  });
-                }
-              });
-            });
-          }            
         }
       })()
     </script>

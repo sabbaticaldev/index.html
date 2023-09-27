@@ -144,7 +144,7 @@ const messageHandlers = {
 
     const userId = await getUserId(appId);
     source.postMessage({
-      action: "INIT_APP",
+      type: "INIT_APP",
       appId,
       userId,
     });
@@ -162,7 +162,7 @@ const messageHandlers = {
     requestUpdate();
 
     source.postMessage({
-      action: "SYNC_FINISHED",
+      type: "SYNC_FINISHED",
     });
   },
 
@@ -187,12 +187,13 @@ const messageHandlers = {
 };
 
 self.addEventListener("message", async (event) => {
-  const handler = messageHandlers[event.data.action];
+  const handler = messageHandlers[event.data.type];
   if (handler) {
+    console.log("DEBUG: Received bridge-message from Web Worker: ", { event });
     try {
       await handler(event.data, event.source);
     } catch (error) {
-      console.error(`Error handling ${event.data.action}:`, error);
+      console.error(`Error handling ${event.data.type}:`, error);
     }
   }
 });

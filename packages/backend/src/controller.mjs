@@ -1,14 +1,146 @@
-import { P2P } from "./sync.mjs";
+import adapter from "./indexeddb.mjs";
+
+export const events = {};
+
+let dataChannel;
+
+onmessage = (e) => {
+  // Process message or do something
+  if (e.data.bridge) {
+    postMessage({
+      ...e.data,
+      bridge: true,
+    });
+  }
+};
+
+const dispatch = (event) => {
+  const message = JSON.parse(event.data);
+  const { type, ...payload } = message;
+  const handler = events[type];
+  if (handler) {
+    handler(payload);
+  } else {
+    console.warn("DEBUG: No handler registered for message type:", type);
+  }
+};
+
+export const registerEvent = (type, handler) => {
+  events[type] = handler;
+};
+
+const syncRequest = async ({ appId, models }) => {
+  console.log("DEBUG: Sync request received:", { appId, models });
+
+  // Prepare an object to hold the fetched data
+  const data = {};
+
+  // Fetch data from IndexedDB for each model
+  for (let model of models) {
+    const db = adapter.createStore(`${appId}_${model}`);
+    const entries = await adapter.entries(db);
+    data[model] = entries;
+  }
+  console.log({ dataChannel });
+  // Send the fetched data over the data channel
+  dataChannel.send({ type: "SYNC_DATA", data, appId: appId });
+};
+
+const syncData = async ({ data, appId }) => {
+  console.log("DEBUG: Sync data received:", data);
+  postMessage({
+    type: "SYNC_DATA",
+    appId,
+    data,
+  });
+};
+
+const handleOplogWrite = async ({ model, key, value }) => {
+  console.log("DEBUG: Oplog write received:", { key, value });
+  postMessage({
+    type: "OPLOG_WRITE",
+    model,
+    key,
+    value,
+  });
+};
+
+registerEvent("OPLOG_WRITE", handleOplogWrite);
+registerEvent("SYNC_REQUEST", syncRequest);
+registerEvent("SYNC_DATA", syncData);
+
+let rtc;
+let ws;
+
+export const call = async (appId, userId, targetUsername, models) => {
+  const onopenCallback = (dataChannel) => {
+    dataChannel.send(
+      JSON.stringify({
+        type: "SYNC_REQUEST",
+        appId,
+        models,
+      }),
+    );
+  };
+  const dataChannel = rtc.createDataChannel("channel");
+  console.log("DEBUG: DataChannel initial state:", dataChannel.readyState);
+  dataChannel.onmessage = dispatch;
+
+  dataChannel.onopen = () => {
+    console.log("DEBUG: Data Channel is now open!");
+    onopenCallback?.(dataChannel);
+  };
+
+  dataChannel.onerror = (error) => {
+    console.error("DEBUG: DataChannel Error:", error);
+  };
+
+  rtc.oniceconnectionstatechange = () => {
+    console.log("DEBUG: ICE Connection State:", rtc.iceConnectionState);
+  };
+
+  rtc.onsignalingstatechange = () => {
+    console.log("DEBUG: Signaling State:", rtc.signalingState);
+  };
+
+  rtc.onicecandidate = ({ candidate }) => {
+    if (candidate) {
+      console.log("DEBUG: Trying to connect to: " + targetUsername);
+      ws.send(
+        JSON.stringify({
+          type: "ice-candidate",
+          candidate,
+          targetUsername: targetUsername,
+        }),
+      );
+    }
+  };
+
+  const offer = await rtc.createOffer();
+  await rtc.setLocalDescription(offer);
+  console.log("DEBUG: DataChannel state:", dataChannel.readyState);
+  ws.send(
+    JSON.stringify({
+      type: "offer",
+      offer,
+      fromUsername: [appId, userId].join("|"),
+      targetUsername,
+    }),
+  );
+  console.log("DEBUG: DataChannel initial state:", dataChannel.readyState);
+  return Promise.resolve(dataChannel);
+};
 
 export const connect = (opts = {}) => {
   const {
     url = "ws://127.0.0.1:3030/ws",
     stunUrls = "stun:stun.l.google.com:19302",
   } = opts;
+
   const ondatachannel = (event) => {
     console.log("DEBUG: Connecting to Peer ...");
-    const dataChannel = event.channel;
-    dataChannel.onmessage = (event) => P2P.dispatch(event, { dataChannel });
+    dataChannel = event.channel;
+    dataChannel.onmessage = dispatch;
     dataChannel.onopen = () => {
       console.log("DEBUG: Data Channel is now open!");
     };
@@ -21,11 +153,11 @@ export const connect = (opts = {}) => {
   const configuration = {
     iceServers: [{ urls: stunUrls }],
   };
-  const ws = new WebSocket(url);
-  const rtc = new RTCPeerConnection(configuration);
+  ws = new WebSocket(url);
+  rtc = new RTCPeerConnection(configuration);
 
   ws.onopen = () => {
-    console.log("DBUG: Connected to the server");
+    console.log("DEBUG: Connected to the server");
     ws.send(JSON.stringify({ type: "register", username }));
   };
 
@@ -102,65 +234,6 @@ export const connect = (opts = {}) => {
       console.log("DEBUG: HandleIceCandidate", { candidate });
       pendingCandidates.push(candidate);
     }
-  };
-
-  const call = async (appId, targetUsername, models) => {
-    const onopenCallback = (dataChannel) => {
-      dataChannel.send(
-        JSON.stringify({
-          type: "SYNC_REQUEST",
-          appId,
-          models,
-        }),
-      );
-    };
-    const dataChannel = rtc.createDataChannel("channel");
-    console.log("DEBUG: DataChannel initial state:", dataChannel.readyState);
-    dataChannel.onmessage = (event) => P2P.dispatch(event, { dataChannel });
-
-    dataChannel.onopen = () => {
-      console.log("DEBUG: Data Channel is now open!");
-      onopenCallback?.(dataChannel);
-    };
-
-    dataChannel.onerror = (error) => {
-      console.error("DEBUG: DataChannel Error:", error);
-    };
-
-    rtc.oniceconnectionstatechange = () => {
-      console.log("DEBUG: ICE Connection State:", rtc.iceConnectionState);
-    };
-
-    rtc.onsignalingstatechange = () => {
-      console.log("DEBUG: Signaling State:", rtc.signalingState);
-    };
-
-    rtc.onicecandidate = ({ candidate }) => {
-      if (candidate) {
-        console.log("DEBUG: Trying to connect to: " + targetUsername);
-        ws.send(
-          JSON.stringify({
-            type: "ice-candidate",
-            candidate,
-            targetUsername: targetUsername,
-          }),
-        );
-      }
-    };
-
-    const offer = await rtc.createOffer();
-    await rtc.setLocalDescription(offer);
-    console.log("DEBUG: DataChannel state:", dataChannel.readyState);
-    ws.send(
-      JSON.stringify({
-        type: "offer",
-        offer,
-        fromUsername: username,
-        targetUsername,
-      }),
-    );
-    console.log("DEBUG: DataChannel initial state:", dataChannel.readyState);
-    return Promise.resolve(dataChannel);
   };
 
   return {

@@ -51,7 +51,7 @@ export function defineView(component, config = {}) {
         }
         
         if(prop.sync) {
-          this[key] = syncAdapters[prop.sync].getItem(key); // you might have added a sync adapter that doesn't exist
+          this[key] = syncAdapters[prop.sync].getItem(prop.key || key); // you might have added a sync adapter that doesn't exist
         }
 
         if(!prop.readonly) {
@@ -61,7 +61,7 @@ export function defineView(component, config = {}) {
             // TODO: do a few things only if it is a connected-to-model property
             //}
             if(prop.sync) {              
-              syncAdapters[prop.sync].setItem(key, newValue);
+              syncAdapters[prop.sync].setItem(prop.key || key, newValue);
             }
             this[key] = newValue;            
           };
