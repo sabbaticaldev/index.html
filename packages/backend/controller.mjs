@@ -1,10 +1,21 @@
+import { onDataChannelMessage } from "./sync.mjs";
+
 export const connect = (opts = {}) => {
   const {
     url = "ws://127.0.0.1:3030/ws",
     stunUrls = "stun:stun.l.google.com:19302",
-    ondatachannel,
   } = opts;
-
+  const ondatachannel = (event) => {
+    console.log("DEBUG: Connecting to Peer ...");
+    const dataChannel = event.channel;
+    dataChannel.onmessage = (event) => onDataChannelMessage(event, dataChannel);
+    dataChannel.onopen = () => {
+      console.log("DEBUG: Data Channel is now open!");
+    };
+    dataChannel.onerror = (error) => {
+      console.error("DEBUG: DataChannel Error:", error);
+    };
+  };
   const username = opts.username;
   const configuration = {
     iceServers: [{ urls: stunUrls }],
@@ -89,10 +100,19 @@ export const connect = (opts = {}) => {
     }
   };
 
-  const call = async (targetUsername, callback, onopenCallback) => {
+  const call = async (appId, targetUsername) => {
+    const onopenCallback = (dataChannel) => {
+      dataChannel.send(
+        JSON.stringify({
+          type: "SYNC_REQUEST",
+          appId: appId,
+          models: ["todo"],
+        }),
+      );
+    };
     const dataChannel = rtc.createDataChannel("channel");
     console.log("DataChannel initial state:", dataChannel.readyState);
-    dataChannel.onmessage = (event) => callback(event, dataChannel);
+    dataChannel.onmessage = (event) => onDataChannelMessage(event, dataChannel);
 
     dataChannel.onopen = () => {
       console.log("Data Channel is now open!");
