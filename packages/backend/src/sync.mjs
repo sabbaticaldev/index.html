@@ -20,7 +20,6 @@ export const P2P = {
     }
   },
   dispatch: (event, channel) => {
-    console.log(event.data);
     const message = JSON.parse(event.data);
     const { type, ...payload } = message;
     const handler = events[type];
@@ -63,5 +62,16 @@ const syncData = async ({ data, appId }) => {
   });
 };
 
+const handleOplogWrite = async ({ model, key, value }) => {
+  console.log("DEBUG: Oplog write received:", { key, value });
+  Backend.postMessage({
+    action: "OPLOG_WRITE",
+    model,
+    key,
+    value,
+  });
+};
+
+registerEvent("OPLOG_WRITE", handleOplogWrite);
 registerEvent("SYNC_REQUEST", syncRequest);
 registerEvent("SYNC_DATA", syncData);

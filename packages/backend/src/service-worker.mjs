@@ -142,9 +142,9 @@ self.addEventListener("fetch", async (event) => {
   );
 });
 
-self.addEventListener("message", async (event) => {
-  if (event.data.action === "INIT_APP") {
-    let appId = event.data.appId;
+const messageHandlers = {
+  INIT_APP: async (data, source) => {
+    let appId = data.appId;
     if (appId) {
       await setAppId(appId);
     } else {
@@ -152,19 +152,17 @@ self.addEventListener("message", async (event) => {
     }
 
     const userId = await getUserId(appId);
-    console.log({ appId, userId });
-
-    event.source.postMessage({
+    source.postMessage({
       action: "INIT_APP",
       appId,
       userId,
     });
-  }
+  },
 
-  if (event.data.action === "SYNC_DATA") {
-    const { data, appId } = event.data;
+  SYNC_DATA: async (data, source) => {
+    const { data: syncData, appId } = data;
 
-    for (let [model, entries] of Object.entries(data)) {
+    for (let [model, entries] of Object.entries(syncData)) {
       const db = adapter.createStore(`${appId}_${model}`, "kv");
       await adapter.clear(db);
       await adapter.setMany(entries, db);
@@ -172,8 +170,39 @@ self.addEventListener("message", async (event) => {
 
     requestUpdate();
 
-    event.source.postMessage({
+    source.postMessage({
       action: "SYNC_FINISHED",
     });
+  },
+
+  OPLOG_WRITE: async (data, source) => {
+    const { store, key, value } = data;
+    console.log({ data, source });
+    // Parse the key to get the propName, objectId, and operationId
+    const [propName, objectId, operationId] = key.split("_").slice(0, -1);
+
+    // Update the model/store
+    const db = adapter.createStore(store, "kv");
+    const propKey = [propName, objectId].join("_");
+    if (value) {
+      console.log("update");
+      await adapter.setItem(propKey, value, db);
+    } else {
+      await adapter.removeItem(propKey, db);
+    }
+
+    // After successful operation, request an update to the client
+    requestUpdate();
+  },
+};
+
+self.addEventListener("message", async (event) => {
+  const handler = messageHandlers[event.data.action];
+  if (handler) {
+    try {
+      await handler(event.data, event.source);
+    } catch (error) {
+      console.error(`Error handling ${event.data.action}:`, error);
+    }
   }
 });

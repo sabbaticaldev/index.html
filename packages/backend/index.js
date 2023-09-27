@@ -2,21 +2,26 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const srcDir = path.join(__dirname, "src");
+const publicDir = path.join(__dirname, "public");
+
 const controllersMap = {};
 const modelsMap = {};
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const copyFiles = (filesToCopy) =>
-  filesToCopy.forEach((file) => {
-    const sourcePath = path.join(__dirname, file.source);
-    const targetPath = path.join("./public", file.target);
+const copyFilesFromSrc = () => {
+  const files = fs.readdirSync(srcDir);
+  files.forEach((file) => {
+    const sourcePath = path.join(srcDir, file);
+    const targetPath = path.join("./public", file);
     try {
       fs.copyFileSync(sourcePath, targetPath);
-      console.log(`${file.source} copied successfully to ${file.target}!`);
+      console.log(`${file} copied successfully!`);
     } catch (error) {
-      console.error(`Error copying ${file.source} to ${file.target}:`, error);
+      console.error(`Error copying ${file}:`, error);
     }
   });
+};
 
 const exportFile = (type, [name, code]) =>
   code.replace("export default", `const ${name} = `);
@@ -25,8 +30,8 @@ const writeToFile = (type, map, filePath) => {
   const exports = `${Object.entries(map)
     .map((entry) => exportFile(type, entry))
     .join("\r\n")}
-const ${type}s = { ${Object.keys(map).join(", ")} };
-export default ${type}s;`;
+    const ${type}s = { ${Object.keys(map).join(", ")} };
+    export default ${type}s;`;
 
   try {
     fs.writeFileSync(filePath, exports, "utf8");
@@ -40,18 +45,10 @@ const ServiceWorkerPlugin = () => ({
   name: "service-worker-plugin",
 
   buildStart() {
-    const filesToCopy = [
-      { source: "service-worker.mjs", target: "service-worker.mjs" },
-      { source: "reactive-controller.mjs", target: "reactive-controller.mjs" },
-      { source: "reactive-record.mjs", target: "reactive-record.mjs" },
-      { source: "indexeddb.mjs", target: "indexeddb.mjs" },
-      { source: "helpers.mjs", target: "helpers.mjs" },
-    ];
-    copyFiles(filesToCopy);
+    copyFilesFromSrc();
   },
 
   transform(code, id) {
-    console.log({ id });
     if (id.endsWith(".controller.js") || id.endsWith(".controller.ts")) {
       const name = path
         .basename(id, path.extname(id))
@@ -60,7 +57,7 @@ const ServiceWorkerPlugin = () => ({
       writeToFile(
         "Controller",
         controllersMap,
-        path.join("./public", "controllers.mjs"),
+        path.join(publicDir, "controllers.mjs"),
       );
       return code;
     }
@@ -68,7 +65,7 @@ const ServiceWorkerPlugin = () => ({
     if (id.endsWith(".model.js") || id.endsWith(".model.ts")) {
       const name = path.basename(id, path.extname(id)).replace(".model", "");
       modelsMap[name] = code;
-      writeToFile("Model", modelsMap, path.join("./public", "models.mjs"));
+      writeToFile("Model", modelsMap, path.join(publicDir, "models.mjs"));
       return code;
     }
   },
