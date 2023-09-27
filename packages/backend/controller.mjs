@@ -1,16 +1,14 @@
-import { onDataChannelMessage } from "./sync.mjs";
+import { P2P } from "./sync.mjs";
 
 export const connect = (opts = {}) => {
   const {
     url = "ws://127.0.0.1:3030/ws",
     stunUrls = "stun:stun.l.google.com:19302",
-    client,
   } = opts;
   const ondatachannel = (event) => {
     console.log("DEBUG: Connecting to Peer ...");
     const dataChannel = event.channel;
-    dataChannel.onmessage = (event) =>
-      onDataChannelMessage(event, { dataChannel, client });
+    dataChannel.onmessage = (event) => P2P.dispatch(event, dataChannel);
     dataChannel.onopen = () => {
       console.log("DEBUG: Data Channel is now open!");
     };
@@ -117,8 +115,7 @@ export const connect = (opts = {}) => {
     };
     const dataChannel = rtc.createDataChannel("channel");
     console.log("DEBUG: DataChannel initial state:", dataChannel.readyState);
-    dataChannel.onmessage = (event) =>
-      onDataChannelMessage(event, { dataChannel, client });
+    dataChannel.onmessage = (event) => P2P.dispatch(event, dataChannel);
 
     dataChannel.onopen = () => {
       console.log("DEBUG: Data Channel is now open!");
