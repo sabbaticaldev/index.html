@@ -8,7 +8,7 @@ export const connect = (opts = {}) => {
   const ondatachannel = (event) => {
     console.log("DEBUG: Connecting to Peer ...");
     const dataChannel = event.channel;
-    dataChannel.onmessage = (event) => P2P.dispatch(event, dataChannel);
+    dataChannel.onmessage = (event) => P2P.dispatch(event, { dataChannel });
     dataChannel.onopen = () => {
       console.log("DEBUG: Data Channel is now open!");
     };
@@ -16,6 +16,7 @@ export const connect = (opts = {}) => {
       console.error("DEBUG: DataChannel Error:", error);
     };
   };
+
   const username = opts.username;
   const configuration = {
     iceServers: [{ urls: stunUrls }],
@@ -115,7 +116,7 @@ export const connect = (opts = {}) => {
     };
     const dataChannel = rtc.createDataChannel("channel");
     console.log("DEBUG: DataChannel initial state:", dataChannel.readyState);
-    dataChannel.onmessage = (event) => P2P.dispatch(event, dataChannel);
+    dataChannel.onmessage = (event) => P2P.dispatch(event, { dataChannel });
 
     dataChannel.onopen = () => {
       console.log("DEBUG: Data Channel is now open!");

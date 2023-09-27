@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const srcDir = path.join(__dirname, "src");
-const publicDir = path.join(__dirname, "public");
+const outputDir = "./public";
 
 const controllersMap = {};
 const modelsMap = {};
@@ -13,7 +13,7 @@ const copyFilesFromSrc = () => {
   const files = fs.readdirSync(srcDir);
   files.forEach((file) => {
     const sourcePath = path.join(srcDir, file);
-    const targetPath = path.join("./public", file);
+    const targetPath = path.join(outputDir, file);
     try {
       fs.copyFileSync(sourcePath, targetPath);
       console.log(`${file} copied successfully!`);
@@ -49,6 +49,11 @@ const ServiceWorkerPlugin = () => ({
   },
 
   transform(code, id) {
+    if (id.toString().includes("backend")) {
+      console.log({ id });
+      const name = path.basename(id, path.extname(id));
+      fs.copyFileSync(id, path.join(outputDir, name + ".mjs"));
+    }
     if (id.endsWith(".controller.js") || id.endsWith(".controller.ts")) {
       const name = path
         .basename(id, path.extname(id))
@@ -57,7 +62,7 @@ const ServiceWorkerPlugin = () => ({
       writeToFile(
         "Controller",
         controllersMap,
-        path.join(publicDir, "controllers.mjs"),
+        path.join(outputDir, "controllers.mjs"),
       );
       return code;
     }
@@ -65,7 +70,7 @@ const ServiceWorkerPlugin = () => ({
     if (id.endsWith(".model.js") || id.endsWith(".model.ts")) {
       const name = path.basename(id, path.extname(id)).replace(".model", "");
       modelsMap[name] = code;
-      writeToFile("Model", modelsMap, path.join(publicDir, "models.mjs"));
+      writeToFile("Model", modelsMap, path.join(outputDir, "models.mjs"));
       return code;
     }
   },

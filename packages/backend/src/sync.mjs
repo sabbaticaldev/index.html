@@ -1,7 +1,6 @@
 import adapter from "./indexeddb.mjs";
 
 export const events = {};
-let dataChannel;
 export const Backend = {
   postMessage: (payload) => {
     if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
@@ -12,20 +11,19 @@ export const Backend = {
 };
 
 export const P2P = {
-  postMessage: (payload) => {
+  postMessage: (payload, { dataChannel }) => {
     if (!dataChannel)
       console.log("DEBUG: postMessage without an open datachannel");
-    if (dataChannel) {
+    if (dataChannel && dataChannel.readyState === "open") {
       dataChannel.send(JSON.stringify(payload));
     }
   },
-  dispatch: (event, channel) => {
+  dispatch: (event, { dataChannel }) => {
     const message = JSON.parse(event.data);
     const { type, ...payload } = message;
     const handler = events[type];
     if (handler) {
-      dataChannel = channel;
-      handler(payload);
+      handler(payload, { dataChannel });
     } else {
       console.warn("DEBUG: No handler registered for message type:", type);
     }
@@ -36,7 +34,7 @@ export const registerEvent = (type, handler) => {
   events[type] = handler;
 };
 
-const syncRequest = async ({ appId, models }) => {
+const syncRequest = async ({ appId, models }, { dataChannel }) => {
   console.log("DEBUG: Sync request received:", { appId, models });
 
   // Prepare an object to hold the fetched data

@@ -177,7 +177,6 @@ const messageHandlers = {
 
   OPLOG_WRITE: async (data, source) => {
     const { store, key, value } = data;
-    console.log({ data, source });
     // Parse the key to get the propName, objectId, and operationId
     const [propName, objectId, operationId] = key.split("_").slice(0, -1);
 
