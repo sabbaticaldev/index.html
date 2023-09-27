@@ -1,7 +1,5 @@
-import { defineControllers } from "./reactive-controller.mjs";
 import { defineModels } from "./reactive-record.mjs";
 import modelList from "./models.mjs";
-import controllerList from "./controllers.mjs";
 import { getAppId, setAppId, getUserId } from "./helpers.mjs";
 import adapter from "./indexeddb.mjs";
 
@@ -34,7 +32,6 @@ const requestUpdate = () =>
     );
 
 const models = defineModels(modelList);
-const controllers = defineControllers(models);
 
 // Convert the endpoint string to a regular expression.
 const endpointToRegex = (endpoint) => {
@@ -46,25 +43,19 @@ const endpointToRegex = (endpoint) => {
   return new RegExp(`^${method} ${regexPath}$`);
 };
 
-const api = Object.entries(controllerList).reduce(
-  (acc, [controllerName, controller]) => {
-    const endpoints = getDefaultCRUDEndpoints(
-      controllerName,
-      controller.endpoints,
-    );
+const api = Object.entries(modelList).reduce((acc, [name, model]) => {
+  const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);
 
-    Object.entries(endpoints).forEach(([endpoint, callback]) => {
-      const regex = endpointToRegex(endpoint);
-      acc[String(endpoint)] = {
-        regex,
-        controller: controllers[controllerName],
-        callback,
-      };
-    });
-    return acc;
-  },
-  {},
-);
+  Object.entries(endpoints).forEach(([endpoint, callback]) => {
+    const regex = endpointToRegex(endpoint);
+    acc[String(endpoint)] = {
+      regex,
+      model: models[name],
+      callback,
+    };
+  });
+  return acc;
+}, {});
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
@@ -97,7 +88,7 @@ self.addEventListener("fetch", async (event) => {
       try {
         const {
           callback,
-          controller,
+          model,
           regex: endpointRegex,
         } = api[matchedEndpointKey];
 
@@ -121,7 +112,7 @@ self.addEventListener("fetch", async (event) => {
           : {};
 
         const allParams = { ...pathParams, ...bodyParams, ...queryParams };
-        const response = await callback.call(controller, allParams);
+        const response = await callback.call(model, allParams);
 
         if (["POST", "PATCH", "DELETE"].includes(event.request.method)) {
           requestUpdate();

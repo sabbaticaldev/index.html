@@ -6,7 +6,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const srcDir = path.join(__dirname, "src");
 const outputDir = "./public";
 
-const controllersMap = {};
 const modelsMap = {};
 
 const copyFilesFromSrc = () => {
@@ -50,21 +49,8 @@ const ServiceWorkerPlugin = () => ({
 
   transform(code, id) {
     if (id.toString().includes("backend")) {
-      console.log({ id });
       const name = path.basename(id, path.extname(id));
       fs.copyFileSync(id, path.join(outputDir, name + ".mjs"));
-    }
-    if (id.endsWith(".controller.js") || id.endsWith(".controller.ts")) {
-      const name = path
-        .basename(id, path.extname(id))
-        .replace(".controller", "");
-      controllersMap[name] = code;
-      writeToFile(
-        "Controller",
-        controllersMap,
-        path.join(outputDir, "controllers.mjs"),
-      );
-      return code;
     }
 
     if (id.endsWith(".model.js") || id.endsWith(".model.ts")) {
