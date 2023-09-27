@@ -9,21 +9,22 @@ export const Backend = {
     }
   },
 };
+let dataChannel;
 
 export const P2P = {
-  postMessage: (payload, { dataChannel }) => {
+  postMessage: (payload) => {
     if (!dataChannel)
       console.log("DEBUG: postMessage without an open datachannel");
     if (dataChannel && dataChannel.readyState === "open") {
       dataChannel.send(JSON.stringify(payload));
     }
   },
-  dispatch: (event, { dataChannel }) => {
+  dispatch: (event) => {
     const message = JSON.parse(event.data);
     const { type, ...payload } = message;
     const handler = events[type];
     if (handler) {
-      handler(payload, { dataChannel });
+      handler(payload);
     } else {
       console.warn("DEBUG: No handler registered for message type:", type);
     }
@@ -34,7 +35,7 @@ export const registerEvent = (type, handler) => {
   events[type] = handler;
 };
 
-const syncRequest = async ({ appId, models }, { dataChannel }) => {
+const syncRequest = async ({ appId, models }) => {
   console.log("DEBUG: Sync request received:", { appId, models });
 
   // Prepare an object to hold the fetched data
@@ -48,7 +49,7 @@ const syncRequest = async ({ appId, models }, { dataChannel }) => {
   }
 
   // Send the fetched data over the data channel
-  dataChannel.send(JSON.stringify({ type: "SYNC_DATA", data, appId: appId }));
+  P2P.postMessage({ type: "SYNC_DATA", data, appId: appId });
 };
 
 const syncData = async ({ data, appId }) => {

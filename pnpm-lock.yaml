@@ -358,6 +358,9 @@ importers:
       '@astrojs/lit':
         specifier: ^3.0.0
         version: 3.0.0(@webcomponents/template-shadowroot@0.2.1)(lit@2.8.0)
+      '@vitejs/plugin-basic-ssl':
+        specifier: ^1.0.1
+        version: 1.0.1(vite@4.4.9)
       '@webcomponents/template-shadowroot':
         specifier: ^0.2.1
         version: 0.2.1
@@ -3432,6 +3435,15 @@ packages:
     dependencies:
       astro: 3.0.12
       vite-plugin-pwa: 0.16.5(vite@4.4.9)(workbox-build@7.0.0)(workbox-window@7.0.0)
+    dev: true
+
+  /@vitejs/plugin-basic-ssl@1.0.1(vite@4.4.9):
+    resolution: {integrity: sha512-pcub+YbFtFhaGRTo1832FQHQSHvMrlb43974e2eS8EKleR3p1cDdkJFPci1UhwkEf1J9Bz+wKBSzqpKp7nNj2A==}
+    engines: {node: '>=14.6.0'}
+    peerDependencies:
+      vite: ^3.0.0 || ^4.0.0
+    dependencies:
+      vite: 4.4.9(@types/node@20.5.9)(sass@1.66.1)
     dev: true
 
   /@vitejs/plugin-vue2@2.2.0(vite@4.4.9)(vue@2.7.14):
