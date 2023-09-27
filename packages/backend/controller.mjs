@@ -4,11 +4,13 @@ export const connect = (opts = {}) => {
   const {
     url = "ws://127.0.0.1:3030/ws",
     stunUrls = "stun:stun.l.google.com:19302",
+    client,
   } = opts;
   const ondatachannel = (event) => {
     console.log("DEBUG: Connecting to Peer ...");
     const dataChannel = event.channel;
-    dataChannel.onmessage = (event) => onDataChannelMessage(event, dataChannel);
+    dataChannel.onmessage = (event) =>
+      onDataChannelMessage(event, { dataChannel, client });
     dataChannel.onopen = () => {
       console.log("DEBUG: Data Channel is now open!");
     };
@@ -24,7 +26,7 @@ export const connect = (opts = {}) => {
   const rtc = new RTCPeerConnection(configuration);
 
   ws.onopen = () => {
-    console.log("Connected to the server");
+    console.log("DBUG: Connected to the server");
     ws.send(JSON.stringify({ type: "register", username }));
   };
 
@@ -48,10 +50,10 @@ export const connect = (opts = {}) => {
   ws.onclose = (event) => {
     if (event.wasClean) {
       console.log(
-        `Connection closed cleanly, code=${event.code}, reason=${event.reason}`,
+        `DEBUG: Connection closed cleanly, code=${event.code}, reason=${event.reason}`,
       );
     } else {
-      console.log("Connection died");
+      console.log("DEBUG: Connection died");
     }
   };
 
@@ -70,7 +72,11 @@ export const connect = (opts = {}) => {
       .createAnswer()
       .then((answer) => rtc.setLocalDescription(answer))
       .then(() => {
-        console.log("Sending answer:", rtc.localDescription, fromUsername);
+        console.log(
+          "DEBUG: Sending answer:",
+          rtc.localDescription,
+          fromUsername,
+        );
         ws.send(
           JSON.stringify({
             type: "answer",
@@ -89,51 +95,51 @@ export const connect = (opts = {}) => {
 
   let pendingCandidates = [];
   const handleIceCandidate = (candidate) => {
-    console.log("handleIceCandidate");
     if (rtc.remoteDescription && rtc.remoteDescription.type) {
       rtc.addIceCandidate(new RTCIceCandidate(candidate)).catch((e) => {
-        console.error("Error adding ice candidate", e);
+        console.error("DEBUG: Error adding ice candidate", e);
       });
     } else {
-      console.log("HandleIceCandidate", { candidate });
+      console.log("DEBUG: HandleIceCandidate", { candidate });
       pendingCandidates.push(candidate);
     }
   };
 
-  const call = async (appId, targetUsername) => {
+  const call = async (appId, targetUsername, models) => {
     const onopenCallback = (dataChannel) => {
       dataChannel.send(
         JSON.stringify({
           type: "SYNC_REQUEST",
-          appId: appId,
-          models: ["todo"],
+          appId,
+          models,
         }),
       );
     };
     const dataChannel = rtc.createDataChannel("channel");
-    console.log("DataChannel initial state:", dataChannel.readyState);
-    dataChannel.onmessage = (event) => onDataChannelMessage(event, dataChannel);
+    console.log("DEBUG: DataChannel initial state:", dataChannel.readyState);
+    dataChannel.onmessage = (event) =>
+      onDataChannelMessage(event, { dataChannel, client });
 
     dataChannel.onopen = () => {
-      console.log("Data Channel is now open!");
+      console.log("DEBUG: Data Channel is now open!");
       onopenCallback?.(dataChannel);
     };
 
     dataChannel.onerror = (error) => {
-      console.error("DataChannel Error:", error);
+      console.error("DEBUG: DataChannel Error:", error);
     };
 
     rtc.oniceconnectionstatechange = () => {
-      console.log("ICE Connection State:", rtc.iceConnectionState);
+      console.log("DEBUG: ICE Connection State:", rtc.iceConnectionState);
     };
 
     rtc.onsignalingstatechange = () => {
-      console.log("Signaling State:", rtc.signalingState);
+      console.log("DEBUG: Signaling State:", rtc.signalingState);
     };
 
     rtc.onicecandidate = ({ candidate }) => {
       if (candidate) {
-        console.log("Trying to connect to: " + targetUsername);
+        console.log("DEBUG: Trying to connect to: " + targetUsername);
         ws.send(
           JSON.stringify({
             type: "ice-candidate",
@@ -146,7 +152,7 @@ export const connect = (opts = {}) => {
 
     const offer = await rtc.createOffer();
     await rtc.setLocalDescription(offer);
-    console.log("DataChannel state:", dataChannel.readyState);
+    console.log("DEBUG: DataChannel state:", dataChannel.readyState);
     ws.send(
       JSON.stringify({
         type: "offer",
@@ -155,7 +161,7 @@ export const connect = (opts = {}) => {
         targetUsername,
       }),
     );
-    console.log("DataChannel initial state:", dataChannel.readyState);
+    console.log("DEBUG: DataChannel initial state:", dataChannel.readyState);
     return Promise.resolve(dataChannel);
   };
 

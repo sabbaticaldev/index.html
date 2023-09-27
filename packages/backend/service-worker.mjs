@@ -3,6 +3,7 @@ import { defineModels } from "./reactive-record.mjs";
 import modelList from "./models.mjs";
 import controllerList from "./controllers.mjs";
 import { getAppId, setAppId, getUserId } from "./helpers.mjs";
+import adapter from "./indexeddb.mjs";
 
 function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
   return {
@@ -24,6 +25,13 @@ function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
     ...endpoints,
   };
 }
+
+const requestUpdate = () =>
+  self.clients
+    .matchAll()
+    .then((clients) =>
+      clients.forEach((client) => client.postMessage("REQUEST_UPDATE")),
+    );
 
 const models = defineModels(modelList);
 const controllers = defineControllers(models);
@@ -116,11 +124,7 @@ self.addEventListener("fetch", async (event) => {
         const response = await callback.call(controller, allParams);
 
         if (["POST", "PATCH", "DELETE"].includes(event.request.method)) {
-          self.clients
-            .matchAll()
-            .then((clients) =>
-              clients.forEach((client) => client.postMessage("REQUEST_UPDATE")),
-            );
+          requestUpdate();
         }
 
         return new Response(JSON.stringify(response), {
@@ -154,6 +158,22 @@ self.addEventListener("message", async (event) => {
       action: "INIT_APP",
       appId,
       userId,
+    });
+  }
+
+  if (event.data.action === "SYNC_DATA") {
+    const { data, appId } = event.data;
+
+    for (let [model, entries] of Object.entries(data)) {
+      const db = adapter.createStore(`${appId}_${model}`, "kv");
+      await adapter.clear(db);
+      await adapter.setMany(entries, db);
+    }
+
+    requestUpdate();
+
+    event.source.postMessage({
+      action: "SYNC_FINISHED",
     });
   }
 });
