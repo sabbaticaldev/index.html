@@ -34,22 +34,20 @@ const checkType = (value)=> {
  */
 
 
-export function defineView(tag, componentDefinition, config = {}) {
+export function defineView(tag, component, config = {}) {
   const {
     render,
-    i18n,
     onLoad,
-  } = componentDefinition;
+  } = component;
   
-  const { style } = config;
+  const { style, i18n } = config;
 
   // Map the new props format to the structure used in the original code
-  const props = Object.keys(componentDefinition.props).reduce((acc, key) => {
-    const value = componentDefinition.props[key];
+  const props = !component.props ? {} : Object.keys(component.props).reduce((acc, key) => {
+    const value = component.props[key];
     acc[key] = {
-      type: checkType(value),  // Simple type inference, you might need to expand this for other types
+      type: checkType(value),
       defaultValue: value,
-      // ... You can add more fields as needed
     };
     if(value.type) {
       // If the user supply an object like {type: String, key: "propKey", sync: "url"} we add those values to the prop so it can be used later
@@ -59,7 +57,6 @@ export function defineView(tag, componentDefinition, config = {}) {
   }, {});
 
   class ReactionView extends LitElement {
-    // Define the properties for LitElement
     static properties = props;
   
     constructor() {
@@ -133,16 +130,15 @@ export function defineView(tag, componentDefinition, config = {}) {
   return ReactionView;
 }
 
-export const defineViews = (views, { style }) => {
-  return Object.fromEntries(
-    Object.values(views).map((componentDefinition) => {
-      const tag = Object.keys(componentDefinition)[0];
-      return [
-        tag,
-        defineView(tag, componentDefinition[tag], {
-          style,
-        }),
-      ];
-    })
-  );
+export const defineViews = (views, { style, i18n }) => {
+  return Object.fromEntries(Object.entries(views).map(([tag, component]) => {
+    console.log({tag, component});
+    return [
+      tag,
+      defineView(tag, component, {
+        style,
+        i18n
+      }),
+    ];
+  }));
 };
