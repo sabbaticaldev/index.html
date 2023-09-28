@@ -1,5 +1,6 @@
 import { LitElement, html } from "lit";
 import { until } from "lit/directives/until.js";
+import { repeat } from "lit/directives/repeat.js";
 import { customElement } from "lit/decorators.js";
 import I18N from "../helpers/i18n/i18n.mjs";
 import url from "../helpers/url.mjs";
@@ -61,7 +62,7 @@ export function defineView(tag, component, config = {}) {
   
     constructor() {
       super();
-      this.context = { html, until, i18n: I18N(i18n), ...CRUD, ...DateTimeHelpers, ...StringHelpers };
+      this.context = { html, until, repeat, i18n: I18N(i18n), ...CRUD, ...DateTimeHelpers, ...StringHelpers };
       
       const propKeys = Object.keys(props);
       propKeys.forEach((key)=> {
@@ -98,6 +99,7 @@ export function defineView(tag, component, config = {}) {
     handleServiceWorkerMessage(event) {
       if (event.data === "REQUEST_UPDATE") {
         // TODO: it should update only the specific element, not all elements - prototype 
+        // one way to implement is to store all IDs used by this component and have a event.data.updatedIds to match
         this.requestUpdate();
       }
     }
@@ -131,8 +133,7 @@ export function defineView(tag, component, config = {}) {
 }
 
 export const defineViews = (views, { style, i18n }) => {
-  return Object.fromEntries(Object.entries(views).map(([tag, component]) => {
-    console.log({tag, component});
+  return Object.fromEntries(Object.entries(views).map(([tag, component]) => {    
     return [
       tag,
       defineView(tag, component, {
