@@ -26,7 +26,6 @@ export const getRTCWorker = ({ appId, userId, models }) => {
     navigator.serviceWorker.onmessage = (e) => {
       if (e.data.bridge) {
         console.log("DEBUG: received message from service worker", { e });
-        console.log({ worker, data: e.data });
         if (dataChannel) {
           dataChannel.send(JSON.stringify(e.data));
         }

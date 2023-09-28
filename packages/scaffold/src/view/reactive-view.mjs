@@ -1,7 +1,7 @@
 import { LitElement, html } from "lit";
 import { until } from "lit/directives/until.js";
 import { customElement } from "lit/decorators.js";
-import i18n from "../plugins/i18n/i18n.mjs";
+import I18N from "../helpers/i18n/i18n.mjs";
 import url from "../helpers/url.mjs";
 import CRUD from "../helpers/rest.mjs";
 import DateTimeHelpers from "../helpers/datetime.mjs";
@@ -16,32 +16,39 @@ const syncAdapters = { url, localStorage, sessionStorage };
  * @param {Object} [config={}] - Additional configuration parameters.
  * @returns {typeof LitElement}
  */
-export function defineView(component, config = {}) {
-  // Destructure properties from the component configuration
+
+
+export function defineView(tag, componentDefinition, config = {}) {
   const {
-    tag,
-    props = {},
     render,
+    i18n,
     onLoad,
-  } = component;
+  } = componentDefinition;
   
   const { style } = config;
+
+  // Map the new props format to the structure used in the original code
+  const props = Object.keys(componentDefinition.props).reduce((acc, key) => {
+    const value = componentDefinition.props[key];
+    acc[key] = {
+      type: typeof value === "object" ? Object : String,  // Simple type inference, you might need to expand this for other types
+      defaultValue: value,
+      // ... You can add more fields as needed
+    };
+    if(acc[key].type === Object) {
+      // If the user supply an object like {key: "propKey", sync: "url"} we add those values to the prop so it can be used later
+      acc[key] = { ...acc[key], ...value };
+    }
+    return acc;
+  }, {});
+
   class ReactionView extends LitElement {
     // Define the properties for LitElement
-    static properties = Object.keys(props)
-      .reduce((acc, key) => {
-        const prop = props[key];
-        acc[key] = {
-          type: prop.type,
-          noAccessor: !!prop.readonly,
-          defaultValue: prop.defaultValue,
-        };
-        return acc;
-      }, {});
+    static properties = props;
   
     constructor() {
       super();
-      this.context = { html, until, i18n: i18n(props.i18n), ...CRUD, ...DateTimeHelpers, ...StringHelpers };
+      this.context = { html, until, i18n: I18N(i18n), ...CRUD, ...DateTimeHelpers, ...StringHelpers };
       
       const propKeys = Object.keys(props);
       propKeys.forEach((key)=> {
@@ -97,7 +104,7 @@ export function defineView(component, config = {}) {
   
     render() {
       
-      return component.template || render?.(this, this.context) || html`<h1>Error: no render function or template.</h1>`;
+      return render?.(this, this.context) || html`<h1>Error: no render function or template.</h1>`;
     }
   }
 
@@ -110,13 +117,13 @@ export function defineView(component, config = {}) {
   return ReactionView;
 }
 
-
 export const defineViews = (views, { style }) => {
   return Object.fromEntries(
-    Object.entries(views).map(([name, view]) => {
+    Object.values(views).map((componentDefinition) => {
+      const tag = Object.keys(componentDefinition)[0];
       return [
-        name,
-        defineView(view, {
+        tag,
+        defineView(tag, componentDefinition[tag], {
           style,
         }),
       ];

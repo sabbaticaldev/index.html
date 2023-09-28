@@ -174,6 +174,7 @@ const messageHandlers = {
   OPLOG_WRITE: async (data) => {
     const { store, key, value } = data;
     const db = adapter.createStore(store, "kv");
+    console.log({ value });
     if (value) {
       await adapter.setItem(key, value, { store: db });
     } else {
