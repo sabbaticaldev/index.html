@@ -9,6 +9,22 @@ import StringHelpers from "../helpers/string.mjs";
 
 const syncAdapters = { url, localStorage, sessionStorage };
 
+const TYPE_MAP = {
+  "boolean": Boolean,
+  "number": Number,
+  "string": String,
+  "object": Object,
+  "array": Array,  
+};
+
+const checkType = (value)=> {
+  const type = Array.isArray(value) ? "array" : typeof value;
+  if (type === "object" && value !== null && "type" in value) {
+    return value.type;    
+  }
+  return type === TYPE_MAP[type] || String;
+};
+
 /**
  * Defines and registers a custom element based on the provided configuration.
  *
@@ -31,12 +47,12 @@ export function defineView(tag, componentDefinition, config = {}) {
   const props = Object.keys(componentDefinition.props).reduce((acc, key) => {
     const value = componentDefinition.props[key];
     acc[key] = {
-      type: typeof value === "object" ? Object : String,  // Simple type inference, you might need to expand this for other types
+      type: checkType(value),  // Simple type inference, you might need to expand this for other types
       defaultValue: value,
       // ... You can add more fields as needed
     };
-    if(acc[key].type === Object) {
-      // If the user supply an object like {key: "propKey", sync: "url"} we add those values to the prop so it can be used later
+    if(value.type) {
+      // If the user supply an object like {type: String, key: "propKey", sync: "url"} we add those values to the prop so it can be used later
       acc[key] = { ...acc[key], ...value };
     }
     return acc;
