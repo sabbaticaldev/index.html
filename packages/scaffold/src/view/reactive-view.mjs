@@ -2,7 +2,7 @@ import { LitElement, html } from "lit";
 import { until } from "lit/directives/until.js";
 import { customElement } from "lit/decorators.js";
 import i18n from "../plugins/i18n/i18n.mjs";
-import url from "../model/adapters/url.mjs";
+import url from "../helpers/url.mjs";
 import CRUD from "../helpers/rest.mjs";
 import DateTimeHelpers from "../helpers/datetime.mjs";
 import StringHelpers from "../helpers/string.mjs";

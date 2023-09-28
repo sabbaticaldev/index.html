@@ -1,7 +1,7 @@
 import { defineViews } from "./view/reactive-view.mjs";
 
 const classifyFile = ([path, module]) => {
-  const nameMatch = /\/([\w\-_]+)\.(view|controller|model)\./.exec(path);
+  const nameMatch = /\/([\w\-_]+)\.(view|model)\./.exec(path);
   if (!nameMatch) return null;
 
   const name = nameMatch[1];
@@ -18,13 +18,10 @@ const reduceFiles = (acc, file) => {
 };
 
 const bootstrapp = ({ files, style, onLoad, bootstrappTag = "app-index" }) => {
-  const plugins = import.meta.glob("./plugins/**/*.{js,ts}", { eager: true });
-
   // Merge files and plugins
-  const allFiles = { ...plugins, ...files };
-  const categorized = Object.entries(allFiles)
+  const categorized = Object.entries(files)
     .map(classifyFile)
-    .reduce(reduceFiles, { view: {}, controller: {}, model: {} });
+    .reduce(reduceFiles, { view: {}, model: {} });
 
   
   if(onLoad) {
