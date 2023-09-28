@@ -31,6 +31,16 @@ const requestUpdate = () =>
       clients.forEach((client) => client.postMessage("REQUEST_UPDATE")),
     );
 
+const P2P = {
+  postMessage: (payload) => {
+    self.clients.matchAll().then((clients) => {
+      if (clients && clients.length) {
+        clients[0].postMessage({ ...payload, bridge: true });
+      }
+    });
+  },
+};
+
 const models = defineModels(modelList);
 
 // Convert the endpoint string to a regular expression.
@@ -141,8 +151,8 @@ const messageHandlers = {
     } else {
       appId = await getAppId();
     }
-
     const userId = await getUserId(appId);
+
     source.postMessage({
       type: "INIT_APP",
       appId,
@@ -150,9 +160,8 @@ const messageHandlers = {
     });
   },
 
-  SYNC_DATA: async (data, source) => {
+  SYNC_DATA: async (data) => {
     const { data: syncData, appId } = data;
-    console.log("SYNC_DATA", { data });
     for (let [model, entries] of Object.entries(syncData)) {
       const db = adapter.createStore(`${appId}_${model}`, "kv");
       await adapter.clear(db);
@@ -160,29 +169,19 @@ const messageHandlers = {
     }
 
     requestUpdate();
-
-    source.postMessage({
-      type: "SYNC_FINISHED",
-    });
   },
 
-  OPLOG_WRITE: async (data, source) => {
+  OPLOG_WRITE: async (data) => {
     const { store, key, value } = data;
-    // Parse the key to get the propName, objectId, and operationId
-    const [propName, objectId, operationId] = key.split("_").slice(0, -1);
-
-    // Update the model/store
     const db = adapter.createStore(store, "kv");
-    const propKey = [propName, objectId].join("_");
     if (value) {
-      console.log("update");
-      await adapter.setItem(propKey, value, db);
+      await adapter.setItem(key, value, { store: db });
     } else {
-      await adapter.removeItem(propKey, db);
+      await adapter.removeItem(key, { store: db });
     }
+    P2P.postMessage({ type: "OPLOG_WRITE", store, key, value });
 
-    // After successful operation, request an update to the client
-    requestUpdate();
+    if (data.requestUpdate) requestUpdate();
   },
 };
 

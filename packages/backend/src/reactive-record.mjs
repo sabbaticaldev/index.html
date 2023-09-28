@@ -1,5 +1,6 @@
 import indexeddbAdapter from "./indexeddb.mjs";
 import { getAppId, generateId } from "./helpers.mjs";
+import P2P from "./rtc-worker.mjs";
 
 let oplog;
 let queue;
@@ -101,12 +102,12 @@ class ReactiveRecord {
 
   async _set(key, value) {
     this.logOp(key, value);
-    // P2P.postMessage({
-    //   type: "OPLOG_WRITE",
-    //   store: [this.appId, this.name].join("_"),
-    //   key,
-    //   value,
-    // });
+    P2P.postMessage({
+      type: "OPLOG_WRITE",
+      store: [this.appId, this.name].join("_"),
+      key,
+      value,
+    });
     return this.adapter.setItem(key, value, { store: this.store });
   }
 

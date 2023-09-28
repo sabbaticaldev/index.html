@@ -1,15 +1,35 @@
-import { connect } from "backend/src/controller.mjs";
+import { connect } from "./controller.mjs";
 
 export let worker;
+export let dataChannel;
+
+export const postMessage = (payload) => {
+  if (self && self.dispatchEvent) {
+    console.log(
+      "DEBUG: Send event to service worker queue from reactive-record",
+      { payload },
+    );
+    const message = new MessageEvent("message", {
+      data: payload,
+    });
+    self.dispatchEvent(message);
+  }
+};
 
 export const getRTCWorker = ({ appId, userId, models }) => {
-  console.log({ worker });
   if (!worker) {
     worker = new Worker("./controller.mjs", { type: "module" });
+    worker.onmessage = (event) => {
+      console.log("DEBUG: event on RTC Worker: ", { event });
+    };
+
     navigator.serviceWorker.onmessage = (e) => {
-      console.log("receive message from worker");
       if (e.data.bridge) {
-        worker.postMessage(e.data);
+        console.log("DEBUG: received message from service worker", { e });
+        console.log({ worker, data: e.data });
+        if (dataChannel) {
+          dataChannel.send(JSON.stringify(e.data));
+        }
       }
     };
 
@@ -20,16 +40,26 @@ export const getRTCWorker = ({ appId, userId, models }) => {
       models,
       bridge: true,
     });
+
+    const connectCallback = (channel) => {
+      dataChannel = channel;
+      connection.connected = true;
+    };
+
     const connection = connect({
       username: appId + "|" + userId,
+      callback: connectCallback,
     });
+
     if (connection?.call && !connection.connected) {
       if (appId && userId !== "1") {
         connection
           .call(appId, userId, [appId, "1"].join("|"), models)
-          .then(() => (connection.connected = true));
+          .then(connectCallback);
       }
     }
   }
   return worker;
 };
+
+export default { postMessage, getRTCWorker, worker };

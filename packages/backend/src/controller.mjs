@@ -12,7 +12,6 @@ onmessage = (e) => {
 };
 
 const dispatch = (event) => {
-  console.log(event.data);
   const message = JSON.parse(event.data);
   const { type, ...payload } = message;
   const handler = events[type];
@@ -53,14 +52,15 @@ const syncData = async ({ data, appId }) => {
   });
 };
 
-const handleOplogWrite = async ({ model, key, value }) => {
-  console.log("DEBUG: Oplog write received:", { key, value });
+const handleOplogWrite = async ({ store, key, value }) => {
+  console.log("DEBUG: Oplog write received:", { store, key, value });
   postMessage({
     type: "OPLOG_WRITE",
-    model,
+    store,
     key,
     value,
     bridge: true,
+    requestUpdate: true,
   });
 };
 
@@ -134,6 +134,7 @@ export const connect = (opts = {}) => {
   const {
     url = "ws://127.0.0.1:3030/ws",
     stunUrls = "stun:stun.l.google.com:19302",
+    callback,
   } = opts;
 
   const ondatachannel = (event) => {
@@ -142,6 +143,7 @@ export const connect = (opts = {}) => {
     dataChannel.onmessage = dispatch;
     dataChannel.onopen = () => {
       console.log("DEBUG: Data Channel is now open!");
+      if (callback) callback(dataChannel);
     };
     dataChannel.onerror = (error) => {
       console.error("DEBUG: DataChannel Error:", error);
