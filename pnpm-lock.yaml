@@ -317,6 +317,39 @@ importers:
         version: 7.0.0
 
   apps/todoMVC:
+    devDependencies:
+      '@astrojs/lit':
+        specifier: ^3.0.0
+        version: 3.0.0(@webcomponents/template-shadowroot@0.2.1)(lit@2.8.0)
+      astro:
+        specifier: ^3.0.8
+        version: 3.0.12
+      autoprefixer:
+        specifier: ^10.4.15
+        version: 10.4.15(postcss@8.4.29)
+      backend:
+        specifier: workspace:^
+        version: link:../../packages/backend
+      daisyui:
+        specifier: ^3.7.3
+        version: 3.7.3
+      lit:
+        specifier: ^2.8.0
+        version: 2.8.0
+      modern-normalize:
+        specifier: ^2.0.0
+        version: 2.0.0
+      postcss:
+        specifier: ^8.4.29
+        version: 8.4.29
+      scaffold:
+        specifier: workspace:^
+        version: link:../../packages/scaffold
+      tailwindcss:
+        specifier: ^3.3.3
+        version: 3.3.3
+
+  apps/todoMVC-vite:
     dependencies:
       '@vaadin/button':
         specifier: ^24.1.7
@@ -352,55 +385,6 @@ importers:
       vite:
         specifier: ^4.4.5
         version: 4.4.9(@types/node@20.5.9)(sass@1.66.1)
-
-  apps/todoMVC-old:
-    dependencies:
-      '@astrojs/starlight':
-        specifier: ^0.9.0
-        version: 0.9.1(astro@3.0.12)
-      '@vaadin/button':
-        specifier: ^24.1.7
-        version: 24.1.7
-      '@vaadin/checkbox':
-        specifier: ^24.1.7
-        version: 24.1.7
-      '@vaadin/horizontal-layout':
-        specifier: ^24.1.7
-        version: 24.1.7
-      '@vaadin/list-box':
-        specifier: ^24.1.7
-        version: 24.1.7
-      '@vaadin/text-field':
-        specifier: ^24.1.7
-        version: 24.1.7
-      '@vaadin/vertical-layout':
-        specifier: ^24.1.7
-        version: 24.1.7
-      astro:
-        specifier: ^3.0.8
-        version: 3.0.12
-      backend:
-        specifier: workspace:^
-        version: link:../../packages/backend
-      modern-normalize:
-        specifier: ^2.0.0
-        version: 2.0.0
-      scaffold:
-        specifier: workspace:^
-        version: link:../../packages/scaffold
-      sharp:
-        specifier: ^0.32.5
-        version: 0.32.5
-    devDependencies:
-      '@astrojs/lit':
-        specifier: ^3.0.0
-        version: 3.0.0(@webcomponents/template-shadowroot@0.2.1)(lit@2.8.0)
-      '@webcomponents/template-shadowroot':
-        specifier: ^0.2.1
-        version: 0.2.1
-      lit:
-        specifier: ^2.8.0
-        version: 2.8.0
 
   packages/backend: {}
 
@@ -688,7 +672,7 @@ packages:
       dset: 3.1.2
       is-docker: 3.0.0
       is-wsl: 3.0.0
-      undici: 5.23.0
+      undici: 5.24.0
       which-pm-runs: 1.1.0
     transitivePeerDependencies:
       - supports-color
@@ -2903,7 +2887,6 @@ packages:
 
   /@types/node@20.6.0:
     resolution: {integrity: sha512-najjVq5KN2vsH2U/xyh2opaSEz6cZMR2SetLIlxlj08nOcmPOemJmUK2o4kUzfLqfrWE0PIrNeE16XhYDd3nqg==}
-    dev: true
 
   /@types/normalize-package-data@2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -2954,7 +2937,7 @@ packages:
   /@types/sax@1.2.4:
     resolution: {integrity: sha512-pSAff4IAxJjfAXUG6tFkO7dsSbTmf8CtUpfhhZ5VhkRpC4628tJhh3+V6H1E+/Gs9piSzYKT5yzHO5M4GG9jkw==}
     dependencies:
-      '@types/node': 17.0.45
+      '@types/node': 20.6.0
     dev: false
 
   /@types/send@0.17.1:
@@ -9273,7 +9256,6 @@ packages:
   /modern-normalize@2.0.0:
     resolution: {integrity: sha512-CxBoEVKh5U4DH3XuNbc5ONLF6dQBc8dSc7pdZ1957FGbIO5JBqGqqchhET9dTexri8/pk9xBL6+5ceOtCIp1QA==}
     engines: {node: '>=6'}
-    dev: false
 
   /module-alias@2.2.3:
     resolution: {integrity: sha512-23g5BFj4zdQL/b6tor7Ji+QY4pEfNH784BMslY9Qb0UnJWRAt+lQGLYmRaM0KDBwIG23ffEBELhZDP2rhi9f/Q==}
@@ -11965,12 +11947,6 @@ packages:
       has-bigints: 1.0.2
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
-
-  /undici@5.23.0:
-    resolution: {integrity: sha512-1D7w+fvRsqlQ9GscLBwcAJinqcZGHUKjbOmXdlE/v8BvEGXjeWAax+341q44EuTcHXXnfyKNbKRq4Lg7OzhMmg==}
-    engines: {node: '>=14.0'}
-    dependencies:
-      busboy: 1.6.0
 
   /undici@5.24.0:
     resolution: {integrity: sha512-OKlckxBjFl0oXxcj9FU6oB8fDAaiRUq+D8jrFWGmOfI/gIyjk/IeS75LMzgYKUaeHzLUcYvf9bbJGSrUwTfwwQ==}

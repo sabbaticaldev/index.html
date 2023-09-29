@@ -33,7 +33,7 @@ export default {
     },
     render: ({ src, alt, size }, { html }) => {
       const sizeClass = size === "sm" ? "w-6 h-6" : size === "md" ? "w-10 h-10" : "w-14 h-14";
-      return html`<img src="${src}" alt="${alt}" class="rounded-full ${sizeClass}">`;
+      return html`<img src=${src} alt=${alt} class="rounded-full ${sizeClass}">`;
     },
   },
       
@@ -44,7 +44,7 @@ export default {
       external: { type: Boolean, defaultValue: false },
     },
     render: ({ href, content, external }, { html }) => {
-      return html`<a href="${href}" class="text-primary-500 hover:underline" ${external ? "target=\"_blank\" rel=\"noopener noreferrer\"" : ""}>${content}</a>`;
+      return html`<a href=${href} class="text-primary-500 hover:underline" ${external ? "target=\"_blank\" rel=\"noopener noreferrer\"" : ""}>${content}</a>`;
     },
   },
       
@@ -55,7 +55,7 @@ export default {
     },
     render: ({ keyContent, combo }, { html }) => {
       const kbdClass = `bg-primary-200 rounded px-2 py-1 ${combo ? "border border-primary-300" : ""}`;
-      return html`<kbd class="${kbdClass}">${keyContent}</kbd>`;
+      return html`<kbd class=${kbdClass}>${keyContent}</kbd>`;
     },
   },
       
@@ -68,7 +68,7 @@ export default {
     render: ({ title, subtitle, backgroundImage }, { html }) => {
       const heroClass = backgroundImage ? "bg-cover bg-center" : "bg-primary-200";
       return html`
-              <div class="${heroClass}" style="background-image: url('${backgroundImage}');">
+              <div class=${heroClass} style="background-image: url('${backgroundImage}');">
                 <div class="text-center p-10">
                   <h1 class="text-4xl font-bold text-primary-700">${title}</h1>
                   <p class="text-xl text-primary-600">${subtitle}</p>
@@ -86,7 +86,7 @@ export default {
       disabled: { type: Boolean, defaultValue: false }
     },
     render: ({ label, variant, size, disabled }, { html }) => {
-      return html`<button class="btn btn-${variant} btn-${size}" ?disabled="${disabled}">${label}</button>`;
+      return html`<button class="btn btn-${variant} btn-${size}" ?disabled=${disabled}>${label}</button>`;
     },
   },
 
@@ -95,12 +95,13 @@ export default {
       checked: { type: Boolean, defaultValue: false },
       variant: { type: String, defaultValue: "default", enum: Variants },
       label: { type: String, defaultValue: "Checkbox" },
-      disabled: { type: Boolean, defaultValue: false }
+      disabled: { type: Boolean, defaultValue: false },
+      change: {type: Function }
     },
-    render: ({ checked, label, disabled, variant }, { html }) => {
+    render: ({ checked, onchange, label, disabled, variant }, { html }) => {
       return html`
         <label class="flex items-center">
-          <input type="checkbox" ?checked="${checked}" ?disabled="${disabled}" class="checkbox checkbox-${variant}">
+          <input type="checkbox" @change=${onchange} ?checked=${checked} ?disabled=${disabled} class="checkbox checkbox-${variant}">
           <span class="ml-2">${label}</span>
         </label>
       `;
@@ -116,7 +117,7 @@ export default {
     render: ({ on, label, disabled }, { html }) => {
       return html`
         <label class="flex items-center">
-          <input type="checkbox" ?checked="${on}" ?disabled="${disabled}" class="toggle">
+          <input type="checkbox" ?checked=${on} ?disabled=${disabled} class="toggle">
           <span class="ml-2">${label}</span>
         </label>
       `;
@@ -142,7 +143,7 @@ export default {
       return html`
         ${options.map(option => html`
           <label class="inline-flex items-center">
-            <input type="radio" class="form-radio" name="radios" value="${option}" .checked="${selectedValue === option}" ?disabled="${disabled}">
+            <input type="radio" class="form-radio" name="radios" value=${option} .checked="${selectedValue === option}" ?disabled=${disabled}>
             <span class="ml-2">${option}</span>
           </label>
         `)}
@@ -160,7 +161,7 @@ export default {
       // Implementation will vary based on how you're using DaisyUI for tooltips.
       // Below is a conceptual example.
       return html`
-        <span data-tooltip="${content}" data-tooltip-position="${position}" data-tooltip-trigger="${trigger}">
+        <span data-tooltip=${content} data-tooltip-position=${position} data-tooltip-trigger=${trigger}>
           ${content}
         </span>
       `;
@@ -185,36 +186,25 @@ export default {
     },
   },
 
-  "uix-alert": {
-    props: {
-      message: { type: String, defaultValue: "Alert Message" },
-      variant: { type: String, defaultValue: "default", enum: Variants },
-      closable: { type: Boolean, defaultValue: true }
-    },
-    render: ({ message, variant, closable }, { html }) => {
-      return html`
-        <div class="alert alert-${variant}">
-          ${message}
-          ${closable ? html`<button class="alert-close-btn">&times;</button>` : ""}
-        </div>
-      `;
-    },
-  },
-
   "uix-input": {
     props: {
       value: { type: String, defaultValue: "" },
       placeholder: { type: String, defaultValue: "Enter value" },
       disabled: { type: Boolean, defaultValue: false },
       type: { type: String, defaultValue: "text", enum: ["text", "password", "email", "number", "search"] },
-      maxLength: { type: Number, defaultValue: null }
+      maxLength: { type: Number, defaultValue: null },
+      keyup: { type: Function }
     },
-    render: ({ value, placeholder, disabled, type, maxLength }, { html }) => {
+    render: ({ value, keyup, placeholder, disabled, type, maxLength }, { html }) => {      
       return html`
-        <input class="input input-${type}" .value="${value}" placeholder="${placeholder}" ?disabled="${disabled}" type="${type}" .maxLength="${maxLength}">
+        <input class="input input-${type}"
+        @keyup=${keyup}
+        .value=${value || ""}
+        placeholder=${placeholder} ?disabled=${disabled} type=${type} ${maxLength !== null ? `maxlength=${maxLength}` : ""}>
       `;
     },
   },
+
   "uix-badge": {
     props: {
       content: { type: String, defaultValue: "Text" },
@@ -240,7 +230,7 @@ export default {
       rows: { type: Number, defaultValue: 4 }
     },
     render: ({ value, placeholder, disabled, rows }, { html }) => {
-      return html`<textarea placeholder="${placeholder}" ?disabled=${disabled} rows=${rows}>${value}</textarea>`;
+      return html`<textarea placeholder=${placeholder} ?disabled=${disabled} rows=${rows}>${value}</textarea>`;
     },
   },
   "uix-file-input": {
@@ -250,7 +240,7 @@ export default {
       label: { type: String, defaultValue: "Choose File" }
     },
     render: ({ acceptedTypes, multiple, label }, { html }) => {
-      return html`<input type="file" accept="${acceptedTypes}" ?multiple="${multiple}" class="bg-neutral p-2 rounded" aria-label="${label}" />`;
+      return html`<input type="file" accept=${acceptedTypes} ?multiple=${multiple} class="bg-neutral p-2 rounded" aria-label=${label} />`;
     },
   },
 
@@ -262,7 +252,7 @@ export default {
       value: { type: Number, defaultValue: 50 }
     },
     render: ({ min, max, step, value }, { html }) => {
-      return html`<input type="range" min="${min}" max="${max}" step="${step}" value="${value}" class="bg-neutral p-2 rounded" />`;
+      return html`<input type="range" min=${min} max=${max} step=${step} value=${value} class="bg-neutral p-2 rounded" />`;
     },
   },
 
@@ -274,8 +264,8 @@ export default {
     },
     render: ({ options, selectedValue, disabled }, { html }) => {
       return html`
-        <select ?disabled="${disabled}" class="form-select">
-          ${options.map(option => html`<option value="${option}" ?selected="${option === selectedValue}">${option}</option>`)}
+        <select ?disabled=${disabled} class="form-select">
+          ${options.map(option => html`<option value=${option} ?selected="${option === selectedValue}">${option}</option>`)}
         </select>
       `;
     },
@@ -334,9 +324,10 @@ export default {
     },
     render: ({ direction }, { html }) => {
       const directionClass = direction === "horizontal" ? "join" : "join-vertical";
-      return html`<div class="${directionClass}"><slot></slot></div>`;
+      return html`<div class=${directionClass}><slot></slot></div>`;
     },
   },
+  
   "uix-navbar": {
     props: {
       items: { type: Array, defaultValue: [] },
@@ -418,7 +409,7 @@ export default {
     render: ({ isOpen, content }, { html }) => {
       const displayClass = isOpen ? "block" : "hidden";
       return html`
-        <div class="${displayClass}">
+        <div class=${displayClass}>
           ${content}
         </div>
       `;
@@ -434,7 +425,7 @@ export default {
       return html`
         <div class="accordion ${multi ? "accordion-multi" : ""}">
           ${items.map(item => html`
-            <button class="accordion-btn">${item.title}</button>
+            <uix-button label=${item.title}></uix-button>
             <div class="accordion-content">
               ${item.content}
             </div>
@@ -453,7 +444,7 @@ export default {
       return html`
         <div class="tabs">
           ${items.map(item => html`
-            <button class="tab ${item.value === selectedValue ? "active" : ""}">${item.label}</button>
+            <uix-button label=${item.label} variant=${item.value === selectedValue ? "active" : "default"}></uix-button>
           `)}
           <!-- Corresponding tab contents can be rendered here -->
         </div>
@@ -461,6 +452,21 @@ export default {
     },
   },
 
+  "uix-alert": {
+    props: {
+      message: { type: String, defaultValue: "Alert Message" },
+      variant: { type: String, defaultValue: "default", enum: Variants },
+      closable: { type: Boolean, defaultValue: true }
+    },
+    render: ({ message, variant, closable }, { html }) => {
+      return html`
+        <div class="alert alert-${variant}">
+          ${message}
+          ${closable ? html`<uix-button label="&times;" variant="neutral"></uix-button>` : ""}
+        </div>
+      `;
+    },
+  },
   "uix-breadcrumbs": {
     props: {
       items: { type: Array, defaultValue: [] },
@@ -618,7 +624,7 @@ export default {
     },
     render: ({ value, maxValue, variant }, { html }) => {
       return html`
-        <progress class="progress progress-${variant} w-56" value="${value}" max="${maxValue}"></progress>
+        <progress class="progress progress-${variant} w-56" value=${value} max=${maxValue}></progress>
       `;
     },
   },
@@ -632,7 +638,7 @@ export default {
     },
     render: ({ value, maxValue, variant }, { html }) => {
       return html`
-        <progress class="progress progress-${variant} w-56" value="${value}" max="${maxValue}"></progress>
+        <progress class="progress progress-${variant} w-56" value=${value} max=${maxValue}></progress>
       `;
     },
   },
@@ -647,7 +653,7 @@ export default {
     render: ({ columns, data, striped, variant }, { html }) => {
       const tableClass = striped ? `table table-striped table-${variant}` : `table table-${variant}`;
       return html`
-        <table class="${tableClass}">
+        <table class=${tableClass}>
           <thead>
             <tr>
               ${columns.map(column => html`<th>${column}</th>`)}
@@ -676,7 +682,7 @@ export default {
         <div class="steps">
           ${steps.map((step, index) => {
     const stepClass = (index + 1) === currentStep ? `step step-${variant}` : "step";
-    return html`<div class="${stepClass}">${step}</div>`;
+    return html`<div class=${stepClass}>${step}</div>`;
   })}
         </div>
       `;
@@ -694,8 +700,8 @@ export default {
     render: ({ value, swapValue, labelA, labelB, variant }, { html }) => {
       return html`
         <div class="p-4 space-x-2">
-          <label>${labelA}: <input class="input input-bordered input-${variant}" type="text" value="${value}"></label>
-          <label>${labelB}: <input class="input input-bordered input-${variant}" type="text" value="${swapValue}"></label>
+          <label>${labelA}: <input class="input input-bordered input-${variant}" type="text" value=${value}></label>
+          <label>${labelB}: <input class="input input-bordered input-${variant}" type="text" value=${swapValue}></label>
         </div>
       `;
     },
