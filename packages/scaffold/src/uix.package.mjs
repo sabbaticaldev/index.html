@@ -1,42 +1,740 @@
+const ModalPositions = {
+  "top": "modal-top",
+  "middle": "modal-middle",
+  "bottom": "modal-bottom",
+};
+const Methods = ["details", "focus"];
+const Sizes = ["lg", "md", "sm", "xs"];
+const Shapes = ["default", "circle", "square"];
+const Styles = ["ghost", "link", "outline", "glass", "active", "disabled"];
 const Triggers = ["click", "hover"];
 const Directions = ["horizontal", "vertical"];
-const Positions = ["top", "bottom", "left", "right", "top-right", "top-left", "bottom-right", "bottom-left"];
+const Positions = ["top", "end", "bottom", "left", "right", "top-right", "top-left", "bottom-right", "bottom-left"];
 const Formats = ["DHMS", "HMS", "MS", "S"];
-const Sizes = ["sm", "md", "lg"];
 const IndicatorsFormat = ["percentage", "absolute"];
 const Variants = ["primary", "secondary", "accent", "neutral", "base", "info", "success", "warning", "error"];
 
 export default {
-  "uix-divider": {
+  "uix-accordion": {
     props: {
-      thickness: { type: String, defaultValue: "1px" },
-      color: {
-        type: String, 
-        defaultValue: "primary",
-        enum: Variants,
+      items: { type: Array, defaultValue: [] },
+      variant: { type: String, defaultValue: "base", enum: Variants },
+      method: { type: String, defaultValue: "focus", enum: ["focus", "checkbox", "details"] }, // Propagate the method of collapsing.
+      icon: { type: String, defaultValue: "", enum: ["", "arrow", "plus"] }, // Propagate the icon type.
+    },
+    render: ({ items, variant, method, icon }, { html }) => {
+      return html`
+            ${items.map(item => html`
+              <uix-collapse
+                title=${item.title}
+                content=${item.content}
+                variant=${variant}
+                method=${method}
+                icon=${icon}
+              ></uix-collapse>
+            `)}
+          `;
+    },
+  },
+  "uix-alert": {
+    props: {
+      title: { type: String, defaultValue: "" },
+      message: { type: String, defaultValue: "Alert Message" },
+      variant: { 
+        type: String,
+        defaultValue: "info",
+        enum: Variants
       },
+      closable: { type: Boolean, defaultValue: true },
+      actions: { type: Array, defaultValue: [] }
     },
-    render: ({ thickness, color }, { html }) => {
-      return html`<hr class="border-t border-${color}-500" style="border-top-width: ${thickness};">`;
-    },
-  },    
+    render: ({ title, message, variant, closable, actions }, { html }) => {
+      const colorClass = `bg-${variant}-200 border-${variant}-content text-${variant}-focus`;
       
+      return html`
+        <div class="alert p-4 rounded shadow-lg ${colorClass}">
+          <div class="flex justify-between">
+            <div>
+              ${title ? html`<h3 class="font-bold mb-2">${title}</h3>` : ""}
+              <div class="text-xs">${message}</div>
+            </div>
+            <div>
+              ${closable ? html`<uix-button label="&times;" variant="neutral" action=${()=> dispatchEvent(new CustomEvent("close-alert"))}></uix-button>` : ""}
+            </div>
+          </div>
+          ${actions.length > 0 ? html`
+            <div class="mt-4">
+              ${actions.map(action => 
+    html`<uix-button .label=${action.label} .action=${action.action}></uix-button>`
+  )}
+            </div>
+          ` : ""}
+        </div>
+      `;
+    },
+  },
   "uix-avatar": {
     props: {
-      src: { type: String, required: true },
-      alt: { type: String, defaultValue: "User Avatar" },
+      src: { type: String },
+      alt: { type: String, defaultValue: "" },
+      size: { type: Number, defaultValue: 24 },
+      shape: { type: String, defaultValue: "rounded", enum: ["rounded", "rounded-full", "mask-squircle", "mask-hexagon", "mask-triangle"] },
+      status: { type: String, enum: ["online", "offline", ""] },
+      placeholder: { type: String, defaultValue: "" },
+      hasRing: { type: Boolean, defaultValue: false },
+      ringColor: { type: String, defaultValue: "primary", enum: Variants }
+    },
+    render: ({ src, alt, size, shape, status, placeholder, hasRing, ringColor }, { html }) => {
+      const sizeClass = `w-${size}`;
+      const ringClass = hasRing ? `ring ring-${ringColor} ring-offset-base-100 ring-offset-2` : "";
+      let content;
+      
+      if (src) {
+        content = html`<img src=${src} alt=${alt} />`;
+      } else if (placeholder) {
+        content = html`<span class="${size > 12 ? `text-${Math.round(size / 8)}xl` : "text-xs"}">${placeholder}</span>`;
+      }
+      
+      return html`
+        <div class="avatar ${status} ${ringClass}">
+          <div class="${sizeClass} ${shape}">
+            ${content}
+          </div>
+        </div>
+      `;
+    },
+  },
+  "uix-avatar-group": {
+    props: {
+      avatars: { type: Array, defaultValue: [] },
+      count: { type: Number, defaultValue: 0 }
+    },
+    render: ({ avatars, count }, { html }) => {
+      return html`
+        <div class="avatar-group -space-x-6">
+          ${avatars.map(avatar => html`
+            <uix-avatar 
+              src=${avatar.src} 
+              alt=${avatar.alt} 
+              size=${avatar.size}
+              shape=${avatar.shape}
+              status=${avatar.status}
+              placeholder=${avatar.placeholder}
+              hasRing=${avatar.hasRing}
+              ringColor=${avatar.ringColor}
+            ></uix-avatar>
+          `)}
+          ${count > 0 ? html`
+            <div class="avatar placeholder">
+              <div class="w-12 bg-neutral-focus text-neutral-content">
+                <span>+${count}</span>
+              </div>
+            </div>
+          ` : ""}
+        </div>
+      `;
+    },
+  },
+
+  "uix-badge": {
+    props: {
+      content: { type: String, defaultValue: "" },
+      variant: { 
+        type: String,
+        defaultValue: "default",
+        enum: Variants
+      },
+      outline: { type: Boolean, defaultValue: false },
+      size: { 
+        type: String,
+        defaultValue: "md",
+        enum: ["lg", "md", "sm", "xs"]
+      },
+      icon: { type: String, defaultValue: null },
+    },
+    render: ({ content, variant, outline, size, icon }, { html }) => {
+      const baseClass = "badge";
+      const colorClass = `badge-${variant}${outline ? "-outline" : ""}`;
+      const sizeClass = size !== "md" ? `badge-${size}` : "";
+      const iconRender = icon ? html`<uix-icon name=${icon} class="w-4 h-4 mr-2"></uix-icon>` : "";
+
+      return html`
+        <span class="${baseClass} ${colorClass} ${sizeClass}">
+          ${iconRender}
+          ${content}
+        </span>
+      `;
+    },
+  },
+
+  "uix-icon": {
+    props: {
+    },
+    render: (props, { html }) => {
+      console.log("NEED TO IMPLEMENT");
+      return html`NEED TO IMPLEMENT`;
+    }
+  },
+  "uix-alerts-container": { // TODO: create a container for alerts that knows how to close alert
+    props: {
+    },
+    render: (props, { html }) => {
+      console.log("NEED TO IMPLEMENT");
+      return html`NEED TO IMPLEMENT`;
+    }
+  },
+  "uix-breadcrumbs": {
+    props: {
+      items: { 
+        type: Array, 
+        defaultValue: [],
+        format: [
+          {
+            label: String,
+            href: String,
+            icon: String // This will be a string referencing the icon name
+          }
+        ]
+      },
+      separator: { type: String, defaultValue: "/" }
+    },
+    render: ({ items, separator }, { html }) => {
+      return html`
+        <nav class="text-sm breadcrumbs">
+          <ul>
+            ${items.map(item => html`
+              <li>
+                ${item.icon ? html`<uix-icon name=${item.icon} class="w-4 h-4 mr-2"></uix-icon>` : ""}
+                ${item.href ? html`<a href=${item.href}>${item.label}</a>` : item.label}
+              </li>
+              ${items.indexOf(item) !== items.length - 1 ? html`<li>${separator}</li>` : ""}
+            `)}
+          </ul>
+        </nav>
+      `;
+    },
+  },
+  "uix-bottom-navigation": {
+    props: {
+      items: {
+        type: Array,
+        defaultValue: []
+      },
+      activeIndex: {
+        type: Number,
+        defaultValue: 0
+      },
       size: {
-        type: String, 
+        type: String,
+        defaultValue: "md",
+        enum: Sizes
+      }
+    },
+    render: ({ items, activeIndex, size }, { html }) => {
+      const sizeClass = `btm-nav-${size}`;
+      return html`
+        <div class="btm-nav ${sizeClass}">
+          ${items.map((item, index) => {
+    const isActive = index === activeIndex;
+    const activeClass = isActive ? "active" : "";
+    const textColor = `text-${item.color}`;
+    return html`
+              <button class="${textColor} ${activeClass}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">${item.icon}</svg>
+              </button>
+            `;
+  })}
+        </div>
+      `;
+    }
+  },
+  "uix-button": {
+    props: {
+      variant: { 
+        type: String,
+        defaultValue: "base",
+        enum: Variants
+      },
+      size: {
+        type: String,
+        defaultValue: "md",
+        enum: Sizes
+      },
+      fullWidth: { type: Boolean, defaultValue: false },
+      shape: {
+        type: String,
+        defaultValue: "default",
+        enum: Shapes
+      },
+      style: {
+        type: String,
+        defaultValue: "",
+        enum: Styles
+      },
+      isLoading: { type: Boolean, defaultValue: false },
+      startIcon: { type: String, defaultValue: "" },
+      endIcon: { type: String, defaultValue: "" },
+      noAnimation: { type: Boolean, defaultValue: false }
+    },
+    render: ({ variant, size, fullWidth, shape, style, isLoading, startIcon, endIcon, noAnimation }, { html }) => {
+      const btnClass = `
+        btn
+        ${variant ? `btn-${variant}` : ""}
+        ${size ? `btn-${size}` : ""}
+        ${fullWidth ? "btn-block" : ""}
+        ${shape ? `btn-${shape}` : ""}
+        ${style ? `btn-${style}` : ""}
+        ${noAnimation ? "no-animation" : ""}
+      `;
+
+      return html`
+        <button class=${btnClass}>
+          ${startIcon ? html`<svg class="h-6 w-6">${startIcon}</svg>` : ""}
+          <slot></slot>
+          ${endIcon ? html`<svg class="h-6 w-6">${endIcon}</svg>` : ""}
+          ${isLoading ? html`<span class="loading loading-spinner"></span>` : ""}
+        </button>
+      `;
+    }
+  },
+  "uix-card": {
+    props: {
+      title: { type: String, defaultValue: "Card Title" },
+      subtitle: { type: String, defaultValue: "Subtitle" },
+      content: { type: String, defaultValue: "Card Content" },
+      image: { type: String, defaultValue: "" },
+      footerContent: { type: String, defaultValue: "" },
+      variant: { type: String, defaultValue: "base-100", enum: Variants },
+      compact: { type: Boolean, defaultValue: false },
+      bordered: { type: Boolean, defaultValue: false },
+      sideImage: { type: Boolean, defaultValue: false },
+      centeredContent: { type: Boolean, defaultValue: false },
+      imageOverlay: { type: Boolean, defaultValue: false }
+    },
+    render: ({ title, subtitle, content, image, footerContent, variant, compact, bordered, sideImage, centeredContent, imageOverlay }, { html }) => {
+      const bgClass = `bg-${variant}`;
+      const textColorClass = variant === "base-100" ? "" : `text-${variant}-content`;
+      const compactClass = compact ? "card-compact" : "";
+      const borderedClass = bordered ? "card-bordered" : "";
+      const sideImageClass = sideImage ? "card-side" : "";
+      const centeredContentClass = centeredContent ? "items-center text-center" : "";
+      const imageOverlayClass = imageOverlay ? "image-full" : "";
+  
+      return html`
+          <div class="card ${bgClass} ${textColorClass} ${compactClass} ${borderedClass} ${sideImageClass} ${imageOverlayClass} shadow-xl">
+            ${image ? html`
+              <figure><img src=${image} alt="Card Image" /></figure>
+            ` : ""}
+            <div class="card-body ${centeredContentClass}">
+              <h2 class="card-title">${title}</h2>
+              ${subtitle ? html`<h3 class="subtitle">${subtitle}</h3>` : ""}
+              <p>${content}</p>
+              ${footerContent ? html`
+                <div class="justify-end card-actions">
+                  ${footerContent}
+                </div>
+              ` : ""}
+            </div>
+          </div>
+        `;
+    },
+  },  
+  "uix-carousel": {
+    props: {
+      items: {
+        type: Array,
+        defaultValue: []
+      },
+      alignment: {
+        type: String,
+        defaultValue: "start",
+        enum: ["start", "center", "end"]
+      },
+      orientation: {
+        type: String,
+        defaultValue: "horizontal",
+        enum: ["horizontal", "vertical"]
+      },
+      indicatorButtons: {
+        type: Boolean,
+        defaultValue: false
+      },
+      navigationButtons: {
+        type: Boolean,
+        defaultValue: false
+      }
+    },
+    render: ({ items, alignment, orientation, indicatorButtons, navigationButtons }, { html }) => {
+      const orientationClass = orientation === "vertical" ? "carousel-vertical" : "";
+      const alignmentClass = `carousel-${alignment}`;
+      let carouselItems = items.map((item, index) => {
+        return html`
+          <div id="item${index}" class="carousel-item">
+            <img src=${item.src} alt=${item.alt} />
+            ${navigationButtons ? html`
+              <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                <a href="#item${index-1}" class="btn btn-circle">❮</a>
+                <a href="#item${index+1}" class="btn btn-circle">❯</a>
+              </div>
+            ` : ""}
+          </div>
+        `;
+      });
+
+      return html`
+        <div class="carousel ${alignmentClass} ${orientationClass} rounded-box">
+          ${carouselItems}
+        </div>
+        ${indicatorButtons ? html`
+          <div class="flex justify-center w-full py-2 gap-2">
+            ${items.map((_, index) => html`<a href="#item${index}" class="btn btn-xs">${index+1}</a>`)}
+          </div>
+        ` : ""}
+      `;
+    },
+  },
+  "uix-chat-message": {
+    props: {
+      message: { type: Object, defaultValue: { content: "", timestamp: "" } },
+      sender: { type: Object, defaultValue: { name: "", avatar: "" } },
+      alignment: {
+        type: String,
+        defaultValue: "start",
+        enum: ["start", "end"]
+      },
+      variant: {
+        type: String,
+        defaultValue: "primary",
+        enum: Variants
+      }
+    },
+    render: ({ message, sender, alignment, variant }, { html }) => {
+      const bgColorClass = `chat-bubble-${variant}`;
+      return html`
+        <div class="chat chat-${alignment}">
+          ${sender.avatar ? html`
+            <div class="chat-image avatar">
+              <div class="w-10 rounded-full">
+                <img src=${sender.avatar} />
+              </div>
+            </div>
+          ` : ""}
+          <div class="chat-header">
+            ${sender.name}
+            <time class="text-xs opacity-50">${message.timestamp}</time>
+          </div>
+          <div class="chat-bubble ${bgColorClass}">
+            ${message.content}
+          </div>
+        </div>
+      `;
+    }
+  },
+  "uix-chat-bubble": {
+    props: {
+      messages: { type: Array, defaultValue: [] }
+    },
+    render: ({ messages }, { html }) => {
+      return html`
+        <div class="chat-bubble-container">
+          ${messages.map(({ content, timestamp, sender }) => html`
+            <uix-chat-message .message=${{ content, timestamp }} .sender=${sender}></uix-chat-message>
+          `)}
+        </div>
+      `;
+    }
+  },
+  "uix-checkbox": {
+    props: {
+      checked: { type: Boolean, defaultValue: false },
+      indeterminate: { type: Boolean, defaultValue: false },
+      variant: {
+        type: String,
+        defaultValue: "default",
+        enum: Variants
+      },
+      size: {
+        type: String,
+        defaultValue: "md",
+        enum: Sizes
+      },
+      label: { type: String, defaultValue: "Checkbox" },
+      disabled: { type: Boolean, defaultValue: false },
+      change: { type: Function }
+    },
+    render: ({ checked, indeterminate, change, label, disabled, variant, size }, { html }) => {
+      // Handle the indeterminate state.
+      const postRender = (el) => {
+        const inputEl = el.querySelector("input[type=\"checkbox\"]");
+        if (inputEl) inputEl.indeterminate = indeterminate;
+      };
+      
+      return html`
+        <div class="form-control">
+          <label class="cursor-pointer label">
+            <span class="label-text">${label}</span>
+            <input 
+              type="checkbox" 
+              @change=${change} 
+              ?checked=${checked} 
+              ?disabled=${disabled} 
+              class="checkbox checkbox-${variant} checkbox-${size}"
+              @postRender=${postRender}
+            >
+          </label>
+        </div>
+      `;
+    },
+  },
+  "uix-collapse": {
+    props: {
+      method: { type: String, defaultValue: "focus", enum: ["focus", "checkbox", "details"] }, // Method of collapsing.
+      variant: { type: String, defaultValue: "base", enum: Variants }, // Color variant.
+      title: { type: String, defaultValue: "Click to open/close" }, // Title of the collapse.
+      content: { type: String, defaultValue: "Collapse Content" }, // Content of the collapse.
+      icon: { type: String, defaultValue: "", enum: ["", "arrow", "plus"] }, // Icon for the collapse (if any).
+      isOpen: { type: Boolean, defaultValue: false }, // Determines if the collapse is initially open or closed.
+    },
+    render: ({ method, variant, title, content, icon, isOpen }, { html }) => {
+      const baseClass = `collapse bg-${variant}-200`;
+      const iconClass = icon ? `collapse-${icon}` : "";
+      const openClass = isOpen ? "collapse-open" : "";
+      
+      if(method === "focus") {
+        return html`
+          <div tabindex="0" class="${baseClass} ${iconClass} ${openClass}">
+            <div class="collapse-title text-xl font-medium">${title}</div>
+            <div class="collapse-content">${content}</div>
+          </div>
+        `;
+      } else if(method === "checkbox") {
+        return html`
+          <div class="${baseClass}">
+            <input type="checkbox" class="peer" />
+            <div class="collapse-title text-xl font-medium ${iconClass}">${title}</div>
+            <div class="collapse-content">${content}</div>
+          </div>
+        `;
+      } else {
+        return html`
+          <details class="${baseClass}">
+            <summary class="collapse-title text-xl font-medium">${title}</summary>
+            <div class="collapse-content">${content}</div>
+          </details>
+        `;
+      }
+    },
+  },
+  "uix-kbd": {
+    props: {
+      keyContent: { type: String, defaultValue: "Key" },
+      size: { 
+        type: String,
         defaultValue: "md",
         enum: Sizes
       },
     },
-    render: ({ src, alt, size }, { html }) => {
-      const sizeClass = size === "sm" ? "w-6 h-6" : size === "md" ? "w-10 h-10" : "w-14 h-14";
-      return html`<img src=${src} alt=${alt} class="rounded-full ${sizeClass}">`;
+    render: ({ keyContent, size }, { html }) => {
+      const sizeClassMap = {
+        lg: "text-lg px-3 py-2",
+        md: "text-md px-2 py-1", // default
+        sm: "text-sm px-1 py-0.5",
+        xs: "text-xs px-0.5 py-0.25"
+      };
+      const sizeClasses = sizeClassMap[size];
+      const kbdClass = `bg-primary-200 rounded ${sizeClasses}`;
+      return html`<kbd class=${kbdClass}>${keyContent}</kbd>`;
     },
   },
+
+  "uix-countdown": {
+    props: {
+      endDate: { type: String, defaultValue: "YYYY-MM-DD HH:MM:SS" },
+      format: {
+        type: String,
+        defaultValue: "DHMS",
+        enum: Formats
+      }
+    },
+    render: ({ endDate, format }, { html }) => {
+      const calculateCountdown = (end) => {
+        const now = new Date();
+        const endDateTime = new Date(end);
+        const diff = endDateTime - now;
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       
+        return { days, hours, minutes, seconds };
+      };
+
+      const countdown = calculateCountdown(endDate);
+
+      const formattedCountdown = format.split("").map(f => {
+        switch(f) {
+        case "D": return html`<span class="font-mono text-4xl countdown"><span style="--value:${countdown.days};"></span>days</span>`;
+        case "H": return html`<span class="font-mono text-4xl countdown"><span style="--value:${countdown.hours};"></span>hours</span>`;
+        case "M": return html`<span class="font-mono text-4xl countdown"><span style="--value:${countdown.minutes};"></span>minutes</span>`;
+        case "S": return html`<span class="font-mono text-4xl countdown"><span style="--value:${countdown.seconds};"></span>seconds</span>`;
+        default: return "";
+        }
+      });
+
+      return html`
+      <div class="countdown">
+        ${formattedCountdown}
+      </div>
+    `;
+    }
+  },
+  "uix-divider": {
+    props: {
+      thickness: { type: String, defaultValue: "1px" },
+      color: { 
+        type: String, 
+        defaultValue: "primary",
+        enum: Variants,
+      },
+      text: { type: String, defaultValue: "" }, 
+      direction: {
+        type: String,
+        defaultValue: "vertical",
+        enum: Directions
+      },
+      responsiveDirection: {
+        type: String,
+        defaultValue: "",
+        enum: Directions
+      }
+    },
+    
+    render: ({ thickness, color, text, direction, responsiveDirection }, { html }) => {
+      const baseClass = `divider ${direction === "horizontal" ? "divider-horizontal" : ""}`;
+      const responsiveClass = responsiveDirection ? `lg:divider-${responsiveDirection}` : "";
+      const colorClass = `bg-${color}-focus`;
+    
+      return html`
+          <div class="${baseClass} ${responsiveClass} ${colorClass}" style="height: ${thickness};">
+            ${text}
+          </div>
+        `;
+    },
+  },    
+  "uix-drawer": {
+    props: {
+      isOpen: { type: Boolean, defaultValue: false },
+      position: {
+        type: String,
+        defaultValue: "left",
+        enum: Positions
+      },
+      setIsOpen: {
+        type: Function,
+        defaultValue: null
+      }
+    },
+    render: ({ isOpen, position, setIsOpen }, { html }) => {
+      const positionClass = position === "right" ? "drawer-end" : "";
+      const toggleDrawer = () => {
+        if (setIsOpen) {
+          setIsOpen(!isOpen);
+        }
+      };
+
+      return html`
+        <div class="drawer ${positionClass}">
+          <input 
+            id="uix-drawer-toggle" 
+            type="checkbox" 
+            class="drawer-toggle" 
+            ?checked=${isOpen} 
+            @change=${toggleDrawer} />
+          <div class="flex flex-col items-center justify-center drawer-content">
+            <label for="uix-drawer-toggle" class="btn btn-primary drawer-button" @click=${toggleDrawer}>
+              <uix-icon name="menu" class="w-4 h-4 mr-2"></uix-icon>
+              Open drawer
+            </label>
+          </div> 
+          <div class="drawer-side h-full absolute">
+            <label for="uix-drawer-toggle" class="drawer-overlay" @click=${toggleDrawer}></label>
+            <slot></slot>
+          </div>
+        </div>
+      `;
+    },
+  },
+  "uix-dropdown": {
+    props: {
+      label: { type: String, defaultValue: "Click" },
+      items: { type: Array, defaultValue: [] },
+      variant: { 
+        type: String,
+        defaultValue: "base",
+        enum: Variants
+      },
+      method: {
+        type: String,
+        defaultValue: "focus",
+        enum: Methods
+      },
+      position: {
+        type: String,
+        defaultValue: "bottom",
+        enum: Positions
+      },
+      isOpen: { type: Boolean, defaultValue: false },
+      openOnHover: { type: Boolean, defaultValue: false },
+      forceOpen: { type: Boolean, defaultValue: false }
+    },
+    render: ({ label, items, variant, method, position, isOpen, openOnHover, forceOpen, setIsOpen }, { html }) => {
+      const bgColorClass = `bg-${variant}-100`;
+      const textColorClass = `text-${variant}-content`;
+
+      return html`
+        <div class="dropdown ${position === "end" ? "dropdown-end" : ""} ${openOnHover ? "dropdown-hover" : ""} ${forceOpen ? "dropdown-open" : ""}">
+          ${method === "details" ? html`
+            <details class="${bgColorClass} ${textColorClass} mb-32">
+              <summary class="m-1 btn">${label}</summary>
+              <ul class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} rounded-box w-52">
+                ${items.map(item => html`<li><a>${item}</a></li>`)}
+              </ul>
+            </details>
+          ` : html`
+            <label tabindex="0" class="m-1 btn" @click=${()=> setIsOpen(!isOpen)}>${label}</label>
+            ${isOpen ? html`
+              <ul tabindex="0" class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} rounded-box w-52">
+                ${items.map(item => html`<li><a>${item}</a></li>`)}
+              </ul>
+            ` : ""}
+          `}
+        </div>
+      `;
+    },
+  },
+  "uix-modal": {
+    props: {
+      isOpen: { type: Boolean, defaultValue: false },
+      title: { type: String, defaultValue: "Modal Title" },
+      content: { type: String, defaultValue: "Modal Content" },
+      closable: { type: Boolean, defaultValue: true },
+      position: { type: String, defaultValue: "middle", enum: ["top", "middle", "bottom"] },
+      icon: { type: String, defaultValue: "" },
+    },
+    render: ({ isOpen, title, content, closable, setIsOpen, position, icon }, { html }) => {
+      const modalClass = `modal ${ModalPositions[position] || ModalPositions.middle}`;
+  
+      return html`
+        <dialog class=${modalClass} ?open=${isOpen}>
+          ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
+          <div class="modal-title">${title}</div>
+          <div class="modal-content">${content}</div>
+          ${closable ? html`<uix-button @click=${() => setIsOpen(false)}>Close</uix-button>` : ""}
+        </dialog>
+      `;
+    },
+  },  
   "uix-link": {
     props: {
       href: { type: String, defaultValue: "#" },
@@ -48,16 +746,6 @@ export default {
     },
   },
       
-  "uix-kbd": {
-    props: {
-      keyContent: { type: String, defaultValue: "Key" },
-      combo: { type: Boolean, defaultValue: false },
-    },
-    render: ({ keyContent, combo }, { html }) => {
-      const kbdClass = `bg-primary-200 rounded px-2 py-1 ${combo ? "border border-primary-300" : ""}`;
-      return html`<kbd class=${kbdClass}>${keyContent}</kbd>`;
-    },
-  },
       
   "uix-hero": {
     props: {
@@ -75,36 +763,6 @@ export default {
                 </div>
               </div>
             `;
-    },
-  },
-
-  "uix-button": {
-    props: {
-      label: { type: String, defaultValue: "Button" },
-      variant: { type: String, defaultValue: "default", enum: Variants },
-      size: { type: String, defaultValue: "md", enum: Sizes },
-      disabled: { type: Boolean, defaultValue: false }
-    },
-    render: ({ label, variant, size, disabled }, { html }) => {
-      return html`<button class="btn btn-${variant} btn-${size}" ?disabled=${disabled}>${label}</button>`;
-    },
-  },
-
-  "uix-checkbox": {
-    props: {
-      checked: { type: Boolean, defaultValue: false },
-      variant: { type: String, defaultValue: "default", enum: Variants },
-      label: { type: String, defaultValue: "Checkbox" },
-      disabled: { type: Boolean, defaultValue: false },
-      change: {type: Function }
-    },
-    render: ({ checked, onchange, label, disabled, variant }, { html }) => {
-      return html`
-        <label class="flex items-center">
-          <input type="checkbox" @change=${onchange} ?checked=${checked} ?disabled=${disabled} class="checkbox checkbox-${variant}">
-          <span class="ml-2">${label}</span>
-        </label>
-      `;
     },
   },
 
@@ -205,22 +863,6 @@ export default {
     },
   },
 
-  "uix-badge": {
-    props: {
-      content: { type: String, defaultValue: "Text" },
-      variant: { 
-        type: String,
-        defaultValue: "default",
-        enum: Variants        
-      },
-      pill: { type: Boolean, defaultValue: false }
-    },
-    render: ({ content, variant, pill }, { html }) => {
-      const colorClass = `bg-${variant}-focus text-${variant}-content`;
-      const pillClass = pill ? "rounded-full" : "rounded-md";
-      return html`<span class="${colorClass} ${pillClass}">${content}</span>`;
-    },
-  },  
   
   "uix-textarea": {
     props: {
@@ -299,11 +941,13 @@ export default {
   "uix-artboard": {
     props: {
       content: { type: String, defaultValue: "Artboard Content" },
-      width: { type: String, defaultValue: "auto" },
-      height: { type: String, defaultValue: "auto" }
+      size: { type: Number, defaultValue: 1, enum: [1,2,3,4,5,6] },
+      horizontal: { type: Boolean, defaultValue: false }
     },
-    render: ({ content, width, height }, { html }) => {
-      return html`<div style="width: ${width}; height: ${height};" class="border rounded p-2">${content}</div>`;
+    render: ({ content, size, horizontal }, { html }) => {
+      const sizeClass = `phone-${size}`;
+      const orientationClass = horizontal ? "artboard-horizontal" : "";
+      return html`<div class="artboard ${sizeClass} ${orientationClass}">${content}</div>`;
     },
   },
 
@@ -323,7 +967,7 @@ export default {
       direction: { type: String, defaultValue: "vertical", enum: Directions }
     },
     render: ({ direction }, { html }) => {
-      const directionClass = direction === "horizontal" ? "join" : "join-vertical";
+      const directionClass = direction === "horizontal" ? "flex flex-row" : "flex flex-col";
       return html`<div class=${directionClass}><slot></slot></div>`;
     },
   },
@@ -342,55 +986,6 @@ export default {
       `;
     },
   },
-
-  "uix-button-group": {
-    props: {
-      direction: { type: String, defaultValue: "horizontal" }
-    },
-    render: ({ direction }, { html }) => {
-      return html`
-        <div class="button-group-${direction}">
-          <slot></slot> <!-- Expecting uix-button elements here -->
-        </div>
-      `;
-    },
-  },
-
-  "uix-dropdown": {
-    props: {
-      trigger: { type: String, defaultValue: "click" },
-      items: { type: Array, defaultValue: [] }
-    },
-    render: ({ trigger, items }, { html }) => {
-      return html`
-        <div class="dropdown">
-          <uix-button label="Open Dropdown"></uix-button>
-          <div class="dropdown-content">
-            ${items.map(item => html`<a href=${item.href}>${item.label}</a>`)}
-          </div>
-        </div>
-      `;
-    },
-  },
-
-  "uix-bottom-navigation": {
-    props: {
-      items: { type: Array, defaultValue: [] },
-      selectedValue: { type: String, defaultValue: "" }
-    },
-    render: ({ items, selectedValue }, { html }) => {
-      return html`
-        <div class="bottom-navigation">
-          ${items.map(item => html`
-            <uix-button 
-              label=${item.label} 
-              variant=${item.value === selectedValue ? "primary" : "secondary"}
-            ></uix-button>
-          `)}
-        </div>
-      `;
-    },
-  },
   "uix-footer": {
     props: {
       content: { type: String, defaultValue: "Footer Content" }
@@ -401,39 +996,7 @@ export default {
       `;
     },
   },
-  "uix-collapse": {
-    props: {
-      isOpen: { type: Boolean, defaultValue: false },
-      content: { type: String, defaultValue: "Collapse Content" }
-    },
-    render: ({ isOpen, content }, { html }) => {
-      const displayClass = isOpen ? "block" : "hidden";
-      return html`
-        <div class=${displayClass}>
-          ${content}
-        </div>
-      `;
-    },
-  },
 
-  "uix-accordion": {
-    props: {
-      items: { type: Array, defaultValue: [] },
-      multi: { type: Boolean, defaultValue: false }
-    },
-    render: ({ items, multi }, { html }) => {
-      return html`
-        <div class="accordion ${multi ? "accordion-multi" : ""}">
-          ${items.map(item => html`
-            <uix-button label=${item.title}></uix-button>
-            <div class="accordion-content">
-              ${item.content}
-            </div>
-          `)}
-        </div>
-      `;
-    },
-  },
 
   "uix-tabs": {
     props: {
@@ -448,35 +1011,6 @@ export default {
           `)}
           <!-- Corresponding tab contents can be rendered here -->
         </div>
-      `;
-    },
-  },
-
-  "uix-alert": {
-    props: {
-      message: { type: String, defaultValue: "Alert Message" },
-      variant: { type: String, defaultValue: "default", enum: Variants },
-      closable: { type: Boolean, defaultValue: true }
-    },
-    render: ({ message, variant, closable }, { html }) => {
-      return html`
-        <div class="alert alert-${variant}">
-          ${message}
-          ${closable ? html`<uix-button label="&times;" variant="neutral"></uix-button>` : ""}
-        </div>
-      `;
-    },
-  },
-  "uix-breadcrumbs": {
-    props: {
-      items: { type: Array, defaultValue: [] },
-      separator: { type: String, defaultValue: "/" }
-    },
-    render: ({ items, separator }, { html }) => {
-      return html`
-        <nav class="breadcrumbs">
-          ${items.map(item => html`<a href=${item.href}>${item.label}</a><span>${separator}</span>`)}
-        </nav>
       `;
     },
   },
@@ -545,58 +1079,6 @@ export default {
         <div class="window-mockup">
           <div class="title">${title}</div>
           <div class="content">${content}</div>
-        </div>
-      `;
-    },
-  },
-
-  "uix-card": {
-    props: {
-      title: { type: String, defaultValue: "Card Title" },
-      subtitle: { type: String, defaultValue: "Subtitle" },
-      content: { type: String, defaultValue: "Card Content" },
-      image: { type: String, defaultValue: "" },
-      footerContent: { type: String, defaultValue: "" }
-    },
-    render: ({ title, subtitle, content, image, footerContent }, { html }) => {
-      return html`
-        <div class="card">
-          ${image ? html`<img src=${image} alt="Card Image" />` : ""}
-          <h1>${title}</h1>
-          <h2>${subtitle}</h2>
-          <p>${content}</p>
-          <footer>${footerContent}</footer>
-        </div>
-      `;
-    },
-  },
-
-  "uix-carousel": {
-    props: {
-      items: { type: Array, defaultValue: [] },
-      autoplay: { type: Boolean, defaultValue: true },
-      duration: { type: Number, defaultValue: 3000 }
-    },
-    render: ({ items, autoplay, duration }, { html }) => {
-      // A more complex carousel logic with autoplay, animations, etc. would be required here.
-      return html`
-        <div class="carousel">
-          ${items.map(item => html`<div class="slide">${item.content}</div>`)}
-        </div>
-      `;
-    },
-  },
-
-  "uix-chat-bubble": {
-    props: {
-      message: { type: String, defaultValue: "Chat Message" },
-      sender: { type: String, defaultValue: "Sender Name" }
-    },
-    render: ({ message, sender }, { html }) => {
-      return html`
-        <div class="chat-bubble">
-          <strong>${sender}</strong>
-          <p>${message}</p>
         </div>
       `;
     },
@@ -705,24 +1187,7 @@ export default {
         </div>
       `;
     },
-  }, "uix-drawer": {
-    props: {
-      isOpen: { type: Boolean, defaultValue: false },
-      position: {
-        type: String,
-        defaultValue: "left",
-        enum: Positions
-      }
-    },
-    render: ({ isOpen, position }, { html }) => {
-      const positionClass = `drawer-${position}`;
-      return html`
-        <div class=${positionClass} ?open=${isOpen}>
-          <slot></slot>
-        </div>
-      `;
-    },
-  },
+  }, 
 
   "uix-modal": {
     props: {
@@ -749,21 +1214,6 @@ export default {
     },
     render: ({ isVisible, message }, { html }) => {
       return isVisible ? html`<div class="loading">${message}</div>` : html``;
-    },
-  },
-
-  "uix-countdown": {
-    props: {
-      endDate: { type: String, defaultValue: "YYYY-MM-DD HH:MM:SS" },
-      format: {
-        type: String,
-        defaultValue: "DHMS",
-        enum: Formats
-      }
-    },
-    render: ({ endDate, format }, { html }) => {
-      // You'd need to implement countdown logic using `endDate` and format it using `format`.
-      return html`<div class="countdown">${endDate} - ${format}</div>`;
     },
   },
 
