@@ -367,6 +367,9 @@ importers:
 
   apps/todomvc:
     devDependencies:
+      autoprefixer:
+        specifier: ^10.4.15
+        version: 10.4.15(postcss@8.4.29)
       backend:
         specifier: workspace:^
         version: link:../../packages/backend
@@ -376,9 +379,15 @@ importers:
       modern-normalize:
         specifier: ^2.0.0
         version: 2.0.0
+      postcss:
+        specifier: ^8.4.29
+        version: 8.4.29
       scaffold:
         specifier: workspace:^
         version: link:../../packages/scaffold
+      tailwindcss:
+        specifier: ^3.3.3
+        version: 3.3.3
       vite:
         specifier: ^4.4.5
         version: 4.4.9(@types/node@20.5.9)(sass@1.66.1)

@@ -7,10 +7,8 @@ const bootstrapp = (app, { style, onLoad, bootstrappTag = "app-index" } = {}) =>
     onLoad();
   }
   
-  const uixViews = defineViews(uix, { style, i18n: uix.i18n });
+  defineViews(uix, { style, i18n: uix.i18n });
   const views = defineViews(app.views, { style, i18n: app.i18n });
-  
-  console.log({uixViews});
   return views[bootstrappTag];
 };
 
