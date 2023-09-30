@@ -1056,7 +1056,7 @@ export default {
       disabled: { type: Boolean, defaultValue: false },
       rows: { type: Number, defaultValue: 4 },
       variant: { type: String, defaultValue: "bordered", enum: Styles },
-      color: { type: String, defaultValue: "default", enum: Colors },
+      color: { type: String, defaultValue: "default", enum: Variants },
       size: { type: String, defaultValue: "md", enum: Sizes },
       hasFormControl: { type: Boolean, defaultValue: false },
       label: { type: String, defaultValue: null },

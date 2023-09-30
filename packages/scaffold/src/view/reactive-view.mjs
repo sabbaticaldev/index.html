@@ -8,7 +8,9 @@ import CRUD from "../helpers/rest.mjs";
 import DateTimeHelpers from "../helpers/datetime.mjs";
 import StringHelpers from "../helpers/string.mjs";
 
-const syncAdapters = { url, localStorage, sessionStorage };
+const isServer = typeof localStorage === "undefined";
+
+const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
 
 const TYPE_MAP = {
   "boolean": Boolean,
