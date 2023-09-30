@@ -1,7 +1,12 @@
 import { defineModels } from "./reactive-record.mjs";
-import modelList from "./models.mjs";
-import { getAppId, setAppId, getUserId } from "./helpers.mjs";
+import { getAppId, setAppId, getUserId, getModels } from "./helpers.mjs";
 import adapter from "./indexeddb.mjs";
+
+let models;
+(async () => {
+  const modelList = await getModels();
+  models = defineModels(modelList);
+})();
 
 function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
   return {
@@ -40,8 +45,6 @@ const P2P = {
     });
   },
 };
-
-const models = defineModels(modelList);
 
 // Convert the endpoint string to a regular expression.
 const endpointToRegex = (endpoint) => {
