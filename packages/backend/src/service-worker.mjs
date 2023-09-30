@@ -176,9 +176,9 @@ const messageHandlers = {
     const db = adapter.createStore(store, "kv");
     console.log({ value });
     if (value) {
-      await adapter.setItem(key, value, { store: db });
+      await adapter.setItem(key, value, db);
     } else {
-      await adapter.removeItem(key, { store: db });
+      await adapter.removeItem(key, db);
     }
     P2P.postMessage({ type: "OPLOG_WRITE", store, key, value });
 

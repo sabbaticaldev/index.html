@@ -27,18 +27,18 @@ export const getItem = (key, db) => {
   return db("readonly", (store) => promisifyRequest(store.get(key)));
 };
 
-export const setItem = (key, value, config) => {
-  return config.store("readwrite", (store) => {
+export const setItem = (key, value, db) => {
+  return db("readwrite", (store) => {
     store.put(value, key);
     return promisifyRequest(store.transaction);
   });
 };
 
 export const setLastOp = async (key, value, config) => {
-  const { store, propKey } = config;
-  const keys = await startsWith(propKey, store, { index: true, keepKey: true });
-  await removeMany(keys, store);
-  setItem(key, value, { store });
+  const { db, propKey } = config;
+  const keys = await startsWith(propKey, db, { index: true, keepKey: true });
+  await removeMany(keys, db);
+  setItem(key, value, db);
 };
 
 export const setMany = (entries, db) => {
@@ -71,8 +71,8 @@ export const update = (key, updater, db) => {
   );
 };
 
-export const removeItem = (key, config) => {
-  return config.store("readwrite", (store) => {
+export const removeItem = (key, db) => {
+  return db("readwrite", (store) => {
     store.delete(key);
     return promisifyRequest(store.transaction);
   });
