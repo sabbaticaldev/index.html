@@ -1,3 +1,9 @@
+const Positions = ["start", "center", "end", "top", "middle", "bottom", "top", "end", "bottom", "middle", "left", "right", "top-right", "top-left", "bottom-right", "bottom-left"];
+const Resolutions = ["sm", "md", "lg", "xl"];  // Assuming standard TailwindCSS breakpoints
+const NavbarPart = ["start", "center", "end"];
+const Layouts = ["default", "responsive"];
+const Spacings = ["none", "xs", "sm", "md", "lg", "xl", "2xl"];
+const AnimationTypes = ["spinner", "dots", "ring", "ball", "bars", "infinity"];
 const ModalPositions = {
   "top": "modal-top",
   "middle": "modal-middle",
@@ -6,12 +12,10 @@ const ModalPositions = {
 const Methods = ["details", "focus"];
 const Sizes = ["lg", "md", "sm", "xs"];
 const Shapes = ["default", "circle", "square"];
-const Styles = ["ghost", "link", "outline", "glass", "active", "disabled"];
+const Styles = ["ghost", "link", "outline", "glass", "active", "disabled", "bordered"];
 const Triggers = ["click", "hover"];
 const Directions = ["horizontal", "vertical"];
-const Positions = ["top", "end", "bottom", "left", "right", "top-right", "top-left", "bottom-right", "bottom-left"];
 const Formats = ["DHMS", "HMS", "MS", "S"];
-const IndicatorsFormat = ["percentage", "absolute"];
 const Variants = ["primary", "secondary", "accent", "neutral", "base", "info", "success", "warning", "error"];
 
 export default {
@@ -135,7 +139,6 @@ export default {
       `;
     },
   },
-
   "uix-badge": {
     props: {
       content: { type: String, defaultValue: "" },
@@ -166,7 +169,6 @@ export default {
       `;
     },
   },
-
   "uix-icon": {
     props: {
     },
@@ -250,7 +252,7 @@ export default {
   },
   "uix-button": {
     props: {
-      variant: { 
+      color: { 
         type: String,
         defaultValue: "base",
         enum: Variants
@@ -266,7 +268,7 @@ export default {
         defaultValue: "default",
         enum: Shapes
       },
-      style: {
+      variant: {
         type: String,
         defaultValue: "",
         enum: Styles
@@ -276,14 +278,14 @@ export default {
       endIcon: { type: String, defaultValue: "" },
       noAnimation: { type: Boolean, defaultValue: false }
     },
-    render: ({ variant, size, fullWidth, shape, style, isLoading, startIcon, endIcon, noAnimation }, { html }) => {
+    render: ({ color, size, fullWidth, shape, variant, isLoading, startIcon, endIcon, noAnimation }, { html }) => {
       const btnClass = `
         btn
-        ${variant ? `btn-${variant}` : ""}
+        ${color ? `btn-${color}` : ""}
         ${size ? `btn-${size}` : ""}
         ${fullWidth ? "btn-block" : ""}
         ${shape ? `btn-${shape}` : ""}
-        ${style ? `btn-${style}` : ""}
+        ${variant ? `btn-${variant}` : ""}
         ${noAnimation ? "no-animation" : ""}
       `;
 
@@ -546,7 +548,6 @@ export default {
       return html`<kbd class=${kbdClass}>${keyContent}</kbd>`;
     },
   },
-
   "uix-countdown": {
     props: {
       endDate: { type: String, defaultValue: "YYYY-MM-DD HH:MM:SS" },
@@ -734,116 +735,274 @@ export default {
         </dialog>
       `;
     },
-  },  
+  }, 
+  "uix-mask": {
+    props: {
+      variant: { type: String, defaultValue: "squircle" },
+      src: String
+    },
+    render: ({ variant, src }, { html }) => {
+      // Placeholder for masked content, you can expand on this using CSS or JS masking techniques
+      return html`<img class="mask ${variant}" src=${src} />`;
+    },
+  },
+  "uix-loading": {
+    props: {
+      isVisible: { type: Boolean, defaultValue: false },
+      message: { type: String, defaultValue: null },
+      type: { 
+        type: String, 
+        defaultValue: "spinner",
+        enum: AnimationTypes
+      },
+      size: {
+        type: String,
+        defaultValue: "md",
+        enum: Sizes
+      },
+      color: {
+        type: String,
+        defaultValue: "primary",
+        enum: Variants
+      }
+    },
+    render: ({ isVisible, message, type, size, color }, { html }) => {
+      if (!isVisible) return html``;
+
+      // Dynamically construct class strings
+      const loadingClass = `loading loading-${type} loading-${size} text-${color}`;
+
+      return html`
+        <span class="${loadingClass}">
+          ${message ? html`<span>${message}</span>` : ""}
+          ${message && type === "spinner" ? html`<uix-icon name="spinner"></uix-icon>` : ""}
+        </span>
+      `;
+    },
+  },
+  "uix-menu": {
+    props: {
+      items: { type: Array, defaultValue: [] },
+      title: { type: String, defaultValue: null },
+      variant: { type: String, defaultValue: "base", enum: Variants },
+      orientation: { type: String, defaultValue: "vertical", enum: ["vertical", "horizontal"] },
+      size: { type: String, defaultValue: "md", enum: ["xs", "sm", "md", "lg"] },
+      isActive: { type: Boolean, defaultValue: false },
+      isCollapsible: { type: Boolean, defaultValue: false },
+      withIcon: { type: Boolean, defaultValue: false },
+      iconOnly: { type: Boolean, defaultValue: false },
+    },
+    render: ({ items, title, variant, orientation, size, isActive, isCollapsible, withIcon, iconOnly }, { html }) => {
+      const baseClass = `menu ${orientation === "horizontal" ? "menu-horizontal" : ""} bg-${variant}-200 rounded-box`;
+      const sizeClass = `menu-${size}`;
+      const activeClass = isActive ? "active" : "";
+      const iconClass = withIcon ? "<uix-icon></uix-icon>" : "";
+
+      return html`
+        <ul class="${baseClass} ${sizeClass}">
+          ${title ? html`<li class="menu-title">${title}</li>` : ""}
+          ${items.map(item => {
+    if (isCollapsible) {
+      return html`
+                <details open>
+                  <summary>${iconOnly ? iconClass : `${iconClass} ${item.label}`}</summary>
+                  ${item.subItems ? html`
+                    <ul>
+                      ${item.subItems.map(subItem => html`<li><a class="${activeClass}">${subItem.label}</a></li>`)}
+                    </ul>
+                  ` : ""}
+                </details>
+              `;
+    } else {
+      return html`
+                <li><a class="${activeClass}">${iconOnly ? iconClass : `${iconClass} ${item.label}`}</a></li>
+              `;
+    }
+  })}
+        </ul>
+      `;
+    },
+  },
   "uix-link": {
     props: {
       href: { type: String, defaultValue: "#" },
       content: { type: String, defaultValue: "Link" },
       external: { type: Boolean, defaultValue: false },
+      variant: { 
+        type: String, 
+        defaultValue: "primary",
+        enum: Variants
+      },
+      underlineOnHover: { type: Boolean, defaultValue: false },
+      icon: { type: String, defaultValue: null }
     },
-    render: ({ href, content, external }, { html }) => {
-      return html`<a href=${href} class="text-primary-500 hover:underline" ${external ? "target=\"_blank\" rel=\"noopener noreferrer\"" : ""}>${content}</a>`;
+    render: ({ href, content, external, variant, underlineOnHover, icon }, { html }) => {
+      const textColorClass = `text-${variant}-focus`;
+      const hoverUnderlineClass = underlineOnHover ? "hover:underline" : "underline";
+      return html`
+          <a href=${href} 
+             class="${textColorClass} ${hoverUnderlineClass}" 
+             ${external ? "target=\"_blank\" rel=\"noopener noreferrer\"" : ""}
+          >
+            ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
+            ${content}
+          </a>
+        `;
     },
   },
-      
-      
   "uix-hero": {
     props: {
-      title: { type: String, defaultValue: "Hero Title" },
-      subtitle: { type: String, defaultValue: "Subtitle" },
-      backgroundImage: { type: String, defaultValue: "" },
+      title: { type: String, defaultValue: "Hello there" },
+      description: { type: String, defaultValue: "" },
+      variant: { type: String, defaultValue: "base", enum: Variants },
+      imageUrl: { type: String, defaultValue: null },
+      overlayOpacity: { type: Number, defaultValue: 60 }
     },
-    render: ({ title, subtitle, backgroundImage }, { html }) => {
-      const heroClass = backgroundImage ? "bg-cover bg-center" : "bg-primary-200";
+    render: ({ title, description, variant, imageUrl, overlayOpacity }, { html }) => {
+      const bgColorClass = `bg-${variant}-200`;
+      const textColorClass = variant === "neutral" ? "text-neutral-content" : "text-${variant}-content";
       return html`
-              <div class=${heroClass} style="background-image: url('${backgroundImage}');">
-                <div class="text-center p-10">
-                  <h1 class="text-4xl font-bold text-primary-700">${title}</h1>
-                  <p class="text-xl text-primary-600">${subtitle}</p>
-                </div>
-              </div>
-            `;
-    },
-  },
-
-  "uix-toggle": {
-    props: {
-      on: { type: Boolean, defaultValue: false },
-      label: { type: String, defaultValue: "Toggle" },
-      disabled: { type: Boolean, defaultValue: false }
-    },
-    render: ({ on, label, disabled }, { html }) => {
-      return html`
-        <label class="flex items-center">
-          <input type="checkbox" ?checked=${on} ?disabled=${disabled} class="toggle">
-          <span class="ml-2">${label}</span>
-        </label>
+        <div class="hero min-h-[30rem] rounded ${imageUrl ? `style="background-image: url(${imageUrl});"` : bgColorClass}">
+          ${imageUrl ? html`<div class="hero-overlay rounded bg-opacity-${overlayOpacity}"></div>` : ""}
+          <div class="text-center hero-content ${textColorClass}">
+            <div class="max-w-md">
+              <h1 class="mb-5 text-5xl font-bold">${title}</h1>
+              <p class="mb-5">${description}</p>
+              <uix-button variant="${variant}">Get Started</uix-button>
+            </div>
+          </div>
+        </div>
       `;
-    },
-  },
-
-  "uix-mask": {
-    props: {
-      content: { type: String, defaultValue: "Masked Content" }
-    },
-    render: ({ content }, { html }) => {
-      // Placeholder for masked content, you can expand on this using CSS or JS masking techniques
-      return html`<div class="masked">${content}</div>`;
     },
   },
   "uix-radio": {
     props: {
       selectedValue: { type: String, defaultValue: "" },
       options: { type: Array, defaultValue: [] },
-      disabled: { type: Boolean, defaultValue: false }
+      variant: {
+        type: String,
+        defaultValue: "default",
+        enum: Variants
+      },
+      size: {
+        type: String,
+        defaultValue: "md",
+        enum: Sizes
+      },
+      disabled: { type: Boolean, defaultValue: false },
+      withCustomColors: { type: Boolean, defaultValue: false }
     },
-    render: ({ selectedValue, options, disabled }, { html }) => {
+    render: ({ selectedValue, options, disabled, variant, size, withCustomColors }, { html }) => {
+      const radioClass = `radio ${variant !== "default" ? `radio-${variant}` : ""} radio-${size}`;
       return html`
-        ${options.map(option => html`
-          <label class="inline-flex items-center">
-            <input type="radio" class="form-radio" name="radios" value=${option} .checked="${selectedValue === option}" ?disabled=${disabled}>
-            <span class="ml-2">${option}</span>
-          </label>
-        `)}
-      `;
-    },
-  },
-
-  "uix-tooltip": {
-    props: {
-      content: { type: String, defaultValue: "Tooltip Content" },
-      position: { type: String, defaultValue: "top", enum: Directions },
-      trigger: { type: String, defaultValue: "hover", enum: Triggers }
-    },
-    render: ({ content, position, trigger }, { html }) => {
-      // Implementation will vary based on how you're using DaisyUI for tooltips.
-      // Below is a conceptual example.
-      return html`
-        <span data-tooltip=${content} data-tooltip-position=${position} data-tooltip-trigger=${trigger}>
-          ${content}
-        </span>
-      `;
-    },
-  },
-
-  "uix-toast": {
-    props: {
-      message: { type: String, defaultValue: "Toast Message" },
-      duration: { type: Number, defaultValue: 3000 },
-      position: { type: String, defaultValue: "top-right", enum: Positions },
-      variant: { type: String, defaultValue: "default", enum: Variants }
-    },
-    render: ({ message, duration, position, variant }, { html }) => {
-      // Toasts typically are dynamic and might require JavaScript to be displayed/hidden.
-      // Below is a basic structure.
-      return html`
-        <div class="toast toast-${position} toast-${variant}" style="animation-duration: ${duration}ms;">
-          ${message}
+        <div class="flex flex-col">
+          ${options.map(option => html`
+            <div class="form-control">
+              <label class="cursor-pointer label">
+                <span class="label-text">${option.label}</span> 
+                <input type="radio" name="uix-radio-group" class="${radioClass} ${withCustomColors && option.color ? `checked:bg-${option.color}-500` : ""}" value=${option.value} .checked="${selectedValue === option.value}" ?disabled=${disabled}>
+              </label>
+            </div>
+          `)}
         </div>
       `;
     },
   },
-
+  "uix-tooltip": {
+    props: {
+      content: { type: String, defaultValue: "Tooltip Content" },
+      position: { type: String, defaultValue: "top", enum: Positions },
+      trigger: { type: String, defaultValue: "hover", enum: Triggers },
+      isOpen: { type: Boolean, defaultValue: false },
+      variant: { type: String, defaultValue: "primary", enum: Variants },
+    },
+    render: ({ content, position, trigger, isOpen, setIsOpen, color }, { html }) => {
+      const tooltipPositionClass = `tooltip-${position}`;
+      const tooltipColorClass = `tooltip-${color}`;
+      
+      const tooltipClasses = [
+        "tooltip",
+        tooltipPositionClass,
+        isOpen ? "tooltip-open" : "",
+        tooltipColorClass
+      ].join(" ");
+      
+      return html`
+        <div class=${tooltipClasses} data-tip=${content}>
+          <uix-button
+            @on${trigger}=${() => setIsOpen(true)}
+            @onmouseleave=${() => setIsOpen(false)}>
+            ${content}
+          </uix-button>
+        </div>
+      `;
+    },
+  },
+  "uix-toggle": {
+    props: {
+      on: { type: Boolean, defaultValue: false },
+      indeterminate: { type: Boolean, defaultValue: false },
+      variant: {
+        type: String,
+        defaultValue: "default",
+        enum: Variants // ["primary", "secondary", ...]
+      },
+      size: {
+        type: String,
+        defaultValue: "md",
+        enum: Sizes // ["xs", "sm", "md", "lg"]
+      },
+      label: { type: String, defaultValue: "Toggle" },
+      disabled: { type: Boolean, defaultValue: false },
+      change: { type: Function }
+    },
+    render: ({ on, indeterminate, change, label, disabled, variant, size }, { html }) => {
+      // Handle the indeterminate state.
+      const postRender = (el) => {
+        const inputEl = el.querySelector("input[type=\"checkbox\"]");
+        if (inputEl) inputEl.indeterminate = indeterminate;
+      };
+  
+      const variantClass = variant !== "default" ? `toggle-${variant}` : "";
+      const sizeClass = `toggle-${size}`;
+  
+      return html`
+        <div class="form-control w-52">
+          <label class="cursor-pointer label">
+            <span class="label-text">${label}</span>
+            <input 
+              type="checkbox" 
+              @change=${change} 
+              ?checked=${on} 
+              ?disabled=${disabled} 
+              class="toggle ${variantClass} ${sizeClass}"
+              @postRender=${postRender}
+            >
+          </label>
+        </div>
+      `;
+    },
+  },
+  "uix-toast": {
+    props: {
+      content: { type: Array, defaultValue: [{message: "Default Message", type: "info"}] }, // Assuming a list of alerts
+      duration: { type: Number, defaultValue: 3000 },
+      horizontalPosition: { type: String, defaultValue: "end", enum: Positions },
+      verticalPosition: { type: String, defaultValue: "bottom", enum: Positions },
+    },
+    render: ({ content, duration, horizontalPosition, verticalPosition }, { html }) => {
+      return html`
+      <div class="toast toast-${horizontalPosition} toast-${verticalPosition}" style="animation-duration: ${duration}ms;">
+        ${content.map(alert => html`
+          <div class="alert alert-${alert.type}">
+            ${alert.icon ? html`<uix-icon name=${alert.icon}></uix-icon>` : ""}
+            <span>${alert.message}</span>
+          </div>
+        `)}
+      </div>
+    `;
+    },
+  },
   "uix-input": {
     props: {
       value: { type: String, defaultValue: "" },
@@ -851,414 +1010,726 @@ export default {
       disabled: { type: Boolean, defaultValue: false },
       type: { type: String, defaultValue: "text", enum: ["text", "password", "email", "number", "search"] },
       maxLength: { type: Number, defaultValue: null },
-      keyup: { type: Function }
+      keyup: { type: Function },
+      variant: { type: String, defaultValue: "bordered", enum: Styles },
+      color: { type: String, defaultValue: "default", enum: Variants },
+      size: { type: String, defaultValue: "md", enum: Sizes },
+      hasFormControl: { type: Boolean, defaultValue: false },
+      label: { type: String, defaultValue: null },
+      labelAlt: { type: Array, defaultValue: [] }, // For top-right, bottom-left, bottom-right labels
     },
-    render: ({ value, keyup, placeholder, disabled, type, maxLength }, { html }) => {      
-      return html`
-        <input class="input input-${type}"
-        @keyup=${keyup}
-        .value=${value || ""}
-        placeholder=${placeholder} ?disabled=${disabled} type=${type} ${maxLength !== null ? `maxlength=${maxLength}` : ""}>
+    render: ({ value, keyup, placeholder, disabled, type, maxLength, variant, color, size, hasFormControl, label, labelAlt }, { html }) => {      
+      
+      const inputClass = `input ${variant === "bordered" ? "input-bordered" : ""} input-${color} input-${size}`;
+      
+      const inputElem = html`
+        <input 
+          class="${inputClass}" 
+          @keyup=${keyup}
+          .value=${value || ""}
+          placeholder=${placeholder} 
+          ?disabled=${disabled} 
+          type=${type} 
+          ${maxLength !== null ? `maxlength=${maxLength}` : ""}>
       `;
+  
+      if (hasFormControl) {
+        return html`
+          <div class="form-control">
+            ${label ? html`<label class="label"><span class="label-text">${label}</span></label>` : ""}
+            ${inputElem}
+            ${labelAlt && labelAlt.length ? html`<label class="label">
+              ${labelAlt[0] ? html`<span class="label-text-alt">${labelAlt[0]}</span>` : ""}
+              ${labelAlt[1] ? html`<span class="label-text-alt">${labelAlt[1]}</span>` : ""}
+            </label>` : ""}
+          </div>
+        `;
+      }
+  
+      return inputElem;
     },
   },
-
-  
   "uix-textarea": {
     props: {
       value: { type: String, defaultValue: "" },
       placeholder: { type: String, defaultValue: "Enter text" },
       disabled: { type: Boolean, defaultValue: false },
-      rows: { type: Number, defaultValue: 4 }
+      rows: { type: Number, defaultValue: 4 },
+      variant: { type: String, defaultValue: "bordered", enum: Styles },
+      color: { type: String, defaultValue: "default", enum: Colors },
+      size: { type: String, defaultValue: "md", enum: Sizes },
+      hasFormControl: { type: Boolean, defaultValue: false },
+      label: { type: String, defaultValue: null },
+      labelAlt: { type: Array, defaultValue: [] } // For alt labels
     },
-    render: ({ value, placeholder, disabled, rows }, { html }) => {
-      return html`<textarea placeholder=${placeholder} ?disabled=${disabled} rows=${rows}>${value}</textarea>`;
+    render: ({ value, placeholder, disabled, rows, variant, color, size, hasFormControl, label, labelAlt }, { html }) => {
+      
+      const textareaClass = `textarea ${variant === "bordered" ? "textarea-bordered" : ""} textarea-${color} textarea-${size}`;
+  
+      const textareaElem = html`
+        <textarea 
+          class="${textareaClass}" 
+          placeholder=${placeholder} 
+          ?disabled=${disabled} 
+          rows=${rows}>${value}</textarea>
+      `;
+  
+      if (hasFormControl) {
+        return html`
+          <div class="form-control">
+            ${label ? html`<label class="label"><span class="label-text">${label}</span></label>` : ""}
+            ${textareaElem}
+            ${labelAlt && labelAlt.length ? html`
+              <label class="label">
+                ${labelAlt.map(alt => html`<span class="label-text-alt">${alt}</span>`)}
+              </label>` : ""}
+          </div>
+        `;
+      } else {
+        return textareaElem;
+      }
     },
-  },
+  },  
   "uix-file-input": {
     props: {
       acceptedTypes: { type: String, defaultValue: "*/*" },
       multiple: { type: Boolean, defaultValue: false },
-      label: { type: String, defaultValue: "Choose File" }
+      label: { type: String, defaultValue: null },
+      altLabel: { type: String, defaultValue: null },
+      variant: {
+        type: String,
+        defaultValue: "neutral",
+        enum: Variants
+      },
+      bordered: { type: Boolean, defaultValue: false },
+      ghost: { type: Boolean, defaultValue: false },
+      size: {
+        type: String,
+        defaultValue: "md",
+        enum: Sizes
+      },
+      disabled: { type: Boolean, defaultValue: false }
     },
-    render: ({ acceptedTypes, multiple, label }, { html }) => {
-      return html`<input type="file" accept=${acceptedTypes} ?multiple=${multiple} class="bg-neutral p-2 rounded" aria-label=${label} />`;
+    render: ({ acceptedTypes, multiple, label, altLabel, variant, bordered, ghost, size, disabled }, { html }) => {
+      // Base classes
+      let inputClasses = "file-input w-full max-w-xs";
+      
+      // Add variant color
+      if (variant && Variants.includes(variant)) {
+        inputClasses += ` file-input-${variant}`;
+      }
+      
+      // Add bordered style
+      if (bordered) {
+        inputClasses += " file-input-bordered";
+      }
+      
+      // Add ghost style
+      if (ghost) {
+        inputClasses += " file-input-ghost";
+      }
+  
+      // Add size
+      if (size && Sizes.includes(size)) {
+        inputClasses += ` file-input-${size}`;
+      }
+  
+      // Render
+      return html`
+        <div class="form-control w-full max-w-xs">
+          ${label ? html`<label class="label">
+            <span class="label-text">${label}</span>
+            ${altLabel ? html`<span class="label-text-alt">${altLabel}</span>` : ""}
+          </label>` : ""}
+          
+          <input type="file" accept=${acceptedTypes} ?multiple=${multiple} class=${inputClasses} ?disabled=${disabled} />
+          
+          ${altLabel ? html`<label class="label">
+            <span class="label-text-alt">${altLabel}</span>
+          </label>` : ""}
+        </div>
+      `;
     },
   },
-
   "uix-range-slider": {
     props: {
       min: { type: Number, defaultValue: 0 },
       max: { type: Number, defaultValue: 100 },
       step: { type: Number, defaultValue: 1 },
-      value: { type: Number, defaultValue: 50 }
+      value: { type: Number, defaultValue: 50 },
+      variant: {
+        type: String,
+        defaultValue: "neutral",
+        enum: Variants
+      },
+      size: {
+        type: String,
+        defaultValue: "md",
+        enum: Sizes
+      }
     },
-    render: ({ min, max, step, value }, { html }) => {
-      return html`<input type="range" min=${min} max=${max} step=${step} value=${value} class="bg-neutral p-2 rounded" />`;
+    render: ({ min, max, step, value, variant, size }, { html }) => {
+      const colorClass = `range-${variant}`;
+      const sizeClass = `range-${size}`;
+  
+      return html`
+        <input type="range" 
+               min=${min} 
+               max=${max} 
+               step=${step} 
+               value=${value} 
+               class="range ${colorClass} ${sizeClass} max-w-xs"
+        />
+      `;
     },
   },
-
   "uix-select": {
     props: {
       options: { type: Array, defaultValue: [] },
-      selectedValue: { type: String, defaultValue: "" },
-      disabled: { type: Boolean, defaultValue: false }
+      variant: { 
+        type: String, 
+        defaultValue: "base",
+        enum: Variants 
+      },
+      label: { type: String, defaultValue: "" },
+      altLabel: { type: String, defaultValue: "" },
+      size: { 
+        type: String, 
+        defaultValue: "md",
+        enum: Sizes
+      }
     },
-    render: ({ options, selectedValue, disabled }, { html }) => {
+    render: ({ options, variant, label, altLabel, size }, { html }) => {
+      const variantClass = `select-${variant}`;
+      const sizeClass = `select-${size}`;
+      
       return html`
-        <select ?disabled=${disabled} class="form-select">
-          ${options.map(option => html`<option value=${option} ?selected="${option === selectedValue}">${option}</option>`)}
-        </select>
+        <div class="form-control w-full max-w-xs">
+          ${label ? html`<label class="label"><span class="label-text">${label}</span></label>` : ""}
+          <select class="select ${variantClass} ${sizeClass} w-full max-w-xs">
+            ${options.map(option => html`
+              <option>${option}</option>
+            `)}
+          </select>
+          ${altLabel ? html`<label class="label"><span class="label-text-alt">${altLabel}</span></label>` : ""}
+        </div>
       `;
-    },
-  },
-
-  "uix-input-group": {
-    props: {
-      label: { type: String, defaultValue: "Group Label" },
-      direction: { type: String, defaultValue: "horizontal", enum: Directions }
-    },
-    render: ({ label, direction }, { html }) => {
-      const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
-      return html`<div class="flex ${directionClass}"><label class="font-bold">${label}</label><slot></slot></div>`;
-    },
-  },
-
+    }
+  },  
   "uix-rating": {
     props: {
       maxValue: { type: Number, defaultValue: 5 },
-      value: { type: Number, defaultValue: 0 }
+      value: { type: Number, defaultValue: 0 },
+      mask: { type: String, defaultValue: "star", enum: ["star", "heart"] },
+      color: { type: String, defaultValue: "neutral", enum: ["orange", "red", "yellow", "lime", "green"] },
+      size: { type: String, defaultValue: "md", enum: Sizes },
+      allowReset: { type: Boolean, defaultValue: false },
+      half: { type: Boolean, defaultValue: false }
     },
-    render: ({ maxValue, value }, { html }) => {
+    render: ({ maxValue, value, mask, color, size, allowReset, half }, { html }) => {
+      const maskClass = `mask mask-${mask}-${half ? "2" : ""}`;
+      const colorClass = `bg-${color}-400`; // Taking a neutral shade, modify accordingly
+      const sizeClass = `rating-${size}`;
+      
       return html`
-        ${Array.from({ length: maxValue }).map((_, index) => 
-    html`<span class="text-${index < value ? "primary" : "neutral"}">★</span>`
+        <div class="rating ${sizeClass}">
+          ${allowReset ? html`<input type="radio" name="rating" class="rating-hidden" />` : ""}
+          
+          ${Array.from({ length: maxValue * (half ? 2 : 1) }).map((_, index) => 
+    html`
+              <input type="radio" 
+                     name="rating" 
+                     class="${maskClass} ${index < value * (half ? 2 : 1) ? colorClass : ""} ${half && index % 2 == 0 ? "mask-half-1" : ""} ${half && index % 2 != 0 ? "mask-half-2" : ""}" 
+                     ${index < value * (half ? 2 : 1) ? "checked" : ""}
+              />
+            `
   )}
+        </div>
       `;
     },
   },
-
   "uix-artboard": {
     props: {
       content: { type: String, defaultValue: "Artboard Content" },
+      demo: { type: Boolean, defaultValue: false }, // artboard-demo for shadow, radius, and centering
       size: { type: Number, defaultValue: 1, enum: [1,2,3,4,5,6] },
       horizontal: { type: Boolean, defaultValue: false }
     },
-    render: ({ content, size, horizontal }, { html }) => {
+    render: ({ content, size, horizontal, demo }, { html }) => {
       const sizeClass = `phone-${size}`;
       const orientationClass = horizontal ? "artboard-horizontal" : "";
-      return html`<div class="artboard ${sizeClass} ${orientationClass}">${content}</div>`;
+      const demoClass = demo ? "artboard-demo" : "";
+      return html`
+        <div class="artboard ${sizeClass} ${orientationClass} ${demoClass}">
+          ${content}
+        </div>
+      `;
     },
   },
-
   "uix-stack": {
     props: {
-      direction: { type: String, defaultValue: "vertical", enum: Directions },
-      spacing: { type: String, defaultValue: "default" }
+      direction: { 
+        type: String, 
+        defaultValue: "vertical", 
+        enum: Directions 
+      },
+      spacing: { 
+        type: String, 
+        defaultValue: "md",
+        enum: Spacings
+      }
     },
     render: ({ direction, spacing }, { html }) => {
+      // Convert spacing to tailwind class
+      const spacingClass = spacing === "none" ? "" : (direction === "horizontal" ? `space-x-${spacing}` : `space-y-${spacing}`);
       const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
-      return html`<div class="flex ${directionClass} space-${spacing}"><slot></slot></div>`;
+      return html`
+        <div class="stack flex ${directionClass} ${spacingClass}">
+          <slot></slot>
+        </div>
+      `;
     },
   },
-
   "uix-join": {
     props: {
-      direction: { type: String, defaultValue: "vertical", enum: Directions }
+      direction: {
+        type: String,
+        defaultValue: "horizontal",
+        enum: Directions
+      },
+      layout: {
+        type: String,
+        defaultValue: "default",
+        enum: Layouts
+      },
+      customBorder: { type: Boolean, defaultValue: false }
     },
-    render: ({ direction }, { html }) => {
-      const directionClass = direction === "horizontal" ? "flex flex-row" : "flex flex-col";
-      return html`<div class=${directionClass}><slot></slot></div>`;
+    render: ({ direction, layout, customBorder }, { html }) => {
+      // Choose appropriate flex direction
+      const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
+  
+      // Apply responsive behavior if needed
+      const responsiveClass = layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
+  
+      // Apply custom border radii if specified
+      const borderRadiusClass = customBorder ? "rounded-l-full rounded-r-full" : "";
+  
+      return html`
+        <div class="flex ${directionClass} ${responsiveClass} ${borderRadiusClass}">
+          <slot></slot>
+        </div>
+      `;
     },
   },
-  
   "uix-navbar": {
     props: {
-      items: { type: Array, defaultValue: [] },
-      position: { type: String, defaultValue: "top" },
-      sticky: { type: Boolean, defaultValue: false }
+      variant: { 
+        type: String,
+        defaultValue: "base-100",
+        enum: Variants
+      },
+      shadow: { type: Boolean, defaultValue: true },
+      rounded: { type: Boolean, defaultValue: true },
+      part: {
+        type: String,
+        defaultValue: "center",
+        enum: NavbarPart
+      },
+      icon: { type: Boolean, defaultValue: false },
+      menu: { type: Array, defaultValue: [] },
+      title: { type: String, defaultValue: "daisyUI" }
     },
-    render: ({ items, position, sticky }, { html }) => {
+    render: ({ variant, shadow, rounded, part, icon, menu, title }, { html }) => {
+      const baseClasses = `navbar bg-${variant}`;
+      const shadowClass = shadow ? "shadow-xl" : "";
+      const roundedClass = rounded ? "rounded-box" : "";
+      const partClass = `navbar-${part}`;
+      
       return html`
-        <nav class="navbar-${position} ${sticky ? "sticky" : ""}">
-          ${items.map(item => html`<uix-button label=${item.label} variant=${item.variant}></uix-button>`)}
-        </nav>
+        <div class="${baseClasses} ${shadowClass} ${roundedClass}">
+          <div class="${partClass}">
+            ${icon ? html`<uix-icon></uix-icon>` : ""}
+            <a class="btn btn-ghost normal-case text-xl">${title}</a>
+          </div>
+          ${menu.length > 0 ? html`
+            <div class="flex-none gap-2">
+              <ul class="menu menu-horizontal px-1 bg-${variant}">
+                ${menu.map(item => {
+    if (item.submenu) {
+      return html`
+                      <li>
+                        <details>
+                          <summary>${item.label}</summary>
+                          <ul class="p-2 bg-${variant}">
+                            ${item.submenu.map(subItem => html`
+                              <li><a>${subItem.label}</a></li>
+                            `)}
+                          </ul>
+                        </details>
+                      </li>
+                    `;
+    }
+    return html`<li><a>${item.label}</a></li>`;
+  })}
+              </ul>
+            </div>
+          ` : ""}
+        </div>
       `;
     },
   },
   "uix-footer": {
     props: {
-      content: { type: String, defaultValue: "Footer Content" }
+      sections: { 
+        type: Array, 
+        defaultValue: [] // Each section can be a nav, aside, or form
+      },
+      bgColor: { 
+        type: String,
+        defaultValue: "neutral",
+        enum: Variants
+      },
+      textColor: { 
+        type: String,
+        defaultValue: "neutral-content",
+        enum: Variants
+      },
+      alignCenter: { 
+        type: Boolean,
+        defaultValue: false
+      },
+      rounded: { 
+        type: Boolean,
+        defaultValue: false
+      }
     },
-    render: ({ content }, { html }) => {
+    render: ({ sections, bgColor, textColor, alignCenter, rounded }, { html }) => {
+      const bgClass = `bg-${bgColor}`;
+      const textClass = `text-${textColor}`;
+      const alignClass = alignCenter ? "footer-center" : "";
+      const roundedClass = rounded ? "rounded" : "";
+
       return html`
-        <footer class="bg-neutral p-4">${content}</footer>
+        <footer class="p-10 footer ${bgClass} ${textClass} ${alignClass} ${roundedClass}">
+          ${sections.map(section => {
+    switch (section.type) {
+    case "nav":
+      return html`
+                  <nav>
+                    <header class="footer-title">${section.title}</header>
+                    ${section.links.map(link => html`
+                      <a class="link link-hover">${link}</a>
+                    `)}
+                  </nav>
+                `;
+    case "aside":
+      return html`
+                  <aside>
+                    ${section.content}
+                  </aside>
+                `;
+    case "form":
+      return html`
+                  <form>
+                    ${section.content}
+                  </form>
+                `;
+    default:
+      return "";
+    }
+  })}
+        </footer>
       `;
-    },
+    }
   },
-
-
   "uix-tabs": {
     props: {
-      items: { type: Array, defaultValue: [] },
-      selectedValue: { type: String, defaultValue: "" }
+      items: { 
+        type: Array,
+        defaultValue: []
+      },
+      selectedValue: { 
+        type: String, 
+        defaultValue: "" 
+      },
+      styleVariant: {
+        type: String,
+        defaultValue: "default", // can be "boxed", "bordered", "lifted"
+        enum: ["default", "boxed", "bordered", "lifted"]
+      },
+      size: {
+        type: String,
+        defaultValue: "md",
+        enum: Sizes
+      }
     },
-    render: ({ items, selectedValue }, { html }) => {
+    render: ({ items, selectedValue, styleVariant, size }, { html }) => {
+      const getTabClass = (item) => {
+        let baseClass = "tab";
+        if (item.value === selectedValue) baseClass += " tab-active";
+        if (item.disabled) baseClass += " tab-disabled";
+        if (styleVariant === "bordered") baseClass += " tab-bordered";
+        if (styleVariant === "lifted") baseClass += " tab-lifted";
+        if (Sizes.includes(size)) baseClass += ` tab-${size}`;
+        return baseClass;
+      };
+  
       return html`
-        <div class="tabs">
+        <div class=${`tabs ${styleVariant === "boxed" ? "tabs-boxed" : ""}`}>
           ${items.map(item => html`
-            <uix-button label=${item.label} variant=${item.value === selectedValue ? "active" : "default"}></uix-button>
+            <a class=${getTabClass(item)} href=${item.href || "#"} role="tab">
+              ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
+              ${item.label}
+            </a>
           `)}
-          <!-- Corresponding tab contents can be rendered here -->
         </div>
       `;
     },
-  },
-
-  "uix-pagination": {
-    props: {
-      currentPage: { type: Number, defaultValue: 1 },
-      totalPages: { type: Number, defaultValue: 10 }
-    },
-    render: ({ currentPage, totalPages }, { html }) => {
-      // Basic pagination logic, can be improved based on use case
-      return html`
-        <div class="pagination">
-          ${Array.from({ length: totalPages }).map((_, idx) => html`<uix-button label=${idx + 1} variant=${idx + 1 === currentPage ? "primary" : "neutral"}></uix-button>`)}
-        </div>
-      `;
-    },
-  },
-
-  "uix-browser-mockup": {
-    props: {
-      url: { type: String, defaultValue: "https://example.com" },
-      content: { type: String, defaultValue: "Browser Content" }
-    },
-    render: ({ url, content }, { html }) => {
-      return html`
-        <div class="browser-mockup">
-          <div class="url-bar">${url}</div>
-          <div class="content">${content}</div>
-        </div>
-      `;
-    },
-  },
-
-  "uix-code-mockup": {
-    props: {
-      code: { type: String, defaultValue: "Example code" },
-      language: { type: String, defaultValue: "html" }
-    },
-    render: ({ code, language }, { html }) => {
-      // Syntax highlighting and other features can be implemented based on the 'language' prop.
-      return html`
-        <pre class="code-mockup">${code}</pre>
-      `;
-    },
-  },
-
-  "uix-phone-mockup": {
-    props: {
-      content: { type: String, defaultValue: "Phone Content" }
-    },
-    render: ({ content }, { html }) => {
-      return html`
-        <div class="phone-mockup">${content}</div>
-      `;
-    },
-  },
-
-  "uix-window-mockup": {
-    props: {
-      title: { type: String, defaultValue: "Window Title" },
-      content: { type: String, defaultValue: "Window Content" }
-    },
-    render: ({ title, content }, { html }) => {
-      return html`
-        <div class="window-mockup">
-          <div class="title">${title}</div>
-          <div class="content">${content}</div>
-        </div>
-      `;
-    },
-  },
-
-  "uix-menu": {
-    props: {
-      items: { type: Array, defaultValue: [] },
-      horizontal: { type: Boolean, defaultValue: false }
-    },
-    render: ({ items, horizontal }, { html }) => {
-      return html`
-        <ul class="menu ${horizontal ? "horizontal" : "vertical"}">
-          ${items.map(item => html`<li><a href=${item.href}>${item.label}</a></li>`)}
-        </ul>
-      `;
-    },
-  },
-
+  },  
   "uix-progress": {
     props: {
       value: { type: Number, defaultValue: 0 },
-      maxValue: { type: Number, defaultValue: 100 },
-      variant: { type: String, defaultValue: "primary", enum: Variants }
+      max: { type: Number, defaultValue: 100 },
+      width: { type: String, defaultValue: "w-56" },
+      variant: {
+        type: String,
+        defaultValue: "base",
+        enum: Variants
+      }
     },
-    render: ({ value, maxValue, variant }, { html }) => {
+    render: ({ value, max, width, variant }, { html }) => {
+      const progressClass = `progress ${width}`;
+      const variantClass = variant !== "base" ? `progress-${variant}` : "";
       return html`
-        <progress class="progress progress-${variant} w-56" value=${value} max=${maxValue}></progress>
+        <progress class="${progressClass} ${variantClass}" value="${value}" max="${max}"></progress>
       `;
     },
   },
 
   "uix-radial-progress": {
-    // Placeholder for radial progress. Adjust accordingly for real implementation.
     props: {
-      value: { type: Number, defaultValue: 0 },
-      maxValue: { type: Number, defaultValue: 100 },
-      variant: { type: String, defaultValue: "primary", enum: Variants }
+      value: { 
+        type: Number,
+        defaultValue: 0 
+      },
+      size: { 
+        type: String,
+        defaultValue: "4rem" 
+      },
+      thickness: { 
+        type: String,
+        defaultValue: "0.4rem" // 10% of the default size 
+      },
+      variant: { 
+        type: String,
+        defaultValue: "primary",
+        enum: Variants
+      },
+      backgroundColor: { 
+        type: String,
+        defaultValue: "default" // Change this as per need.
+      },
+      borderColor: { 
+        type: String,
+        defaultValue: "default" // Change this as per need.
+      },
+      borderWidth: {
+        type: String,
+        defaultValue: "0px"
+      },
+      textColor: {
+        type: String,
+        defaultValue: "default-content" // Change this as per need.
+      }
     },
-    render: ({ value, maxValue, variant }, { html }) => {
+    render: ({ value, size, thickness, variant, backgroundColor, borderColor, borderWidth, textColor }, { html }) => {
+      const textStyle = `text-${textColor}`;
+      const bgColor = backgroundColor !== "default" ? `bg-${backgroundColor}` : "";
+      const borderColorStyle = borderColor !== "default" ? `border-${borderWidth} border-${borderColor}` : "";
+      const textSizeStyle = `text-${variant}`;
       return html`
-        <progress class="progress progress-${variant} w-56" value=${value} max=${maxValue}></progress>
+        <div 
+          class="radial-progress ${textSizeStyle} ${bgColor} ${borderColorStyle} ${textStyle}"
+          style="--value:${value}; --size:${size}; --thickness:${thickness};"
+        >
+          ${value}%
+        </div>
       `;
     },
   },
-
   "uix-table": {
     props: {
-      columns: { type: Array, defaultValue: [] },
-      data: { type: Array, defaultValue: [] },
-      striped: { type: Boolean, defaultValue: false },
-      variant: { type: String, defaultValue: "primary", enum: Variants }
+      rows: { type: Array, defaultValue: [] },
+      headers: { type: Array, defaultValue: [] },
+      zebra: { type: Boolean, defaultValue: false },
+      pinRows: { type: Boolean, defaultValue: false },
+      pinCols: { type: Boolean, defaultValue: false },
+      size: { 
+        type: String,
+        defaultValue: "md",
+        enum: Sizes
+      }
     },
-    render: ({ columns, data, striped, variant }, { html }) => {
-      const tableClass = striped ? `table table-striped table-${variant}` : `table table-${variant}`;
+    render: ({ rows, headers, zebra, pinRows, pinCols, size }, { html }) => {
+      const tableClass = `table 
+      ${zebra ? "table-zebra" : ""} 
+      ${pinRows ? "table-pin-rows" : ""} 
+      ${pinCols ? "table-pin-cols" : ""} 
+      table-${size}`;
       return html`
-        <table class=${tableClass}>
-          <thead>
-            <tr>
-              ${columns.map(column => html`<th>${column}</th>`)}
-            </tr>
-          </thead>
-          <tbody>
-            ${data.map(row => html`
-              <tr>
-                ${row.map(cell => html`<td>${cell}</td>`)}
-              </tr>
-            `)}
-          </tbody>
-        </table>
-      `;
+          <div class="overflow-x-auto">
+            <table class=${tableClass}>
+              <thead>
+                ${headers.map(header => html`<th>${header}</th>`)}
+              </thead>
+              <tbody>
+                ${rows.map(row => html`
+                  <tr>
+                    ${row.map(cell => html`<td>${cell}</td>`)}
+                  </tr>
+                `)}
+              </tbody>
+            </table>
+          </div>
+        `;
     },
   },
-
   "uix-steps": {
     props: {
-      steps: { type: Array, defaultValue: [] },
-      currentStep: { type: Number, defaultValue: 1 },
-      variant: { type: String, defaultValue: "primary", enum: Variants }
+      steps: {
+        type: Array,
+        defaultValue: [],
+        enum: Variants,
+      }, // Array of objects with properties: label, icon, variant.
+      direction: { type: String, defaultValue: "horizontal", enum: ["horizontal", "vertical", "responsive"] },
+      scrollable: { type: Boolean, defaultValue: false }
     },
-    render: ({ steps, currentStep, variant }, { html }) => {
+    render: ({ steps, direction, scrollable }, { html }) => {
+      const directionClass = direction === "responsive" ? "steps-vertical lg:steps-horizontal" : `steps-${direction}`;
+      const wrapperClass = scrollable ? "overflow-x-auto" : "";
+  
       return html`
-        <div class="steps">
-          ${steps.map((step, index) => {
-    const stepClass = (index + 1) === currentStep ? `step step-${variant}` : "step";
-    return html`<div class=${stepClass}>${step}</div>`;
+        <div class="${wrapperClass}">
+          <ul class="steps ${directionClass}">
+            ${steps.map(step => {
+    const stepClass = `step step-${step.variant}`;
+    return step.icon ? 
+      html`<li class="${stepClass}"><uix-icon name="${step.icon}"></uix-icon> ${step.label}</li>` :
+      html`<li class="${stepClass}">${step.label}</li>`;
   })}
+          </ul>
         </div>
       `;
     },
   },
-
   "uix-swap": {
     props: {
-      value: { type: String, defaultValue: "" },
-      swapValue: { type: String, defaultValue: "" },
-      labelA: { type: String, defaultValue: "A" },
-      labelB: { type: String, defaultValue: "B" },
-      variant: { type: String, defaultValue: "primary", enum: Variants }
+      isActive: { type: Boolean, defaultValue: false },  // To represent the swap-active state
+      isRotated: { type: Boolean, defaultValue: false }, // To represent the swap-rotate effect
+      isFlipped: { type: Boolean, defaultValue: false }, // To represent the swap-flip effect
+      variant: { 
+        type: String,
+        defaultValue: "base",
+        enum: Variants
+      }
     },
-    render: ({ value, swapValue, labelA, labelB, variant }, { html }) => {
+    render: ({ isActive, isRotated, isFlipped, variant }, { html }) => {
+      const baseClass = "swap";
+      const activeClass = isActive ? "swap-active" : "";
+      const rotateClass = isRotated ? "swap-rotate" : "";
+      const flipClass = isFlipped ? "swap-flip" : "";
+      const bgColorClass = `bg-${variant}`;
+
       return html`
-        <div class="p-4 space-x-2">
-          <label>${labelA}: <input class="input input-bordered input-${variant}" type="text" value=${value}></label>
-          <label>${labelB}: <input class="input input-bordered input-${variant}" type="text" value=${swapValue}></label>
-        </div>
+        <label class="${baseClass} ${activeClass} ${rotateClass} ${flipClass}">
+          <input type="checkbox" />
+          <div class="swap-on ${bgColorClass}">ON Content</div>
+          <div class="swap-off ${bgColorClass}">OFF Content</div>
+        </label>
       `;
-    },
-  }, 
-
-  "uix-modal": {
-    props: {
-      isOpen: { type: Boolean, defaultValue: false },
-      title: { type: String, defaultValue: "Modal Title" },
-      content: { type: String, defaultValue: "Modal Content" },
-      closable: { type: Boolean, defaultValue: true }
-    },
-    render: ({ isOpen, title, content, closable, setIsOpen }, { html }) => {
-      return html`
-        <div class="modal" ?open=${isOpen}>
-          <div class="modal-title">${title}</div>
-          <div class="modal-content">${content}</div>
-          ${closable ? html`<uix-button @click=${() => setIsOpen(false)}>Close</uix-button>` : ""}
-        </div>
-      `;
-    },
+    }
   },
-
-  "uix-loading": {
-    props: {
-      isVisible: { type: Boolean, defaultValue: false },
-      message: { type: String, defaultValue: "Loading..." }
-    },
-    render: ({ isVisible, message }, { html }) => {
-      return isVisible ? html`<div class="loading">${message}</div>` : html``;
-    },
-  },
-
+  
   "uix-indicator": {
     props: {
-      value: { type: Number, defaultValue: 0 },
-      maxValue: { type: Number, defaultValue: 100 },
-      format: {
+      content: { type: String, defaultValue: "" },
+      badge: { type: String, defaultValue: "" }, // This can be text, number or any label
+      horizontalPosition: {
         type: String,
-        defaultValue: "percentage",
-        enum: IndicatorsFormat}
+        defaultValue: "end",
+        enum: Positions.filter(p => ["start", "center", "end"].includes(p))
+      },
+      verticalPosition: {
+        type: String,
+        defaultValue: "top",
+        enum: Positions.filter(p => ["top", "middle", "bottom"].includes(p))
+      },
+      responsivePositions: {
+        type: Object,
+        defaultValue: {}
+      },
+      badgeColor: {
+        type: String,
+        defaultValue: "secondary",
+        enum: Variants
+      }
     },
-    render: ({ value, maxValue, format }, { html }) => {
-      const percentageValue = (value / maxValue) * 100;
-      const displayValue = format === "percentage" ? `${percentageValue}%` : `${value}/${maxValue}`;
+    render: ({ content, badge, horizontalPosition, verticalPosition, responsivePositions, badgeColor }, { html }) => {
+      const colorClass = `badge-${badgeColor}`;
+      let positionClasses = `indicator-item indicator-${horizontalPosition} indicator-${verticalPosition}`;
+      
+      Resolutions.forEach(res => {
+        if(responsivePositions[res]) {
+          const { horizontal, vertical } = responsivePositions[res];
+          positionClasses += ` ${res}:indicator-${horizontal} ${res}:indicator-${vertical}`;
+        }
+      });
+  
       return html`
         <div class="indicator">
-          <div class="indicator-bar" style="width: ${percentageValue}%;"></div>
-          <span>${displayValue}</span>
+          <span class="${positionClasses} ${colorClass}">${badge}</span>
+          <div>${content}</div>
         </div>
       `;
     },
   },
-
+  "uix-stat-container": {
+    props: {
+      orientation: { type: String, defaultValue: "horizontal", enum: ["horizontal", "vertical"] },
+      shadow: { type: Boolean, defaultValue: true }
+    },
+    render: ({ orientation, shadow, children }, { html }) => {
+      const orientationClass = orientation === "vertical" ? "stats-vertical" : "";
+      const shadowClass = shadow ? "shadow" : "";
+      return html`
+        <div class="stats ${orientationClass} ${shadowClass}">
+          ${children}
+        </div>
+      `;
+    }
+  },
+  
   "uix-stat": {
     props: {
-      number: { type: String, defaultValue: "0" },
-      description: { type: String, defaultValue: "Description" },
-      color: {
-        type: String,
-        defaultValue: "default",
-        enum: Variants        
-      },
+      title: { type: String, required: true },
+      value: { type: String, required: true },
+      desc: { type: String, required: true },
+      figure: { type: String, defaultValue: null },
+      valueColor: { type: String, defaultValue: "default", enum: Variants },
+      descColor: { type: String, defaultValue: "default", enum: Variants }
     },
-    render: ({ number, description, color }, { html }) => {
-      const numberClass = `text-${color}-content font-bold text-4xl`;
-      const descClass = `text-${color}-content text-lg mt-2`;
-
+    render: ({ title, value, desc, figure, valueColor, descColor }, { html }) => {
+      const valueColorClass = `text-${valueColor}-focus`;
+      const descColorClass = `text-${descColor}-focus`;
       return html`
-        <div class="p-4">
-          <div class=${numberClass}>${number}</div>
-          <div class=${descClass}>${description}</div>
+        <div class="stat">
+          ${figure ? html`<div class="stat-figure ${valueColorClass}">${figure}</div>` : ""}
+          <div class="stat-title">${title}</div>
+          <div class="stat-value ${valueColorClass}">${value}</div>
+          <div class="stat-desc ${descColorClass}">${desc}</div>
         </div>
       `;
-    },
-  },
+    }
+  }
 };
       
