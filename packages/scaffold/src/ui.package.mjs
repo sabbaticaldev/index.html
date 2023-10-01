@@ -1650,6 +1650,32 @@ export default {
         `;
       },
     },
+    "uix-navbar-item": {
+      props: {
+        component: { type: Function, defaultValue: null },
+        label: { type: String, defaultValue: "" },
+        submenu: { type: Array, defaultValue: [] },
+      },
+      render: ({ component, label, submenu, variant }, { html }) => {
+        if (component) {
+          return component;
+        }
+  
+        if (submenu?.length > 0) {
+          return html`
+                  <details>
+                      <summary>${label}</summary>
+                      <ul class="p-2 bg-${variant}">
+                          ${submenu.map(subItem => html`
+                              <li><a>${subItem.label}</a></li>
+                          `)}
+                      </ul>
+                  </details>
+              `;
+        }
+        return html`<li><a>${label}</a></li>`;
+      }
+    },
     "uix-navbar": {
       props: {
         variant: { 
@@ -1674,43 +1700,29 @@ export default {
           "center": "navbar-center",
           "end": "navbar-end"
         };
-
+  
         const baseClasses = `navbar ${BgColor[variant]}`;
         const shadowClass = shadow ? "shadow-xl" : "";
         const roundedClass = rounded ? "rounded-box" : "";
         const partClass = NavbarPartClasses[part];
-      
+  
         return html`
-        <div class="${baseClasses} ${shadowClass} ${roundedClass}">
-          <div class="${partClass}">
-            ${icon ? html`<uix-icon></uix-icon>` : ""}
-            <a class="btn btn-ghost normal-case text-xl">${title}</a>
+          <div class="${baseClasses} ${shadowClass} ${roundedClass}">
+              ${items.length > 0 ? html`
+                  <div class="flex-none gap-2 w-full">
+                      <ul class="menu menu-horizontal items-center justify-between flex flex-row w-full px-1 bg-${variant}">
+                        <li class="${partClass}">
+                          ${icon ? html`<uix-icon></uix-icon>` : ""}
+                          <a class="btn btn-ghost normal-case text-xl">${title}</a>
+                        </li>              
+                          ${items.map(item => html`
+                              <li><uix-navbar-item .label=${item.label} .submenu=${item.submenu} .component=${item.component}></uix-navbar-item></li>
+                          `)}
+                      </ul>
+                  </div>
+              ` : ""}
           </div>
-          ${items.length > 0 ? html`
-            <div class="flex-none gap-2">
-              <ul class="menu menu-horizontal px-1 bg-${variant}">
-                ${items.map(item => {
-    if (item.submenu) {
-      return html`
-                      <li>
-                        <details>
-                          <summary>${item.label}</summary>
-                          <ul class="p-2 bg-${variant}">
-                            ${item.submenu.map(subItem => html`
-                              <li><a>${subItem.label}</a></li>
-                            `)}
-                          </ul>
-                        </details>
-                      </li>
-                    `;
-    }
-    return html`<li><a>${item.label}</a></li>`;
-  })}
-              </ul>
-            </div>
-          ` : ""}
-        </div>
-      `;
+          `;
       },
     },
     "uix-footer": {
@@ -1982,8 +1994,8 @@ export default {
         return html`
         <label class="${baseClass} ${activeClass} ${rotateClass} ${flipClass}">
           <input type="checkbox" />
-          <div class="swap-on ${bgColorClass}">ON Content</div>
-          <div class="swap-off ${bgColorClass}">OFF Content</div>
+          <div class="swap-on ${bgColorClass}">ON</div>
+          <div class="swap-off ${bgColorClass}">OFF</div>
         </label>
       `;
       }
