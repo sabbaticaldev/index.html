@@ -1,26 +1,26 @@
 import indexeddbAdapter from "./indexeddb.mjs";
-import { getAppId, generateId } from "./appstate.mjs";
+import { generateId } from "./appstate.mjs";
 import P2P from "./rtc-worker.mjs";
 
 let oplog;
 let queue;
 
 class ReactiveRecord {
-  async init(properties, name) {
+  async init(properties, name, appId) {
     this.name = name;
     this.adapter = indexeddbAdapter;
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
 
-    this.appId = await getAppId();
+    this.appId = appId;
     this.store = this.adapter.createStore(`${this.appId}_${name}`, "kv");
     // TODO: create one store and reuse it globally
     oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
     queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
   }
 
-  constructor(config, name) {
-    this.init(config, name);
+  constructor(config, name, appId) {
+    this.init(config, name, appId);
   }
 
   async logOp(key, value = null) {
@@ -36,6 +36,7 @@ class ReactiveRecord {
   }
 
   async add(value) {
+    console.log(this.appId);
     const id = value?.id || generateId(this.appId);
     const properties = Object.keys(value);
     if (!properties[this.referenceKey]) {

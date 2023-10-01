@@ -1,3 +1,20 @@
+const AlignX = {
+  "start": "justify-start",
+  "center": "justify-center",
+  "end": "justify-end",
+  "between": "justify-between",
+  "around": "justify-around",
+  "evenly": "justify-evenly"
+};
+
+const AlignY = {
+  "top": "items-start",
+  "middle": "items-center",
+  "bottom": "items-end",
+  "stretch": "items-stretch",
+  "baseline": "items-baseline"
+};
+
 const BgOverlayOpacity = {
   10: "bg-opacity-10",
   20: "bg-opacity-20",
@@ -1702,22 +1719,28 @@ export default {
         defaultValue: "default",
         enum: Layouts
       },
-      customBorder: { type: Boolean, defaultValue: false }
+      customBorder: { type: Boolean, defaultValue: false },
+      alignX: {
+        type: String,
+        enum: Object.keys(AlignX)
+      },
+      alignY: {
+        type: String,
+        enum: Object.keys(AlignY)
+      }
     },
-    render: ({ direction, layout, customBorder }, { html }) => {
-      // Choose appropriate flex direction
+    render: ({ direction, layout, customBorder, alignX, alignY }, { html }) => {
       const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
-      // Apply responsive behavior if needed
       const responsiveClass = layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
-  
-      // Apply custom border radii if specified
       const borderRadiusClass = customBorder ? "rounded-l-full rounded-r-full" : "";
-  
+      const alignXClass = alignX ? "w-full "+ AlignX[alignX] : "";
+      const alignYClass = alignY ? "h-full "+ AlignY[alignY] : "";
+      
       return html`
-        <div class="flex ${directionClass} ${responsiveClass} ${borderRadiusClass}">
-          <slot></slot>
-        </div>
-      `;
+            <div class="flex ${directionClass} ${responsiveClass} ${borderRadiusClass} ${alignXClass} ${alignYClass}">
+                <slot></slot>
+            </div>
+        `;
     },
   },
   "uix-navbar": {

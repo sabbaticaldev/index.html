@@ -67,7 +67,6 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", async (event) => {
   const url = new URL(event.request.url);
-  console.log(url.pathname);
   // If the request doesn't start with /api/, fetch it normally.
   if (!url.pathname.startsWith("/api")) {
     event.respondWith(fetch(event.request));
@@ -96,13 +95,7 @@ self.addEventListener("fetch", async (event) => {
         const { regex } = api[endpointKey];
         return regex.test(request);
       });
-      if (!matchedEndpointKey)
-        return new Response(JSON.stringify({ response: "not found" }), {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      console.log({ request, matchedEndpointKey }, Object.keys(api));
+      if (!matchedEndpointKey) return;
 
       try {
         const {
@@ -183,7 +176,6 @@ const messageHandlers = {
   OPLOG_WRITE: async (data) => {
     const { store, key, value } = data;
     const db = adapter.createStore(store, "kv");
-    console.log({ value });
     if (value) {
       await adapter.setItem(key, value, db);
     } else {
