@@ -1,5 +1,5 @@
 import indexeddbAdapter from "./indexeddb.mjs";
-import { getAppId, generateId } from "./helpers.mjs";
+import { getAppId, generateId } from "./appstate.mjs";
 import P2P from "./rtc-worker.mjs";
 
 let oplog;
@@ -27,11 +27,9 @@ class ReactiveRecord {
     if (oplog) {
       const operationId = generateId(this.appId);
       const propKey = `${this.name}_${key}`;
-      await this.adapter.setItem(`${propKey}_${operationId}`, value, {
-        store: oplog,
-      });
+      await this.adapter.setItem(`${propKey}_${operationId}`, value, oplog);
       await this.adapter.setLastOp(`${propKey}_${operationId}`, value, {
-        store: queue,
+        db: queue,
         propKey,
       });
     }
@@ -64,7 +62,7 @@ class ReactiveRecord {
       properties.map(async (prop) => {
         const propKey = `${prop}_${key}`;
         this.logOp(propKey, "");
-        return await this.adapter.removeItem(propKey, { store: this.store });
+        return await this.adapter.removeItem(propKey, this.store);
       }),
     );
 
@@ -108,7 +106,7 @@ class ReactiveRecord {
       key,
       value,
     });
-    return this.adapter.setItem(key, value, { store: this.store });
+    return this.adapter.setItem(key, value, this.store);
   }
 
   async addMany(values) {
@@ -125,11 +123,11 @@ class ReactiveRecord {
   }
 }
 
-const defineModels = (models) => {
+const defineModels = (models, appId) => {
   return Object.fromEntries(
     Object.entries(models).map(([name, module]) => [
       name,
-      new ReactiveRecord(module, name),
+      new ReactiveRecord(module, name, appId),
     ]),
   );
 };

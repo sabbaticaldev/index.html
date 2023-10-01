@@ -1,28 +1,22 @@
 import { defineModels } from "./reactive-record.mjs";
-import { getAppId, setAppId, getUserId, getModels } from "./helpers.mjs";
+import { getAppId, setAppId, getUserId, getModels } from "./appstate.mjs";
 import adapter from "./indexeddb.mjs";
-
-let models;
-(async () => {
-  const modelList = await getModels();
-  models = defineModels(modelList);
-})();
 
 function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
   return {
-    [`GET /${modelName}`]: function () {
+    [`GET /api/${modelName}`]: function () {
       return this.getMany();
     },
-    [`GET /${modelName}/:id`]: function ({ id }) {
+    [`GET /api/${modelName}/:id`]: function ({ id }) {
       return this.get(id);
     },
-    [`POST /${modelName}`]: function (item) {
+    [`POST /api/${modelName}`]: function (item) {
       return this.add(item);
     },
-    [`DELETE /${modelName}/:id`]: function ({ id }) {
+    [`DELETE /api/${modelName}/:id`]: function ({ id }) {
       return this.remove(id);
     },
-    [`PATCH /${modelName}/:id`]: function ({ id, ...rest }) {
+    [`PATCH /api/${modelName}/:id`]: function ({ id, ...rest }) {
       return this.edit({ id, ...rest });
     },
     ...endpoints,
@@ -55,25 +49,6 @@ const endpointToRegex = (endpoint) => {
     .join("/");
   return new RegExp(`^${method} ${regexPath}$`);
 };
-
-const api = Object.entries(modelList).reduce((acc, [name, model]) => {
-  const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);
-
-  Object.entries(endpoints).forEach(([endpoint, callback]) => {
-    const regex = endpointToRegex(endpoint);
-    acc[String(endpoint)] = {
-      regex,
-      model: models[name],
-      callback,
-    };
-  });
-  return acc;
-}, {});
-
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
-});
-
 const extractPathParams = (endpoint, requestPath, regex) => {
   const paramNames = [...endpoint.matchAll(/:([a-z]+)/gi)].map(
     (match) => match[1],
@@ -85,19 +60,50 @@ const extractPathParams = (endpoint, requestPath, regex) => {
   );
 };
 
+self.addEventListener("activate", (event) => {
+  console.log("Service Worker Activated");
+  event.waitUntil(self.clients.claim()); // Claim any clients immediately, so page reload is not required.
+});
+
 self.addEventListener("fetch", async (event) => {
   const url = new URL(event.request.url);
-  const request = `${event.request.method} ${url.pathname}`;
-
-  const matchedEndpointKey = Object.keys(api).find((endpointKey) => {
-    const { regex } = api[endpointKey];
-    return regex.test(request);
-  });
-
-  if (!matchedEndpointKey) return;
-
+  console.log(url.pathname);
+  // If the request doesn't start with /api/, fetch it normally.
+  if (!url.pathname.startsWith("/api")) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
   event.respondWith(
     (async () => {
+      const appId = await getAppId();
+      const modelList = await getModels(appId);
+      const models = defineModels(modelList, appId);
+      const api = Object.entries(modelList).reduce((acc, [name, model]) => {
+        const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);
+        Object.entries(endpoints).forEach(([endpoint, callback]) => {
+          const regex = endpointToRegex(endpoint);
+          acc[String(endpoint)] = {
+            regex,
+            model: models[name],
+            callback,
+          };
+        });
+        return acc;
+      }, {});
+      const request = `${event.request.method} ${url.pathname}`;
+
+      const matchedEndpointKey = Object.keys(api).find((endpointKey) => {
+        const { regex } = api[endpointKey];
+        return regex.test(request);
+      });
+      if (!matchedEndpointKey)
+        return new Response(JSON.stringify({ response: "not found" }), {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      console.log({ request, matchedEndpointKey }, Object.keys(api));
+
       try {
         const {
           callback,
