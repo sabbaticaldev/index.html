@@ -6,7 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const srcDir = path.join(__dirname, "src");
 const outputDir = "./public";
 
-const modelsMap = {};
+const propsMap = {};
 
 const copyFilesFromSrc = () => {
   const files = fs.readdirSync(srcDir);
@@ -22,21 +22,26 @@ const copyFilesFromSrc = () => {
   });
 };
 
-const exportFile = (type, [name, code]) =>
-  code.replace("export default", `const ${name} = `);
+const updatePropsMap = async (id) => {
+  const module = await import(id);
+  const { views } = module.default;
 
-const writeToFile = (type, map, filePath) => {
-  const exports = `${Object.entries(map)
-    .map((entry) => exportFile(type, entry))
-    .join("\r\n")}
-    const ${type}s = { ${Object.keys(map).join(", ")} };
-    export default ${type}s;`;
+  Object.entries(views).forEach(([componentName, componentDetails]) => {
+    if (componentDetails.props) {
+      propsMap[componentName] = componentDetails.props;
+    }
+  });
+};
+
+const writeToFile = (map, filePath) => {
+  const exports = `const props = ${JSON.stringify(map, null, 2)};
+  export default props;`;
 
   try {
     fs.writeFileSync(filePath, exports, "utf8");
-    console.log(`${type}s.mjs updated successfully!`);
+    console.log("props.mjs updated successfully!");
   } catch (error) {
-    console.error(`Error updating ${type}s.mjs:`, error);
+    console.error("Error updating props.mjs:", error);
   }
 };
 
@@ -47,16 +52,15 @@ const ServiceWorkerPlugin = () => ({
     copyFilesFromSrc();
   },
 
-  transform(code, id) {
+  async transform(code, id) {
     if (id.toString().includes("backend")) {
       const name = path.basename(id, path.extname(id));
       fs.copyFileSync(id, path.join(outputDir, name + ".mjs"));
     }
 
-    if (id.endsWith(".model.js") || id.endsWith(".model.ts")) {
-      const name = path.basename(id, path.extname(id)).replace(".model", "");
-      modelsMap[name] = code;
-      writeToFile("Model", modelsMap, path.join(outputDir, "models.mjs"));
+    if (id.endsWith(".package.mjs") || id.endsWith(".app.mjs")) {
+      await updatePropsMap(id);
+      writeToFile(propsMap, path.join(outputDir, "props.mjs"));
       return code;
     }
   },

@@ -4,12 +4,12 @@ export const events = {};
 
 let dataChannel;
 
-onmessage = (e) => {
-  if ("serviceWorker" in navigator && e.data.bridge) {
-    console.log("send message to service worker");
-    navigator.serviceWorker.controller.postMessage(e.data);
-  }
-};
+// onmessage = (e) => {
+//   if ("serviceWorker" in navigator && e.data.bridge) {
+//     console.log("send message to service worker");
+//     navigator.serviceWorker.controller.postMessage(e.data);
+//   }
+// };
 
 const dispatch = (event) => {
   const message = JSON.parse(event.data);

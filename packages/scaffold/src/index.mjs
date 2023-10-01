@@ -1,5 +1,6 @@
 import { defineViews } from "./view/reactive-view.mjs";
-import uix from "./uix.package.mjs";
+import ui from "./ui.package.mjs";
+import ux from "./ux.package.mjs";
 
 
 const bootstrapp = (app, { style, onLoad, bootstrappTag = "app-index" } = {}) => {  
@@ -8,15 +9,11 @@ const bootstrapp = (app, { style, onLoad, bootstrappTag = "app-index" } = {}) =>
   }
   
   const views = defineViews(app.views, { style, i18n: app.i18n });
-  defineViews(uix, { style, i18n: uix.i18n });
+  defineViews(ux.views, { style, i18n: ux.i18n });
+  defineViews(ui.views, { style, i18n: ui.i18n });
   return views[bootstrappTag];
 };
 
 export default bootstrapp;
-
-
-
-
-
 
 export { bootstrapp };
