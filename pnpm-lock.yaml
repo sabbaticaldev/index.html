@@ -316,55 +316,6 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
 
-  apps/old-todoMVC:
-    devDependencies:
-      '@astrojs/lit':
-        specifier: ^3.0.0
-        version: 3.0.0(@webcomponents/template-shadowroot@0.2.1)(lit@2.8.0)
-      astro:
-        specifier: ^3.0.8
-        version: 3.0.12
-      autoprefixer:
-        specifier: ^10.4.15
-        version: 10.4.15(postcss@8.4.29)
-      backend:
-        specifier: workspace:^
-        version: link:../../packages/backend
-      lit:
-        specifier: ^2.8.0
-        version: 2.8.0
-      modern-normalize:
-        specifier: ^2.0.0
-        version: 2.0.0
-      postcss:
-        specifier: ^8.4.29
-        version: 8.4.29
-      scaffold:
-        specifier: workspace:^
-        version: link:../../packages/scaffold
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.3.3
-
-  apps/todoMVC-vite:
-    dependencies:
-      backend:
-        specifier: workspace:^
-        version: link:../../packages/backend
-      lit:
-        specifier: ^2.8.0
-        version: 2.8.0
-      modern-normalize:
-        specifier: ^2.0.0
-        version: 2.0.0
-      scaffold:
-        specifier: workspace:^
-        version: link:../../packages/scaffold
-    devDependencies:
-      vite:
-        specifier: ^4.4.5
-        version: 4.4.9(@types/node@20.5.9)(sass@1.66.1)
-
   apps/todomvc:
     devDependencies:
       autoprefixer:

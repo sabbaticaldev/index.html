@@ -1,5 +1,26 @@
+const BgOverlayOpacity = {
+  10: "bg-opacity-10",
+  20: "bg-opacity-20",
+  30: "bg-opacity-30",
+  40: "bg-opacity-40",
+  50: "bg-opacity-50",
+  60: "bg-opacity-60",
+  70: "bg-opacity-70",
+  80: "bg-opacity-80",
+  90: "bg-opacity-90",
+  100: "bg-opacity-100",
+};
+
+const DirectionsClasses = {
+  "horizontal": "divider-horizontal",
+  "vertical": ""
+};
+
+
+
+
 const Positions = ["start", "center", "end", "top", "middle", "bottom", "top", "end", "bottom", "middle", "left", "right", "top-right", "top-left", "bottom-right", "bottom-left"];
-const Resolutions = ["sm", "md", "lg", "xl"];  // Assuming standard TailwindCSS breakpoints
+const Resolutions = ["sm", "md", "lg", "xl"];
 const NavbarPart = ["start", "center", "end"];
 const Layouts = ["default", "responsive"];
 const Spacings = ["none", "xs", "sm", "md", "lg", "xl", "2xl"];
@@ -17,6 +38,89 @@ const Triggers = ["click", "hover"];
 const Directions = ["horizontal", "vertical"];
 const Formats = ["DHMS", "HMS", "MS", "S"];
 const Variants = ["primary", "secondary", "accent", "neutral", "base", "info", "success", "warning", "error"];
+const BgColor = {
+  "primary": "bg-primary-200",
+  "secondary": "bg-secondary-200",
+  "accent": "bg-accent-200",
+  "neutral": "bg-neutral-200",
+  "base": "bg-base-200",
+  "info": "bg-info-200",
+  "success": "bg-success-200",
+  "warning": "bg-warning-200",
+  "error": "bg-error-200"
+};
+const CheckboxVariant = {
+  "default": "checkbox-default",
+  "primary": "checkbox-primary",
+  "secondary": "checkbox-secondary",
+  "accent": "checkbox-accent",
+  "neutral": "checkbox-neutral",
+  "base": "checkbox-base",
+  "info": "checkbox-info",
+  "success": "checkbox-success",
+  "warning": "checkbox-warning",
+  "error": "checkbox-error"
+};
+
+const CheckboxSize = {
+  "lg": "checkbox-lg",
+  "md": "checkbox-md",
+  "sm": "checkbox-sm",
+  "xs": "checkbox-xs"
+};
+
+const CollapseBgColor = {
+  "primary": "bg-primary-200",
+  "secondary": "bg-secondary-200",
+  "accent": "bg-accent-200",
+  "neutral": "bg-neutral-200",
+  "base": "bg-base-200",
+  "info": "bg-info-200",
+  "success": "bg-success-200",
+  "warning": "bg-warning-200",
+  "error": "bg-error-200"
+};
+
+const CollapseIcon = {
+  "": "",
+  "arrow": "collapse-arrow",
+  "plus": "collapse-plus"
+};
+const TextColor = {
+  "primary": "text-primary-focus",
+  "secondary": "text-secondary-focus",
+  "accent": "text-accent-focus",
+  "neutral": "text-neutral-focus",
+  "base": "text-base-focus",
+  "info": "text-info-focus",
+  "success": "text-success-focus",
+  "warning": "text-warning-focus",
+  "error": "text-error-focus"
+};
+
+const BorderColor = {
+  "primary": "border-primary-content",
+  "secondary": "border-secondary-content",
+  "accent": "border-accent-content",
+  "neutral": "border-neutral-content",
+  "base": "border-base-content",
+  "info": "border-info-content",
+  "success": "border-success-content",
+  "warning": "border-warning-content",
+  "error": "border-error-content"
+};
+
+const RingColor = {
+  "primary": "ring-primary",
+  "secondary": "ring-secondary",
+  "accent": "ring-accent",
+  "neutral": "ring-neutral",
+  "base": "ring-base",
+  "info": "ring-info",
+  "success": "ring-success",
+  "warning": "ring-warning",
+  "error": "ring-error"
+};
 
 export default {
   "uix-accordion": {
@@ -53,8 +157,8 @@ export default {
       actions: { type: Array, defaultValue: [] }
     },
     render: ({ title, message, variant, closable, actions }, { html }) => {
-      const colorClass = `bg-${variant}-200 border-${variant}-content text-${variant}-focus`;
-      
+      const colorClass = `${BgColor[variant]} ${BorderColor[variant]} ${TextColor[variant]}`;
+    
       return html`
         <div class="alert p-4 rounded shadow-lg ${colorClass}">
           <div class="flex justify-between">
@@ -90,7 +194,7 @@ export default {
     },
     render: ({ src, alt, size, shape, status, placeholder, hasRing, ringColor }, { html }) => {
       const sizeClass = `w-${size}`;
-      const ringClass = hasRing ? `ring ring-${ringColor} ring-offset-base-100 ring-offset-2` : "";
+      const ringClass = hasRing ? `${RingColor[ringColor]} ring-offset-base-100 ring-offset-2` : "";
       let content;
       
       if (src) {
@@ -115,28 +219,28 @@ export default {
     },
     render: ({ avatars, count }, { html }) => {
       return html`
-        <div class="avatar-group -space-x-6">
-          ${avatars.map(avatar => html`
-            <uix-avatar 
-              src=${avatar.src} 
-              alt=${avatar.alt} 
-              size=${avatar.size}
-              shape=${avatar.shape}
-              status=${avatar.status}
-              placeholder=${avatar.placeholder}
-              hasRing=${avatar.hasRing}
-              ringColor=${avatar.ringColor}
-            ></uix-avatar>
-          `)}
-          ${count > 0 ? html`
-            <div class="avatar placeholder">
-              <div class="w-12 bg-neutral-focus text-neutral-content">
-                <span>+${count}</span>
+          <div class="avatar-group -space-x-6">
+            ${avatars.map(avatar => html`
+              <uix-avatar 
+                src=${avatar.src} 
+                alt=${avatar.alt} 
+                size=${avatar.size}
+                shape=${avatar.shape}
+                status=${avatar.status}
+                placeholder=${avatar.placeholder}
+                hasRing=${avatar.hasRing}
+                ringColor=${avatar.ringColor}
+              ></uix-avatar>
+            `)}
+            ${count > 0 ? html`
+              <div class="avatar placeholder">
+                <div class="w-12 bg-neutral-focus text-neutral-content">
+                  <span>+${count}</span>
+                </div>
               </div>
-            </div>
-          ` : ""}
-        </div>
-      `;
+            ` : ""}
+          </div>
+        `;
     },
   },
   "uix-badge": {
@@ -157,8 +261,15 @@ export default {
     },
     render: ({ content, variant, outline, size, icon }, { html }) => {
       const baseClass = "badge";
-      const colorClass = `badge-${variant}${outline ? "-outline" : ""}`;
-      const sizeClass = size !== "md" ? `badge-${size}` : "";
+      const colorClass = BgColor[variant] + (outline ? "-outline" : ""); 
+      const sizeClassMapping = {
+        "lg": "badge-lg",
+        "md": "",
+        "sm": "badge-sm",
+        "xs": "badge-xs"
+      };
+      const sizeClass = sizeClassMapping[size];
+
       const iconRender = icon ? html`<uix-icon name=${icon} class="w-4 h-4 mr-2"></uix-icon>` : "";
 
       return html`
@@ -200,19 +311,23 @@ export default {
       },
       separator: { type: String, defaultValue: "/" }
     },
-    render: ({ items, separator }, { html }) => {
+    render: ({ content, variant, outline, size, icon }, { html }) => {
+      const BadgeSizes = {
+        "lg": "badge-lg",
+        "md": "",
+        "sm": "badge-sm",
+        "xs": "badge-xs"
+      };
+      const baseClass = "badge";
+      const colorClass = BgColor[variant] + (outline ? "-outline" : "");
+      const sizeClass = BadgeSizes[size];
+      const iconRender = icon ? html`<uix-icon name=${icon} class="w-4 h-4 mr-2"></uix-icon>` : "";
+
       return html`
-        <nav class="text-sm breadcrumbs">
-          <ul>
-            ${items.map(item => html`
-              <li>
-                ${item.icon ? html`<uix-icon name=${item.icon} class="w-4 h-4 mr-2"></uix-icon>` : ""}
-                ${item.href ? html`<a href=${item.href}>${item.label}</a>` : item.label}
-              </li>
-              ${items.indexOf(item) !== items.length - 1 ? html`<li>${separator}</li>` : ""}
-            `)}
-          </ul>
-        </nav>
+        <span class="${baseClass} ${colorClass} ${sizeClass}">
+          ${iconRender}
+          ${content}
+        </span>
       `;
     },
   },
@@ -233,13 +348,20 @@ export default {
       }
     },
     render: ({ items, activeIndex, size }, { html }) => {
-      const sizeClass = `btm-nav-${size}`;
+      const BtmClasses = {
+        "md": "btm-nav-md",
+        "sm": "btm-nav-sm",
+        "lg": "btm-nav-lg",
+        "xl": "btm-nav-xl"
+      };
+      const sizeClass = BtmClasses[size];
+
       return html`
         <div class="btm-nav ${sizeClass}">
           ${items.map((item, index) => {
     const isActive = index === activeIndex;
     const activeClass = isActive ? "active" : "";
-    const textColor = `text-${item.color}`;
+    const textColor = TextColor[item.color];
     return html`
               <button class="${textColor} ${activeClass}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">${item.icon}</svg>
@@ -279,13 +401,43 @@ export default {
       noAnimation: { type: Boolean, defaultValue: false }
     },
     render: ({ color, size, fullWidth, shape, variant, isLoading, startIcon, endIcon, noAnimation }, { html }) => {
+      const ButtonColors = {
+        ...BgColor,
+        ...TextColor,
+        ...BorderColor
+      };
+
+      const ButtonSizes = {
+        "lg": "btn-lg",
+        "md": "",
+        "sm": "btn-sm",
+        "xs": "btn-xs"
+      };
+
+      const ButtonShapes = {
+        "default": "",
+        "circle": "btn-circle",
+        "square": "btn-square"
+      };
+
+      const ButtonVariants = {
+        "ghost": "btn-ghost",
+        "link": "btn-link",
+        "outline": "btn-outline",
+        "glass": "btn-glass",
+        "active": "btn-active",
+        "disabled": "btn-disabled",
+        "bordered": "btn-bordered"
+      };
+
       const btnClass = `
         btn
-        ${color ? `btn-${color}` : ""}
-        ${size ? `btn-${size}` : ""}
+
+        ${ButtonColors[color] || ""}
+        ${ButtonSizes[size] || ""}
         ${fullWidth ? "btn-block" : ""}
-        ${shape ? `btn-${shape}` : ""}
-        ${variant ? `btn-${variant}` : ""}
+        ${ButtonShapes[shape] || ""}
+        ${ButtonVariants[variant] || ""}
         ${noAnimation ? "no-animation" : ""}
       `;
 
@@ -314,14 +466,14 @@ export default {
       imageOverlay: { type: Boolean, defaultValue: false }
     },
     render: ({ title, subtitle, content, image, footerContent, variant, compact, bordered, sideImage, centeredContent, imageOverlay }, { html }) => {
-      const bgClass = `bg-${variant}`;
-      const textColorClass = variant === "base-100" ? "" : `text-${variant}-content`;
+      const bgClass = BgColor[variant];
+      const textColorClass = variant === "base-100" ? "" : TextColor[variant];
       const compactClass = compact ? "card-compact" : "";
       const borderedClass = bordered ? "card-bordered" : "";
       const sideImageClass = sideImage ? "card-side" : "";
       const centeredContentClass = centeredContent ? "items-center text-center" : "";
       const imageOverlayClass = imageOverlay ? "image-full" : "";
-  
+
       return html`
           <div class="card ${bgClass} ${textColorClass} ${compactClass} ${borderedClass} ${sideImageClass} ${imageOverlayClass} shadow-xl">
             ${image ? html`
@@ -367,8 +519,19 @@ export default {
       }
     },
     render: ({ items, alignment, orientation, indicatorButtons, navigationButtons }, { html }) => {
-      const orientationClass = orientation === "vertical" ? "carousel-vertical" : "";
-      const alignmentClass = `carousel-${alignment}`;
+      const OrientationClasses = {
+        "horizontal": "",
+        "vertical": "carousel-vertical"
+      };
+  
+      const AlignmentClasses = {
+        "start": "carousel-start",
+        "center": "carousel-center",
+        "end": "carousel-end"
+      };
+  
+      const alignmentClass = AlignmentClasses[alignment];
+      const orientationClass = OrientationClasses[orientation];
       let carouselItems = items.map((item, index) => {
         return html`
           <div id="item${index}" class="carousel-item">
@@ -411,25 +574,31 @@ export default {
       }
     },
     render: ({ message, sender, alignment, variant }, { html }) => {
-      const bgColorClass = `chat-bubble-${variant}`;
+      const bgColorClass = BgColor[variant];
+      const AlignmentClasses = {
+        "start": "chat-start",
+        "end": "chat-end"
+      };
+      const alignmentClass = AlignmentClasses[alignment];
+  
       return html`
-        <div class="chat chat-${alignment}">
-          ${sender.avatar ? html`
-            <div class="chat-image avatar">
-              <div class="w-10 rounded-full">
-                <img src=${sender.avatar} />
+          <div class="${alignmentClass}">
+            ${sender.avatar ? html`
+              <div class="chat-image avatar">
+                <div class="w-10 rounded-full">
+                  <img src=${sender.avatar} />
+                </div>
               </div>
+            ` : ""}
+            <div class="chat-header">
+              ${sender.name}
+              <time class="text-xs opacity-50">${message.timestamp}</time>
             </div>
-          ` : ""}
-          <div class="chat-header">
-            ${sender.name}
-            <time class="text-xs opacity-50">${message.timestamp}</time>
+            <div class="chat-bubble ${bgColorClass}">
+              ${message.content}
+            </div>
           </div>
-          <div class="chat-bubble ${bgColorClass}">
-            ${message.content}
-          </div>
-        </div>
-      `;
+        `;
     }
   },
   "uix-chat-bubble": {
@@ -465,27 +634,29 @@ export default {
       change: { type: Function }
     },
     render: ({ checked, indeterminate, change, label, disabled, variant, size }, { html }) => {
-      // Handle the indeterminate state.
+      const variantClass = CheckboxVariant[variant];
+      const sizeClass = CheckboxSize[size];
+
       const postRender = (el) => {
         const inputEl = el.querySelector("input[type=\"checkbox\"]");
         if (inputEl) inputEl.indeterminate = indeterminate;
       };
-      
+    
       return html`
-        <div class="form-control">
-          <label class="cursor-pointer label">
-            <span class="label-text">${label}</span>
-            <input 
-              type="checkbox" 
-              @change=${change} 
-              ?checked=${checked} 
-              ?disabled=${disabled} 
-              class="checkbox checkbox-${variant} checkbox-${size}"
-              @postRender=${postRender}
-            >
-          </label>
-        </div>
-      `;
+      <div class="form-control">
+        <label class="cursor-pointer label">
+          <span class="label-text">${label}</span>
+          <input 
+            type="checkbox" 
+            @change=${change} 
+            ?checked=${checked} 
+            ?disabled=${disabled} 
+            class="checkbox ${variantClass} ${sizeClass}"
+            @postRender=${postRender}
+          >
+        </label>
+      </div>
+    `;
     },
   },
   "uix-collapse": {
@@ -498,8 +669,8 @@ export default {
       isOpen: { type: Boolean, defaultValue: false }, // Determines if the collapse is initially open or closed.
     },
     render: ({ method, variant, title, content, icon, isOpen }, { html }) => {
-      const baseClass = `collapse bg-${variant}-200`;
-      const iconClass = icon ? `collapse-${icon}` : "";
+      const baseClass = `collapse ${CollapseBgColor[variant]}`;
+      const iconClass = CollapseIcon[icon];
       const openClass = isOpen ? "collapse-open" : "";
       
       if(method === "focus") {
@@ -612,9 +783,9 @@ export default {
     },
     
     render: ({ thickness, color, text, direction, responsiveDirection }, { html }) => {
-      const baseClass = `divider ${direction === "horizontal" ? "divider-horizontal" : ""}`;
+      const baseClass = `divider ${DirectionsClasses[direction]}`;
       const responsiveClass = responsiveDirection ? `lg:divider-${responsiveDirection}` : "";
-      const colorClass = `bg-${color}-focus`;
+      const colorClass = BgColor[color];
     
       return html`
           <div class="${baseClass} ${responsiveClass} ${colorClass}" style="height: ${thickness};">
@@ -690,9 +861,8 @@ export default {
       forceOpen: { type: Boolean, defaultValue: false }
     },
     render: ({ label, items, variant, method, position, isOpen, openOnHover, forceOpen, setIsOpen }, { html }) => {
-      const bgColorClass = `bg-${variant}-100`;
-      const textColorClass = `text-${variant}-content`;
-
+      const bgColorClass = BgColor[variant];
+      const textColorClass = TextColor[variant];
       return html`
         <div class="dropdown ${position === "end" ? "dropdown-end" : ""} ${openOnHover ? "dropdown-hover" : ""} ${forceOpen ? "dropdown-open" : ""}">
           ${method === "details" ? html`
@@ -768,9 +938,22 @@ export default {
     },
     render: ({ isVisible, message, type, size, color }, { html }) => {
       if (!isVisible) return html``;
-
-      // Dynamically construct class strings
-      const loadingClass = `loading loading-${type} loading-${size} text-${color}`;
+      const Loading = {
+        "spinner": "loading loading-spinner",
+        "dots": "loading loading-dots",
+        "ring": "loading loading-ring",
+        "ball": "loading loading-ball",
+        "bars": "loading loading-bars",
+        "infinity": "loading loading-infinity"
+      };
+      const LoadingSize = {
+        "lg": "loading-lg",
+        "md": "loading-md",
+        "sm": "loading-sm",
+        "xs": "loading-xs"
+      };
+      
+      const loadingClass = `${Loading[type]} ${LoadingSize[size]} ${TextColor[color]}`;
 
       return html`
         <span class="${loadingClass}">
@@ -793,13 +976,21 @@ export default {
       iconOnly: { type: Boolean, defaultValue: false },
     },
     render: ({ items, title, variant, orientation, size, isActive, isCollapsible, withIcon, iconOnly }, { html }) => {
-      const baseClass = `menu ${orientation === "horizontal" ? "menu-horizontal" : ""} bg-${variant}-200 rounded-box`;
-      const sizeClass = `menu-${size}`;
+      const MenuSize = {
+        "lg": "menu-lg",
+        "md": "menu-md",
+        "sm": "menu-sm",
+        "xs": "menu-xs"
+      };
+      
+      const baseClass = `menu ${orientation === "horizontal" ? "menu-horizontal" : ""} rounded-box`;
+      const bgColorClass = BgColor[variant];
+      const sizeClass = MenuSize[size];
       const activeClass = isActive ? "active" : "";
       const iconClass = withIcon ? "<uix-icon></uix-icon>" : "";
 
       return html`
-        <ul class="${baseClass} ${sizeClass}">
+        <ul class="${baseClass} ${sizeClass} ${bgColorClass}">
           ${title ? html`<li class="menu-title">${title}</li>` : ""}
           ${items.map(item => {
     if (isCollapsible) {
@@ -837,7 +1028,8 @@ export default {
       icon: { type: String, defaultValue: null }
     },
     render: ({ href, content, external, variant, underlineOnHover, icon }, { html }) => {
-      const textColorClass = `text-${variant}-focus`;
+      const textColorClass = TextColor[variant];
+      
       const hoverUnderlineClass = underlineOnHover ? "hover:underline" : "underline";
       return html`
           <a href=${href} 
@@ -859,11 +1051,11 @@ export default {
       overlayOpacity: { type: Number, defaultValue: 60 }
     },
     render: ({ title, description, variant, imageUrl, overlayOpacity }, { html }) => {
-      const bgColorClass = `bg-${variant}-200`;
-      const textColorClass = variant === "neutral" ? "text-neutral-content" : "text-${variant}-content";
+      const bgColorClass = BgColor[variant];
+      const textColorClass = TextColor[variant];
       return html`
         <div class="hero min-h-[30rem] rounded ${imageUrl ? `style="background-image: url(${imageUrl});"` : bgColorClass}">
-          ${imageUrl ? html`<div class="hero-overlay rounded bg-opacity-${overlayOpacity}"></div>` : ""}
+          ${imageUrl ? html`<div class="hero-overlay rounded ${BgOverlayOpacity[overlayOpacity]}"></div>` : ""}
           <div class="text-center hero-content ${textColorClass}">
             <div class="max-w-md">
               <h1 class="mb-5 text-5xl font-bold">${title}</h1>
@@ -893,7 +1085,26 @@ export default {
       withCustomColors: { type: Boolean, defaultValue: false }
     },
     render: ({ selectedValue, options, disabled, variant, size, withCustomColors }, { html }) => {
-      const radioClass = `radio ${variant !== "default" ? `radio-${variant}` : ""} radio-${size}`;
+      const RadioVariantClass = {
+        "primary": "radio-primary",
+        "secondary": "radio-secondary",
+        "accent": "radio-accent",
+        "neutral": "radio-neutral",
+        "base": "radio-base",
+        "info": "radio-info",
+        "success": "radio-success",
+        "warning": "radio-warning",
+        "error": "radio-error"
+      };
+
+      const RadioSizeClass = {
+        "md": "radio-md",
+        "sm": "radio-sm",
+        "lg": "radio-lg",
+        "xs": "radio-xs"
+      };
+      const radioClass = `radio ${RadioVariantClass[variant] || ""} ${RadioSizeClass[size]}`;
+   
       return html`
         <div class="flex flex-col">
           ${options.map(option => html`
@@ -945,26 +1156,46 @@ export default {
       variant: {
         type: String,
         defaultValue: "default",
-        enum: Variants // ["primary", "secondary", ...]
+        enum: Variants
       },
       size: {
         type: String,
         defaultValue: "md",
-        enum: Sizes // ["xs", "sm", "md", "lg"]
+        enum: Sizes 
       },
       label: { type: String, defaultValue: "Toggle" },
       disabled: { type: Boolean, defaultValue: false },
       change: { type: Function }
     },
     render: ({ on, indeterminate, change, label, disabled, variant, size }, { html }) => {
+      const ToggleVariantClass = {
+        "primary": "toggle-primary",
+        "secondary": "toggle-secondary",
+        "accent": "toggle-accent",
+        "neutral": "toggle-neutral",
+        "base": "toggle-base",
+        "info": "toggle-info",
+        "success": "toggle-success",
+        "warning": "toggle-warning",
+        "error": "toggle-error"
+      };
+      
+      const ToggleSizeClass = {
+        "md": "toggle-md",
+        "sm": "toggle-sm",
+        "lg": "toggle-lg",
+        "xs": "toggle-xs"
+      };
+
+
       // Handle the indeterminate state.
       const postRender = (el) => {
         const inputEl = el.querySelector("input[type=\"checkbox\"]");
         if (inputEl) inputEl.indeterminate = indeterminate;
       };
   
-      const variantClass = variant !== "default" ? `toggle-${variant}` : "";
-      const sizeClass = `toggle-${size}`;
+      const variantClass = ToggleVariantClass[variant] || "";
+      const sizeClass = ToggleSizeClass[size];
   
       return html`
         <div class="form-control w-52">
@@ -991,10 +1222,39 @@ export default {
       verticalPosition: { type: String, defaultValue: "bottom", enum: Positions },
     },
     render: ({ content, duration, horizontalPosition, verticalPosition }, { html }) => {
+      const ToastPositionHorizontalClass = {
+        "start": "toast-start",
+        "center": "toast-center",
+        "end": "toast-end",
+        "left": "toast-left",
+        "right": "toast-right",
+        "top-right": "toast-top-right",
+        "top-left": "toast-top-left",
+        "bottom-right": "toast-bottom-right",
+        "bottom-left": "toast-bottom-left"
+      };
+
+      const ToastPositionVerticalClass = {
+        "top": "toast-top",
+        "middle": "toast-middle",
+        "bottom": "toast-bottom",
+        "top-end": "toast-top-end",
+        "bottom-middle": "toast-bottom-middle"
+      };
+      const AlertTypes = {
+        "info": "alert-info",
+        "success": "alert-success",
+        "warning": "alert-warning",
+        "error": "alert-error"
+      };
+      
+      const horizontalClass = ToastPositionHorizontalClass[horizontalPosition] || "";
+      const verticalClass = ToastPositionVerticalClass[verticalPosition] || "";
+   
       return html`
-      <div class="toast toast-${horizontalPosition} toast-${verticalPosition}" style="animation-duration: ${duration}ms;">
+      <div class="toast ${horizontalClass} ${verticalClass}" style="animation-duration: ${duration}ms;">
         ${content.map(alert => html`
-          <div class="alert alert-${alert.type}">
+          <div class="alert ${AlertTypes[item.type || "info"]}">
             ${alert.icon ? html`<uix-icon name=${alert.icon}></uix-icon>` : ""}
             <span>${alert.message}</span>
           </div>
@@ -1011,17 +1271,45 @@ export default {
       type: { type: String, defaultValue: "text", enum: ["text", "password", "email", "number", "search"] },
       maxLength: { type: Number, defaultValue: null },
       keyup: { type: Function },
-      variant: { type: String, defaultValue: "bordered", enum: Styles },
-      color: { type: String, defaultValue: "default", enum: Variants },
+      style: { type: String, defaultValue: "bordered", enum: Styles },
+      variant: { type: String, defaultValue: "default", enum: Variants },
       size: { type: String, defaultValue: "md", enum: Sizes },
       hasFormControl: { type: Boolean, defaultValue: false },
       label: { type: String, defaultValue: null },
       labelAlt: { type: Array, defaultValue: [] }, // For top-right, bottom-left, bottom-right labels
     },
-    render: ({ value, keyup, placeholder, disabled, type, maxLength, variant, color, size, hasFormControl, label, labelAlt }, { html }) => {      
+    render: ({ value, keyup, placeholder, disabled, type, maxLength, style, variant, size, hasFormControl, label, labelAlt }, { html }) => {      
+      const InputVariantClass = {
+        "primary": "input-primary",
+        "secondary": "input-secondary",
+        "accent": "input-accent",
+        "neutral": "input-neutral",
+        "base": "input-base",
+        "info": "input-info",
+        "success": "input-success",
+        "warning": "input-warning",
+        "error": "input-error"
+      };
+
+      const InputStyleClass = {
+        "ghost": "input-ghost",
+        "link": "input-link",
+        "outline": "input-outline",
+        "glass": "input-glass",
+        "active": "input-active",
+        "disabled": "input-disabled",
+        "bordered": "input-bordered"
+      };
       
-      const inputClass = `input ${variant === "bordered" ? "input-bordered" : ""} input-${color} input-${size}`;
-      
+      const InputSizeClass = {
+        "lg": "input-lg",
+        "md": "input-md",
+        "sm": "input-sm",
+        "xs": "input-xs"
+      };
+
+      const inputClass = `${InputStyleClass[style] || ""} ${InputVariantClass[variant] || ""} ${InputSizeClass[size]}`;
+   
       const inputElem = html`
         <input 
           class="${inputClass}" 
@@ -1111,12 +1399,30 @@ export default {
       disabled: { type: Boolean, defaultValue: false }
     },
     render: ({ acceptedTypes, multiple, label, altLabel, variant, bordered, ghost, size, disabled }, { html }) => {
+      
+      const FileInputColor = {
+        "primary": "file-input-primary",
+        "secondary": "file-input-secondary",
+        "accent": "file-input-accent",
+        "neutral": "file-input-neutral",
+        "base": "file-input-base",
+        "info": "file-input-info",
+        "success": "file-input-success",
+        "warning": "file-input-warning",
+        "error": "file-input-error"
+      };
+      const FileInputSize = {
+        "lg": "file-input-lg",
+        "md": "file-input-md",
+        "sm": "file-input-sm",
+        "xs": "file-input-xs"
+      };
       // Base classes
       let inputClasses = "file-input w-full max-w-xs";
       
       // Add variant color
       if (variant && Variants.includes(variant)) {
-        inputClasses += ` file-input-${variant}`;
+        inputClasses += FileInputColor[variant];
       }
       
       // Add bordered style
@@ -1131,7 +1437,7 @@ export default {
   
       // Add size
       if (size && Sizes.includes(size)) {
-        inputClasses += ` file-input-${size}`;
+        inputClasses += FileInputSize(size);
       }
   
       // Render
@@ -1169,8 +1475,27 @@ export default {
       }
     },
     render: ({ min, max, step, value, variant, size }, { html }) => {
-      const colorClass = `range-${variant}`;
-      const sizeClass = `range-${size}`;
+      const RangeColor = {
+        "primary": "range-primary",
+        "secondary": "range-secondary",
+        "accent": "range-accent",
+        "neutral": "range-neutral",
+        "base": "range-base",
+        "info": "range-info",
+        "success": "range-success",
+        "warning": "range-warning",
+        "error": "range-error"
+      };
+
+      const RangeSize = {
+        "lg": "range-lg",
+        "md": "range-md",
+        "sm": "range-sm",
+        "xs": "range-xs"
+      };
+
+      const colorClass = RangeColor[variant];
+      const sizeClass = RangeSize[size];
   
       return html`
         <input type="range" 
@@ -1200,8 +1525,25 @@ export default {
       }
     },
     render: ({ options, variant, label, altLabel, size }, { html }) => {
-      const variantClass = `select-${variant}`;
-      const sizeClass = `select-${size}`;
+      const SelectColors = {
+        "primary": "select-primary",
+        "secondary": "select-secondary",
+        "accent": "select-accent",
+        "neutral": "select-neutral",
+        "base": "select-base",
+        "info": "select-info",
+        "success": "select-success",
+        "warning": "select-warning",
+        "error": "select-error"
+      };
+      const SelectSizes = {
+        "lg": "select-lg",
+        "md": "select-md",
+        "sm": "select-sm",
+        "xs": "select-xs"
+      };      
+      const variantClass =  SelectColors[variant];
+      const sizeClass = SelectSizes[size];
       
       return html`
         <div class="form-control w-full max-w-xs">
@@ -1217,6 +1559,7 @@ export default {
     }
   },  
   "uix-rating": {
+    // TODO: expand daisyUI tags as the JIT can't get dynamic ones
     props: {
       maxValue: { type: Number, defaultValue: 5 },
       value: { type: Number, defaultValue: 0 },
@@ -1227,9 +1570,17 @@ export default {
       half: { type: Boolean, defaultValue: false }
     },
     render: ({ maxValue, value, mask, color, size, allowReset, half }, { html }) => {
-      const maskClass = `mask mask-${mask}-${half ? "2" : ""}`;
-      const colorClass = `bg-${color}-400`; // Taking a neutral shade, modify accordingly
-      const sizeClass = `rating-${size}`;
+      const RatingSizeClasses = {
+        "lg": "rating-lg",
+        "md": "rating-md",
+        "sm": "rating-sm",
+        "xs": "rating-xs"
+      };    
+      const maskClass =  mask === "star" ? half ? "mask-star-2" : 
+        "mask-star" : half ? "mask-heart-2" : 
+        "mask-heart";
+      const colorClass = BgColor[color];
+      const sizeClass = RatingSizeClasses[size];
       
       return html`
         <div class="rating ${sizeClass}">
@@ -1239,7 +1590,7 @@ export default {
     html`
               <input type="radio" 
                      name="rating" 
-                     class="${maskClass} ${index < value * (half ? 2 : 1) ? colorClass : ""} ${half && index % 2 == 0 ? "mask-half-1" : ""} ${half && index % 2 != 0 ? "mask-half-2" : ""}" 
+                     class="mask ${maskClass} ${index < value * (half ? 2 : 1) ? colorClass : ""} ${half && index % 2 == 0 ? "mask-half-1" : ""} ${half && index % 2 != 0 ? "mask-half-2" : ""}" 
                      ${index < value * (half ? 2 : 1) ? "checked" : ""}
               />
             `
@@ -1249,6 +1600,7 @@ export default {
     },
   },
   "uix-artboard": {
+    // TODO: expand daisyUI tags as the JIT can't get dynamic ones
     props: {
       content: { type: String, defaultValue: "Artboard Content" },
       demo: { type: Boolean, defaultValue: false }, // artboard-demo for shadow, radius, and centering
@@ -1256,7 +1608,15 @@ export default {
       horizontal: { type: Boolean, defaultValue: false }
     },
     render: ({ content, size, horizontal, demo }, { html }) => {
-      const sizeClass = `phone-${size}`;
+      const PhoneSize = {
+        1: "phone-1",
+        2: "phone-2",
+        3: "phone-3",
+        4: "phone-4",
+        5: "phone-5",
+        6: "phone-6",
+      };
+      const sizeClass = PhoneSize[size];
       const orientationClass = horizontal ? "artboard-horizontal" : "";
       const demoClass = demo ? "artboard-demo" : "";
       return html`
@@ -1280,8 +1640,19 @@ export default {
       }
     },
     render: ({ direction, spacing }, { html }) => {
-      // Convert spacing to tailwind class
-      const spacingClass = spacing === "none" ? "" : (direction === "horizontal" ? `space-x-${spacing}` : `space-y-${spacing}`);
+      const SpacingXClasses = {
+        "lg": "space-x-lg",
+        "md": "space-x-md",
+        "sm": "space-x-sm",
+        "xs": "space-x-xs"
+      };
+      const SpacingYClasses = {
+        "lg": "space-y-lg",
+        "md": "space-y-md",
+        "sm": "space-y-sm",
+        "xs": "space-y-xs"
+      };
+      const spacingClass = spacing === "none" ? "" : (direction === "horizontal" ? SpacingXClasses[spacing] :  SpacingYClasses[spacing]);
       const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
       return html`
         <div class="stack flex ${directionClass} ${spacingClass}">
@@ -1305,9 +1676,37 @@ export default {
       customBorder: { type: Boolean, defaultValue: false }
     },
     render: ({ direction, layout, customBorder }, { html }) => {
+  
+      // Apply responsive behavior if needed
+      const responsiveClass = layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
+  
+      // Apply custom border radii if specified
+      const borderRadiusClass = customBorder ? "rounded-l-full rounded-r-full" : "";
+  
+      return html`
+        <div class="join join-${direction} ${responsiveClass} ${borderRadiusClass}">
+          <slot></slot>
+        </div>
+      `;
+    },
+  },
+  "uix-list": {
+    props: {
+      direction: {
+        type: String,
+        defaultValue: "horizontal",
+        enum: Directions
+      },
+      layout: {
+        type: String,
+        defaultValue: "default",
+        enum: Layouts
+      },
+      customBorder: { type: Boolean, defaultValue: false }
+    },
+    render: ({ direction, layout, customBorder }, { html }) => {
       // Choose appropriate flex direction
       const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
-  
       // Apply responsive behavior if needed
       const responsiveClass = layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
   
@@ -1340,10 +1739,16 @@ export default {
       title: { type: String, defaultValue: "daisyUI" }
     },
     render: ({ variant, shadow, rounded, part, icon, menu, title }, { html }) => {
-      const baseClasses = `navbar bg-${variant}`;
+      const NavbarPartClasses = {
+        "start": "navbar-start", 
+        "center": "navbar-center",
+        "end": "navbar-end"
+      };
+
+      const baseClasses = `navbar ${BgColor[variant]}`;
       const shadowClass = shadow ? "shadow-xl" : "";
       const roundedClass = rounded ? "rounded-box" : "";
-      const partClass = `navbar-${part}`;
+      const partClass = NavbarPartClasses[part];
       
       return html`
         <div class="${baseClasses} ${shadowClass} ${roundedClass}">
@@ -1404,8 +1809,8 @@ export default {
       }
     },
     render: ({ sections, bgColor, textColor, alignCenter, rounded }, { html }) => {
-      const bgClass = `bg-${bgColor}`;
-      const textClass = `text-${textColor}`;
+      const bgClass = BgColor[bgColor];
+      const textClass = TextColor[textColor];
       const alignClass = alignCenter ? "footer-center" : "";
       const roundedClass = rounded ? "rounded" : "";
 
@@ -1487,6 +1892,7 @@ export default {
     },
   },  
   "uix-progress": {
+    // TODO: expand daisyui tags
     props: {
       value: { type: Number, defaultValue: 0 },
       max: { type: Number, defaultValue: 100 },
@@ -1507,6 +1913,7 @@ export default {
   },
 
   "uix-radial-progress": {
+    // TODO: expand daisyui tags
     props: {
       value: { 
         type: Number,
@@ -1544,8 +1951,8 @@ export default {
     },
     render: ({ value, size, thickness, variant, backgroundColor, borderColor, borderWidth, textColor }, { html }) => {
       const textStyle = `text-${textColor}`;
-      const bgColor = backgroundColor !== "default" ? `bg-${backgroundColor}` : "";
-      const borderColorStyle = borderColor !== "default" ? `border-${borderWidth} border-${borderColor}` : "";
+      const bgColor = backgroundColor !== "default" ? BgColor[backgroundColor] : "";
+      const borderColorStyle = borderColor !== "default" ? `border-${borderWidth} ${BorderColor[borderColor]}` : "";
       const textSizeStyle = `text-${variant}`;
       return html`
         <div 
@@ -1595,6 +2002,7 @@ export default {
     },
   },
   "uix-steps": {
+    // TODO: expand daisyui tags
     props: {
       steps: {
         type: Array,
@@ -1638,7 +2046,8 @@ export default {
       const activeClass = isActive ? "swap-active" : "";
       const rotateClass = isRotated ? "swap-rotate" : "";
       const flipClass = isFlipped ? "swap-flip" : "";
-      const bgColorClass = `bg-${variant}`;
+      const bgColorClass = BgColor[variant];
+      
 
       return html`
         <label class="${baseClass} ${activeClass} ${rotateClass} ${flipClass}">
@@ -1651,6 +2060,7 @@ export default {
   },
   
   "uix-indicator": {
+    // TODO: expand daisyui tags
     props: {
       content: { type: String, defaultValue: "" },
       badge: { type: String, defaultValue: "" }, // This can be text, number or any label
@@ -1710,6 +2120,7 @@ export default {
   },
   
   "uix-stat": {
+    // TODO: expand daisyui tags for tailwind JIT
     props: {
       title: { type: String, required: true },
       value: { type: String, required: true },
