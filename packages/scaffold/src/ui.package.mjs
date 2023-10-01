@@ -1,140 +1,33 @@
-const AlignX = {
-  "start": "justify-start",
-  "center": "justify-center",
-  "end": "justify-end",
-  "between": "justify-between",
-  "around": "justify-around",
-  "evenly": "justify-evenly"
-};
+import {
+  AlignX,
+  AlignY,
+  BgOverlayOpacity,
+  DirectionsClasses,
+  Positions,
+  Resolutions,
+  NavbarPart,
+  Layouts,
+  Spacings,
+  AnimationTypes,
+  ModalPositions,
+  Methods,
+  Sizes,
+  Shapes,
+  Styles,
+  Triggers,
+  Directions,
+  Formats,
+  Variants,
+  BgColor,
+  TextColor,
+  BorderColor,
+  CheckboxVariant,
+  CheckboxSize,
+  CollapseBgColor,
+  CollapseIcon,
+  RingColor
+} from "./style-props.mjs"; 
 
-const AlignY = {
-  "top": "items-start",
-  "middle": "items-center",
-  "bottom": "items-end",
-  "stretch": "items-stretch",
-  "baseline": "items-baseline"
-};
-
-const BgOverlayOpacity = {
-  10: "bg-opacity-10",
-  20: "bg-opacity-20",
-  30: "bg-opacity-30",
-  40: "bg-opacity-40",
-  50: "bg-opacity-50",
-  60: "bg-opacity-60",
-  70: "bg-opacity-70",
-  80: "bg-opacity-80",
-  90: "bg-opacity-90",
-  100: "bg-opacity-100",
-};
-
-const DirectionsClasses = {
-  "horizontal": "divider-horizontal",
-  "vertical": ""
-};
-const Positions = ["start", "center", "end", "top", "middle", "bottom", "top", "end", "bottom", "middle", "left", "right", "top-right", "top-left", "bottom-right", "bottom-left"];
-const Resolutions = ["sm", "md", "lg", "xl"];
-const NavbarPart = ["start", "center", "end"];
-const Layouts = ["default", "responsive"];
-const Spacings = ["none", "xs", "sm", "md", "lg", "xl", "2xl"];
-const AnimationTypes = ["spinner", "dots", "ring", "ball", "bars", "infinity"];
-const ModalPositions = {
-  "top": "modal-top",
-  "middle": "modal-middle",
-  "bottom": "modal-bottom",
-};
-const Methods = ["details", "focus"];
-const Sizes = ["lg", "md", "sm", "xs"];
-const Shapes = ["default", "circle", "square"];
-const Styles = ["ghost", "link", "outline", "glass", "active", "disabled", "bordered"];
-const Triggers = ["click", "hover"];
-const Directions = ["horizontal", "vertical"];
-const Formats = ["DHMS", "HMS", "MS", "S"];
-const Variants = ["primary", "secondary", "accent", "neutral", "base", "info", "success", "warning", "error"];
-const BgColor = {
-  "primary": "bg-primary-200",
-  "secondary": "bg-secondary-200",
-  "accent": "bg-accent-200",
-  "neutral": "bg-neutral-200",
-  "base": "bg-base-200",
-  "info": "bg-info-200",
-  "success": "bg-success-200",
-  "warning": "bg-warning-200",
-  "error": "bg-error-200"
-};
-
-const TextColor = {
-  "primary": "text-primary-focus",
-  "secondary": "text-secondary-focus",
-  "accent": "text-accent-focus",
-  "neutral": "text-neutral-focus",
-  "base": "text-base-focus",
-  "info": "text-info-focus",
-  "success": "text-success-focus",
-  "warning": "text-warning-focus",
-  "error": "text-error-focus"
-};
-
-const BorderColor = {
-  "primary": "border-primary-content",
-  "secondary": "border-secondary-content",
-  "accent": "border-accent-content",
-  "neutral": "border-neutral-content",
-  "base": "border-base-content",
-  "info": "border-info-content",
-  "success": "border-success-content",
-  "warning": "border-warning-content",
-  "error": "border-error-content"
-};
-const CheckboxVariant = {
-  "default": "checkbox-default",
-  "primary": "checkbox-primary",
-  "secondary": "checkbox-secondary",
-  "accent": "checkbox-accent",
-  "neutral": "checkbox-neutral",
-  "base": "checkbox-base",
-  "info": "checkbox-info",
-  "success": "checkbox-success",
-  "warning": "checkbox-warning",
-  "error": "checkbox-error"
-};
-
-const CheckboxSize = {
-  "lg": "checkbox-lg",
-  "md": "checkbox-md",
-  "sm": "checkbox-sm",
-  "xs": "checkbox-xs"
-};
-
-const CollapseBgColor = {
-  "primary": "bg-primary-200",
-  "secondary": "bg-secondary-200",
-  "accent": "bg-accent-200",
-  "neutral": "bg-neutral-200",
-  "base": "bg-base-200",
-  "info": "bg-info-200",
-  "success": "bg-success-200",
-  "warning": "bg-warning-200",
-  "error": "bg-error-200"
-};
-
-const CollapseIcon = {
-  "": "",
-  "arrow": "collapse-arrow",
-  "plus": "collapse-plus"
-};
-
-const RingColor = {
-  "primary": "ring-primary",
-  "secondary": "ring-secondary",
-  "accent": "ring-accent",
-  "neutral": "ring-neutral",
-  "base": "ring-base",
-  "info": "ring-info",
-  "success": "ring-success",
-  "warning": "ring-warning",
-  "error": "ring-error"
-};
 
 export default {
   "views": {
@@ -169,13 +62,14 @@ export default {
           enum: Variants
         },
         closable: { type: Boolean, defaultValue: true },
+        rounded: { type: Boolean, defaultValue: false },
         actions: { type: Array, defaultValue: [] }
       },
-      render: ({ title, message, variant, closable, actions }, { html }) => {
+      render: ({ title, message, rounded, variant, closable, actions }, { html }) => {
         const colorClass = `${BgColor[variant]} ${BorderColor[variant]} ${TextColor[variant]}`;
-      
+        
         return html`
-        <div class="alert p-4 rounded shadow-lg ${colorClass}">
+        <div class="alert p-4 ${rounded && "rounded" || ""} shadow-lg ${colorClass}">
           <div class="flex justify-between">
             <div>
               ${title ? html`<h3 class="font-bold mb-2">${title}</h3>` : ""}
@@ -581,21 +475,21 @@ export default {
           type: String,
           defaultValue: "primary",
           enum: Variants
-        }
+        },
+        rounded: { type: Boolean, defaultValue: false },
       },
-      render: ({ message, sender, alignment, variant }, { html }) => {
+      render: ({ message, sender, alignment, rounded, variant }, { html }) => {
         const bgColorClass = BgColor[variant];
         const AlignmentClasses = {
           "start": "chat-start",
           "end": "chat-end"
         };
         const alignmentClass = AlignmentClasses[alignment];
-  
         return html`
           <div class="${alignmentClass}">
             ${sender.avatar ? html`
               <div class="chat-image avatar">
-                <div class="w-10 rounded-full">
+                <div class="w-10 ${rounded && "rounded-full" || ""}">
                   <img src=${sender.avatar} />
                 </div>
               </div>
@@ -868,9 +762,10 @@ export default {
         },
         isOpen: { type: Boolean, defaultValue: false },
         openOnHover: { type: Boolean, defaultValue: false },
-        forceOpen: { type: Boolean, defaultValue: false }
+        forceOpen: { type: Boolean, defaultValue: false },
+        rounded: { type: Boolean, defaultValue: false }
       },
-      render: ({ label, items, variant, method, position, isOpen, openOnHover, forceOpen, setIsOpen }, { html }) => {
+      render: ({ label, items, variant, rounded, method, position, isOpen, openOnHover, forceOpen, setIsOpen }, { html }) => {
         const bgColorClass = BgColor[variant];
         const textColorClass = TextColor[variant];
         return html`
@@ -878,14 +773,14 @@ export default {
           ${method === "details" ? html`
             <details class="${bgColorClass} ${textColorClass} mb-32">
               <summary class="m-1 btn">${label}</summary>
-              <ul class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} rounded-box w-52">
+              <ul class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} ${rounded && "rounded-box" || ""} w-52">
                 ${items.map(item => html`<li><a>${item}</a></li>`)}
               </ul>
             </details>
           ` : html`
             <label tabindex="0" class="m-1 btn" @click=${()=> setIsOpen(!isOpen)}>${label}</label>
             ${isOpen ? html`
-              <ul tabindex="0" class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} rounded-box w-52">
+              <ul tabindex="0" class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} ${rounded && "rounded-box" || ""} w-52">
                 ${items.map(item => html`<li><a>${item}</a></li>`)}
               </ul>
             ` : ""}
@@ -903,15 +798,24 @@ export default {
         position: { type: String, defaultValue: "middle", enum: ["top", "middle", "bottom"] },
         icon: { type: String, defaultValue: "" },
       },
-      render: ({ isOpen, title, content, closable, setIsOpen, position, icon }, { html }) => {
+      render: ({ isOpen, title, position, icon }, { html }) => {
         const modalClass = `modal ${ModalPositions[position] || ModalPositions.middle}`;
   
         return html`
         <dialog class=${modalClass} ?open=${isOpen}>
           ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
-          <div class="modal-title">${title}</div>
-          <div class="modal-content">${content}</div>
-          ${closable ? html`<uix-button @click=${() => setIsOpen(false)}>Close</uix-button>` : ""}
+          <div class="modal-box">
+          
+          ${title && html`<div class="modal-title">${title}</div>`}
+
+          <slot name="content"></slot>
+          <div class="modal-action">
+            <slot name="footer"></slot>                        
+            <form method="dialog">
+              <button class="btn">Close</button>
+            </form>
+          </div>
+          </div>
         </dialog>
       `;
       },
@@ -980,12 +884,16 @@ export default {
         variant: { type: String, defaultValue: "base", enum: Variants },
         orientation: { type: String, defaultValue: "vertical", enum: ["vertical", "horizontal"] },
         size: { type: String, defaultValue: "md", enum: ["xs", "sm", "md", "lg"] },
+        click: {type: Function, default: () => {}},
         isActive: { type: Boolean, defaultValue: false },
         isCollapsible: { type: Boolean, defaultValue: false },
         withIcon: { type: Boolean, defaultValue: false },
         iconOnly: { type: Boolean, defaultValue: false },
+        fullHeight: { type: Boolean, defaultValue: false },
+        fullWidth: { type: Boolean, defaultValue: false },
+        rounded: { type: Boolean, defaultValue: false }
       },
-      render: ({ items, title, variant, orientation, size, isActive, isCollapsible, withIcon, iconOnly }, { html }) => {
+      render: ({ items, title, variant, fullHeight, fullWidth, orientation, rounded, size, isActive, isCollapsible, withIcon, iconOnly }, { html }) => {
         const MenuSize = {
           "lg": "menu-lg",
           "md": "menu-md",
@@ -993,14 +901,16 @@ export default {
           "xs": "menu-xs"
         };
       
-        const baseClass = `menu ${orientation === "horizontal" ? "menu-horizontal" : ""} rounded-box`;
+        const baseClass = `menu ${orientation === "horizontal" ? "menu-horizontal" : ""} ${rounded && "rounded-box" || ""}`;
         const bgColorClass = BgColor[variant];
         const sizeClass = MenuSize[size];
         const activeClass = isActive ? "active" : "";
         const iconClass = withIcon ? "<uix-icon></uix-icon>" : "";
+        const fullHeightClass = fullHeight ? "h-full" : "";
+        const fullWidthClass = fullWidth ? "w-full" : "";
 
         return html`
-        <ul class="${baseClass} ${sizeClass} ${bgColorClass}">
+        <ul class="${baseClass} ${sizeClass} ${bgColorClass} ${fullHeightClass} ${fullWidthClass}">
           ${title ? html`<li class="menu-title">${title}</li>` : ""}
           ${items.map(item => {
     if (isCollapsible) {
@@ -1009,14 +919,14 @@ export default {
                   <summary>${iconOnly ? iconClass : `${iconClass} ${item.label}`}</summary>
                   ${item.subItems ? html`
                     <ul>
-                      ${item.subItems.map(subItem => html`<li><a class="${activeClass}">${subItem.label}</a></li>`)}
+                      ${item.subItems.map(subItem => html`<li><a class=${activeClass} @click=${subItem.click}>${subItem.label}</a></li>`)}
                     </ul>
                   ` : ""}
                 </details>
               `;
     } else {
       return html`
-                <li><a class="${activeClass}">${iconOnly ? iconClass : `${iconClass} ${item.label}`}</a></li>
+                <li><a @click=${item.click} class="${activeClass}">${iconOnly ? iconClass : `${iconClass} ${item.label}`}</a></li>
               `;
     }
   })}
@@ -1058,14 +968,15 @@ export default {
         description: { type: String, defaultValue: "" },
         variant: { type: String, defaultValue: "base", enum: Variants },
         imageUrl: { type: String, defaultValue: null },
-        overlayOpacity: { type: Number, defaultValue: 60 }
+        overlayOpacity: { type: Number, defaultValue: 60 },
+        rounded: { type: Boolean, defaultValue: false },
       },
-      render: ({ title, description, variant, imageUrl, overlayOpacity }, { html }) => {
+      render: ({ title, description, variant, imageUrl, rounded, overlayOpacity }, { html }) => {
         const bgColorClass = BgColor[variant];
         const textColorClass = TextColor[variant];
         return html`
-        <div class="hero min-h-[30rem] rounded ${imageUrl ? `style="background-image: url(${imageUrl});"` : bgColorClass}">
-          ${imageUrl ? html`<div class="hero-overlay rounded ${BgOverlayOpacity[overlayOpacity]}"></div>` : ""}
+        <div class="hero min-h-[30rem] ,${rounded && "rounded" || ""} ${imageUrl ? `style="background-image: url(${imageUrl});"` : bgColorClass}">
+          ${imageUrl ? html`<div class="hero-overlay ,${rounded && "rounded" || ""} ${BgOverlayOpacity[overlayOpacity]}"></div>` : ""}
           <div class="text-center hero-content ${textColorClass}">
             <div class="max-w-md">
               <h1 class="mb-5 text-5xl font-bold">${title}</h1>
@@ -1264,7 +1175,7 @@ export default {
         return html`
       <div class="toast ${horizontalClass} ${verticalClass}" style="animation-duration: ${duration}ms;">
         ${content.map(alert => html`
-          <div class="alert ${AlertTypes[item.type || "info"]}">
+          <div class="alert ${AlertTypes[alert.type || "info"]}">
             ${alert.icon ? html`<uix-icon name=${alert.icon}></uix-icon>` : ""}
             <span>${alert.message}</span>
           </div>
@@ -1683,15 +1594,16 @@ export default {
           defaultValue: "default",
           enum: Layouts
         },
-        customBorder: { type: Boolean, defaultValue: false }
+        customBorder: { type: Boolean, defaultValue: false },
+        rounded: { type: Boolean, defaultValue: false },
       },
-      render: ({ direction, layout, customBorder }, { html }) => {
+      render: ({ direction, layout, rounded, customBorder }, { html }) => {
   
         // Apply responsive behavior if needed
         const responsiveClass = layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
   
         // Apply custom border radii if specified
-        const borderRadiusClass = customBorder ? "rounded-l-full rounded-r-full" : "";
+        const borderRadiusClass = customBorder ?  `${rounded && "rounded" || ""}-l-full ${rounded && "rounded-r-full" || ""}` : "";
   
         return html`
         <div class="join join-${direction} ${responsiveClass} ${borderRadiusClass}">
@@ -1712,7 +1624,7 @@ export default {
           defaultValue: "default",
           enum: Layouts
         },
-        customBorder: { type: Boolean, defaultValue: false },
+        rounded: { type: Boolean, defaultValue: false },
         alignX: {
           type: String,
           enum: Object.keys(AlignX),
@@ -1724,10 +1636,10 @@ export default {
           defaultValue: ""
         }
       },
-      render: ({ direction, layout, customBorder, alignX, alignY }, { html }) => {
+      render: ({ direction, layout, rounded, alignX, alignY }, { html }) => {
         const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
         const responsiveClass = layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
-        const borderRadiusClass = customBorder ? "rounded-l-full rounded-r-full" : "";
+        const borderRadiusClass = rounded ? "rounded-l-full rounded-r-full" : "";
         const alignXClass = alignX ? "w-full "+ AlignX[alignX] : "";
         const alignYClass = alignY ? "h-full "+ AlignY[alignY] : "";
       
@@ -1746,17 +1658,17 @@ export default {
           enum: Variants
         },
         shadow: { type: Boolean, defaultValue: true },
-        rounded: { type: Boolean, defaultValue: true },
+        rounded: { type: Boolean, defaultValue: false },
         part: {
           type: String,
           defaultValue: "center",
           enum: NavbarPart
         },
         icon: { type: Boolean, defaultValue: false },
-        menu: { type: Array, defaultValue: [] },
+        items: { type: Array, defaultValue: [] },
         title: { type: String, defaultValue: "daisyUI" }
       },
-      render: ({ variant, shadow, rounded, part, icon, menu, title }, { html }) => {
+      render: ({ variant, shadow, rounded, part, icon, items, title }, { html }) => {
         const NavbarPartClasses = {
           "start": "navbar-start", 
           "center": "navbar-center",
@@ -1774,10 +1686,10 @@ export default {
             ${icon ? html`<uix-icon></uix-icon>` : ""}
             <a class="btn btn-ghost normal-case text-xl">${title}</a>
           </div>
-          ${menu.length > 0 ? html`
+          ${items.length > 0 ? html`
             <div class="flex-none gap-2">
               <ul class="menu menu-horizontal px-1 bg-${variant}">
-                ${menu.map(item => {
+                ${items.map(item => {
     if (item.submenu) {
       return html`
                       <li>
