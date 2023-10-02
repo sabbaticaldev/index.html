@@ -158,10 +158,20 @@ export const promisifyRequest = (request) => {
   });
 };
 
+export const getCount = (db) => {
+  return db("readonly", (store) => promisifyRequest(store.count()));
+};
+
+export const isEmpty = (db) => {
+  return getCount(db).then((count) => count === 0);
+};
+
 export default {
   clear,
   createStore,
   entries,
+  getCount,
+  isEmpty,
   getMany,
   getItem,
   keys,

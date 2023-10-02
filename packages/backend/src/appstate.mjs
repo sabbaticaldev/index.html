@@ -38,21 +38,35 @@ const indexedDBWrapper = {
   },
 };
 
-export const generateId = (appId) => {
-  const referenceTimestamp = fromBase62(appId);
-  if (!referenceTimestamp) {
+const generateIdByTimestamp = (timestamp) => {
+  if (!timestamp) {
     throw new Error(
       "Reference timestamp not set. Ensure getAppId has been called first.",
     );
   }
 
-  const timeDifference = Date.now() - parseInt(referenceTimestamp, 10);
+  const timeDifference = Date.now() - parseInt(timestamp, 10);
   let id = toBase62(timeDifference);
 
   while (id.length < 5) {
     id = "0" + id;
   }
+  return id;
+};
 
+let storedLastId;
+
+export const generateId = (appId) => {
+  const referenceTimestamp = fromBase62(appId);
+  let randomNumber = Math.floor(Math.random() * 100) + 1;
+  let id = generateIdByTimestamp(referenceTimestamp + randomNumber);
+  if (id === storedLastId) {
+    console.log({ id, storedLastId });
+    id = generateIdByTimestamp(referenceTimestamp + 1);
+    console.log({ id, storedLastId });
+  }
+
+  storedLastId = id;
   return id;
 };
 

@@ -6,21 +6,23 @@ let oplog;
 let queue;
 
 class ReactiveRecord {
-  async init(properties, name, appId) {
+  async init({ importData, ...properties }, name, appId) {
     this.name = name;
     this.adapter = indexeddbAdapter;
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
-
     this.appId = appId;
     this.store = this.adapter.createStore(`${this.appId}_${name}`, "kv");
     // TODO: create one store and reuse it globally
     oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
     queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
+    if (importData && (await this.adapter.isEmpty(this.store))) {
+      this.addMany(importData);
+    }
   }
 
-  constructor(config, name, appId) {
-    this.init(config, name, appId);
+  constructor(properties, name, appId) {
+    this.init(properties, name, appId);
   }
 
   async logOp(key, value = null) {
@@ -36,8 +38,8 @@ class ReactiveRecord {
   }
 
   async add(value) {
-    console.log(this.appId);
-    const id = value?.id || generateId(this.appId);
+    let id = value?.id || generateId(this.appId, this.lastId);
+    this.lastId = id;
     const properties = Object.keys(value);
     if (!properties[this.referenceKey]) {
       properties[this.referenceKey] = "";
@@ -111,11 +113,7 @@ class ReactiveRecord {
   }
 
   async addMany(values) {
-    if (!values || !values.length) return;
-    const ids = values.map(generateId);
-    await Promise.all(
-      values.map((value, idx) => this.add({ ...value, id: ids[idx] }, true)),
-    );
+    await values.map(async (value) => await this.add(value));
   }
 
   async editMany(records) {
