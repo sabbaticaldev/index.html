@@ -1,31 +1,6 @@
 import {
-  AlignX,
-  AlignY,
-  BgOverlayOpacity,
-  DirectionsClasses,
-  Positions,
-  Resolutions,
-  NavbarPart,
-  Layouts,
-  Spacings,
-  AnimationTypes,
-  ModalPositions,
-  Methods,
-  Sizes,
-  Shapes,
-  Styles,
-  Triggers,
-  Directions,
-  Formats,
-  Variants,
   BgColor,
   TextColor,
-  BorderColor,
-  CheckboxVariant,
-  CheckboxSize,
-  CollapseBgColor,
-  CollapseIcon,
-  RingColor
 } from "./style-props.mjs"; 
 
 export default {
@@ -33,39 +8,42 @@ export default {
   views: {
     "uix-app-shell": {
       props: {
-        leftNavbar: {
-          bgColor: { type: String, defaultValue: "primary", enum: BgColor },
-          textColor: { type: String, defaultValue: "primary", enum: TextColor },
-          items: { type: Array, defaultValue: [] },
-          width: { type: String, defaultValue: "200px" }
-        },
         topNavbar: {
           bgColor: { type: String, defaultValue: "primary", enum: BgColor },
           textColor: { type: String, defaultValue: "primary", enum: TextColor },
-          items: { type: Array, defaultValue: [] }
+          items: { type: Array, defaultValue: [] },
+          height: { type: String, defaultValue: "h-16" },
+        },
+        leftNavbar: {
+          bgColor: { type: String, defaultValue: "primary", enum: BgColor },
+          textColor: { type: String, defaultValue: "primary", enum: TextColor },
+          items: { type: Array, defaultValue: [] },          
+          width: { type: String, defaultValue: "w-72" },
         },
         rightNavbar: {
           bgColor: { type: String, defaultValue: "primary", enum: BgColor },
           textColor: { type: String, defaultValue: "primary", enum: TextColor },
           items: { type: Array, defaultValue: [] },
-          width: { type: String, defaultValue: "200px" }
+          width: { type: String, defaultValue: "w-72" },
         },
         bottomNavbar: {
           bgColor: { type: String, defaultValue: "primary", enum: BgColor },
           textColor: { type: String, defaultValue: "primary", enum: TextColor },
-          items: { type: Array, defaultValue: [] }
+          items: { type: Array, defaultValue: [] },
+          height: { type: String, defaultValue: "h-16" },
         }
       },
       render: ({ leftNavbar, topNavbar, rightNavbar, bottomNavbar }, { html }) => {
+        
         return html`
           <div class="app-shell w-full h-full flex flex-col">
             ${topNavbar.items.length ? html`
-              <uix-navbar variant=${topNavbar.bgColor} .items=${topNavbar.items}></uix-navbar>
+              <uix-navbar padding="p-0" variant=${topNavbar.bgColor} height=${topNavbar.height || "h-16"} .items=${topNavbar.items}></uix-navbar>
             ` : ""}
             
             <div class="flex h-full">
               ${leftNavbar.items.length ? html`
-                <uix-menu variant=${leftNavbar.bgColor} ?fullHeight=${true} .items=${leftNavbar.items} style="min-width: ${leftNavbar.width}"></uix-menu>
+                <uix-menu variant=${leftNavbar.bgColor} fullHeight width=${leftNavbar.width} .items=${leftNavbar.items}></uix-menu>
               ` : ""}
       
               <main class="content flex-grow">
@@ -73,12 +51,12 @@ export default {
               </main>
       
               ${rightNavbar.items.length ? html`
-                <uix-menu orientation="vertical" ?fullHeight=${true} variant=${rightNavbar.bgColor} .items=${rightNavbar.items} style="min-width: ${rightNavbar.width}"></uix-menu>
+                <uix-menu orientation="vertical" fullHeight variant=${rightNavbar.bgColor} width=${rightNavbar.width} .items=${rightNavbar.items}></uix-menu>
               ` : ""}
             </div>
             
             ${bottomNavbar.items.length ? html`
-              <uix-navbar variant=${bottomNavbar.bgColor} .items=${bottomNavbar.items}></uix-navbar>
+              <uix-navbar padding="p-0" variant=${bottomNavbar.bgColor} height=${bottomNavbar.height  || "h-16"} .items=${bottomNavbar.items}></uix-navbar>
             ` : ""}
           </div>
         `;

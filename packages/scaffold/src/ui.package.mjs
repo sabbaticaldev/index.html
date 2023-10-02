@@ -5,7 +5,6 @@ import {
   DirectionsClasses,
   Positions,
   Resolutions,
-  NavbarPart,
   Layouts,
   Spacings,
   AnimationTypes,
@@ -191,10 +190,11 @@ export default {
     },
     "uix-icon": {
       props: {
+        name: ""
       },
-      render: (props, { html }) => {
-        console.log("NEED TO IMPLEMENT");
-        return html`NEED TO IMPLEMENT`;
+      render: ({ name }, { html }) => {
+        console.log({name});
+        return html`<ion-icon name=${name} class="text-2xl md hydrated" role="img"></ion-icon>`;
       }
     },
     "uix-alerts-container": { // TODO: create a container for alerts that knows how to close alert
@@ -408,7 +408,7 @@ export default {
           defaultValue: "start",
           enum: ["start", "center", "end"]
         },
-        orientation: {
+        direction: {
           type: String,
           defaultValue: "horizontal",
           enum: ["horizontal", "vertical"]
@@ -422,8 +422,8 @@ export default {
           defaultValue: false
         }
       },
-      render: ({ items, alignment, orientation, indicatorButtons, navigationButtons }, { html }) => {
-        const OrientationClasses = {
+      render: ({ items, alignment, direction, indicatorButtons, navigationButtons }, { html }) => {
+        const DirectionClasses = {
           "horizontal": "",
           "vertical": "carousel-vertical"
         };
@@ -435,7 +435,7 @@ export default {
         };
   
         const alignmentClass = AlignmentClasses[alignment];
-        const orientationClass = OrientationClasses[orientation];
+        const directionClass = DirectionClasses[direction];
         let carouselItems = items.map((item, index) => {
           return html`
           <div id="item${index}" class="carousel-item">
@@ -451,7 +451,7 @@ export default {
         });
 
         return html`
-        <div class="carousel ${alignmentClass} ${orientationClass} rounded-box">
+        <div class="carousel ${alignmentClass} ${directionClass} rounded-box">
           ${carouselItems}
         </div>
         ${indicatorButtons ? html`
@@ -881,19 +881,26 @@ export default {
       props: {
         items: { type: Array, defaultValue: [] },
         title: { type: String, defaultValue: null },
-        variant: { type: String, defaultValue: "base", enum: Variants },
-        orientation: { type: String, defaultValue: "vertical", enum: ["vertical", "horizontal"] },
+        variant: { type: String, defaultValue: "", enum: Variants },
+        direction: { type: String, defaultValue: "vertical", enum: Directions },
         size: { type: String, defaultValue: "md", enum: ["xs", "sm", "md", "lg"] },
         click: {type: Function, default: () => {}},
         isActive: { type: Boolean, defaultValue: false },
-        isCollapsible: { type: Boolean, defaultValue: false },
-        withIcon: { type: Boolean, defaultValue: false },
+        isCollapsible: { type: Boolean, defaultValue: false },        
         iconOnly: { type: Boolean, defaultValue: false },
+        width: "",
+        height: "",
         fullHeight: { type: Boolean, defaultValue: false },
         fullWidth: { type: Boolean, defaultValue: false },
-        rounded: { type: Boolean, defaultValue: false }
+        rounded: { type: Boolean, defaultValue: false },
+        style: { type: Object, defaultValue: {} }
       },
-      render: ({ items, title, variant, fullHeight, fullWidth, orientation, rounded, size, isActive, isCollapsible, withIcon, iconOnly }, { html }) => {
+      render: ({ 
+        items, title, variant, fullHeight,
+        style,
+        fullWidth, height, width, direction, 
+        rounded, size, isActive, isCollapsible, iconOnly 
+      }, { html }) => {
         const MenuSize = {
           "lg": "menu-lg",
           "md": "menu-md",
@@ -901,32 +908,35 @@ export default {
           "xs": "menu-xs"
         };
       
-        const baseClass = `menu ${orientation === "horizontal" ? "menu-horizontal" : ""} ${rounded && "rounded-box" || ""}`;
+        const baseClass = `menu ${direction === "horizontal" ? "menu-horizontal" : ""} ${rounded && "rounded-box" || ""}`;
         const bgColorClass = BgColor[variant];
         const sizeClass = MenuSize[size];
         const activeClass = isActive ? "active" : "";
-        const iconClass = withIcon ? "<uix-icon></uix-icon>" : "";
         const fullHeightClass = fullHeight ? "h-full" : "";
         const fullWidthClass = fullWidth ? "w-full" : "";
-
+        const itemClass = "font-semibold leading-6 text-sm " + (style?.items || " text-gray-700 hover:text-indigo-600 ");
+        
         return html`
-        <ul class="${baseClass} ${sizeClass} ${bgColorClass} ${fullHeightClass} ${fullWidthClass}">
+        <ul class="${baseClass} ${sizeClass} ${bgColorClass} ${fullHeightClass} ${fullWidthClass} ${height || ""} ${width || ""}">
           ${title ? html`<li class="menu-title">${title}</li>` : ""}
           ${items.map(item => {
+    const { icon } = item;
+    const iconComponent = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
+    
     if (isCollapsible) {
       return html`
                 <details open>
-                  <summary>${iconOnly ? iconClass : `${iconClass} ${item.label}`}</summary>
+                  <summary>${iconOnly ? iconComponent : `${iconComponent} ${item.label}`}</summary>
                   ${item.subItems ? html`
                     <ul>
-                      ${item.subItems.map(subItem => html`<li><a class=${activeClass} @click=${subItem.click}>${subItem.label}</a></li>`)}
+                      ${item.subItems.map(subItem => html`<li><a class="${activeClass} ${itemClass}" @click=${subItem.click}>${subItem.label}</a></li>`)}
                     </ul>
                   ` : ""}
                 </details>
               `;
     } else {
       return html`
-                <li><a @click=${item.click} class="${activeClass}">${iconOnly ? iconClass : `${iconClass} ${item.label}`}</a></li>
+                <li><a @click=${item.click} href=${item.href || "#"} class="${activeClass} ${itemClass}">${iconComponent} ${!iconOnly && item.label}</a></li>
               `;
     }
   })}
@@ -1538,10 +1548,10 @@ export default {
           6: "phone-6",
         };
         const sizeClass = PhoneSize[size];
-        const orientationClass = horizontal ? "artboard-horizontal" : "";
+        const directionClass = horizontal ? "artboard-horizontal" : "";
         const demoClass = demo ? "artboard-demo" : "";
         return html`
-        <div class="artboard ${sizeClass} ${orientationClass} ${demoClass}">
+        <div class="artboard ${sizeClass} ${directionClass} ${demoClass}">
           ${content}
         </div>
       `;
@@ -1654,16 +1664,20 @@ export default {
       props: {
         component: { type: Function, defaultValue: null },
         label: { type: String, defaultValue: "" },
+        icon: "",
         submenu: { type: Array, defaultValue: [] },
       },
-      render: ({ component, label, submenu, variant }, { html }) => {
+      render: ({ component, label, icon, submenu, variant }, { html }) => {
         if (component) {
           return component;
         }
-  
+        
+        const iconClass = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
+
         if (submenu?.length > 0) {
           return html`
                   <details>
+                      ${iconClass}
                       <summary>${label}</summary>
                       <ul class="p-2 bg-${variant}">
                           ${submenu.map(subItem => html`
@@ -1683,40 +1697,26 @@ export default {
           defaultValue: "base-100",
           enum: Variants
         },
-        shadow: { type: Boolean, defaultValue: true },
+        shadow: { type: Boolean, defaultValue: false },
         rounded: { type: Boolean, defaultValue: false },
-        part: {
-          type: String,
-          defaultValue: "center",
-          enum: NavbarPart
-        },
-        icon: { type: Boolean, defaultValue: false },
+        height: { type: String, defaultValue: "" },
+        width: { type: String, defaultValue: "" },
         items: { type: Array, defaultValue: [] },
-        title: { type: String, defaultValue: "daisyUI" }
+        padding: {type: String, defautValue: "px-1" }
       },
-      render: ({ variant, shadow, rounded, part, icon, items, title }, { html }) => {
-        const NavbarPartClasses = {
-          "start": "navbar-start", 
-          "center": "navbar-center",
-          "end": "navbar-end"
-        };
-  
-        const baseClasses = `navbar ${BgColor[variant]}`;
+      render: ({ variant, shadow, height, width, padding, rounded, items }, { html }) => {    
+        const bgClass = BgColor[variant];
+        const baseClasses = `navbar ${padding} ${bgClass}`;        
         const shadowClass = shadow ? "shadow-xl" : "";
         const roundedClass = rounded ? "rounded-box" : "";
-        const partClass = NavbarPartClasses[part];
-  
+        
         return html`
-          <div class="${baseClasses} ${shadowClass} ${roundedClass}">
+          <div class="${baseClasses} ${shadowClass} ${roundedClass} ${height || ""} ${width || ""}">
               ${items.length > 0 ? html`
                   <div class="flex-none gap-2 w-full">
-                      <ul class="menu menu-horizontal items-center justify-between flex flex-row w-full px-1 bg-${variant}">
-                        <li class="${partClass}">
-                          ${icon ? html`<uix-icon></uix-icon>` : ""}
-                          <a class="btn btn-ghost normal-case text-xl">${title}</a>
-                        </li>              
+                      <ul class="menu menu-horizontal items-center justify-between flex flex-row w-full ${padding} ${bgClass}">
                           ${items.map(item => html`
-                              <li><uix-navbar-item .label=${item.label} .submenu=${item.submenu} .component=${item.component}></uix-navbar-item></li>
+                              <li class="${item.height || ""} ${item.width || ""}"><uix-navbar-item .label=${item.label} .submenu=${item.submenu} .component=${item.component}></uix-navbar-item></li>
                           `)}
                       </ul>
                   </div>
@@ -1951,7 +1951,7 @@ export default {
           defaultValue: [],
           enum: Variants,
         }, // Array of objects with properties: label, icon, variant.
-        direction: { type: String, defaultValue: "horizontal", enum: ["horizontal", "vertical", "responsive"] },
+        direction: { type: String, defaultValue: "horizontal", enum: Directions },
         scrollable: { type: Boolean, defaultValue: false }
       },
       render: ({ steps, direction, scrollable }, { html }) => {
@@ -2047,14 +2047,14 @@ export default {
     },
     "uix-stat-container": {
       props: {
-        orientation: { type: String, defaultValue: "horizontal", enum: ["horizontal", "vertical"] },
+        direction: { type: String, defaultValue: "horizontal", enum: ["horizontal", "vertical"] },
         shadow: { type: Boolean, defaultValue: true }
       },
-      render: ({ orientation, shadow, children }, { html }) => {
-        const orientationClass = orientation === "vertical" ? "stats-vertical" : "";
+      render: ({ direction, shadow, children }, { html }) => {
+        const directionClass = direction === "vertical" ? "stats-vertical" : "";
         const shadowClass = shadow ? "shadow" : "";
         return html`
-        <div class="stats ${orientationClass} ${shadowClass}">
+        <div class="stats ${directionClass} ${shadowClass}">
           ${children}
         </div>
       `;
