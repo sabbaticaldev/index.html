@@ -2,7 +2,8 @@ import {
   BgColor,
   TextColor,
   Variants,
-  BgOverlayOpacity
+  BgOverlayOpacity,
+  Directions
 } from "./style-props.mjs"; 
 
 export default {
@@ -12,6 +13,11 @@ export default {
       props: {
         icon: "",
         label: "",
+        mainNavbar: {
+          type: String, 
+          defaultValue: "topNavbar", 
+          enum: ["topNavbar", "leftNavbar", "bottomNavbar", "rightNavbar"]
+        },
         topNavbar: {
           bgColor: { type: String, defaultValue: "primary", enum: BgColor },
           textColor: { type: String, defaultValue: "primary", enum: TextColor },
@@ -37,33 +43,51 @@ export default {
           height: { type: String, defaultValue: "h-16" },
         }
       },
-      render: ({ leftNavbar, topNavbar, rightNavbar, bottomNavbar, icon, label }, { html }) => {
-        
+      render: ({ mainNavbar, leftNavbar, topNavbar, rightNavbar, bottomNavbar, icon, label }, { html }) => {        
+        const renderNavbar = (navbar, orientation) => {
+          const isMain = mainNavbar === orientation;
+          return navbar.items.length ? html`
+        <uix-navbar
+          icon=${isMain ? icon : ""}
+          label=${isMain ? label : ""}
+          padding="p-0"
+          direction=${["rightNavbar","leftNavbar"].includes(orientation) ? "vertical" : "horizontal"}
+          variant=${navbar.bgColor}
+          height=${navbar.height || ""}
+          .items=${navbar.items}>
+        </uix-navbar>
+      ` : "";
+        };
+
+        const renderMenu = (navbar, orientation) => {
+          return navbar.items.length ? html`
+            <uix-menu
+              direction=${["rightNavbar","leftNavbar"].includes(orientation) ? "vertical" : "horizontal"}
+              fullHeight
+              variant=${navbar.bgColor}
+              width=${navbar.width}
+              .items=${navbar.items}>
+            </uix-menu>
+          ` : "";
+        };
+
         return html`
-          <div class="app-shell w-full h-full flex flex-col">
-            ${topNavbar.items.length ? html`
-              <uix-navbar icon=${icon} label=${label} padding="p-0" variant=${topNavbar.bgColor} height=${topNavbar.height || "h-16"} .items=${topNavbar.items}></uix-navbar>
-            ` : ""}
-            
-            <div class="flex h-full">
-              ${leftNavbar.items.length ? html`
-                <uix-menu variant=${leftNavbar.bgColor} fullHeight width=${leftNavbar.width} .items=${leftNavbar.items}></uix-menu>
-              ` : ""}
-      
-              <main class="content flex-grow">
-                <slot></slot>
-              </main>
-      
-              ${rightNavbar.items.length ? html`
-                <uix-menu orientation="vertical" fullHeight variant=${rightNavbar.bgColor} width=${rightNavbar.width} .items=${rightNavbar.items}></uix-menu>
-              ` : ""}
-            </div>
-            
-            ${bottomNavbar.items.length ? html`
-              <uix-navbar padding="p-0" variant=${bottomNavbar.bgColor} height=${bottomNavbar.height  || "h-16"} .items=${bottomNavbar.items}></uix-navbar>
-            ` : ""}
-          </div>
-        `;
+      <div class="app-shell w-full h-full flex flex-col">
+        ${mainNavbar === "topNavbar" ? renderNavbar(topNavbar, "topNavbar") : renderMenu(topNavbar, "topNavbar")}
+        
+        <div class="flex h-full">
+          ${mainNavbar === "leftNavbar" ? renderNavbar(leftNavbar, "leftNavbar") : renderMenu(leftNavbar, "leftNavbar")}
+          
+          <main class="content flex-grow">
+            <slot></slot>
+          </main>
+          
+          ${mainNavbar === "rightNavbar" ? renderNavbar(rightNavbar, "rightNavbar") : renderMenu(rightNavbar, "rightNavbar")}
+        </div>
+
+        ${mainNavbar === "bottomNavbar" ? renderNavbar(bottomNavbar, "bottomNavbar") : renderMenu(bottomNavbar, "bottomNavbar")}
+      </div>
+    `;
       },
     }, 
     "uix-navbar-item": {
@@ -107,22 +131,25 @@ export default {
         rounded: { type: Boolean, defaultValue: false },
         height: { type: String, defaultValue: "" },
         width: { type: String, defaultValue: "" },
-        items: { type: Array, defaultValue: [] },
+        items: { type: Array, defaultValue: [] },        
+        direction: { type: String, defaultValue: "horizontal", enum: Directions },
         padding: {type: String, defautValue: "px-1" },
         label: "", 
         icon: ""
       },
-      render: ({ variant, label, icon, shadow, height, width, padding, rounded, items }, { html }) => {    
+      render: ({ variant, label, icon, direction, shadow, height, width, padding, rounded, items }, { html }) => {    
         const bgClass = BgColor[variant];
         const baseClasses = `navbar ${padding} ${bgClass}`;        
         const shadowClass = shadow ? "shadow-xl" : "";
         const roundedClass = rounded ? "rounded-box" : "";
+        console.log({direction});
+        const menuClass = direction === "vertical" ? "menu-vertical" : "menu-horizontal";
         
         return html`
           <div class="${baseClasses} ${shadowClass} ${roundedClass} ${height || ""} ${width || ""}">
               ${items.length > 0 ? html`
                   <div class="flex-none gap-2 w-full">
-                      <ul class="menu menu-horizontal items-center justify-between flex flex-row w-full ${padding} ${bgClass}">      
+                      <ul class="menu ${menuClass} items-center justify-between w-full ${padding} ${bgClass}">      
                         <li class="w-72 h-16 bg-gray-800  text-white flex items-center justify-center">
                           <a class="hover:text-primary-200">
                             <ion-icon

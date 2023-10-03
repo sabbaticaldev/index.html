@@ -850,7 +850,7 @@ export default {
           "xs": "menu-xs"
         };
       
-        const baseClass = `menu ${direction === "horizontal" ? "menu-horizontal" : ""} ${rounded && "rounded-box" || ""}`;
+        const baseClass = `menu ${direction === "horizontal" ? "menu-horizontal" : "menu-vertical"} ${rounded && "rounded-box" || ""}`;
         const bgColorClass = BgColor[variant];
         const sizeClass = MenuSize[size];
         const activeClass = isActive ? "active" : "";
