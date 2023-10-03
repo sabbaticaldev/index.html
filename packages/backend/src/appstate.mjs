@@ -1,7 +1,6 @@
 import indexeddb from "./indexeddb.mjs";
 
 const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
 export const fromBase62 = (str) => {
   let num = 0;
   for (let i = 0; i < str.length; i++) {
@@ -38,6 +37,7 @@ const indexedDBWrapper = {
   },
 };
 
+export let sequentialCounter = 0;
 const generateIdByTimestamp = (timestamp) => {
   if (!timestamp) {
     throw new Error(
@@ -46,7 +46,9 @@ const generateIdByTimestamp = (timestamp) => {
   }
 
   const timeDifference = Date.now() - parseInt(timestamp, 10);
-  let id = toBase62(timeDifference);
+  let id = toBase62(timeDifference + sequentialCounter);
+
+  sequentialCounter++;
 
   while (id.length < 5) {
     id = "0" + id;
@@ -54,19 +56,9 @@ const generateIdByTimestamp = (timestamp) => {
   return id;
 };
 
-let storedLastId;
-
 export const generateId = (appId) => {
   const referenceTimestamp = fromBase62(appId);
-  let randomNumber = Math.floor(Math.random() * 100) + 1;
-  let id = generateIdByTimestamp(referenceTimestamp + randomNumber);
-  if (id === storedLastId) {
-    console.log({ id, storedLastId });
-    id = generateIdByTimestamp(referenceTimestamp + 1);
-    console.log({ id, storedLastId });
-  }
-
-  storedLastId = id;
+  let id = generateIdByTimestamp(referenceTimestamp);
   return id;
 };
 

@@ -10,6 +10,7 @@ const bootstrapp = (app, { style, onLoad, bootstrappTag = "app-index" } = {}) =>
   
   const views = defineViews(app.views, { style, i18n: app.i18n });
   defineViews(ux.views, { style, i18n: ux.i18n });
+  console.log(ux.views);
   defineViews(ui.views, { style, i18n: ui.i18n });
   return views[bootstrappTag];
 };
