@@ -835,11 +835,11 @@ export default {
         fullHeight: { type: Boolean, defaultValue: false },
         fullWidth: { type: Boolean, defaultValue: false },
         rounded: { type: Boolean, defaultValue: false },
-        style: { type: Object, defaultValue: {} }
+        classes: { type: Object, defaultValue: {} }
       },
       render: ({ 
         items, title, variant, fullHeight,
-        style,
+        classes,
         fullWidth, height, width, direction, 
         rounded, size, isActive, isCollapsible, iconOnly 
       }, { html }) => {
@@ -856,7 +856,7 @@ export default {
         const activeClass = isActive ? "active" : "";
         const fullHeightClass = fullHeight ? "h-full" : "";
         const fullWidthClass = fullWidth ? "w-full" : "";
-        const itemClass = "font-semibold leading-6 text-sm " + (style?.items || " text-gray-700 hover:text-indigo-600 ");
+        const itemClass = "font-semibold leading-6 text-sm " + (classes?.items || " text-gray-700 hover:text-indigo-600 ");
         
         return html`
         <ul class="${baseClass} ${sizeClass} ${bgColorClass} ${fullHeightClass} ${fullWidthClass} ${height || ""} ${width || ""}">

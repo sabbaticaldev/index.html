@@ -50,10 +50,12 @@ export default {
         <uix-navbar
           icon=${isMain ? icon : ""}
           label=${isMain ? label : ""}
+          .classes=${{container: "border-r bg-base-100"}}
           padding="p-0"
           direction=${["rightNavbar","leftNavbar"].includes(orientation) ? "vertical" : "horizontal"}
           variant=${navbar.bgColor}
           height=${navbar.height || ""}
+          width=${navbar.width || "w-72"}
           .items=${navbar.items}>
         </uix-navbar>
       ` : "";
@@ -65,7 +67,8 @@ export default {
               direction=${["rightNavbar","leftNavbar"].includes(orientation) ? "vertical" : "horizontal"}
               fullHeight
               variant=${navbar.bgColor}
-              width=${navbar.width}
+              width=${navbar.width || "w-72"}
+              height=${navbar.height || ""}
               .items=${navbar.items}>
             </uix-menu>
           ` : "";
@@ -103,7 +106,7 @@ export default {
         }
         
         const iconClass = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
-
+        
         if (submenu?.length > 0) {
           return html`
                   <details>
@@ -111,13 +114,23 @@ export default {
                       <summary>${label}</summary>
                       <ul class="p-2 bg-${variant}">
                           ${submenu.map(subItem => html`
-                              <li><a>${subItem.label}</a></li>
+                              <li><a>
+                              ${subItem.icon && html`<ion-icon
+                                name=${subItem.icon}
+                                role="img"
+                                ></ion-icon>`}
+                              ${subItem.label}</a></li>
                           `)}
                       </ul>
                   </details>
               `;
         }
-        return html`<li><a>${label}</a></li>`;
+        return html`<li>
+                      <a class="leading-2 flex items-center gap-2">
+                        ${iconClass}
+                        ${label}
+                      </a>
+                    </li>`;
       }
     },
     "uix-navbar": {
@@ -135,39 +148,44 @@ export default {
         direction: { type: String, defaultValue: "horizontal", enum: Directions },
         padding: {type: String, defautValue: "px-1" },
         label: "", 
-        icon: ""
+        icon: "",
+        classes: { type: Object, defaultValue: {} },
       },
-      render: ({ variant, label, icon, direction, shadow, height, width, padding, rounded, items }, { html }) => {    
+      render: ({ 
+        classes: {
+          link: linkClass = "text-gray-800 hover:text-gray-600",
+          container: containerClass
+        }, 
+        variant, label, icon, direction, shadow, 
+        height, width, padding, rounded, items 
+      }, { html }) => {    
         const bgClass = BgColor[variant];
-        const baseClasses = `navbar ${padding} ${bgClass}`;        
+        const baseClasses = `navbar ${bgClass} h-full`;        
         const shadowClass = shadow ? "shadow-xl" : "";
-        const roundedClass = rounded ? "rounded-box" : "";
-        console.log({direction});
+        const roundedClass = rounded ? "rounded-box" : "";        
         const menuClass = direction === "vertical" ? "menu-vertical" : "menu-horizontal";
         
         return html`
-          <div class="${baseClasses} ${shadowClass} ${roundedClass} ${height || ""} ${width || ""}">
+          <div class="${baseClasses} ${shadowClass} ${roundedClass} ${height || ""} ${width || ""} ${containerClass}">
               ${items.length > 0 ? html`
-                  <div class="flex-none gap-2 w-full">
-                      <ul class="menu ${menuClass} items-center justify-between w-full ${padding} ${bgClass}">      
-                        <li class="w-72 h-16 bg-gray-800  text-white flex items-center justify-center">
-                          <a class="hover:text-primary-200">
-                            <ion-icon
-                              name=${icon}
-                              class="text-2xl"
-                              role="img"
-                            ></ion-icon>
-                            <h2 class="text-xl bold">
-                              ${label}
-                            </h2>
-                          </a>
-                        </li>
-      
-                        ${items.map(item => html`
-                            <li class="${item.height || ""} ${item.width || ""}"><uix-navbar-item .label=${item.label} .submenu=${item.submenu} .component=${item.component}></uix-navbar-item></li>
-                        `)}
-                      </ul>
-                  </div>
+                  <ul class="menu ${menuClass} ${padding} ${bgClass} items-center self-start justify-between w-full gap-2">
+                    ${icon && label && html`<li class="w-72 h-16 text-white flex items-center justify-center w-full border-b">
+                      <a class=${linkClass}>
+                        <ion-icon
+                          name=${icon}
+                          class="text-2xl"
+                          role="img"
+                        ></ion-icon>
+                        <h2 class="text-xl bold">
+                          ${label}
+                        </h2>
+                      </a>
+                    </li>`};
+  
+                    ${items.map(item => html`
+                        <li class="${item.height || ""} ${item.width || ""} ${linkClass} w-full"><uix-navbar-item label=${item.label} icon=${item.icon} .submenu=${item.submenu} .component=${item.component}></uix-navbar-item></li>
+                    `)}
+                  </ul>
               ` : ""}
           </div>
           `;
