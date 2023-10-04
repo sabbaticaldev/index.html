@@ -99,6 +99,7 @@ export default {
         label: { type: String, defaultValue: "" },
         icon: "",
         submenu: { type: Array, defaultValue: [] },
+        variant: { type: Array, defaultValue: "" },
       },
       render: ({ component, label, icon, submenu, variant }, { html }) => {
         if (component) {
@@ -112,9 +113,9 @@ export default {
                   <details>
                       ${iconClass}
                       <summary>${label}</summary>
-                      <ul class="p-2 bg-${variant}">
+                      <ul class="p-2 ${BgColor[variant] || ""}">
                           ${submenu.map(subItem => html`
-                              <li><a>
+                              <li><a href=${subItem.href || "#"}>
                               ${subItem.icon && html`<ion-icon
                                 name=${subItem.icon}
                                 role="img"

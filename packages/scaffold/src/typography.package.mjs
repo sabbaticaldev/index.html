@@ -35,11 +35,11 @@ export default {
     
     "uix-heading": {
       props: {
-        level: { type: Number, defaultValue: 1, enum: [1, 2, 3, 4, 5, 6] },
+        size: { type: Number, defaultValue: 1, enum: [1, 2, 3, 4, 5, 6] },
         variant: { type: String, defaultValue: "primary", enum: Variants },
         classes: { type: String, defaultValue: "" }
       },
-      render: ({ level, variant, classes }, { html }) => {
+      render: ({ size, variant, classes }, { html }) => {
         const { class: combinedClass } = createContent(variant, classes);
         const HeadingTemplates = {
           1: (cls) => html`<h1 class="${cls} text-4xl font-bold mt-0 mb-4"><slot></slot></h1>`,
@@ -49,12 +49,12 @@ export default {
           5: (cls) => html`<h5 class="${cls} text-lg font-medium mt-3 mb-2"><slot></slot></h5>`,
           6: (cls) => html`<h6 class="${cls} text-base font-medium mt-2 mb-1"><slot></slot></h6>`
         };
-        const getHeading = (level, cls) => {
-          const templateFunction = HeadingTemplates[level] || HeadingTemplates[1];
+        const getHeading = (size, cls) => {
+          const templateFunction = HeadingTemplates[size] || HeadingTemplates[1];
           return templateFunction(cls);
         };
 
-        return getHeading(level, combinedClass);
+        return getHeading(size, combinedClass);
       }
     },
     
@@ -71,12 +71,12 @@ export default {
     
     "uix-emphasis": {
       props: {
-        level: { type: String, defaultValue: "strong", enum: ["strong", "emphasis"] },
+        weight: { type: String, defaultValue: "strong", enum: ["strong", "emphasis"] },
         classes: { type: String, defaultValue: "" }
       },
-      render: ({ level, classes }, { html }) => {
-        const { class: combinedClass } = createContent(level, classes);
-        if (level === "strong") {
+      render: ({ weight, classes }, { html }) => {
+        const { class: combinedClass } = createContent(weight, classes);
+        if (weight === "strong") {
           return html`<strong class="${combinedClass}"><slot></slot></strong>`;
         } else {
           return html`<em class="${combinedClass}"><slot></slot></em>`;

@@ -819,6 +819,37 @@ export default {
       `;
       },
     },
+    "uix-mockup-code": {
+      props: {
+        prefix: {
+          type: String,
+          defaultValue: ""
+        },
+        code: {
+          type: String,
+          defaultValue: ""
+        },
+        highlight: {
+          type: Boolean,
+          defaultValue: false
+        },
+        variant: {
+          type: String,
+          defaultValue: "neutral",
+          enum: Variants
+        }
+      },
+      render: ({ prefix, code, highlight, variant }, { html }) => {
+        const colorSchema = [BgColor[variant], TextColor[variant]].join(" ");
+        const highlightClass = highlight ? colorSchema : "";
+    
+        return html`
+      <div class="mockup-code ${colorSchema}">
+        <pre class="${highlightClass}" data-prefix="${prefix}"><code>${code}</code></pre>
+      </div>
+    `;
+      }
+    },
     "uix-block": {
       props: {
         variant: { 
@@ -861,7 +892,7 @@ export default {
         };
 
         const SpacingSizes = {
-          1: "p-1", 2: "p-2", 3: "p-3", 4: "p-4", 5: "p-5", 6: "p-6", 8: "p-8", 10: "p-10"
+          0: "", 1: "p-1", 2: "p-2", 3: "p-3", 4: "p-4", 5: "p-5", 6: "p-6", 8: "p-8", 10: "p-10"
         };
     
         const bgClass = bgColor ? `bg-${bgColor}` : "";
@@ -1644,9 +1675,9 @@ export default {
           type: String, 
           defaultValue: "" 
         },
-        styleVariant: {
+        type: {
           type: String,
-          defaultValue: "default", // can be "boxed", "bordered", "lifted"
+          defaultValue: "boxed", 
           enum: ["default", "boxed", "bordered", "lifted"]
         },
         size: {
@@ -1655,19 +1686,19 @@ export default {
           enum: Sizes
         }
       },
-      render: ({ items, selectedValue, styleVariant, size }, { html }) => {
+      render: ({ items, selectedValue, type, size }, { html }) => {
         const getTabClass = (item) => {
           let baseClass = "tab";
           if (item.value === selectedValue) baseClass += " tab-active";
           if (item.disabled) baseClass += " tab-disabled";
-          if (styleVariant === "bordered") baseClass += " tab-bordered";
-          if (styleVariant === "lifted") baseClass += " tab-lifted";
+          if (type === "bordered") baseClass += " tab-bordered";
+          if (type === "lifted") baseClass += " tab-lifted";
           if (Sizes.includes(size)) baseClass += ` tab-${size}`;
           return baseClass;
         };
   
         return html`
-        <div class=${`tabs ${styleVariant === "boxed" ? "tabs-boxed" : ""}`}>
+        <div class=${`tabs ${type === "boxed" ? "tabs-boxed" : ""}`}>
           ${items.map(item => html`
             <a class=${getTabClass(item)} href=${item.href || "#"} role="tab">
               ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}

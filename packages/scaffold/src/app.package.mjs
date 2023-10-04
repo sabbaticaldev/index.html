@@ -19,7 +19,7 @@ export default {
         // Render the matched component, or show a default 404 message
         return routeItem 
           ? html`${routeItem.component}`
-          : html`<div>404: Page not found</div>`;
+          : html`<uix-block>404: Page not found</uix-block>`;
       }
     },
   },
