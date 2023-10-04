@@ -300,30 +300,6 @@ export default {
       }
     },
 
-    "uix-stat": {
-    // TODO: expand daisyui tags for tailwind JIT
-      props: {
-        title: { type: String, required: true },
-        value: { type: String, required: true },
-        desc: { type: String, required: true },
-        figure: { type: String, defaultValue: null },
-        valueColor: { type: String, defaultValue: "default", enum: Variants },
-        descColor: { type: String, defaultValue: "default", enum: Variants }
-      },
-      render: ({ title, value, desc, figure, valueColor, descColor }, { html }) => {
-        const valueColorClass = `text-${valueColor}-focus`;
-        const descColorClass = `text-${descColor}-focus`;
-        return html`
-        <div class="stat">
-          ${figure ? html`<div class="stat-figure ${valueColorClass}">${figure}</div>` : ""}
-          <div class="stat-title">${title}</div>
-          <div class="stat-value ${valueColorClass}">${value}</div>
-          <div class="stat-desc ${descColorClass}">${desc}</div>
-        </div>
-      `;
-      }
-    },
-
     "uix-chat-message": {
       props: {
         message: { type: Object, defaultValue: { content: "", timestamp: "" } },

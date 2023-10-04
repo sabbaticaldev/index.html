@@ -53,7 +53,8 @@ const ModalPositions = {
   "bottom": "modal-bottom",
 };
 const Methods = ["details", "focus"];
-const Sizes = ["lg", "md", "sm", "xs"];
+const Sizes = ["lg", "md", "sm", "xs", "xl", "2xl", "3xl", "4xl"];
+const TabsSize = {"lg": "tab-lg", "md": "tab-md", "sm": "tab-sm", "xs": "tab-xs"};
 const Shapes = ["default", "circle", "square"];
 const Styles = ["ghost", "link", "outline", "glass", "active", "disabled", "bordered"];
 const Triggers = ["click", "hover"];
@@ -167,6 +168,7 @@ export {
   Formats,
   Variants,
   BgColor,
+  TabsSize,
   TextColor,
   BorderColor,
   CheckboxVariant,

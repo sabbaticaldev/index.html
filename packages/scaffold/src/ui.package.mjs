@@ -3,6 +3,7 @@ import {
   AlignY,
   DirectionsClasses,
   Positions,
+  TabsSize,
   Resolutions,
   Gaps,
   Layouts,
@@ -54,34 +55,35 @@ export default {
     "uix-alert": {
       props: {
         title: { type: String, defaultValue: "" },
-        message: { type: String, defaultValue: "Alert Message" },
+        message: { type: String, defaultValue: "" },
         variant: { 
           type: String,
-          defaultValue: "info",
+          defaultValue: "",
           enum: Variants
         },
-        closable: { type: Boolean, defaultValue: true },
+        closable: { type: Boolean, defaultValue: false },
         rounded: { type: Boolean, defaultValue: false },
+        border: { type: Boolean, defaultValue: false },
         actions: { type: Array, defaultValue: [] }
       },
-      render: ({ title, message, rounded, variant, closable, actions }, { html }) => {
-        const colorClass = `${BgColor[variant]} ${BorderColor[variant]} ${TextColor[variant]}`;
+      render: ({ title, message, rounded, variant, closable, actions, border }, { html }) => {
+        const colorClass = [BgColor[variant], border ? BorderColor[variant] : "", TextColor[variant]].filter(cls=>!!cls).join(" ");
         
         return html`
-        <div class="alert p-4 ${rounded && "rounded" || ""} shadow-lg ${colorClass}">
-          <div class="flex justify-between">
+        <div class="alert ${rounded && "rounded" || ""} ${colorClass}">
+          <div class="flex justify-between items-center">
             <div>
-              ${title ? html`<h3 class="font-bold mb-2">${title}</h3>` : ""}
+              ${title ? html`<h3 class="font-semibold mb-2">${title}</h3>` : ""}
               <div class="text-xs">${message}</div>
             </div>
             <div>
-              ${closable ? html`<uix-button label="&times;" variant="neutral" action=${()=> dispatchEvent(new CustomEvent("close-alert"))}></uix-button>` : ""}
+              ${closable ? html`<uix-button variant="neutral">&times;</uix-button>` : ""}
             </div>
           </div>
           ${actions.length > 0 ? html`
             <div class="mt-4">
               ${actions.map(action => 
-    html`<uix-button label=${action.label} .action=${action.action}></uix-button>`
+    html`<uix-button .action=${action.action}>${action.label}</uix-button>`
   )}
             </div>
           ` : ""}
@@ -167,7 +169,7 @@ export default {
         },
         icon: { type: String, defaultValue: null },
       },
-      render: ({ content, variant, outline, size, icon }, { html }) => {
+      render: ({ variant, outline, size }, { html }) => {
         const baseClass = "badge";
         const colorClass = BgColor[variant] + (outline ? "-outline" : ""); 
         const sizeClassMapping = {
@@ -177,13 +179,10 @@ export default {
           "xs": "badge-xs"
         };
         const sizeClass = sizeClassMapping[size];
-
-        const iconRender = icon ? html`<uix-icon name=${icon} class="w-4 h-4 mr-2"></uix-icon>` : "";
-
+        
         return html`
         <span class="${baseClass} ${colorClass} ${sizeClass}">
-          ${iconRender}
-          ${content}
+          <slot></slot>
         </span>
       `;
       },
@@ -307,9 +306,10 @@ export default {
         isLoading: { type: Boolean, defaultValue: false },
         startIcon: { type: String, defaultValue: "" },
         endIcon: { type: String, defaultValue: "" },
+        border: { type: Boolean, defaultValue: false },
         noAnimation: { type: Boolean, defaultValue: false }
       },
-      render: ({ style, size, fullWidth, shape, variant, isLoading, startIcon, endIcon, noAnimation }, { html }) => {
+      render: ({ style, size, fullWidth, border, shape, variant, isLoading, startIcon, endIcon, noAnimation }, { html }) => {
         const ButtonSizes = {
           "lg": "btn-lg",
           "md": "",
@@ -337,7 +337,7 @@ export default {
         btn
         ${BgColor[variant] || ""}
         ${TextColor[variant] || ""}
-        ${BorderColor[variant] || ""}
+        ${border && BorderColor[variant] || ""}
         ${ButtonSizes[size] || ""}
         ${fullWidth ? "btn-block" : ""}
         ${ButtonShapes[shape] || ""}
@@ -476,7 +476,7 @@ export default {
           defaultValue: "md",
           enum: Sizes
         },
-        label: { type: String, defaultValue: "Checkbox" },
+        label: { type: String, defaultValue: "" },
         disabled: { type: Boolean, defaultValue: false },
         change: { type: Function }
       },
@@ -492,7 +492,7 @@ export default {
         return html`
       <div class="form-control">
         <label class="cursor-pointer label">
-          <span class="label-text">${label}</span>
+          ${label && html`<span class="label-text">${label}</span>` || ""}
           <input 
             type="checkbox" 
             @change=${change} 
@@ -1245,7 +1245,7 @@ export default {
           "xs": "input-xs"
         };
 
-        const inputClass = `${InputStyleClass[style] || ""} ${InputVariantClass[variant] || ""} ${InputSizeClass[size]}`;
+        const inputClass = ["input", InputStyleClass[style], InputVariantClass[variant],InputSizeClass[size]].filter(cls=>!!cls).join(" ");
    
         const inputElem = html`
         <input 
@@ -1586,6 +1586,30 @@ export default {
       `;
       },
     },
+
+    "uix-stat": {
+      // TODO: expand daisyui tags for tailwind JIT
+      props: {
+        title: { type: String, required: true },
+        value: { type: String, required: true },
+        desc: { type: String, required: true },
+        figure: { type: String, defaultValue: null },
+        valueColor: { type: String, defaultValue: "default", enum: Variants },
+        descColor: { type: String, defaultValue: "default", enum: Variants }
+      },
+      render: ({ title, value, desc, figure, valueColor, descColor }, { html }) => {
+        const valueColorClass = `text-${valueColor}-focus`;
+        const descColorClass = `text-${descColor}-focus`;
+        return html`
+          <div class="stat">
+            ${figure ? html`<div class="stat-figure ${valueColorClass}">${figure}</div>` : ""}
+            <div class="stat-title">${title}</div>
+            <div class="stat-value ${valueColorClass}">${value}</div>
+            <div class="stat-desc ${descColorClass}">${desc}</div>
+          </div>
+        `;
+      }
+    },
     "uix-join": {
       props: {
         direction: {
@@ -1628,6 +1652,11 @@ export default {
           defaultValue: "default",
           enum: Layouts
         },
+        gap: {
+          type: String,
+          defaultValue: "sm",
+          enum: Sizes
+        },
         rounded: { type: Boolean, defaultValue: false },
         alignX: {
           type: String,
@@ -1640,17 +1669,42 @@ export default {
           defaultValue: ""
         }
       },
-      render: ({ direction, layout, rounded, alignX, alignY }, { html }) => {
+      render: ({ direction, gap, layout, rounded, alignX, alignY }, { html }) => {
         const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
         const responsiveClass = layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
         const borderRadiusClass = rounded ? "rounded-l-full rounded-r-full" : "";
+        const gapClass = Gaps[gap] || "";
         const alignXClass = alignX ? "w-full "+ AlignX[alignX] : "";
         const alignYClass = alignY ? "h-full "+ AlignY[alignY] : "";
       
         return html`
-            <div class="flex ${directionClass} ${responsiveClass} ${borderRadiusClass} ${alignXClass} ${alignYClass}">
+            <div class=${["flex", gapClass, directionClass, responsiveClass, borderRadiusClass, alignXClass, alignYClass].filter(cls => !!cls).join(" ")}>
                 <slot></slot>
             </div>
+        `;
+      },
+    },
+    "uix-grid": {
+      props: {
+        templateColumns: { type: String, defaultValue: "1fr" },
+        templateRows: { type: String, defaultValue: "" },
+        gap: { type: String, defaultValue: "sm", enum: Sizes },
+        rounded: { type: Boolean, defaultValue: false },
+        alignX: { type: String, enum: Object.keys(AlignX), defaultValue: "" },
+        alignY: { type: String, enum: Object.keys(AlignY), defaultValue: "" }
+      },
+      render: ({ templateColumns, templateRows, gap, rounded, alignX, alignY }, { html }) => {
+        const borderRadiusClass = rounded ? "rounded-l-full rounded-r-full" : "";
+        const gapClass = Gaps[gap] || "";
+        const columnsClass = `grid-cols-${templateColumns}`;
+        const rowsClass = templateRows ? `grid-rows-${templateRows}` : "";
+        const alignXClass = alignX ? AlignX[alignX] : "";
+        const alignYClass = alignY ? AlignY[alignY] : "";
+      
+        return html`
+          <div class=${["grid", gapClass, columnsClass, rowsClass, borderRadiusClass, alignXClass, alignYClass].filter(cls => !!cls).join(" ")}>
+            <slot></slot>
+          </div>
         `;
       },
     },
@@ -1680,24 +1734,26 @@ export default {
           enum: Sizes
         }
       },
-      render: ({ items, selectedValue, type, size, gap }, { html }) => {
+      render: ({ items, selectedValue, setSelectedValue, type, size, gap }, { html }) => {
+        let selected = selectedValue;
+        
         const getTabClass = (item) => {
-          let baseClass = "tab";
-          if (item.value === selectedValue) baseClass += " tab-active";
-          if (item.disabled) baseClass += " tab-disabled";
-          if (type === "bordered") baseClass += " tab-bordered";
-          if (type === "lifted") baseClass += " tab-lifted";
-          if (Sizes.includes(size)) baseClass += ` tab-${size}`;
-          return baseClass;
+          return ["tab",
+            (item.label === selected) && "tab-active",
+            (item.disabled) && "tab-disabled",
+            (type === "bordered") &&  "tab-bordered",
+            (type === "lifted") &&  "tab-lifted",
+            (Sizes.includes(size)) && TabsSize[size]].filter(cls => !!cls).join(" ");          
         };
         const gapClass = Gaps[gap] || "";
+        
         return html`
         <div class=${`tabs ${type === "boxed" ? "tabs-boxed" : ""} ${gapClass}`}>
-          ${items.map(item => html`
-            <a class=${getTabClass(item)} href=${item.href || "#"} role="tab">
+          ${items.map(item => !console.log(getTabClass(item)) && html`
+            <button @click=${() => setSelectedValue(item.label)} class=${getTabClass(item)} role="tab">
               ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
               ${item.label}
-            </a>
+            </button>
           `)}
         </div>
       `;
