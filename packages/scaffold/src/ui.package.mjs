@@ -819,6 +819,65 @@ export default {
       `;
       },
     },
+    "uix-block": {
+      props: {
+        variant: { 
+          type: String, 
+          defaultValue: "base",
+          enum: Variants 
+        },
+        bgColor: { 
+          type: String, 
+          defaultValue: ""
+        },
+        textColor: {
+          type: String,
+          defaultValue: ""
+        },
+        spacing: {
+          type: Number,
+          defaultValue: 4
+        },
+        rounded: {
+          type: Boolean,
+          defaultValue: false
+        },
+        shadow: {
+          type: Boolean,
+          defaultValue: false
+        }
+      },
+      render: ({ variant, bgColor, textColor, spacing, rounded, shadow }, { html }) => {
+        const BlockColors = {
+          "primary": "bg-primary text-primary-content",
+          "secondary": "bg-secondary text-secondary-content",
+          "accent": "bg-accent text-accent-content",
+          "neutral": "bg-neutral text-neutral-content",
+          "base": "bg-base text-base-content",
+          "info": "bg-info text-info-content",
+          "success": "bg-success text-success-content",
+          "warning": "bg-warning text-warning-content",
+          "error": "bg-error text-error-content"
+        };
+
+        const SpacingSizes = {
+          1: "p-1", 2: "p-2", 3: "p-3", 4: "p-4", 5: "p-5", 6: "p-6", 8: "p-8", 10: "p-10"
+        };
+    
+        const bgClass = bgColor ? `bg-${bgColor}` : "";
+        const textClass = textColor ? `text-${textColor}` : "";
+        const spacingClass = SpacingSizes[spacing || 2];
+        const variantClass = BlockColors[variant];
+        const roundedClass = rounded ? "rounded" : "";
+        const shadowClass = shadow ? "shadow-md" : "";
+    
+        return html`
+          <div class="${spacingClass} ${variantClass} ${bgClass} ${textClass} ${roundedClass} ${shadowClass}">
+            <slot></slot>
+          </div>
+        `;
+      }
+    },    
     "uix-menu": {
       props: {
         items: { type: Array, defaultValue: [] },
@@ -841,7 +900,7 @@ export default {
         items, title, variant, fullHeight,
         classes,
         fullWidth, height, width, direction, 
-        rounded, size, isActive, isCollapsible, iconOnly 
+        rounded, size, isActive, iconOnly 
       }, { html }) => {
         const MenuSize = {
           "lg": "menu-lg",
@@ -864,54 +923,31 @@ export default {
           ${items.map(item => {
     const { icon } = item;
     const iconComponent = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
-    
-    if (isCollapsible) {
-      return html`
-                <details open>
-                  <summary>${iconOnly ? iconComponent : `${iconComponent} ${item.label}`}</summary>
-                  ${item.subItems ? html`
+    const submenuItems = item.submenu ? html`
                     <ul>
-                      ${item.subItems.map(subItem => html`<li><a class="${activeClass} ${itemClass}" @click=${subItem.click}>${subItem.label}</a></li>`)}
+                      ${item.submenu.map(subItem => html`<li><a class="${activeClass} ${itemClass}" @click=${subItem.click}>${subItem.label}</a></li>`)}
                     </ul>
-                  ` : ""}
+                  ` : "";
+
+    if (submenuItems) {
+      return html`
+                <details ?open=${!!item.open}>
+                  <summary  class="${activeClass} ${itemClass} flex flex-row items-center gap-2">${iconComponent} ${iconOnly ? "" : ` ${item.label}`}</summary>
+                  ${submenuItems}
                 </details>
               `;
     } else {
       return html`
-                <li><a @click=${item.click} href=${item.href || "#"} class="${activeClass} ${itemClass}">${iconComponent} ${!iconOnly && item.label}</a></li>
+                <li>
+                  <a @click=${item.click} href=${item.href || "#"} class="${activeClass} ${itemClass}">
+                    ${iconComponent} ${!iconOnly && item.label}                    
+                  </a>
+              </li>
               `;
     }
   })}
         </ul>
       `;
-      },
-    },
-    "uix-link": {
-      props: {
-        href: { type: String, defaultValue: "#" },
-        content: { type: String, defaultValue: "Link" },
-        external: { type: Boolean, defaultValue: false },
-        variant: { 
-          type: String, 
-          defaultValue: "primary",
-          enum: Variants
-        },
-        underlineOnHover: { type: Boolean, defaultValue: false },
-        icon: { type: String, defaultValue: null }
-      },
-      render: ({ href, content, external, variant, underlineOnHover, icon }, { html }) => {
-        const textColorClass = TextColor[variant];
-      
-        const hoverUnderlineClass = underlineOnHover ? "hover:underline" : "underline";
-        return html`
-          <a href=${href} 
-             class="${textColorClass} ${hoverUnderlineClass}" 
-             ${external ? "target=\"_blank\" rel=\"noopener noreferrer\"" : ""}
-          >
-            ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
-            ${content}
-          </a>
-        `;
       },
     },
     "uix-radio": {
