@@ -170,7 +170,7 @@ export default {
               ${items.length > 0 ? html`
                   <ul class="menu ${menuClass} ${padding} ${bgClass} items-center self-start justify-between w-full gap-2">
                     ${icon && label && html`<li class="w-72 h-16 text-white flex items-center justify-center w-full border-b">
-                      <a class=${linkClass}>
+                      <a class=${linkClass} href="/">
                         <ion-icon
                           name=${icon}
                           class="text-2xl"

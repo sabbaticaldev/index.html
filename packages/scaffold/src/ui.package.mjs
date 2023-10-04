@@ -189,11 +189,11 @@ export default {
     },
     "uix-icon": {
       props: {
-        name: ""
+        name: "",
+        classes: {}
       },
-      render: ({ name }, { html }) => {
-        console.log({name});
-        return html`<ion-icon name=${name} class="text-2xl md hydrated" role="img"></ion-icon>`;
+      render: ({ name, classes: {container: containerClass = "text-2xl"} }, { html }) => {        
+        return html`<ion-icon name=${name} class=${containerClass} role="img"></ion-icon>`;
       }
     },
     "uix-alerts-container": { // TODO: create a container for alerts that knows how to close alert
@@ -885,10 +885,9 @@ export default {
         click: { type: Function, default: () => {} },
         href: { type: String, defaultValue: "#" },
         active: { type: Boolean, defaultValue: false },
-        classes: { type: String, defaultValue: "" }
       },
     
-      render: ({ icon, label, click, href, active, classes }, { html }) => {
+      render: ({ icon, label, click, href, active }, { html }) => {
         const iconComponent = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
         const activeClass = active ? "active" : "";
         return html`
@@ -896,7 +895,7 @@ export default {
             <a 
               @click=${click} 
               href=${href} 
-              class="${activeClass} ${classes}">
+              class="${activeClass} flex flex-row items-center gap-2 px-4">
                 ${iconComponent}
                 ${label}
             </a>
