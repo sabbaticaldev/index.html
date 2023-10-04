@@ -27,6 +27,14 @@ const BgOverlayOpacity = {
   90: "bg-opacity-90",
   100: "bg-opacity-100",
 };
+
+const Gaps = {
+  sm: "gap-1",
+  md: "gap-2",
+  lg: "gap-4",
+  xl: "gap-8",
+  "2xl": "gap-16"
+};
   
 const DirectionsClasses = {
   "horizontal": "divider-horizontal",
@@ -144,6 +152,7 @@ export {
   DirectionsClasses,
   Positions,
   Resolutions,
+  Gaps,
   NavbarPart,
   Layouts,
   Spacings,

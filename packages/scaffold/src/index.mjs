@@ -3,6 +3,7 @@ import uiKit from "./ui.package.mjs";
 import uxKit from "./ux.package.mjs";
 import appKit from "./app.package.mjs";
 import typographyKit from "./typography.package.mjs";
+import docsKit from "./docs.package.mjs";
 
 
 const bootstrapp = (app, { style, onLoad, bootstrappTag = "app-index" } = {}) => {  
@@ -15,6 +16,7 @@ const bootstrapp = (app, { style, onLoad, bootstrappTag = "app-index" } = {}) =>
   defineViews(typographyKit.views, { style });
   defineViews(appKit.views, { style, i18n: appKit.i18n });  
   defineViews(uiKit.views, { style, i18n: uiKit.i18n });
+  defineViews(docsKit.views, { style, i18n: docsKit.i18n });
   return views[bootstrappTag];
 };
 

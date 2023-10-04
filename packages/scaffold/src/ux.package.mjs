@@ -48,9 +48,9 @@ export default {
           const isMain = mainNavbar === orientation;
           return navbar.items.length ? html`
         <uix-navbar
+          class="bg-base-100 border-r"
           icon=${isMain ? icon : ""}
           label=${isMain ? label : ""}
-          .classes=${{container: "border-r bg-base-100"}}
           padding="p-0"
           direction=${["rightNavbar","leftNavbar"].includes(orientation) ? "vertical" : "horizontal"}
           variant=${navbar.bgColor}
@@ -81,7 +81,7 @@ export default {
         <div class="flex h-full">
           ${mainNavbar === "leftNavbar" ? renderNavbar(leftNavbar, "leftNavbar") : renderMenu(leftNavbar, "leftNavbar")}
           
-          <main class="content flex-grow">
+          <main class="relative content flex-grow overflow-y-auto">
             <slot></slot>
           </main>
           

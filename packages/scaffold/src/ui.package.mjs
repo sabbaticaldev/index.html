@@ -4,6 +4,7 @@ import {
   DirectionsClasses,
   Positions,
   Resolutions,
+  Gaps,
   Layouts,
   Spacings,
   AnimationTypes,
@@ -80,7 +81,7 @@ export default {
           ${actions.length > 0 ? html`
             <div class="mt-4">
               ${actions.map(action => 
-    html`<uix-button .label=${action.label} .action=${action.action}></uix-button>`
+    html`<uix-button label=${action.label} .action=${action.action}></uix-button>`
   )}
             </div>
           ` : ""}
@@ -835,12 +836,12 @@ export default {
         },
         variant: {
           type: String,
-          defaultValue: "neutral",
+          defaultValue: "",
           enum: Variants
         }
       },
       render: ({ prefix, code, highlight, variant }, { html }) => {
-        const colorSchema = [BgColor[variant], TextColor[variant]].join(" ");
+        const colorSchema = variant ? [BgColor[variant], TextColor[variant]].join(" ") : "";
         const highlightClass = highlight ? colorSchema : "";
     
         return html`
@@ -928,7 +929,7 @@ export default {
               href=${href} 
               class="${activeClass} flex flex-row items-center gap-2 px-4">
                 ${iconComponent}
-                ${label}
+                ${label || ""}
             </a>
           </li>
         `;
@@ -956,7 +957,7 @@ export default {
         items, title, variant, fullHeight,
         classes,
         fullWidth, height, width, direction, 
-        rounded, size, isActive, iconOnly 
+        rounded, size, isActive 
       }, { html }) => {
         const MenuSize = {
           "lg": "menu-lg",
@@ -989,8 +990,8 @@ export default {
       return html`
             <details ?open=${!!item.open}>
               <summary class="${activeClass} ${itemClass}">
-                ${item.icon && html`<uix-icon name=${item.icon}></uix-icon>`}
-                ${item.label}                
+                ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
+                ${item.label || ""}                
               </summary>
               ${submenuItems}
             </details>
@@ -1569,29 +1570,17 @@ export default {
           defaultValue: "vertical", 
           enum: Directions 
         },
-        spacing: { 
+        gap: { 
           type: String, 
           defaultValue: "md",
           enum: Spacings
         }
       },
-      render: ({ direction, spacing }, { html }) => {
-        const SpacingXClasses = {
-          "lg": "space-x-lg",
-          "md": "space-x-md",
-          "sm": "space-x-sm",
-          "xs": "space-x-xs"
-        };
-        const SpacingYClasses = {
-          "lg": "space-y-lg",
-          "md": "space-y-md",
-          "sm": "space-y-sm",
-          "xs": "space-y-xs"
-        };
-        const spacingClass = spacing === "none" ? "" : (direction === "horizontal" ? SpacingXClasses[spacing] :  SpacingYClasses[spacing]);
+      render: ({ direction, gap }, { html }) => {
+        const gapClass = Gaps[gap] || "";
         const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
         return html`
-        <div class="stack flex ${directionClass} ${spacingClass}">
+        <div class="stack flex ${directionClass} ${gapClass}">
           <slot></slot>
         </div>
       `;
@@ -1677,16 +1666,21 @@ export default {
         },
         type: {
           type: String,
-          defaultValue: "boxed", 
+          defaultValue: "default", 
           enum: ["default", "boxed", "bordered", "lifted"]
         },
         size: {
           type: String,
           defaultValue: "md",
           enum: Sizes
+        },
+        gap: {
+          type: String,
+          defaultValue: "md",
+          enum: Sizes
         }
       },
-      render: ({ items, selectedValue, type, size }, { html }) => {
+      render: ({ items, selectedValue, type, size, gap }, { html }) => {
         const getTabClass = (item) => {
           let baseClass = "tab";
           if (item.value === selectedValue) baseClass += " tab-active";
@@ -1696,9 +1690,9 @@ export default {
           if (Sizes.includes(size)) baseClass += ` tab-${size}`;
           return baseClass;
         };
-  
+        const gapClass = Gaps[gap] || "";
         return html`
-        <div class=${`tabs ${type === "boxed" ? "tabs-boxed" : ""}`}>
+        <div class=${`tabs ${type === "boxed" ? "tabs-boxed" : ""} ${gapClass}`}>
           ${items.map(item => html`
             <a class=${getTabClass(item)} href=${item.href || "#"} role="tab">
               ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}

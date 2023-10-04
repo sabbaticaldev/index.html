@@ -181,6 +181,7 @@ const messageHandlers = {
     } else {
       await adapter.removeItem(key, db);
     }
+    // TODO: When sending the message to another user, we need to append the user id who sent it
     P2P.postMessage({ type: "OPLOG_WRITE", store, key, value });
 
     if (data.requestUpdate) requestUpdate();
