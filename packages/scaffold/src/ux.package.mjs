@@ -180,7 +180,7 @@ export default {
                           ${label}
                         </h2>
                       </a>
-                    </li>`};
+                    </li>`}
   
                     ${items.map(item => html`
                         <li class="${item.height || ""} ${item.width || ""} ${linkClass} w-full"><uix-navbar-item label=${item.label} icon=${item.icon} .submenu=${item.submenu} .component=${item.component}></uix-navbar-item></li>

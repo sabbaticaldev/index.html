@@ -878,6 +878,32 @@ export default {
         `;
       }
     },    
+    "uix-menu-item": {
+      props: {
+        icon: { type: String, defaultValue: "" },
+        label: { type: String, defaultValue: "" },
+        click: { type: Function, default: () => {} },
+        href: { type: String, defaultValue: "#" },
+        active: { type: Boolean, defaultValue: false },
+        classes: { type: String, defaultValue: "" }
+      },
+    
+      render: ({ icon, label, click, href, active, classes }, { html }) => {
+        const iconComponent = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
+        const activeClass = active ? "active" : "";
+        return html`
+          <li>
+            <a 
+              @click=${click} 
+              href=${href} 
+              class="${activeClass} ${classes}">
+                ${iconComponent}
+                ${label}
+            </a>
+          </li>
+        `;
+      },
+    },    
     "uix-menu": {
       props: {
         items: { type: Array, defaultValue: [] },
@@ -915,39 +941,36 @@ export default {
         const activeClass = isActive ? "active" : "";
         const fullHeightClass = fullHeight ? "h-full" : "";
         const fullWidthClass = fullWidth ? "w-full" : "";
-        const itemClass = "font-semibold leading-6 text-sm " + (classes?.items || " text-gray-700 hover:text-indigo-600 ");
+        const itemClass = "flex flex-row items-center gap-2 py-2 font-semibold leading-6 text-sm " + (classes?.items || " text-gray-700 hover:text-indigo-600 ");
+        
         
         return html`
-        <ul class="${baseClass} ${sizeClass} ${bgColorClass} ${fullHeightClass} ${fullWidthClass} ${height || ""} ${width || ""}">
-          ${title ? html`<li class="menu-title">${title}</li>` : ""}
-          ${items.map(item => {
-    const { icon } = item;
-    const iconComponent = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
-    const submenuItems = item.submenu ? html`
-                    <ul>
-                      ${item.submenu.map(subItem => html`<li><a class="${activeClass} ${itemClass}" @click=${subItem.click}>${subItem.label}</a></li>`)}
-                    </ul>
-                  ` : "";
+    <ul class="${baseClass} ${sizeClass} ${bgColorClass} ${fullHeightClass} ${fullWidthClass} ${height || ""} ${width || ""}">
+      ${title ? html`<li class="menu-title">${title}</li>` : ""}
+      ${items.map(item => {
+    const { submenu } = item;
+    const submenuItems = submenu ? html`
+          <ul>
+            ${submenu.map(subItem => html`<uix-menu-item .icon=${subItem.icon} .label=${subItem.label} .href=${subItem.href || "#"} .active=${isActive}></uix-menu-item>`)}
+          </ul>
+        ` : "";
 
     if (submenuItems) {
       return html`
-                <details ?open=${!!item.open}>
-                  <summary  class="${activeClass} ${itemClass} flex flex-row items-center gap-2">${iconComponent} ${iconOnly ? "" : ` ${item.label}`}</summary>
-                  ${submenuItems}
-                </details>
-              `;
+            <details ?open=${!!item.open}>
+              <summary class="${activeClass} ${itemClass}">
+                ${item.icon && html`<uix-icon name=${item.icon}></uix-icon>`}
+                ${item.label}                
+              </summary>
+              ${submenuItems}
+            </details>
+          `;
     } else {
-      return html`
-                <li>
-                  <a @click=${item.click} href=${item.href || "#"} class="${activeClass} ${itemClass}">
-                    ${iconComponent} ${!iconOnly && item.label}                    
-                  </a>
-              </li>
-              `;
+      return html`<uix-menu-item .icon=${item.icon} .label=${item.label} .href=${item.href || "#"} .active=${isActive}></uix-menu-item>`;
     }
   })}
-        </ul>
-      `;
+    </ul>
+  `;
       },
     },
     "uix-radio": {
