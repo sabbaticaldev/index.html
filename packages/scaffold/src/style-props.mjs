@@ -146,7 +146,32 @@ const RingColor = {
   "error": "ring-error"
 };
 
+const HeadingColors = {
+  "primary": "text-primary",
+  "secondary": "text-secondary",
+  "accent": "text-accent",
+  "neutral": "text-neutral",
+  "base": "text-base",
+  "info": "text-info",
+  "success": "text-success",
+  "warning": "text-warning",
+  "error": "text-error"
+};
+
+const LinkColors = {
+  "primary": "link-primary hover:text-primary-dark",
+  "secondary": "link-secondary hover:text-secondary-dark",
+  "accent": "link-accent hover:text-accent-dark",
+  "neutral": "link-neutral hover:text-neutral-dark",
+  "base": "link-base hover:text-base-dark",
+  "info": "link-info hover:text-info-dark",
+  "success": "link-success hover:text-success-dark",
+  "warning": "link-warning hover:text-warning-dark",
+  "error": "link-error hover:text-error-dark"
+};
 export {
+  HeadingColors,
+  LinkColors,
   AlignX,
   AlignY,
   BgOverlayOpacity,

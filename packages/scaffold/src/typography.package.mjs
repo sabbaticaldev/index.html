@@ -1,31 +1,10 @@
 import {
   Variants,
-  Sizes
+  Sizes,
+  HeadingColors,
+  LinkColors
 } from "./style-props.mjs"; 
 
-const HeadingColors = {
-  "primary": "text-primary",
-  "secondary": "text-secondary",
-  "accent": "text-accent",
-  "neutral": "text-neutral",
-  "base": "text-base",
-  "info": "text-info",
-  "success": "text-success",
-  "warning": "text-warning",
-  "error": "text-error"
-};
-
-const LinkColors = {
-  "primary": "text-primary hover:text-primary-dark",
-  "secondary": "text-secondary hover:text-secondary-dark",
-  "accent": "text-accent hover:text-accent-dark",
-  "neutral": "text-neutral hover:text-neutral-dark",
-  "base": "text-base hover:text-base-dark",
-  "info": "text-info hover:text-info-dark",
-  "success": "text-success hover:text-success-dark",
-  "warning": "text-warning hover:text-warning-dark",
-  "error": "text-error hover:text-error-dark"
-};
 
 export default {  
   views: {
@@ -80,25 +59,23 @@ export default {
     "uix-link": {
       props: {
         href: { type: String, defaultValue: "#" },
-        content: { type: String, defaultValue: "Link" },
+        content: { type: String, defaultValue: "" },
         external: { type: Boolean, defaultValue: false },
         variant: { 
           type: String, 
-          defaultValue: "primary",
+          defaultValue: "",
           enum: Variants 
         },
         underlineOnHover: { type: Boolean, defaultValue: false },
         icon: { type: String, defaultValue: null },
-        classes: { type: String, defaultValue: "" }
       },
-      render: ({ href, content, external, variant, underlineOnHover, icon, classes }, { html }) => {
-        const variantClass = LinkColors[variant];
-        const hoverUnderlineClass = underlineOnHover ? "hover:underline" : "";
+      render: ({ href, content, external, variant, underlineOnHover, icon, }, { html }) => {
+        const variantClass = ["link", LinkColors[variant],underlineOnHover ? "hover:underline" : ""].filter(cls => !!cls).join(" ");
         const externalAttrs = external ? "target=\"_blank\" rel=\"noopener noreferrer\"" : "";
     
         return html`
-          <a href="${href}" 
-             class="${variantClass} ${hoverUnderlineClass} ${classes}" 
+          <a href=${href}
+             class=${variantClass}
              ${externalAttrs}
           >
             ${icon ? html`<uix-icon name="${icon}"></uix-icon>` : ""}

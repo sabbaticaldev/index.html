@@ -1010,7 +1010,7 @@ export default {
         value: { type: String, defaultValue: "" },
         variant: {
           type: String,
-          defaultValue: "default",
+          defaultValue: "",
           enum: Variants
         },
         size: {
