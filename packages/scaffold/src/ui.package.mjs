@@ -927,7 +927,7 @@ export default {
             <a 
               @click=${click} 
               href=${href} 
-              class="${activeClass} flex flex-row items-center gap-2 px-4">
+              class="${activeClass} cursor-pointer flex flex-row items-center gap-2 px-4">
                 ${iconComponent}
                 ${label || ""}
             </a>
@@ -941,10 +941,11 @@ export default {
         title: { type: String, defaultValue: null },
         variant: { type: String, defaultValue: "", enum: Variants },
         direction: { type: String, defaultValue: "vertical", enum: Directions },
-        size: { type: String, defaultValue: "md", enum: ["xs", "sm", "md", "lg"] },
+        size: { type: String, defaultValue: "md", enum: Sizes },
+        gap: { type: String, defaultValue: "md", enum: Sizes },
         click: {type: Function, default: () => {}},
         isActive: { type: Boolean, defaultValue: false },
-        isCollapsible: { type: Boolean, defaultValue: false },        
+        isCollapsible: { type: Boolean, defaultValue: false },       
         iconOnly: { type: Boolean, defaultValue: false },
         width: "",
         height: "",
@@ -955,7 +956,7 @@ export default {
       },
       render: ({ 
         items, title, variant, fullHeight,
-        classes,
+        classes, gap,
         fullWidth, height, width, direction, 
         rounded, size, isActive 
       }, { html }) => {
@@ -965,43 +966,34 @@ export default {
           "sm": "menu-sm",
           "xs": "menu-xs"
         };
-      
-        const baseClass = `menu ${direction === "horizontal" ? "menu-horizontal" : "menu-vertical"} ${rounded && "rounded-box" || ""}`;
-        const bgColorClass = BgColor[variant];
-        const sizeClass = MenuSize[size];
-        const activeClass = isActive ? "active" : "";
-        const fullHeightClass = fullHeight ? "h-full" : "";
-        const fullWidthClass = fullWidth ? "w-full" : "";
-        const itemClass = "flex flex-row items-center gap-2 py-2 font-semibold leading-6 text-sm " + (classes?.items || " text-gray-700 hover:text-indigo-600 ");
         
+        const baseClass = ["menu", BgColor[variant], height || "", width || "",
+          MenuSize[size], Gaps[gap], fullHeight && "h-full", fullWidth && "w-full",
+          direction === "horizontal" ? "menu-horizontal" : "menu-vertical", rounded && "rounded-box"].filter(c=>!!c).join(" ");
+        const itemClass = "flex flex-row items-center font-semibold leading-6 text-sm " + (classes?.items || " text-gray-700 hover:text-indigo-600 ");
         
         return html`
-    <ul class="${baseClass} ${sizeClass} ${bgColorClass} ${fullHeightClass} ${fullWidthClass} ${height || ""} ${width || ""}">
-      ${title ? html`<li class="menu-title">${title}</li>` : ""}
-      ${items.map(item => {
+          <ul class=${baseClass}>
+            ${title ? html`<li class="menu-title">${title}</li>` : ""}
+            ${items.map(item => {
     const { submenu } = item;
-    const submenuItems = submenu ? html`
-          <ul>
-            ${submenu.map(subItem => html`<uix-menu-item .icon=${subItem.icon} .label=${subItem.label} .href=${subItem.href || "#"} .active=${isActive}></uix-menu-item>`)}
-          </ul>
-        ` : "";
-
-    if (submenuItems) {
+    
+    if (submenu) {
       return html`
-            <details ?open=${!!item.open}>
-              <summary class="${activeClass} ${itemClass}">
-                ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
-                ${item.label || ""}                
-              </summary>
-              ${submenuItems}
-            </details>
-          `;
+                  <details ?open=${!!item.open}>
+                    <summary class="${isActive && "active" || ""} cursor-pointer ${itemClass} gap-2">
+                      ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
+                      ${item.label || ""}                
+                    </summary>
+                    <uix-menu .items=${submenu} .direction=${direction}></uix-menu>
+                  </details>
+                `;
     } else {
       return html`<uix-menu-item .icon=${item.icon} .label=${item.label} .href=${item.href || "#"} .active=${isActive}></uix-menu-item>`;
     }
   })}
-    </ul>
-  `;
+          </ul>
+        `;
       },
     },
     "uix-radio": {     

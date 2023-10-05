@@ -138,16 +138,16 @@ export default {
       props: {
         variant: { 
           type: String,
-          defaultValue: "base-100",
+          defaultValue: "base",
           enum: Variants
         },
         shadow: { type: Boolean, defaultValue: false },
         rounded: { type: Boolean, defaultValue: false },
         height: { type: String, defaultValue: "" },
         width: { type: String, defaultValue: "" },
-        items: { type: Array, defaultValue: [] },        
+        items: { type: Array, defaultValue: [] },
         direction: { type: String, defaultValue: "horizontal", enum: Directions },
-        padding: {type: String, defautValue: "px-1" },
+        gap: {type: String, defaultValue: "sm"},
         label: "", 
         icon: "",
         classes: { type: Object, defaultValue: {} },
@@ -158,39 +158,55 @@ export default {
           container: containerClass
         }, 
         variant, label, icon, direction, shadow, 
-        height, width, padding, rounded, items 
-      }, { html }) => {    
-        const bgClass = BgColor[variant];
-        const baseClasses = `navbar ${bgClass} h-full`;        
-        const shadowClass = shadow ? "shadow-xl" : "";
-        const roundedClass = rounded ? "rounded-box" : "";        
-        const menuClass = direction === "vertical" ? "menu-vertical" : "menu-horizontal";
+        height, width, gap, rounded, items 
+      }, { html }) => {
         
+        const baseClasses = [
+          "navbar flex overflow-y-auto overflow-x-hidden", 
+          BgColor[variant],           
+          shadow ? "shadow-xl" : "", 
+          rounded ? "rounded-box" : "",
+          direction === "vertical" ? "flex-col h-full" : "flex-row w-full"
+        ].filter(c => !!c).join(" ");
+    
+        const menuProps = {
+          variant: variant,
+          direction: direction,
+          items: items,
+          gap: gap || "lg",
+          size: "md", 
+          classes: {
+            container: linkClass
+          }
+        };
+    
         return html`
-          <div class="${baseClasses} ${shadowClass} ${roundedClass} ${height || ""} ${width || ""} ${containerClass}">
-              ${items.length > 0 ? html`
-                  <ul class="menu ${menuClass} ${padding} ${bgClass} items-center self-start justify-between w-full gap-2">
-                    ${icon && label && html`<li class="w-72 h-16 text-white flex items-center justify-center w-full border-b">
-                      <a class=${linkClass} href="/">
-                        <ion-icon
-                          name=${icon}
-                          class="text-2xl"
-                          role="img"
-                        ></ion-icon>
-                        <h2 class="text-xl bold">
-                          ${label}
-                        </h2>
-                      </a>
-                    </li>`}
-  
-                    ${items.map(item => html`
-                        <li class="${item.height || ""} ${item.width || ""} ${linkClass} w-full"><uix-navbar-item label=${item.label} icon=${item.icon} .submenu=${item.submenu} .component=${item.component}></uix-navbar-item></li>
-                    `)}
-                  </ul>
-              ` : ""}
+          <div class="${baseClasses} ${height || ""} ${width || ""} ${containerClass}">
+            ${icon && label ? html`
+              <div class="w-72 h-16 text-white border-b mb-2">
+                <a class=${["cursor-pointer flex items-center text-center justify-center w-full gap-2", linkClass].join(" ")} href="/">
+                  <ion-icon
+                    name=${icon}
+                    class="text-2xl"
+                    role="img"
+                  ></ion-icon>
+                  <h2 class="text-xl bold">
+                    ${label}
+                  </h2>
+                </a>
+              </div>
+            ` : ""}
+            <uix-menu
+              .items=${menuProps.items}
+              variant=${menuProps.variant}
+              direction=${menuProps.direction}
+              size=${menuProps.size}
+              gap=${menuProps.gap}
+              .classes=${menuProps.classes}
+            ></uix-menu>
           </div>
-          `;
-      },
+        `;
+      }
     },
     "uix-footer": {
       props: {
