@@ -29,11 +29,13 @@ const BgOverlayOpacity = {
 };
 
 const Gaps = {
-  sm: "gap-1",
-  md: "gap-2",
-  lg: "gap-4",
-  xl: "gap-8",
-  "2xl": "gap-16"
+  sm: "gap-2",
+  md: "gap-4",
+  lg: "gap-8",
+  xl: "gap-16",
+  "2xl": "gap-32",
+  "3xl": "gap-64",
+  "4xl": "gap-96"
 };
   
 const DirectionsClasses = {
@@ -84,7 +86,19 @@ const TextColor = {
   "warning": "text-warning-focus",
   "error": "text-error-focus"
 };
-  
+
+const ButtonVariant = {
+  "default": "btn-default",
+  "primary": "btn-primary",
+  "secondary": "btn-secondary",
+  "accent": "btn-accent",
+  "neutral": "btn-neutral",
+  "base": "btn-base",
+  "info": "btn-info",
+  "success": "btn-success",
+  "warning": "btn-warning",
+  "error": "btn-error"
+};
 const BorderColor = {
   "primary": "border-primary-content",
   "secondary": "border-secondary-content",
@@ -175,6 +189,7 @@ export {
   AlignX,
   AlignY,
   BgOverlayOpacity,
+  ButtonVariant,
   DirectionsClasses,
   Positions,
   Resolutions,

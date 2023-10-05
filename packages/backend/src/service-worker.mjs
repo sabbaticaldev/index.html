@@ -1,27 +1,6 @@
-import { defineModels } from "./reactive-record.mjs";
-import { getAppId, setAppId, getUserId, getModels } from "./appstate.mjs";
+import { initializeApiModel } from "./reactive-record.mjs";
+import { getAppId, setAppId, getUserId } from "./appstate.mjs";
 import adapter from "./indexeddb.mjs";
-
-function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
-  return {
-    [`GET /api/${modelName}`]: function () {
-      return this.getMany();
-    },
-    [`GET /api/${modelName}/:id`]: function ({ id }) {
-      return this.get(id);
-    },
-    [`POST /api/${modelName}`]: function (item) {
-      return this.add(item);
-    },
-    [`DELETE /api/${modelName}/:id`]: function ({ id }) {
-      return this.remove(id);
-    },
-    [`PATCH /api/${modelName}/:id`]: function ({ id, ...rest }) {
-      return this.edit({ id, ...rest });
-    },
-    ...endpoints,
-  };
-}
 
 const requestUpdate = () =>
   self.clients
@@ -40,15 +19,6 @@ const P2P = {
   },
 };
 
-// Convert the endpoint string to a regular expression.
-const endpointToRegex = (endpoint) => {
-  const [method, path] = endpoint.split(" ");
-  const regexPath = path
-    .split("/")
-    .map((part) => (part.startsWith(":") ? "([^/]+)" : part))
-    .join("/");
-  return new RegExp(`^${method} ${regexPath}$`);
-};
 const extractPathParams = (endpoint, requestPath, regex) => {
   const paramNames = [...endpoint.matchAll(/:([a-z]+)/gi)].map(
     (match) => match[1],
@@ -72,23 +42,10 @@ self.addEventListener("fetch", async (event) => {
     event.respondWith(fetch(event.request));
     return;
   }
+
   event.respondWith(
     (async () => {
-      const appId = await getAppId();
-      const modelList = await getModels(appId);
-      const models = defineModels(modelList, appId);
-      const api = Object.entries(modelList).reduce((acc, [name, model]) => {
-        const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);
-        Object.entries(endpoints).forEach(([endpoint, callback]) => {
-          const regex = endpointToRegex(endpoint);
-          acc[String(endpoint)] = {
-            regex,
-            model: models[name],
-            callback,
-          };
-        });
-        return acc;
-      }, {});
+      const { api } = await initializeApiModel();
       const request = `${event.request.method} ${url.pathname}`;
 
       const matchedEndpointKey = Object.keys(api).find((endpointKey) => {

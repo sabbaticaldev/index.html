@@ -1,6 +1,7 @@
 import {
   AlignX,
   AlignY,
+  ButtonVariant,
   DirectionsClasses,
   Positions,
   TabsSize,
@@ -335,8 +336,7 @@ export default {
 
         const btnClass = `
         btn
-        ${BgColor[variant] || ""}
-        ${TextColor[variant] || ""}
+        ${ButtonVariant[variant] || ""}
         ${border && BorderColor[variant] || ""}
         ${ButtonSizes[size] || ""}
         ${fullWidth ? "btn-block" : ""}

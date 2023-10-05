@@ -1,6 +1,64 @@
 import indexeddbAdapter from "./indexeddb.mjs";
-import { generateId } from "./appstate.mjs";
+import { getAppId, generateId, getModels } from "./appstate.mjs";
 import P2P from "./rtc-worker.mjs";
+
+function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
+  return {
+    [`GET /api/${modelName}`]: function () {
+      return this.getMany();
+    },
+    [`GET /api/${modelName}/:id`]: function ({ id }) {
+      return this.get(id);
+    },
+    [`POST /api/${modelName}`]: function (item) {
+      return this.add(item);
+    },
+    [`DELETE /api/${modelName}/:id`]: function ({ id }) {
+      return this.remove(id);
+    },
+    [`PATCH /api/${modelName}/:id`]: function ({ id, ...rest }) {
+      return this.edit({ id, ...rest });
+    },
+    ...endpoints,
+  };
+}
+
+// Convert the endpoint string to a regular expression.
+const endpointToRegex = (endpoint) => {
+  const [method, path] = endpoint.split(" ");
+  const regexPath = path
+    .split("/")
+    .map((part) => (part.startsWith(":") ? "([^/]+)" : part))
+    .join("/");
+  return new RegExp(`^${method} ${regexPath}$`);
+};
+
+export let models;
+export let api;
+
+export async function initializeApiModel() {
+  if (models && api) {
+    return { models, api }; // If already initialized, return cached values
+  }
+
+  const appId = await getAppId();
+  const modelList = await getModels(appId);
+  models = defineModels(modelList, appId);
+  api = Object.entries(modelList).reduce((acc, [name, model]) => {
+    const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);
+    Object.entries(endpoints).forEach(([endpoint, callback]) => {
+      const regex = endpointToRegex(endpoint);
+      acc[String(endpoint)] = {
+        regex,
+        model: models[name],
+        callback,
+      };
+    });
+    return acc;
+  }, {});
+
+  return { models, api };
+}
 
 let oplog;
 let queue;

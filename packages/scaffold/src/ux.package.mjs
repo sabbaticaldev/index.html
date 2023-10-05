@@ -147,7 +147,7 @@ export default {
         width: { type: String, defaultValue: "" },
         items: { type: Array, defaultValue: [] },
         direction: { type: String, defaultValue: "horizontal", enum: Directions },
-        gap: {type: String, defaultValue: "sm"},
+        gap: { type: String, defaultValue: "md" },
         label: "", 
         icon: "",
         classes: { type: Object, defaultValue: {} },
@@ -169,22 +169,12 @@ export default {
           direction === "vertical" ? "flex-col h-full" : "flex-row w-full"
         ].filter(c => !!c).join(" ");
     
-        const menuProps = {
-          variant: variant,
-          direction: direction,
-          items: items,
-          gap: gap || "lg",
-          size: "md", 
-          classes: {
-            container: linkClass
-          }
-        };
     
         return html`
           <div class="${baseClasses} ${height || ""} ${width || ""} ${containerClass}">
             ${icon && label ? html`
-              <div class="w-72 h-16 text-white border-b mb-2">
-                <a class=${["cursor-pointer flex items-center text-center justify-center w-full gap-2", linkClass].join(" ")} href="/">
+                <a class=${[`cursor-pointer flex items-center text-center 
+                justify-center gap-2`, direction === "vertical" ? "w-full h-16 border-b mb-4" : "h-full w-72 border-r mr-4", linkClass].join(" ")} href="/">
                   <ion-icon
                     name=${icon}
                     class="text-2xl"
@@ -194,15 +184,16 @@ export default {
                     ${label}
                   </h2>
                 </a>
-              </div>
+              
             ` : ""}
             <uix-menu
-              .items=${menuProps.items}
-              variant=${menuProps.variant}
-              direction=${menuProps.direction}
-              size=${menuProps.size}
-              gap=${menuProps.gap}
-              .classes=${menuProps.classes}
+              .items=${items}
+              variant=${variant}
+              direction=${direction}
+              gap=${gap || "lg"}
+              .classes=${{
+    container: linkClass
+  }}
             ></uix-menu>
           </div>
         `;
