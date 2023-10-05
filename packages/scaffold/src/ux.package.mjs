@@ -168,6 +168,7 @@ export default {
       }, { html }) => {
         const {
           items: itemsClass = "text-gray-800 hover:text-blue-600",
+          logo: logoClass = "font-bold text-2xl",
           container: containerClass,
         } = classes || {};
 
@@ -178,21 +179,19 @@ export default {
           rounded ? "rounded-box" : "",
           direction === "vertical" ? "flex-col h-full" : "flex-row w-full"
         ].filter(c => !!c).join(" ");
-    
-    
+        
         return html`
           <div class="${baseClasses} ${height || ""} ${width || ""} ${containerClass}">
             ${icon && label ? html`
                 <a class=${[`cursor-pointer flex items-center text-center 
                 justify-center gap-2`, 
   direction === "vertical" ? "w-full h-16 border-b mb-4" : "h-full w-72 border-r mr-4", 
-  itemsClass].join(" ")} href="/">
+  logoClass].join(" ")} href="/">
                   <ion-icon
                     name=${icon}
-                    class="text-2xl"
                     role="img"
                   ></ion-icon>
-                  <h2 class="text-xl bold">
+                  <h2>
                     ${label}
                   </h2>
                 </a>

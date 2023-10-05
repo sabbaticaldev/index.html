@@ -917,17 +917,20 @@ export default {
         click: { type: Function, default: () => {} },
         href: { type: String, defaultValue: "#" },
         active: { type: Boolean, defaultValue: false },
+        classes: {type: Object, defaultValue: {} }
       },
     
-      render: ({ icon, label, click, href, active }, { html }) => {
+      render: ({ icon, label, click, href, active, classes = {} }, { html }) => {
         const iconComponent = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
+        const { item: itemClass = "" } = classes;
+        console.log({classes});
         const activeClass = active ? "active" : "";
         return html`
           <li>
             <a 
               @click=${click} 
               href=${href} 
-              class="${activeClass} cursor-pointer flex flex-row items-center gap-2 px-4">
+              class="${itemClass} ${activeClass} items-center gap-2 px-4">
                 ${iconComponent}
                 ${label || ""}
             </a>
@@ -955,9 +958,9 @@ export default {
         classes: { type: Object, defaultValue: {} }
       },
       render: ({ 
+        classes = {},
         items, title, variant, fullHeight,
-        classes, gap,
-        fullWidth, height, width, direction, 
+        gap, fullWidth, height, width, direction, 
         rounded, size, isActive 
       }, { html }) => {
         const { container: containerClass } = classes || {};
@@ -967,7 +970,7 @@ export default {
           "sm": "menu-sm",
           "xs": "menu-xs"
         };
-        
+        const { items: itemsClass } = classes;
         const baseClass = ["menu",
           BgColor[variant], 
           height || "", 
@@ -978,8 +981,10 @@ export default {
           direction === "horizontal" ? "menu-horizontal" : "menu-vertical", 
           rounded && "rounded-box",
           containerClass].filter(c=>!!c).join(" ");
-        console.log({classes});
-        const itemClass = "flex flex-row items-center font-semibold leading-6 text-sm " + (classes?.items || " text-gray-700 hover:text-indigo-600 ");
+
+        const itemClass = ["flex flex-row items-center hover:bg-gray-900 hover:text-gray-100", 
+          itemsClass, 
+          isActive && "active" || ""].filter(c=>!!c).join(" ");
         
         return html`
           <ul class=${baseClass}>
@@ -990,7 +995,7 @@ export default {
     if (submenu) {
       return html`
                   <details ?open=${!!item.open}>
-                    <summary class="${isActive && "active" || ""} cursor-pointer ${itemClass} gap-2">
+                    <summary class="cursor-pointer gap-2 ${itemClass}">
                       ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
                       ${item.label || ""}                
                     </summary>
@@ -998,7 +1003,7 @@ export default {
                   </details>
                 `;
     } else {
-      return html`<uix-menu-item .icon=${item.icon} .label=${item.label} .href=${item.href || "#"} .active=${isActive}></uix-menu-item>`;
+      return html`<uix-menu-item .icon=${item.icon} .classes=${{ item: itemClass }} label=${item.label} .href=${item.href || "#"} active=${isActive}></uix-menu-item>`;
     }
   })}
           </ul>
