@@ -1004,10 +1004,10 @@ export default {
   `;
       },
     },
-    "uix-radio": {
+    "uix-radio": {     
       props: {
-        selectedValue: { type: String, defaultValue: "" },
-        options: { type: Array, defaultValue: [] },
+        selected: { type: Boolean, defaultValue: false },
+        value: { type: String, defaultValue: "" },
         variant: {
           type: String,
           defaultValue: "default",
@@ -1019,9 +1019,9 @@ export default {
           enum: Sizes
         },
         disabled: { type: Boolean, defaultValue: false },
-        withCustomColors: { type: Boolean, defaultValue: false }
+        label: { type: String, defaultValue: "" }
       },
-      render: ({ selectedValue, options, disabled, variant, size, withCustomColors }, { html }) => {
+      render: ({ selected, value, disabled, variant, size, label }, { html }) => {
         const RadioVariantClass = {
           "primary": "radio-primary",
           "secondary": "radio-secondary",
@@ -1040,22 +1040,53 @@ export default {
           "lg": "radio-lg",
           "xs": "radio-xs"
         };
-        const radioClass = `radio ${RadioVariantClass[variant] || ""} ${RadioSizeClass[size]}`;
+        const radioClass = ["radio", RadioVariantClass[variant], RadioSizeClass[size]].filter(cls=>!!cls).join(" ");
    
         return html`
-        <div class="flex flex-col">
-          ${options.map(option => html`
-            <div class="form-control">
-              <label class="cursor-pointer label">
-                <span class="label-text">${option.label}</span> 
-                <input type="radio" name="uix-radio-group" class="${radioClass} ${withCustomColors && option.color ? `checked:bg-${option.color}-500` : ""}" value=${option.value} .checked="${selectedValue === option.value}" ?disabled=${disabled}>
-              </label>
-            </div>
-          `)}
-        </div>
-      `;
+      <div class="form-control">
+        <label class="cursor-pointer label">
+          ${label ? html`<span class="label-text">${label}</span>` : ""}
+          <input type="radio" class=${radioClass} value=${value} ?checked=${selected} ?disabled=${disabled}>
+        </label>
+      </div>
+    `;
       },
     },
+    "uix-radio-group": {
+      props: {
+        selectedValue: { type: String, defaultValue: "" },
+        options: { type: Array, defaultValue: [] },
+        variant: {
+          type: String,
+          defaultValue: "default",
+          enum: Variants
+        },
+        size: {
+          type: String,
+          defaultValue: "md",
+          enum: Sizes
+        },
+        disabled: { type: Boolean, defaultValue: false },
+        withCustomColors: { type: Boolean, defaultValue: false }
+      },
+      render: ({ selectedValue, options, disabled, variant, size, withCustomColors }, { html }) => {
+        return html`
+          <div class="flex flex-col">
+            ${options.map(option => html`
+              <uix-radio 
+                label=${option.label}
+                value=${option.value}
+                variant=${variant}
+                size=${size}
+                .selected=${selectedValue === option.value}
+                ?disabled=${disabled}
+                ?withCustomColors=${withCustomColors}
+              ></uix-radio>
+            `)}
+          </div>
+        `;
+      }
+    },    
     "uix-tooltip": {
       props: {
         content: { type: String, defaultValue: "Tooltip Content" },
