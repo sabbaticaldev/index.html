@@ -1,67 +1,34 @@
 import indexeddbAdapter from "./indexeddb.mjs";
-import { getAppId, generateId, getModels } from "./appstate.mjs";
+import { fromBase62, toBase62 } from "./string.mjs";
 import P2P from "./rtc-worker.mjs";
-
-function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
-  return {
-    [`GET /api/${modelName}`]: function () {
-      return this.getMany();
-    },
-    [`GET /api/${modelName}/:id`]: function ({ id }) {
-      return this.get(id);
-    },
-    [`POST /api/${modelName}`]: function (item) {
-      return this.add(item);
-    },
-    [`DELETE /api/${modelName}/:id`]: function ({ id }) {
-      return this.remove(id);
-    },
-    [`PATCH /api/${modelName}/:id`]: function ({ id, ...rest }) {
-      return this.edit({ id, ...rest });
-    },
-    ...endpoints,
-  };
-}
-
-// Convert the endpoint string to a regular expression.
-const endpointToRegex = (endpoint) => {
-  const [method, path] = endpoint.split(" ");
-  const regexPath = path
-    .split("/")
-    .map((part) => (part.startsWith(":") ? "([^/]+)" : part))
-    .join("/");
-  return new RegExp(`^${method} ${regexPath}$`);
-};
-
-export let models;
-export let api;
-
-export async function initializeApiModel() {
-  if (models && api) {
-    return { models, api }; // If already initialized, return cached values
-  }
-
-  const appId = await getAppId();
-  const modelList = await getModels(appId);
-  models = defineModels(modelList, appId);
-  api = Object.entries(modelList).reduce((acc, [name, model]) => {
-    const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);
-    Object.entries(endpoints).forEach(([endpoint, callback]) => {
-      const regex = endpointToRegex(endpoint);
-      acc[String(endpoint)] = {
-        regex,
-        model: models[name],
-        callback,
-      };
-    });
-    return acc;
-  }, {});
-
-  return { models, api };
-}
 
 let oplog;
 let queue;
+
+export let sequentialCounter = 0;
+const generateIdByTimestamp = (timestamp) => {
+  if (!timestamp) {
+    throw new Error(
+      "Reference timestamp not set. Ensure getAppId has been called first.",
+    );
+  }
+
+  const timeDifference = Date.now() - parseInt(timestamp, 10);
+  let id = toBase62(timeDifference + sequentialCounter);
+
+  sequentialCounter++;
+
+  while (id.length < 5) {
+    id = "0" + id;
+  }
+  return id;
+};
+
+export const generateId = (appId) => {
+  const referenceTimestamp = fromBase62(appId);
+  let id = generateIdByTimestamp(referenceTimestamp);
+  return id;
+};
 
 class ReactiveRecord {
   async init({ importData, ...properties }, name, appId) {
@@ -187,7 +154,8 @@ class ReactiveRecord {
     await this._unsetMany(allKeysToDelete);
   }
 
-  async getOps(sinceTimestamp = 0) {
+  async getOps() {
+    //sinceTimestamp = 0
     // This method fetches all operations after a given timestamp.
     // Can be optimized further based on how oplog is structured.
     const allOperations = await this.adapter.getMany([], this.oplog);

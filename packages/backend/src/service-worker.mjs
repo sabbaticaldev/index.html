@@ -1,5 +1,9 @@
-import { initializeApiModel } from "./reactive-record.mjs";
-import { getAppId, setAppId, getUserId } from "./appstate.mjs";
+import {
+  getAppId,
+  initializeApiModel,
+  setAppId,
+  getUserId,
+} from "./appstate.mjs";
 import adapter from "./indexeddb.mjs";
 
 const requestUpdate = () =>

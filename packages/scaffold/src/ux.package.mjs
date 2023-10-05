@@ -21,24 +21,28 @@ export default {
         topNavbar: {
           bgColor: { type: String, defaultValue: "primary", enum: BgColor },
           textColor: { type: String, defaultValue: "primary", enum: TextColor },
+          classes: {type: Object, defaultValue: {} },
           items: { type: Array, defaultValue: [] },          
           height: { type: String, defaultValue: "h-16" },
         },
         leftNavbar: {
           bgColor: { type: String, defaultValue: "primary", enum: BgColor },
           textColor: { type: String, defaultValue: "primary", enum: TextColor },
+          classes: {type: Object, defaultValue: {} },
           items: { type: Array, defaultValue: [] },          
           width: { type: String, defaultValue: "w-72" },
         },
         rightNavbar: {
           bgColor: { type: String, defaultValue: "primary", enum: BgColor },
           textColor: { type: String, defaultValue: "primary", enum: TextColor },
+          classes: {type: Object, defaultValue: {} },
           items: { type: Array, defaultValue: [] },
           width: { type: String, defaultValue: "w-72" },
         },
         bottomNavbar: {
           bgColor: { type: String, defaultValue: "primary", enum: BgColor },
           textColor: { type: String, defaultValue: "primary", enum: TextColor },
+          classes: {type: Object, defaultValue: {} },
           items: { type: Array, defaultValue: [] },
           height: { type: String, defaultValue: "h-16" },
         }
@@ -46,15 +50,18 @@ export default {
       render: ({ mainNavbar, leftNavbar, topNavbar, rightNavbar, bottomNavbar, icon, label }, { html }) => {        
         const renderNavbar = (navbar, orientation) => {
           const isMain = mainNavbar === orientation;
+          console.log(navbar.classes);
           return navbar.items.length ? html`
         <uix-navbar
           class="bg-base-100 border-r"
           icon=${isMain ? icon : ""}
           label=${isMain ? label : ""}
           padding="p-0"
+          .classes=${navbar.classes || {}}
           direction=${["rightNavbar","leftNavbar"].includes(orientation) ? "vertical" : "horizontal"}
           variant=${navbar.bgColor}
           height=${navbar.height || ""}
+          gap=${navbar.gap}
           width=${navbar.width || "w-72"}
           .items=${navbar.items}>
         </uix-navbar>
@@ -66,14 +73,16 @@ export default {
             <uix-menu
               direction=${["rightNavbar","leftNavbar"].includes(orientation) ? "vertical" : "horizontal"}
               fullHeight
+              .classes=${navbar.classes || {}}
               variant=${navbar.bgColor}
+              gap=${navbar.gap}
               width=${navbar.width || "w-72"}
               height=${navbar.height || ""}
               .items=${navbar.items}>
             </uix-menu>
           ` : "";
         };
-
+        
         return html`
       <div class="app-shell w-full h-full flex flex-col">
         ${mainNavbar === "topNavbar" ? renderNavbar(topNavbar, "topNavbar") : renderMenu(topNavbar, "topNavbar")}
@@ -153,14 +162,15 @@ export default {
         classes: { type: Object, defaultValue: {} },
       },
       render: ({ 
-        classes: {
-          link: linkClass = "text-gray-800 hover:text-gray-600",
-          container: containerClass
-        }, 
+        classes, 
         variant, label, icon, direction, shadow, 
         height, width, gap, rounded, items 
       }, { html }) => {
-        
+        const {
+          items: itemsClass = "text-gray-800 hover:text-blue-600",
+          container: containerClass,
+        } = classes || {};
+
         const baseClasses = [
           "navbar flex overflow-y-auto overflow-x-hidden", 
           BgColor[variant],           
@@ -174,7 +184,9 @@ export default {
           <div class="${baseClasses} ${height || ""} ${width || ""} ${containerClass}">
             ${icon && label ? html`
                 <a class=${[`cursor-pointer flex items-center text-center 
-                justify-center gap-2`, direction === "vertical" ? "w-full h-16 border-b mb-4" : "h-full w-72 border-r mr-4", linkClass].join(" ")} href="/">
+                justify-center gap-2`, 
+  direction === "vertical" ? "w-full h-16 border-b mb-4" : "h-full w-72 border-r mr-4", 
+  itemsClass].join(" ")} href="/">
                   <ion-icon
                     name=${icon}
                     class="text-2xl"
@@ -188,12 +200,12 @@ export default {
             ` : ""}
             <uix-menu
               .items=${items}
+              .classes=${{
+    items: itemsClass
+  }}
               variant=${variant}
               direction=${direction}
               gap=${gap || "lg"}
-              .classes=${{
-    container: linkClass
-  }}
             ></uix-menu>
           </div>
         `;

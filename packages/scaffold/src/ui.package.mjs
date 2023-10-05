@@ -960,6 +960,7 @@ export default {
         fullWidth, height, width, direction, 
         rounded, size, isActive 
       }, { html }) => {
+        const { container: containerClass } = classes || {};
         const MenuSize = {
           "lg": "menu-lg",
           "md": "menu-md",
@@ -967,9 +968,17 @@ export default {
           "xs": "menu-xs"
         };
         
-        const baseClass = ["menu", BgColor[variant], height || "", width || "",
-          MenuSize[size], Gaps[gap], fullHeight && "h-full", fullWidth && "w-full",
-          direction === "horizontal" ? "menu-horizontal" : "menu-vertical", rounded && "rounded-box"].filter(c=>!!c).join(" ");
+        const baseClass = ["menu",
+          BgColor[variant], 
+          height || "", 
+          width || "",
+          MenuSize[size], Gaps[gap], 
+          fullHeight && "h-full", 
+          fullWidth && "w-full",
+          direction === "horizontal" ? "menu-horizontal" : "menu-vertical", 
+          rounded && "rounded-box",
+          containerClass].filter(c=>!!c).join(" ");
+        console.log({classes});
         const itemClass = "flex flex-row items-center font-semibold leading-6 text-sm " + (classes?.items || " text-gray-700 hover:text-indigo-600 ");
         
         return html`
@@ -1772,7 +1781,7 @@ export default {
         
         return html`
         <div class=${`tabs ${type === "boxed" ? "tabs-boxed" : ""} ${gapClass}`}>
-          ${items.map(item => !console.log(getTabClass(item)) && html`
+          ${items.map(item => html`
             <button @click=${() => setSelectedValue(item.label)} class=${getTabClass(item)} role="tab">
               ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
               ${item.label}
