@@ -735,13 +735,13 @@ export default {
     "uix-modal": {
       props: {
         isOpen: { type: Boolean, defaultValue: false },
-        title: { type: String, defaultValue: "Modal Title" },
-        content: { type: String, defaultValue: "Modal Content" },
-        closable: { type: Boolean, defaultValue: true },
+        title: { type: String, defaultValue: "" },
+        content: { type: String, defaultValue: "" },
+        close: { type: Function, defaultValue: "" },
         position: { type: String, defaultValue: "middle", enum: ["top", "middle", "bottom"] },
         icon: { type: String, defaultValue: "" },
       },
-      render: ({ isOpen, title, position, icon }, { html }) => {
+      render: ({ isOpen, title, position, icon, close }, { html }) => {
         const modalClass = `modal ${ModalPositions[position] || ModalPositions.middle}`;
   
         return html`
@@ -755,7 +755,7 @@ export default {
           <div class="modal-action">
             <slot name="footer"></slot>                        
             <form method="dialog">
-              <button class="btn">Close</button>
+              ${close && html`<button class="btn" @click=${close}>Close</button>`}
             </form>
           </div>
           </div>

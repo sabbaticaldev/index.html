@@ -2,7 +2,8 @@ import {
   Variants,
   Sizes,
   HeadingColors,
-  LinkColors
+  LinkColors,
+  FontWeight
 } from "./style-props.mjs"; 
 
 
@@ -12,19 +13,23 @@ export default {
     "uix-heading": {
       props: {
         size: { type: String, defaultValue: "xl", enum: Sizes },
-        variant: { type: String, defaultValue: "primary", enum: Variants },        
+        variant: { type: String, defaultValue: "primary", enum: Variants },
+        weight: { type: String, defaultValue: "semibold", enum: Variants },
+        class: { type: String, defaultValue: "" }
       },
-      render: ({ size, variant }, { html }) => {
+      render: (props, { html }) => {
+        const { size, variant, weight } = props;
         const variantClass = HeadingColors[variant] + " prose";
+        const weightClass = FontWeight[weight] || "";
+
         const HeadingTemplates = {
-          "4xl": html`<h1 class="${variantClass} text-4xl font-bold mt-0 mb-4"><slot></slot></h1>`,
-          "3xl":  html`<h2 class="${variantClass} text-3xl font-bold mt-4 mb-3"><slot></slot></h2>`,
-          "2xl":  html`<h3 class="${variantClass} text-2xl font-semibold mt-4 mb-3"><slot></slot></h3>`,
-          "xl":  html`<h4 class="${variantClass} text-xl font-semibold mt-3 mb-2"><slot></slot></h4>`,
-          "lg":  html`<h5 class="${variantClass} text-lg font-medium mt-3 mb-2"><slot></slot></h5>`,
-          "md":  html`<h6 class="${variantClass} text-base font-medium mt-2 mb-1"><slot></slot></h6>`,
-          "sm":  html`<p class="${variantClass} text-base font-small text-sm"><slot></slot></p>`,
-          "":  html`<p class="${variantClass} text-base font-small text-sm"><slot></slot></p>`
+          "2xl": html`<h1 class="${variantClass} ${weightClass} text-5xl mt-0 mb-2 ${props.class}"><slot></slot></h1>`,
+          "xl":  html`<h2 class="${variantClass} ${weightClass} text-3xl mt-0 mb-2 ${props.class}"><slot></slot></h2>`,
+          "lg":  html`<h3 class="${variantClass} ${weightClass} text-2xl mt-0 mb-2 ${props.class}"><slot></slot></h3>`,
+          "md":  html`<h4 class="${variantClass} ${weightClass} text-xl  mt-0 mb-2 ${props.class}"><slot></slot></h4>`,
+          "sm":  html`<h5 class="${variantClass} ${weightClass} text-lg mt-0 mb-2 ${props.class}"><slot></slot></h5>`,
+          "xs":  html`<h6 class="${variantClass} ${weightClass} text-base mt-0 mb-1 ${props.class}"><slot></slot></h6>`,          
+          "":  html`<p class="${variantClass} ${weightClass} text-sm ${props.class}"><slot></slot></p>`
         };
         
         return HeadingTemplates[size] || HeadingTemplates["xl"];

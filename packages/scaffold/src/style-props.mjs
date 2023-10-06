@@ -14,7 +14,18 @@ const AlignY = {
   "stretch": "items-stretch",
   "baseline": "items-baseline"
 };
-  
+const FontWeight = {
+  "thin": "font-thin",          // 200
+  "extralight": "font-extralight",  // 100
+  "light": "font-light",       // 300
+  "normal": "font-normal",     // 400
+  "medium": "font-medium",     // 500
+  "semibold": "font-semibold", // 600
+  "bold": "font-bold",         // 700
+  "extrabold": "font-extrabold", // 800
+  "black": "font-black"       // 900
+};
+
 const BgOverlayOpacity = {
   10: "bg-opacity-10",
   20: "bg-opacity-20",
@@ -188,6 +199,7 @@ export {
   LinkColors,
   AlignX,
   AlignY,
+  FontWeight,
   BgOverlayOpacity,
   ButtonVariant,
   DirectionsClasses,
