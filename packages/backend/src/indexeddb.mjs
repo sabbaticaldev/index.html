@@ -16,13 +16,6 @@ export const createStore = (dbName = "bootstrapp") => {
     );
 };
 
-export const removeMany = (keys, db) => {
-  return db("readwrite", (store) => {
-    keys.forEach((key) => store.delete(key));
-    return promisifyRequest(store.transaction);
-  });
-};
-
 export const getItem = (key, db) => {
   return db("readonly", (store) => promisifyRequest(store.get(key)));
 };
@@ -34,24 +27,11 @@ export const setItem = (key, value, db) => {
   });
 };
 
-export const setLastOp = async (key, value, config) => {
-  const { db, propKey } = config;
-  const keys = await startsWith(propKey, db, { index: true, keepKey: true });
-  await removeMany(keys, db);
-  setItem(key, value, db);
-};
-
-export const setMany = (entries, db) => {
+export const removeItem = (key, db) => {
   return db("readwrite", (store) => {
-    entries.forEach((entry) => store.put(entry[1], entry[0]));
+    store.delete(key);
     return promisifyRequest(store.transaction);
   });
-};
-
-export const getMany = (keys, db) => {
-  return db("readonly", (store) =>
-    Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
-  );
 };
 
 export const update = (key, updater, db) => {
@@ -69,13 +49,6 @@ export const update = (key, updater, db) => {
         };
       }),
   );
-};
-
-export const removeItem = (key, db) => {
-  return db("readwrite", (store) => {
-    store.delete(key);
-    return promisifyRequest(store.transaction);
-  });
 };
 
 export const eachCursor = (store, callback) => {
@@ -149,6 +122,33 @@ export const startsWith = (
       };
     });
   });
+};
+
+export const removeMany = (keys, db) => {
+  return db("readwrite", (store) => {
+    keys.forEach((key) => store.delete(key));
+    return promisifyRequest(store.transaction);
+  });
+};
+
+export const setLastOp = async (key, value, config) => {
+  const { db, propKey } = config;
+  const keys = await startsWith(propKey, db, { index: true, keepKey: true });
+  await removeMany(keys, db);
+  setItem(key, value, db);
+};
+
+export const setMany = (entries, db) => {
+  return db("readwrite", (store) => {
+    entries.forEach((entry) => store.put(entry[1], entry[0]));
+    return promisifyRequest(store.transaction);
+  });
+};
+
+export const getMany = (keys, db) => {
+  return db("readonly", (store) =>
+    Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
+  );
 };
 
 export const promisifyRequest = (request) => {
