@@ -2,8 +2,7 @@ import {
   BgColor,
   TextColor,
   Variants,
-  BgOverlayOpacity,
-  Directions
+  BgOverlayOpacity
 } from "./style-props.mjs"; 
 
 export default {
@@ -80,7 +79,7 @@ export default {
         height: { type: String, defaultValue: "" },
         width: { type: String, defaultValue: "" },
         items: { type: Array, defaultValue: [] },
-        direction: { type: String, defaultValue: "horizontal", enum: Directions },
+        vertical: { type: Boolean, defaultValue: false },
         gap: { type: String, defaultValue: "md" },
         label: "", 
         icon: "",
@@ -88,8 +87,9 @@ export default {
       },
       render: ({ 
         classes, 
-        variant, label, icon, direction, shadow, 
-        height, width, gap, rounded, items 
+        variant, label, icon, shadow, 
+        height, width, gap, rounded, items,
+        vertical
       }, { html }) => {
         const {
           items: itemsClass = "text-gray-800 hover:text-blue-600",
@@ -102,7 +102,7 @@ export default {
           BgColor[variant],           
           shadow ? "shadow-xl" : "", 
           rounded ? "rounded-box" : "",
-          direction === "vertical" ? "flex-col h-full" : "flex-row w-full"
+          vertical ? "flex-col h-full" : "flex-row w-full"
         ].filter(c => !!c).join(" ");
 
         return html`
@@ -110,7 +110,7 @@ export default {
             ${icon && label ? html`
                 <a class=${[`cursor-pointer flex items-center text-center 
                 justify-center gap-2`, 
-  direction === "vertical" ? "w-full h-16 border-b mb-4" : "h-full w-72 border-r pr-4", 
+  vertical ? "w-full h-16 border-b mb-4" : "h-full w-72 border-r pr-4", 
   logoClass].join(" ")} href="/">
                   <ion-icon
                     name=${icon}
@@ -128,7 +128,7 @@ export default {
     items: itemsClass
   }}
               variant=${variant}
-              direction=${direction}
+              ?vertical=${vertical}
               gap=${gap || "lg"}
             ></uix-menu>
           </div>
@@ -229,11 +229,11 @@ export default {
 
     "uix-stat-container": {
       props: {
-        direction: { type: String, defaultValue: "horizontal", enum: ["horizontal", "vertical"] },
+        vertical: { type: Boolean, defaultValue: false },
         shadow: { type: Boolean, defaultValue: true }
       },
-      render: ({ direction, shadow, children }, { html }) => {
-        const directionClass = direction === "vertical" ? "stats-vertical" : "";
+      render: ({ vertical, shadow, children }, { html }) => {
+        const directionClass = vertical ? "stats-vertical" : "";
         const shadowClass = shadow ? "shadow" : "";
         return html`
         <div class="stats ${directionClass} ${shadowClass}">

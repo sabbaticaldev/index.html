@@ -49,10 +49,6 @@ const Gaps = {
   "4xl": "gap-96"
 };
   
-const DirectionsClasses = {
-  "horizontal": "divider-horizontal",
-  "vertical": ""
-};
 
 const Positions = ["start", "center", "end", "top", "middle", "bottom", "top", "end", "bottom", "middle", "left", "right", "top-right", "top-left", "bottom-right", "bottom-left"];
 const Resolutions = ["sm", "md", "lg", "xl"];
@@ -194,6 +190,7 @@ const LinkColors = {
   "warning": "link-warning hover:text-warning-dark",
   "error": "link-error hover:text-error-dark"
 };
+
 export {
   HeadingColors,
   LinkColors,
@@ -202,7 +199,6 @@ export {
   FontWeight,
   BgOverlayOpacity,
   ButtonVariant,
-  DirectionsClasses,
   Positions,
   Resolutions,
   Gaps,

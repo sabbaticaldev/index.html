@@ -16,7 +16,7 @@ export default {
         const formattedTitle = (title) => title.toLowerCase().replace(/ /g, "-");
   
         return html`
-              <uix-list direction="horizontal" layout="responsive">
+              <uix-list layout="responsive">
                   <uix-block class="flex-grow">
                     <uix-block>    
                       <uix-heading size="2">${title}</uix-heading>

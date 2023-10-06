@@ -2,7 +2,6 @@ import {
   AlignX,
   AlignY,
   ButtonVariant,
-  DirectionsClasses,
   Positions,
   TabsSize,
   Resolutions,
@@ -16,7 +15,6 @@ import {
   Shapes,
   Styles,
   Triggers,
-  Directions,
   Formats,
   Variants,
   BgColor,
@@ -407,12 +405,8 @@ export default {
           type: String,
           defaultValue: "start",
           enum: ["start", "center", "end"]
-        },
-        direction: {
-          type: String,
-          defaultValue: "horizontal",
-          enum: ["horizontal", "vertical"]
-        },
+        },        
+        vertical: { type: Boolean, defaultValue: false },
         indicatorButtons: {
           type: Boolean,
           defaultValue: false
@@ -422,12 +416,8 @@ export default {
           defaultValue: false
         }
       },
-      render: ({ items, alignment, direction, indicatorButtons, navigationButtons }, { html }) => {
-        const DirectionClasses = {
-          "horizontal": "",
-          "vertical": "carousel-vertical"
-        };
-  
+      render: ({ items, alignment, vertical, indicatorButtons, navigationButtons }, { html }) => {
+        
         const AlignmentClasses = {
           "start": "carousel-start",
           "center": "carousel-center",
@@ -435,7 +425,7 @@ export default {
         };
   
         const alignmentClass = AlignmentClasses[alignment];
-        const directionClass = DirectionClasses[direction];
+        const directionClass = vertical && "carousel-vertical";
         let carouselItems = items.map((item, index) => {
           return html`
           <div id="item${index}" class="carousel-item">
@@ -617,26 +607,23 @@ export default {
           enum: Variants,
         },
         text: { type: String, defaultValue: "" }, 
-        direction: {
-          type: String,
-          defaultValue: "vertical",
-          enum: Directions
-        },
-        responsiveDirection: {
-          type: String,
-          defaultValue: "",
-          enum: Directions
-        }
+        vertical: { type: Boolean, defaultValue: false },
+        responsive: { type: Boolean, defaultValue: false },
+        class: {type: String, default: ""}
       },
     
-      render: ({ thickness, color, text, direction, responsiveDirection }, { html }) => {
-        const baseClass = `divider ${DirectionsClasses[direction]}`;
-        const responsiveClass = responsiveDirection ? `lg:divider-${responsiveDirection}` : "";
-        const colorClass = BgColor[color];
+      render: (props, { html }) => {
+        const { thickness, variant, vertical, responsive } = props;
+        const baseClass = ["divider", 
+          vertical ? "divider-vertical" : "divider-horizontal",
+          responsive && (vertical ? "lg:divider-horizontal" : "lg:divider-vertical"),
+          BgColor[variant],
+          props.class
+        ].filter(c=>!!c).join(" ");        
     
         return html`
-          <div class="${baseClass} ${responsiveClass} ${colorClass}" style="height: ${thickness};">
-            ${text}
+          <div class=${baseClass} style="height: ${thickness};">
+            <slot></slot>
           </div>
         `;
       },
@@ -873,7 +860,7 @@ export default {
         },
         spacing: {
           type: Number,
-          defaultValue: 4
+          defaultValue: "md"
         },
         rounded: {
           type: Boolean,
@@ -882,9 +869,14 @@ export default {
         shadow: {
           type: Boolean,
           defaultValue: false
+        },
+        class: {
+          type: String,
+          defaultValue: ""
         }
       },
-      render: ({ variant, bgColor, textColor, spacing, rounded, shadow }, { html }) => {
+      render: (props, { html }) => {
+        const { variant, bgColor, textColor, spacing, rounded, shadow } = props;
         const BlockColors = {
           "primary": "bg-primary text-primary-content",
           "secondary": "bg-secondary text-secondary-content",
@@ -898,18 +890,18 @@ export default {
         };
 
         const SpacingSizes = {
-          0: "", 1: "p-1", 2: "p-2", 3: "p-3", 4: "p-4", 5: "p-5", 6: "p-6", 8: "p-8", 10: "p-10"
+          xs: "p-1", sm: "p-2", md: "p-4", "lg": "p-6", "xl": "p-8", "2xl": "p-12", "3xl": "p-16", "4xl": "p-24"
         };
     
         const bgClass = bgColor ? `bg-${bgColor}` : "";
         const textClass = textColor ? `text-${textColor}` : "";
-        const spacingClass = SpacingSizes[spacing || 2];
+        const spacingClass = SpacingSizes[spacing || "md"];
         const variantClass = BlockColors[variant];
         const roundedClass = rounded ? "rounded" : "";
         const shadowClass = shadow ? "shadow-md" : "";
     
         return html`
-          <div class="${spacingClass} ${variantClass} ${bgClass} ${textClass} ${roundedClass} ${shadowClass}">
+          <div class="${spacingClass} ${variantClass} ${bgClass} ${textClass} ${roundedClass} ${shadowClass} ${props.class}">
             <slot></slot>
           </div>
         `;
@@ -948,7 +940,7 @@ export default {
         items: { type: Array, defaultValue: [] },
         title: { type: String, defaultValue: null },
         variant: { type: String, defaultValue: "", enum: Variants },
-        direction: { type: String, defaultValue: "vertical", enum: Directions },
+        vertical: { type: Boolean, defaultValue: false },
         size: { type: String, defaultValue: "md", enum: Sizes },
         gap: { type: String, defaultValue: "md", enum: Sizes },
         click: {type: Function, default: () => {}},
@@ -965,7 +957,7 @@ export default {
       render: ({ 
         classes = {},
         items, title, variant, fullHeight,
-        gap, fullWidth, height, width, direction, 
+        gap, fullWidth, height, width, vertical, 
         rounded, size, isActive 
       }, { html }) => {
         const { container: containerClass } = classes || {};
@@ -983,7 +975,7 @@ export default {
           MenuSize[size], Gaps[gap], 
           fullHeight && "h-full", 
           fullWidth && "w-full",
-          direction === "horizontal" ? "menu-horizontal" : "menu-vertical", 
+          vertical ? "menu-vertical" : "menu-horizontal", 
           rounded && "rounded-box",
           containerClass].filter(c=>!!c).join(" ");
 
@@ -1004,7 +996,7 @@ export default {
                       ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
                       ${item.label || ""}                
                     </summary>
-                    <uix-menu .items=${submenu} .direction=${direction}></uix-menu>
+                    <uix-menu .items=${submenu} ?vertical=${vertical}></uix-menu>
                   </details>
                 `;
     } else {
@@ -1607,20 +1599,16 @@ export default {
     },
     "uix-stack": {
       props: {
-        direction: { 
-          type: String, 
-          defaultValue: "vertical", 
-          enum: Directions 
-        },
+        vertical: { type: Boolean, defaultValue: false },
         gap: { 
           type: String, 
           defaultValue: "md",
           enum: Spacings
         }
       },
-      render: ({ direction, gap }, { html }) => {
+      render: ({ vertical, gap }, { html }) => {
         const gapClass = Gaps[gap] || "";
-        const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
+        const directionClass = vertical ? "flex-col" : "flex-row";
         return html`
         <div class="stack flex ${directionClass} ${gapClass}">
           <slot></slot>
@@ -1652,43 +1640,9 @@ export default {
         `;
       }
     },
-    "uix-join": {
-      props: {
-        direction: {
-          type: String,
-          defaultValue: "horizontal",
-          enum: Directions
-        },
-        layout: {
-          type: String,
-          defaultValue: "default",
-          enum: Layouts
-        },
-        customBorder: { type: Boolean, defaultValue: false },
-        rounded: { type: Boolean, defaultValue: false },
-      },
-      render: ({ direction, layout, rounded, customBorder }, { html }) => {
-  
-        // Apply responsive behavior if needed
-        const responsiveClass = layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
-  
-        // Apply custom border radii if specified
-        const borderRadiusClass = customBorder ?  `${rounded && "rounded" || ""}-l-full ${rounded && "rounded-r-full" || ""}` : "";
-  
-        return html`
-        <div class="join join-${direction} ${responsiveClass} ${borderRadiusClass}">
-          <slot></slot>
-        </div>
-      `;
-      },
-    },
     "uix-list": {
-      props: {
-        direction: {
-          type: String,
-          defaultValue: "horizontal",
-          enum: Directions
-        },
+      props: {        
+        vertical: { type: Boolean, defaultValue: false },
         layout: {
           type: String,
           defaultValue: "default",
@@ -1709,10 +1663,15 @@ export default {
           type: String,
           enum: Object.keys(AlignY),
           defaultValue: ""
+        },
+        class: {
+          type: String,
+          defaultValue: ""
         }
       },
-      render: ({ direction, gap, layout, rounded, alignX, alignY }, { html }) => {
-        const directionClass = direction === "horizontal" ? "flex-row" : "flex-col";
+      render: (props, { html }) => {
+        const { vertical, gap, layout, rounded, alignX, alignY } = props;
+        const directionClass = vertical ? "flex-col" : "flex-row";
         const responsiveClass = layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
         const borderRadiusClass = rounded ? "rounded-l-full rounded-r-full" : "";
         const gapClass = Gaps[gap] || "";
@@ -1720,7 +1679,7 @@ export default {
         const alignYClass = alignY ? "h-full "+ AlignY[alignY] : "";
       
         return html`
-            <div class=${["flex", gapClass, directionClass, responsiveClass, borderRadiusClass, alignXClass, alignYClass].filter(cls => !!cls).join(" ")}>
+            <div class=${["flex", gapClass, directionClass, responsiveClass, borderRadiusClass, alignXClass, alignYClass, props.class].filter(cls => !!cls).join(" ")}>
                 <slot></slot>
             </div>
         `;
@@ -1919,16 +1878,18 @@ export default {
           defaultValue: [],
           enum: Variants,
         }, // Array of objects with properties: label, icon, variant.
-        direction: { type: String, defaultValue: "horizontal", enum: Directions },
+        vertical: { type: Boolean, defaultValue: false },
+        responsive: { type: Boolean, defaultValue: false },
         scrollable: { type: Boolean, defaultValue: false }
       },
-      render: ({ steps, direction, scrollable }, { html }) => {
-        const directionClass = direction === "responsive" ? "steps-vertical lg:steps-horizontal" : `steps-${direction}`;
+      render: ({ steps, responsive, vertical, scrollable }, { html }) => {
+        const directionClass = vertical ? "steps-vertical" : "steps-horizontal";
+        const responsiveClass = responsive && (vertical ? "lg:steps-vertical" : "lg:steps-horizontal");
         const wrapperClass = scrollable ? "overflow-x-auto" : "";
   
         return html`
         <div class="${wrapperClass}">
-          <ul class="steps ${directionClass}">
+          <ul class=${["steps", directionClass, responsiveClass].filter(c=>!!c).join(" ")}>
             ${steps.map(step => {
     const stepClass = `step step-${step.variant}`;
     return step.icon ? 
