@@ -308,7 +308,7 @@ export default {
         startIcon: { type: String, defaultValue: "" },
         endIcon: { type: String, defaultValue: "" },
         border: { type: Boolean, defaultValue: false },
-        noAnimation: { type: Boolean, defaultValue: false }
+        noAnimation: { type: Boolean, defaultValue: false },
       },
       render: ({ style, size, fullWidth, border, shape, variant, isLoading, startIcon, endIcon, noAnimation }, { html }) => {
         const ButtonSizes = {
@@ -737,15 +737,21 @@ export default {
         isOpen: { type: Boolean, defaultValue: false },
         title: { type: String, defaultValue: "" },
         content: { type: String, defaultValue: "" },
-        close: { type: Function, defaultValue: "" },
+        closeButton: { type: Boolean, defaultValue: true },
+        openButton: { type: Function, defaultValue: null },
+        name: { type: String, defaultValue: "uix-modal" },
         position: { type: String, defaultValue: "middle", enum: ["top", "middle", "bottom"] },
         icon: { type: String, defaultValue: "" },
       },
-      render: ({ isOpen, title, position, icon, close }, { html }) => {
+      render: function(host, { html }) {
+        const { title, position, openButton, icon, closeButton } = host;
         const modalClass = `modal ${ModalPositions[position] || ModalPositions.middle}`;
-  
+        const openclick = () => host.renderRoot.querySelector("#modal").showModal();
         return html`
-        <dialog class=${modalClass} ?open=${isOpen}>
+        ${openButton ? openButton(openclick)
+    : html`<button @click=${openclick}>open</button>`}
+        
+        <dialog id="modal" class=${modalClass}>
           ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
           <div class="modal-box">
           
@@ -755,7 +761,7 @@ export default {
           <div class="modal-action">
             <slot name="footer"></slot>                        
             <form method="dialog">
-              ${close && html`<button class="btn" @click=${close}>Close</button>`}
+              ${closeButton && html`<button class="btn">Close</button>`}
             </form>
           </div>
           </div>

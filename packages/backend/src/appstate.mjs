@@ -91,9 +91,9 @@ const endpointToRegex = (endpoint) => {
 export let models;
 export let api;
 
-export async function initializeApiModel() {
+export async function getApiModel() {
   if (models && api) {
-    return { models, api }; // If already initialized, return cached values
+    return { models, api };
   }
 
   const appId = await getAppId();
@@ -115,12 +115,76 @@ export async function initializeApiModel() {
   return { models, api };
 }
 
+const messageHandlers = {
+  INIT_APP: async (data, source) => {
+    let appId = data.appId;
+    if (appId) {
+      await setAppId(appId);
+    } else {
+      appId = await getAppId();
+    }
+    const userId = await getUserId(appId);
+
+    source.postMessage({
+      type: "INIT_APP",
+      appId,
+      userId,
+    });
+  },
+
+  SYNC_DATA: async (data, { requestUpdate }) => {
+    const { data: syncData } = data;
+    for (let [modelName, entries] of Object.entries(syncData)) {
+      const { models } = await getApiModel();
+      const model = models[modelName];
+      if (model) model?.setMany(entries);
+    }
+
+    requestUpdate();
+  },
+
+  OPLOG_WRITE: async (data, { requestUpdate, P2P }) => {
+    const { store, modelName, key, value } = data;
+    const { models } = await getApiModel();
+    const model = models[modelName];
+    if (model) {
+      if (value) {
+        await model.setItem(key, value);
+      } else {
+        await model.removeItem(key);
+      }
+
+      // TODO: When sending the message to another user, we need to append the user id who sent it
+      P2P.postMessage({ type: "OPLOG_WRITE", store, modelName, key, value });
+
+      if (data.requestUpdate) requestUpdate();
+    }
+  },
+};
+
+export const messageHandler =
+  ({ requestUpdate, P2P }) =>
+    async (event) => {
+      const handler = messageHandlers[event.data.type];
+      if (handler) {
+        console.log("DEBUG: Received bridge-message from Web Worker: ", {
+          event,
+        });
+        try {
+          await handler(event.data, event.source, { requestUpdate, P2P });
+        } catch (error) {
+          console.error(`Error handling ${event.data.type}:`, error);
+        }
+      }
+    };
+
 export default {
-  initializeApiModel,
+  getApiModel,
   getAppId,
   getUserId,
   generateId,
   getTimestamp,
   getModels,
   setModels,
+  messageHandler,
 };

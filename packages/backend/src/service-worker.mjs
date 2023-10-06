@@ -1,10 +1,4 @@
-import {
-  getAppId,
-  initializeApiModel,
-  setAppId,
-  getUserId,
-} from "./appstate.mjs";
-import adapter from "./indexeddb.mjs";
+import { messageHandler, getApiModel } from "./appstate.mjs";
 
 const requestUpdate = () =>
   self.clients
@@ -23,6 +17,8 @@ const P2P = {
   },
 };
 
+self.addEventListener("message", messageHandler({ P2P, requestUpdate }));
+
 const extractPathParams = (endpoint, requestPath, regex) => {
   const paramNames = [...endpoint.matchAll(/:([a-z]+)/gi)].map(
     (match) => match[1],
@@ -36,7 +32,7 @@ const extractPathParams = (endpoint, requestPath, regex) => {
 
 self.addEventListener("activate", (event) => {
   console.log("Service Worker Activated");
-  event.waitUntil(self.clients.claim()); // Claim any clients immediately, so page reload is not required.
+  event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("fetch", async (event) => {
@@ -49,7 +45,7 @@ self.addEventListener("fetch", async (event) => {
 
   event.respondWith(
     (async () => {
-      const { api } = await initializeApiModel();
+      const { api } = await getApiModel();
       const request = `${event.request.method} ${url.pathname}`;
 
       const matchedEndpointKey = Object.keys(api).find((endpointKey) => {
@@ -104,59 +100,4 @@ self.addEventListener("fetch", async (event) => {
       }
     })(),
   );
-});
-
-const messageHandlers = {
-  INIT_APP: async (data, source) => {
-    let appId = data.appId;
-    if (appId) {
-      await setAppId(appId);
-    } else {
-      appId = await getAppId();
-    }
-    const userId = await getUserId(appId);
-
-    source.postMessage({
-      type: "INIT_APP",
-      appId,
-      userId,
-    });
-  },
-
-  SYNC_DATA: async (data) => {
-    const { data: syncData, appId } = data;
-    for (let [model, entries] of Object.entries(syncData)) {
-      const db = adapter.createStore(`${appId}_${model}`, "kv");
-      await adapter.clear(db);
-      await adapter.setMany(entries, db);
-    }
-
-    requestUpdate();
-  },
-
-  OPLOG_WRITE: async (data) => {
-    const { store, key, value } = data;
-    const db = adapter.createStore(store, "kv");
-    if (value) {
-      await adapter.setItem(key, value, db);
-    } else {
-      await adapter.removeItem(key, db);
-    }
-    // TODO: When sending the message to another user, we need to append the user id who sent it
-    P2P.postMessage({ type: "OPLOG_WRITE", store, key, value });
-
-    if (data.requestUpdate) requestUpdate();
-  },
-};
-
-self.addEventListener("message", async (event) => {
-  const handler = messageHandlers[event.data.type];
-  if (handler) {
-    console.log("DEBUG: Received bridge-message from Web Worker: ", { event });
-    try {
-      await handler(event.data, event.source);
-    } catch (error) {
-      console.error(`Error handling ${event.data.type}:`, error);
-    }
-  }
 });
