@@ -775,7 +775,6 @@ export default {
         src: String
       },
       render: ({ variant, src }, { html }) => {
-      // Placeholder for masked content, you can expand on this using CSS or JS masking techniques
         return html`<img class="mask ${variant}" src=${src} />`;
       },
     },

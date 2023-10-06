@@ -1,34 +1,9 @@
 import indexeddbAdapter from "./indexeddb.mjs";
-import { fromBase62, toBase62 } from "./string.mjs";
+import { generateId } from "./string.mjs";
 import P2P from "./rtc-worker.mjs";
 
 let oplog;
 let queue;
-
-export let sequentialCounter = 0;
-const generateIdByTimestamp = (timestamp) => {
-  if (!timestamp) {
-    throw new Error(
-      "Reference timestamp not set. Ensure getAppId has been called first.",
-    );
-  }
-
-  const timeDifference = Date.now() - parseInt(timestamp, 10);
-  let id = toBase62(timeDifference + sequentialCounter);
-
-  sequentialCounter++;
-
-  while (id.length < 5) {
-    id = "0" + id;
-  }
-  return id;
-};
-
-export const generateId = (appId) => {
-  const referenceTimestamp = fromBase62(appId);
-  let id = generateIdByTimestamp(referenceTimestamp);
-  return id;
-};
 
 class ReactiveRecord {
   async init({ importData, ...properties }, name, appId) {

@@ -1,6 +1,6 @@
 import indexeddb from "./indexeddb.mjs";
-import { generateId, defineModels } from "./reactive-record.mjs";
-import { fromBase62, toBase62 } from "./string.mjs";
+import { defineModels } from "./reactive-record.mjs";
+import { generateId, fromBase62, toBase62 } from "./string.mjs";
 
 const APP_STATE_DB = "app-state-db";
 

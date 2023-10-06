@@ -1,4 +1,31 @@
 const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+export let sequentialCounter = 0;
+
+export const generateIdByTimestamp = (timestamp) => {
+  if (!timestamp) {
+    throw new Error(
+      "Reference timestamp not set. Ensure getAppId has been called first.",
+    );
+  }
+
+  const timeDifference = Date.now() - parseInt(timestamp, 10);
+  let id = toBase62(timeDifference + sequentialCounter);
+
+  sequentialCounter++;
+
+  while (id.length < 5) {
+    id = "0" + id;
+  }
+  return id;
+};
+
+export const generateId = (appId) => {
+  const referenceTimestamp = fromBase62(appId);
+  let id = generateIdByTimestamp(referenceTimestamp);
+  return id;
+};
+
 export const fromBase62 = (str) => {
   let num = 0;
   for (let i = 0; i < str.length; i++) {
