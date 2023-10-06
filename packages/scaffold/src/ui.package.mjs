@@ -919,8 +919,7 @@ export default {
     
       render: ({ icon, label, click, href, active, classes = {} }, { html }) => {
         const iconComponent = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
-        const { item: itemClass = "" } = classes;
-        console.log({classes});
+        const { item: itemClass = "" } = classes;        
         const activeClass = active ? "active" : "";
         return html`
           <li>

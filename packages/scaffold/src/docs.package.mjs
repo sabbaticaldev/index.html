@@ -19,7 +19,7 @@ export default {
               <uix-list layout="responsive">
                   <uix-block class="flex-grow">
                     <uix-block>    
-                      <uix-heading size="2">${title}</uix-heading>
+                      <uix-text size="2">${title}</uix-text>
                       <p>${description}</p>
                       </uix-block>
                       <uix-block>
@@ -32,7 +32,7 @@ export default {
                       ${examples.map((example) => html`
                           <section id="${formattedTitle(example.title)}">
                             <uix-block>    
-                              <uix-heading size="4">${example.title}</uix-heading>
+                              <uix-text size="4">${example.title}</uix-text>
                               <p>${example.description}</p>
                             </uix-block>
                             <uix-block>
@@ -46,7 +46,7 @@ export default {
                   </uix-block>
                   
                   <uix-block class="w-1/4 lg:w-1/3 xl:w-1/3">
-                      <uix-heading size="4">Contents</uix-heading>
+                      <uix-text size="4">Contents</uix-text>
                       <ul>
                           <li><a href="#description">Description</a></li>
                           <li><a href="#properties">Properties</a></li>
