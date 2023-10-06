@@ -84,7 +84,6 @@ class ReactiveRecord {
       const entries = this._generateEntries(value);
       allEntries.push(...entries);
     }
-    console.log({ allEntries });
     await this._setMany(allEntries);
   }
 
@@ -182,6 +181,18 @@ class ReactiveRecord {
     return indexOnly
       ? Promise.all(items.map(async (key) => await this.get(key, props)))
       : Promise.resolve(items);
+  }
+
+  async setItem(key, value) {
+    return this.adapter.setItem(key, value, this.store);
+  }
+
+  async getItem(key) {
+    return this.adapter.getItem(key, this.store);
+  }
+
+  async removeItem(key) {
+    return this.adapter.removeItem(key, this.store);
   }
 }
 
