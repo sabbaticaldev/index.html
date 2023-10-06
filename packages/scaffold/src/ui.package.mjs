@@ -860,7 +860,7 @@ export default {
       props: {
         variant: { 
           type: String, 
-          defaultValue: "base",
+          defaultValue: "",
           enum: Variants 
         },
         bgColor: { 

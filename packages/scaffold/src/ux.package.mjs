@@ -10,94 +10,19 @@ export default {
   i18n: {},
   views: {
     "uix-app-shell": {
-      props: {
-        icon: "",
-        label: "",
-        mainNavbar: {
-          type: String, 
-          defaultValue: "topNavbar", 
-          enum: ["topNavbar", "leftNavbar", "bottomNavbar", "rightNavbar"]
-        },
-        topNavbar: {
-          bgColor: { type: String, defaultValue: "primary", enum: BgColor },
-          textColor: { type: String, defaultValue: "primary", enum: TextColor },
-          classes: {type: Object, defaultValue: {} },
-          items: { type: Array, defaultValue: [] },          
-          height: { type: String, defaultValue: "h-16" },
-        },
-        leftNavbar: {
-          bgColor: { type: String, defaultValue: "primary", enum: BgColor },
-          textColor: { type: String, defaultValue: "primary", enum: TextColor },
-          classes: {type: Object, defaultValue: {} },
-          items: { type: Array, defaultValue: [] },          
-          width: { type: String, defaultValue: "w-72" },
-        },
-        rightNavbar: {
-          bgColor: { type: String, defaultValue: "primary", enum: BgColor },
-          textColor: { type: String, defaultValue: "primary", enum: TextColor },
-          classes: {type: Object, defaultValue: {} },
-          items: { type: Array, defaultValue: [] },
-          width: { type: String, defaultValue: "w-72" },
-        },
-        bottomNavbar: {
-          bgColor: { type: String, defaultValue: "primary", enum: BgColor },
-          textColor: { type: String, defaultValue: "primary", enum: TextColor },
-          classes: {type: Object, defaultValue: {} },
-          items: { type: Array, defaultValue: [] },
-          height: { type: String, defaultValue: "h-16" },
-        }
-      },
-      render: ({ mainNavbar, leftNavbar, topNavbar, rightNavbar, bottomNavbar, icon, label }, { html }) => {        
-        const renderNavbar = (navbar, orientation) => {
-          const isMain = mainNavbar === orientation;
-          console.log(navbar.classes);
-          return navbar.items.length ? html`
-        <uix-navbar
-          class="bg-base-100 border-r"
-          icon=${isMain ? icon : ""}
-          label=${isMain ? label : ""}
-          padding="p-0"
-          .classes=${navbar.classes || {}}
-          direction=${["rightNavbar","leftNavbar"].includes(orientation) ? "vertical" : "horizontal"}
-          variant=${navbar.bgColor}
-          height=${navbar.height || ""}
-          gap=${navbar.gap}
-          width=${navbar.width || "w-72"}
-          .items=${navbar.items}>
-        </uix-navbar>
-      ` : "";
-        };
+      render: (host, { html }) => {        
 
-        const renderMenu = (navbar, orientation) => {
-          return navbar.items.length ? html`
-            <uix-menu
-              direction=${["rightNavbar","leftNavbar"].includes(orientation) ? "vertical" : "horizontal"}
-              fullHeight
-              .classes=${navbar.classes || {}}
-              variant=${navbar.bgColor}
-              gap=${navbar.gap}
-              width=${navbar.width || "w-72"}
-              height=${navbar.height || ""}
-              .items=${navbar.items}>
-            </uix-menu>
-          ` : "";
-        };
-        
         return html`
       <div class="app-shell w-full h-full flex flex-col">
-        ${mainNavbar === "topNavbar" ? renderNavbar(topNavbar, "topNavbar") : renderMenu(topNavbar, "topNavbar")}
-        
+        <slot name="top-navbar"></slot>        
         <div class="flex h-full">
-          ${mainNavbar === "leftNavbar" ? renderNavbar(leftNavbar, "leftNavbar") : renderMenu(leftNavbar, "leftNavbar")}
-          
+          <slot name="left-navbar"></slot>        
           <main class="relative content flex-grow overflow-y-auto">
             <slot></slot>
           </main>
-          
-          ${mainNavbar === "rightNavbar" ? renderNavbar(rightNavbar, "rightNavbar") : renderMenu(rightNavbar, "rightNavbar")}
+          <slot name="right-navbar"></slot>
         </div>
-
-        ${mainNavbar === "bottomNavbar" ? renderNavbar(bottomNavbar, "bottomNavbar") : renderMenu(bottomNavbar, "bottomNavbar")}
+        <slot name="bottom-navbar"></slot>        
       </div>
     `;
       },
@@ -147,7 +72,7 @@ export default {
       props: {
         variant: { 
           type: String,
-          defaultValue: "base",
+          defaultValue: "",
           enum: Variants
         },
         shadow: { type: Boolean, defaultValue: false },
@@ -173,19 +98,19 @@ export default {
         } = classes || {};
 
         const baseClasses = [
-          "navbar flex overflow-y-auto overflow-x-hidden", 
+          "navbar flex overflow-y-auto overflow-x-hidden p-0", 
           BgColor[variant],           
           shadow ? "shadow-xl" : "", 
           rounded ? "rounded-box" : "",
           direction === "vertical" ? "flex-col h-full" : "flex-row w-full"
         ].filter(c => !!c).join(" ");
-        
+
         return html`
           <div class="${baseClasses} ${height || ""} ${width || ""} ${containerClass}">
             ${icon && label ? html`
                 <a class=${[`cursor-pointer flex items-center text-center 
                 justify-center gap-2`, 
-  direction === "vertical" ? "w-full h-16 border-b mb-4" : "h-full w-72 border-r mr-4", 
+  direction === "vertical" ? "w-full h-16 border-b mb-4" : "h-full w-72 border-r pr-4", 
   logoClass].join(" ")} href="/">
                   <ion-icon
                     name=${icon}
