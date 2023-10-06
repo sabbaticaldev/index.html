@@ -291,6 +291,10 @@ export default {
           defaultValue: "md",
           enum: Sizes
         },
+        type: {
+          type: String,
+          defaultValue: "",          
+        },
         fullWidth: { type: Boolean, defaultValue: false },
         shape: {
           type: String,
@@ -302,13 +306,15 @@ export default {
           defaultValue: "",
           enum: Styles
         },
+        click: {type: Function, defaultValue: ""},
         isLoading: { type: Boolean, defaultValue: false },
         startIcon: { type: String, defaultValue: "" },
         endIcon: { type: String, defaultValue: "" },
         border: { type: Boolean, defaultValue: false },
         noAnimation: { type: Boolean, defaultValue: false },
       },
-      render: ({ style, size, fullWidth, border, shape, variant, isLoading, startIcon, endIcon, noAnimation }, { html }) => {
+      render: (host, { html }) => {
+        const { style, type, size, click, fullWidth, border, shape, variant, isLoading, startIcon, endIcon, noAnimation } = host;
         const ButtonSizes = {
           "lg": "btn-lg",
           "md": "",
@@ -344,7 +350,7 @@ export default {
       `;
 
         return html`
-        <button class=${btnClass}>
+        <button type=${type || ""} class=${btnClass} @click=${(event)=> click?.({ event, host })}>
           ${startIcon ? html`<svg class="h-6 w-6">${startIcon}</svg>` : ""}
           <slot></slot>
           ${endIcon ? html`<svg class="h-6 w-6">${endIcon}</svg>` : ""}
@@ -721,7 +727,7 @@ export default {
     },
     "uix-modal": {
       props: {
-        isOpen: { type: Boolean, defaultValue: false },
+        actions: { type: Function, defaultValue: ()=> {} },
         title: { type: String, defaultValue: "" },
         content: { type: String, defaultValue: "" },
         closeButton: { type: Boolean, defaultValue: true },
@@ -730,28 +736,32 @@ export default {
         position: { type: String, defaultValue: "middle", enum: ["top", "middle", "bottom"] },
         icon: { type: String, defaultValue: "" },
       },
-      render: function(host, { html }) {
-        const { title, position, openButton, icon, closeButton } = host;
+      render: (host, { html }) => {
+        const { actions,  title, position, openButton, icon, closeButton } = host;
         const modalClass = `modal ${ModalPositions[position] || ModalPositions.middle}`;
-        const openclick = () => host.renderRoot.querySelector("#modal").showModal();
+        const openclick = () => {
+          host.renderRoot.querySelector("#modal").showModal();
+        };
+        host.closeModal = (msg = "") => host.renderRoot.querySelector("#modal")?.close(msg);
         return html`
         ${openButton ? openButton(openclick)
     : html`<button @click=${openclick}>open</button>`}
-        
-        <dialog id="modal" class=${modalClass}>
-          ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
-          <div class="modal-box">
-          
-          ${title && html`<div class="modal-title">${title}</div>`}
 
-          <slot name="content"></slot>
-          <div class="modal-action">
-            <slot name="footer"></slot>                        
-            <form method="dialog">
-              ${closeButton && html`<button class="btn">Close</button>`}
-            </form>
-          </div>
-          </div>
+        <dialog id="modal" class=${modalClass}>
+            ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
+            <div class="modal-box">
+              ${title && html`<div class="modal-title">${title}</div>`}
+
+              <slot></slot>
+
+              <div class="modal-action">
+                <slot name="footer"></slot>
+                <form method="dialog">
+                  ${actions({host}) || ""}
+                  ${closeButton && html`<button class="btn">Close</button>`}
+                </form>
+              </div>
+            </div>
         </dialog>
       `;
       },
@@ -1235,12 +1245,14 @@ export default {
     },
     "uix-input": {
       props: {
+        autofocus: { type: Boolean, defaultValue: false },
         value: { type: String, defaultValue: "" },
         placeholder: { type: String, defaultValue: "Enter value" },
         disabled: { type: Boolean, defaultValue: false },
         type: { type: String, defaultValue: "text", enum: ["text", "password", "email", "number", "search"] },
         maxLength: { type: Number, defaultValue: null },
-        keyup: { type: Function },
+        change: {type: Function, defaultValue: null },
+        keyup: { type: Function, defaultValue: null },
         style: { type: String, defaultValue: "bordered", enum: Styles },
         variant: { type: String, defaultValue: "default", enum: Variants },
         size: { type: String, defaultValue: "md", enum: Sizes },
@@ -1248,7 +1260,7 @@ export default {
         label: { type: String, defaultValue: null },
         labelAlt: { type: Array, defaultValue: [] }, // For top-right, bottom-left, bottom-right labels
       },
-      render: ({ value, keyup, placeholder, disabled, type, maxLength, style, variant, size, hasFormControl, label, labelAlt }, { html }) => {      
+      render: ({ autofocus, value, keyup, placeholder, change, disabled, type, maxLength, style, variant, size, hasFormControl, label, labelAlt }, { html }) => {      
         const InputVariantClass = {
           "primary": "input-primary",
           "secondary": "input-secondary",
@@ -1279,13 +1291,14 @@ export default {
         };
 
         const inputClass = ["input", InputStyleClass[style], InputVariantClass[variant],InputSizeClass[size]].filter(cls=>!!cls).join(" ");
-   
+        
         const inputElem = html`
         <input 
           class="${inputClass}" 
-          @keyup=${keyup}
+          @keyup=${change || keyup}
           .value=${value || ""}
           placeholder=${placeholder} 
+          ?autofocus=${autofocus}
           ?disabled=${disabled} 
           type=${type} 
           ${maxLength !== null ? `maxlength=${maxLength}` : ""}>

@@ -116,7 +116,7 @@ export async function getApiModel() {
 }
 
 const messageHandlers = {
-  INIT_APP: async (data, source) => {
+  INIT_APP: async (data, { source }) => {
     let appId = data.appId;
     if (appId) {
       await setAppId(appId);
@@ -171,7 +171,12 @@ export const messageHandler =
           event,
         });
         try {
-          await handler(event.data, event.source, { requestUpdate, P2P });
+          const messageHandlerContext = {
+            source: event.source,
+            requestUpdate,
+            P2P,
+          };
+          await handler(event.data, messageHandlerContext);
         } catch (error) {
           console.error(`Error handling ${event.data.type}:`, error);
         }
