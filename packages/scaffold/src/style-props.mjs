@@ -258,6 +258,7 @@ export const SelectSizes = {
 export const Triggers = ["click", "hover"];
 export const Directions = ["horizontal", "vertical", "responsive"];
 export const Formats = ["DHMS", "HMS", "MS", "S"];
+
 export const Colors = [
   "primary",
   "secondary",
@@ -269,6 +270,7 @@ export const Colors = [
   "warning",
   "error"
 ];
+
 export const BgColor = {
   primary: "bg-primary-200",
   secondary: "bg-secondary-200",

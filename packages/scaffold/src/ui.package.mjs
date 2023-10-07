@@ -1211,9 +1211,9 @@ export default {
     } else {
       return html`<uix-menu-item
                   .classes=${{ item: itemClass }}
+                  .click=${item.click}
                   icon=${item.icon}
                   label=${item.label}
-                  click=${item.click}
                   href=${item.href}
                   active=${isActive}
                 ></uix-menu-item>`;
@@ -1614,7 +1614,7 @@ export default {
         },
         thickness: {
           type: String,
-          defaultValue: "0.4rem" // 10% of the default size
+          defaultValue: "0.4rem"
         },
         color: {
           type: String,
@@ -1623,11 +1623,11 @@ export default {
         },
         backgroundColor: {
           type: String,
-          defaultValue: "default" // Change this as per need.
+          defaultValue: "default"
         },
         borderColor: {
           type: String,
-          defaultValue: "default" // Change this as per need.
+          defaultValue: "default"
         },
         borderWidth: {
           type: String,
@@ -1635,7 +1635,7 @@ export default {
         },
         textColor: {
           type: String,
-          defaultValue: "default-content" // Change this as per need.
+          defaultValue: "default-content"
         }
       },
       render: (

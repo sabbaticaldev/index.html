@@ -1,7 +1,7 @@
 import {
+  Colors,
   Sizes,
   Variants,
-  Colors,
   BgColor,
   CheckboxVariant,
   CheckboxSize,
@@ -20,25 +20,58 @@ import {
   ToggleVariantClass
 } from "./style-props.mjs";
 
-// Helper function to generate the appropriate component based on the field config
-const createFieldComponent = (field, html) => {
-  const { type, ...props } = field;
+const InputField = (props, html) =>
+  html`
+    <uix-input
+      ?autofocus=${props.autofocus}
+      value=${props.value}
+      .change=${props.change}
+      placeholder=${props.placeholder}
+      ?disabled=${props.disabled}
+      type=${props.type}
+      maxLength=${props.maxLength}
+      variant=${props.variant}
+      color=${props.color}
+      size=${props.size}
+    ></uix-input>
+  `;
 
-  switch (type) {
-  case "input":
-    return html`<uix-input .props=${props}></uix-input>`;
-  case "textarea":
-    return html`<uix-textarea .props=${props}></uix-textarea>`;
-  case "select":
-    return html`<uix-select .props=${props}></uix-select>`;
-    // ... Add more cases as needed for each type of field
-  default:
-    return html``; // Empty template for unsupported field types
-  }
+const TextareaField = (props, html) => html`
+  <uix-textarea
+    value=${props.value}
+    placeholder=${props.placeholder}
+    ?disabled=${props.disabled}
+    rows=${props.rows}
+    variant=${props.variant}
+    color=${props.color}
+    size=${props.size}
+    label=${props.label}
+    labelAlt=${props.labelAlt}
+  ></uix-textarea>
+`;
+
+const SelectField = (props, html) => html`
+  <uix-select
+    .options=${props.options}
+    color=${props.color}
+    label=${props.label}
+    altLabel=${props.altLabel}
+    size=${props.size}
+  ></uix-select>
+`;
+
+const fieldRenderers = {
+  input: InputField,
+  textarea: TextareaField,
+  select: SelectField
 };
 
 const renderField = (field, html) => {
-  const fieldComponent = createFieldComponent(field, html);
+  const { type, ...props } = field;
+  const FieldRenderer = fieldRenderers[type] || fieldRenderers.input;
+
+  const fieldComponent = FieldRenderer(props, html);
+
   if (field.label || (field.labelAlt && field.labelAlt.length)) {
     return html`
       <uix-form-control
@@ -49,6 +82,7 @@ const renderField = (field, html) => {
       </uix-form-control>
     `;
   }
+
   return fieldComponent;
 };
 
@@ -75,9 +109,10 @@ export default {
       return html`
                   <uix-list responsive>
                     ${row.map(
-    (field) => html`
-                        <uix-block> ${renderField(field, html)} </uix-block>
-                      `
+    (field) =>
+      html`<uix-block>
+                          ${renderField(field, html)}
+                        </uix-block>`
   )}
                   </uix-list>
                 `;
@@ -88,6 +123,43 @@ export default {
   })}
             <uix-menu responsive gap="md" .items=${actions}> </uix-menu>
           </form>
+        `;
+      }
+    },
+    "uix-form-modal": {
+      props: {
+        fields: { type: Array, defaultValue: [] },
+        actions: { type: Array, defaultValue: [] },
+        title: { type: String, defaultValue: "" },
+        color: { type: String, defaultValue: "default", enum: Colors },
+        size: { type: String, defaultValue: "md", enum: Sizes },
+        name: { type: String, defaultValue: "uix-form-modal" },
+        position: {
+          type: String,
+          defaultValue: "middle",
+          enum: ["top", "middle", "bottom"]
+        },
+        icon: { type: String, defaultValue: "" },
+        openButton: { type: Function, defaultValue: null },
+        closeButton: { type: Boolean, defaultValue: true }
+      },
+      render: (props, { html }) => {
+        return html`
+          <uix-modal
+            title=${props.title}
+            color=${props.color}
+            size=${props.size}
+            name=${props.name}
+            position=${props.position}
+            icon=${props.icon}
+            .openButton=${props.openButton}
+            .closeButton=${props.closeButton}
+          >
+            <uix-form
+              .fields=${props.fields}
+              .actions=${props.actions}
+            ></uix-form>
+          </uix-modal>
         `;
       }
     },
@@ -127,6 +199,10 @@ export default {
           defaultValue: "text",
           enum: ["text", "password", "email", "number", "search", "tel", "url"]
         },
+        change: {
+          type: Function,
+          defaultValue: () => {}
+        },
         maxLength: { type: Number, defaultValue: null },
         variant: { type: String, defaultValue: "bordered", enum: Variants },
         color: { type: String, defaultValue: "default", enum: Colors },
@@ -134,6 +210,7 @@ export default {
       },
       render: (
         {
+          change,
           autofocus,
           value,
           placeholder,
@@ -162,12 +239,54 @@ export default {
             placeholder=${placeholder}
             ?autofocus=${autofocus}
             ?disabled=${disabled}
+            @change=${change}
             type=${type}
             ${maxLength !== null ? `maxlength=${maxLength}` : ""}
           />
         `;
       }
     },
+
+    "uix-select": {
+      props: {
+        options: { type: Array, defaultValue: [] },
+        color: {
+          type: String,
+          defaultValue: "base",
+          enum: Colors
+        },
+        label: { type: String, defaultValue: "" },
+        altLabel: { type: String, defaultValue: "" },
+        size: {
+          type: String,
+          defaultValue: "md",
+          enum: Sizes
+        }
+      },
+      render: ({ options, color, label, altLabel, size }, { html }) => {
+        const colorClass = SelectColors[color];
+        const sizeClass = SelectSizes[size];
+
+        return html`
+          <div class="form-control w-full max-w-xs">
+            ${label
+    ? html`<label class="label"
+                  ><span class="label-text">${label}</span></label
+                >`
+    : ""}
+            <select class="select ${colorClass} ${sizeClass} w-full max-w-xs">
+              ${options.map((option) => html` <option>${option}</option> `)}
+            </select>
+            ${altLabel
+    ? html`<label class="label"
+                  ><span class="label-text-alt">${altLabel}</span></label
+                >`
+    : ""}
+          </div>
+        `;
+      }
+    },
+
     "uix-textarea": {
       props: {
         value: { type: String, defaultValue: "" },
@@ -353,46 +472,6 @@ ${value}</textarea
         `;
       }
     },
-    "uix-select": {
-      props: {
-        options: { type: Array, defaultValue: [] },
-        color: {
-          type: String,
-          defaultValue: "base",
-          enum: Colors
-        },
-        label: { type: String, defaultValue: "" },
-        altLabel: { type: String, defaultValue: "" },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        }
-      },
-      render: ({ options, color, label, altLabel, size }, { html }) => {
-        const colorClass = SelectColors[color];
-        const sizeClass = SelectSizes[size];
-
-        return html`
-          <div class="form-control w-full max-w-xs">
-            ${label
-    ? html`<label class="label"
-                  ><span class="label-text">${label}</span></label
-                >`
-    : ""}
-            <select class="select ${colorClass} ${sizeClass} w-full max-w-xs">
-              ${options.map((option) => html` <option>${option}</option> `)}
-            </select>
-            ${altLabel
-    ? html`<label class="label"
-                  ><span class="label-text-alt">${altLabel}</span></label
-                >`
-    : ""}
-          </div>
-        `;
-      }
-    },
-
     "uix-toggle": {
       props: {
         on: { type: Boolean, defaultValue: false },
