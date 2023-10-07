@@ -1,31 +1,31 @@
 import {
-  Variants,
+  Colors,
   Sizes,
   HeadingColors,
   LinkColors,
-  FontWeight,
-} from './style-props.mjs';
+  FontWeight
+} from "./style-props.mjs";
 
 export default {
   views: {
-    'uix-text': {
+    "uix-text": {
       props: {
-        size: { type: String, defaultValue: '', enum: Sizes },
-        variant: { type: String, defaultValue: 'primary', enum: Variants },
-        weight: { type: String, defaultValue: 'semibold', enum: Variants },
-        class: { type: String, defaultValue: '' },
+        size: { type: String, defaultValue: "", enum: Sizes },
+        color: { type: String, defaultValue: "primary", enum: Colors },
+        weight: { type: String, defaultValue: "semibold", enum: Colors },
+        class: { type: String, defaultValue: "" }
       },
       render: (props, { html }) => {
-        const { size, variant, weight } = props;
+        const { size, color, weight } = props;
         const baseClass = [
-          'prose',
-          HeadingColors[variant],
+          "prose",
+          HeadingColors[color],
           FontWeight[weight],
-          props.class,
+          props.class
         ];
 
         const HeadingTemplates = {
-          '2xl': html`<h1 class="text-5xl mt-0 mb-2 ${baseClass}">
+          "2xl": html`<h1 class="text-5xl mt-0 mb-2 ${baseClass}">
             <slot></slot>
           </h1>`,
           xl: html`<h2 class="text-3xl mt-0 mb-2 ${baseClass}">
@@ -43,47 +43,47 @@ export default {
           xs: html`<h6 class="text-xs mt-0 mb-1 ${baseClass}">
             <slot></slot>
           </h6>`,
-          '': html`<p class="text-base ${baseClass}"><slot></slot></p>`,
+          "": html`<p class="text-base ${baseClass}"><slot></slot></p>`
         };
 
-        return HeadingTemplates[size || ''];
-      },
+        return HeadingTemplates[size || ""];
+      }
     },
-    'uix-link': {
+    "uix-link": {
       props: {
-        href: { type: String, defaultValue: '#' },
-        content: { type: String, defaultValue: '' },
+        href: { type: String, defaultValue: "#" },
+        content: { type: String, defaultValue: "" },
         external: { type: Boolean, defaultValue: false },
-        variant: {
+        color: {
           type: String,
-          defaultValue: '',
-          enum: Variants,
+          defaultValue: "",
+          enum: Colors
         },
         underlineOnHover: { type: Boolean, defaultValue: false },
-        icon: { type: String, defaultValue: null },
+        icon: { type: String, defaultValue: null }
       },
       render: (
-        { href, content, external, variant, underlineOnHover, icon },
+        { href, content, external, color, underlineOnHover, icon },
         { html }
       ) => {
-        const variantClass = [
-          'link',
-          LinkColors[variant],
-          underlineOnHover ? 'hover:underline' : '',
+        const colorClass = [
+          "link",
+          LinkColors[color],
+          underlineOnHover ? "hover:underline" : ""
         ]
           .filter((cls) => !!cls)
-          .join(' ');
+          .join(" ");
         const externalAttrs = external
-          ? 'target="_blank" rel="noopener noreferrer"'
-          : '';
+          ? "target=\"_blank\" rel=\"noopener noreferrer\""
+          : "";
 
         return html`
-          <a href=${href} class=${variantClass} ${externalAttrs}>
-            ${icon ? html`<uix-icon name="${icon}"></uix-icon>` : ''}
-            ${content || '<slot></slot>'}
+          <a href=${href} class=${colorClass} ${externalAttrs}>
+            ${icon ? html`<uix-icon name="${icon}"></uix-icon>` : ""}
+            ${content || "<slot></slot>"}
           </a>
         `;
-      },
-    },
-  },
+      }
+    }
+  }
 };

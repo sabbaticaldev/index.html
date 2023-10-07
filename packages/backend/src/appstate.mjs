@@ -164,24 +164,24 @@ const messageHandlers = {
 
 export const messageHandler =
   ({ requestUpdate, P2P }) =>
-  async (event) => {
-    const handler = messageHandlers[event.data.type];
-    if (handler) {
-      console.log("DEBUG: Received bridge-message from Web Worker: ", {
-        event,
-      });
-      try {
-        const messageHandlerContext = {
-          source: event.source,
-          requestUpdate,
-          P2P,
-        };
-        await handler(event.data, messageHandlerContext);
-      } catch (error) {
-        console.error(`Error handling ${event.data.type}:`, error);
+    async (event) => {
+      const handler = messageHandlers[event.data.type];
+      if (handler) {
+        console.log("DEBUG: Received bridge-message from Web Worker: ", {
+          event,
+        });
+        try {
+          const messageHandlerContext = {
+            source: event.source,
+            requestUpdate,
+            P2P,
+          };
+          await handler(event.data, messageHandlerContext);
+        } catch (error) {
+          console.error(`Error handling ${event.data.type}:`, error);
+        }
       }
-    }
-  };
+    };
 
 export default {
   getApiModel,
