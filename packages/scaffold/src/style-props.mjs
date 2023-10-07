@@ -117,6 +117,12 @@ export const ButtonVariants = {
   bordered: "btn-bordered"
 };
 
+export const MenuSize = {
+  lg: "menu-lg",
+  md: "menu-md",
+  sm: "menu-sm",
+  xs: "menu-xs"
+};
 // form classes
 
 export const Variants = [

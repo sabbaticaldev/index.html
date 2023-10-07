@@ -9,7 +9,7 @@ import {
   TabsSize,
   Resolutions,
   Gaps,
-  Layouts,
+  MenuSize,
   Spacings,
   AnimationTypes,
   ModalPositions,
@@ -351,6 +351,14 @@ export default {
           defaultValue: "md",
           enum: Sizes
         },
+        href: {
+          type: String,
+          defaultValue: ""
+        },
+        label: {
+          type: String,
+          defaultValue: ""
+        },
         type: {
           type: String,
           defaultValue: ""
@@ -368,7 +376,7 @@ export default {
         },
         click: { type: Function, defaultValue: "" },
         isLoading: { type: Boolean, defaultValue: false },
-        startIcon: { type: String, defaultValue: "" },
+        icon: { type: String, defaultValue: "" },
         endIcon: { type: String, defaultValue: "" },
         border: { type: Boolean, defaultValue: false },
         noAnimation: { type: Boolean, defaultValue: false }
@@ -378,42 +386,58 @@ export default {
           variant,
           type,
           size,
+          label,
           click,
           fullWidth,
           border,
+          href,
           shape,
           color,
           isLoading,
-          startIcon,
+          icon,
           endIcon,
           noAnimation
         } = host;
 
-        const btnClass = `
-        btn
-        ${ButtonColors[color] || ""}
-        ${(border && BorderColor[color]) || ""}
-        ${ButtonSizes[size] || ""}
-        ${fullWidth ? "btn-block" : ""}
-        ${ButtonShapes[shape] || ""}
-        ${ButtonVariants[variant] || ""}
-        ${noAnimation ? "no-animation" : ""}
-      `;
+        const btnClass = [
+          "flex flex-row items-center gap-2",
+          href && !variant ? "" : "btn",
+          ButtonColors[color] || "",
+          (border && BorderColor[color]) || "",
+          ButtonSizes[size] || "",
+          fullWidth ? "btn-block" : "",
+          ButtonShapes[shape] || "",
+          ButtonVariants[variant] || "",
+          noAnimation ? "no-animation" : ""
+        ]
+          .filter((c) => !!c)
+          .join(" ");
+        const innerContent = [
+          icon ? html`<uix-icon name=${icon}></uix-icon>` : "",
+          label ? label : html`<slot></slot>`,
+          endIcon ? html`<uix-icon name=${endIcon}></uix-icon>` : "",
+          isLoading && html`<span class="loading loading-spinner"></span>`
+        ];
 
-        return html`
-          <button
-            type=${type || ""}
-            class=${btnClass}
-            @click=${(event) => click?.({ event, host })}
-          >
-            ${startIcon ? html`<svg class="h-6 w-6">${startIcon}</svg>` : ""}
-            <slot></slot>
-            ${endIcon ? html`<svg class="h-6 w-6">${endIcon}</svg>` : ""}
-            ${isLoading
-    ? html`<span class="loading loading-spinner"></span>`
-    : ""}
-          </button>
-        `;
+        return href
+          ? html`
+              <a
+                class=${btnClass}
+                href=${href}
+                @click=${(event) => click?.({ event, host })}
+              >
+                ${innerContent}
+              </a>
+            `
+          : html`
+              <button
+                type=${type || ""}
+                class=${btnClass}
+                @click=${(event) => click?.({ event, host })}
+              >
+                ${innerContent}
+              </button>
+            `;
       }
     },
     "uix-card": {
@@ -1068,7 +1092,7 @@ export default {
         icon: { type: String, defaultValue: "" },
         label: { type: String, defaultValue: "" },
         click: { type: Function, default: () => {} },
-        href: { type: String, defaultValue: "#" },
+        href: { type: String, defaultValue: "" },
         active: { type: Boolean, defaultValue: false },
         classes: { type: Object, defaultValue: {} },
         color: {
@@ -1082,34 +1106,23 @@ export default {
         { icon, label, click, href, active, classes = {}, color },
         { html }
       ) => {
-        const iconComponent = icon
-          ? html`<uix-icon name=${icon}></uix-icon>`
-          : "";
-
         const { item: itemClass = "" } = classes;
         const activeClass = active ? "active" : "";
         const menuItemClasses = `${itemClass} ${activeClass} items-center gap-2 px-4`;
 
-        // If there's a click event provided, we'll use uix-button,
-        // otherwise, if there's a href provided, we'll use uix-link
-        const componentToUse = href
-          ? html` <uix-link
+        return html`
+          <li>
+            <uix-button
+              .click=${click}
               href=${href}
-              class=${menuItemClasses}
               icon=${icon}
+              class=${menuItemClasses}
               color=${color}
               label=${label}
             >
-            </uix-link>`
-          : html` <uix-button
-              @click=${click}
-              icon=${icon}
-              class=${menuItemClasses}
-              color=${color}
-            >
-              ${iconComponent} ${label || ""}
-            </uix-button>`;
-        return html` <li>${componentToUse}</li> `;
+            </uix-button>
+          </li>
+        `;
       }
     },
     "uix-menu": {
@@ -1150,12 +1163,6 @@ export default {
         { html }
       ) => {
         const { container: containerClass } = classes || {};
-        const MenuSize = {
-          lg: "menu-lg",
-          md: "menu-md",
-          sm: "menu-sm",
-          xs: "menu-xs"
-        };
         const { items: itemsClass } = classes;
         const baseClass = [
           "menu",
@@ -1186,7 +1193,6 @@ export default {
             ${title ? html`<li class="menu-title">${title}</li>` : ""}
             ${items.map((item) => {
     const { submenu } = item;
-
     if (submenu) {
       return html`
                   <details ?open=${!!item.open}>
@@ -1204,10 +1210,11 @@ export default {
                 `;
     } else {
       return html`<uix-menu-item
-                  .icon=${item.icon}
                   .classes=${{ item: itemClass }}
+                  icon=${item.icon}
                   label=${item.label}
-                  .href=${item.href || "#"}
+                  click=${item.click}
+                  href=${item.href}
                   active=${isActive}
                 ></uix-menu-item>`;
     }
@@ -1402,11 +1409,7 @@ export default {
     "uix-list": {
       props: {
         vertical: { type: Boolean, defaultValue: false },
-        layout: {
-          type: String,
-          defaultValue: "default",
-          enum: Layouts
-        },
+        responsive: { type: Boolean, defaultValue: false },
         gap: {
           type: String,
           defaultValue: "sm",
@@ -1429,10 +1432,14 @@ export default {
         }
       },
       render: (props, { html }) => {
-        const { vertical, gap, layout, rounded, alignX, alignY } = props;
+        const { vertical, gap, responsive, rounded, alignX, alignY } = props;
         const directionClass = vertical ? "flex-col" : "flex-row";
         const responsiveClass =
-          layout === "responsive" ? "sm:flex-col lg:flex-row" : "";
+          (responsive &&
+            (vertical
+              ? "lg:flex-col sm:flex-row"
+              : "sm:flex-col lg:flex-row")) ||
+          "";
         const borderRadiusClass = rounded
           ? "rounded-l-full rounded-r-full"
           : "";

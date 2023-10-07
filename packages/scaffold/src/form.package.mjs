@@ -73,7 +73,7 @@ export default {
     if (Array.isArray(row)) {
       // It's a multi-field row
       return html`
-                  <uix-list layout="responsive">
+                  <uix-list responsive>
                     ${row.map(
     (field) => html`
                         <uix-block> ${renderField(field, html)} </uix-block>
