@@ -52,7 +52,7 @@ export default {
     "uix-link": {
       props: {
         href: { type: String, defaultValue: "#" },
-        content: { type: String, defaultValue: "" },
+        label: { type: String, defaultValue: "" },
         external: { type: Boolean, defaultValue: false },
         color: {
           type: String,
@@ -63,13 +63,14 @@ export default {
         icon: { type: String, defaultValue: null }
       },
       render: (
-        { href, content, external, color, underlineOnHover, icon },
+        { href, label, external, color, underlineOnHover, icon },
         { html }
       ) => {
-        const colorClass = [
+        const baseClass = [
           "link",
           LinkColors[color],
-          underlineOnHover ? "hover:underline" : ""
+          underlineOnHover ? "hover:underline" : "",
+          (icon && "flex gap-2 items-center") || ""
         ]
           .filter((cls) => !!cls)
           .join(" ");
@@ -78,9 +79,9 @@ export default {
           : "";
 
         return html`
-          <a href=${href} class=${colorClass} ${externalAttrs}>
+          <a href=${href} class=${baseClass} ${externalAttrs}>
             ${icon ? html`<uix-icon name="${icon}"></uix-icon>` : ""}
-            ${content || "<slot></slot>"}
+            ${label || html`<slot></slot>`}
           </a>
         `;
       }

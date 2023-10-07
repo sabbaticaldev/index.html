@@ -1092,22 +1092,23 @@ export default {
 
         // If there's a click event provided, we'll use uix-button,
         // otherwise, if there's a href provided, we'll use uix-link
-        const componentToUse = click
-          ? html` <uix-button
-              @click=${click}
-              class=${menuItemClasses}
-              color=${color}
-            >
-              ${iconComponent} ${label || ""}
-            </uix-button>`
-          : html` <uix-link
+        const componentToUse = href
+          ? html` <uix-link
               href=${href}
               class=${menuItemClasses}
+              icon=${icon}
+              color=${color}
+              label=${label}
+            >
+            </uix-link>`
+          : html` <uix-button
+              @click=${click}
+              icon=${icon}
+              class=${menuItemClasses}
               color=${color}
             >
               ${iconComponent} ${label || ""}
-            </uix-link>`;
-
+            </uix-button>`;
         return html` <li>${componentToUse}</li> `;
       }
     },
