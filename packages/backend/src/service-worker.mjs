@@ -74,10 +74,10 @@ self.addEventListener("fetch", async (event) => {
         const bodyMethods = ["POST", "PATCH"];
         const bodyParams = bodyMethods.includes(event.request.method)
           ? await event.request
-            .json()
-            .catch((err) =>
-              console.error("Failed to parse request body", err),
-            )
+              .json()
+              .catch((err) =>
+                console.error("Failed to parse request body", err),
+              )
           : {};
 
         const allParams = { ...pathParams, ...bodyParams, ...queryParams };

@@ -165,15 +165,15 @@ export const connect = (opts = {}) => {
   ws.onmessage = (event) => {
     const msg = JSON.parse(event.data);
     switch (msg.type) {
-    case "offer":
-      handleOffer(msg.offer, msg.fromUsername);
-      break;
-    case "answer":
-      handleAnswer(msg.answer);
-      break;
-    case "ice-candidate":
-      handleIceCandidate(msg.candidate);
-      break;
+      case "offer":
+        handleOffer(msg.offer, msg.fromUsername);
+        break;
+      case "answer":
+        handleAnswer(msg.answer);
+        break;
+      case "ice-candidate":
+        handleIceCandidate(msg.candidate);
+        break;
     }
   };
 

@@ -2,304 +2,338 @@ import {
   BgColor,
   TextColor,
   Variants,
-  BgOverlayOpacity
-} from "./style-props.mjs"; 
+  BgOverlayOpacity,
+} from './style-props.mjs';
 
 export default {
   i18n: {},
   views: {
-    "uix-app-shell": {
-      render: (host, { html }) => {        
-
+    'uix-app-shell': {
+      render: (host, { html }) => {
         return html`
-      <div class="app-shell w-full h-full flex flex-col">
-        <slot name="top-navbar"></slot>        
-        <div class="flex h-full">
-          <slot name="left-navbar"></slot>        
-          <main class="relative content flex-grow overflow-y-auto">
-            <slot></slot>
-          </main>
-          <slot name="right-navbar"></slot>
-        </div>
-        <slot name="bottom-navbar"></slot>        
-      </div>
-    `;
+          <div class="app-shell w-full h-full flex flex-col">
+            <slot name="top-navbar"></slot>
+            <div class="flex h-full">
+              <slot name="left-navbar"></slot>
+              <main class="relative content flex-grow overflow-y-auto">
+                <slot></slot>
+              </main>
+              <slot name="right-navbar"></slot>
+            </div>
+            <slot name="bottom-navbar"></slot>
+          </div>
+        `;
       },
-    }, 
-    "uix-navbar-item": {
+    },
+    'uix-navbar-item': {
       props: {
         component: { type: Function, defaultValue: null },
-        label: { type: String, defaultValue: "" },
-        icon: "",
+        label: { type: String, defaultValue: '' },
+        icon: '',
         submenu: { type: Array, defaultValue: [] },
-        variant: { type: Array, defaultValue: "" },
+        variant: { type: Array, defaultValue: '' },
       },
       render: ({ component, label, icon, submenu, variant }, { html }) => {
         if (component) {
           return component;
         }
-        
-        const iconClass = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
-        
+
+        const iconClass = icon ? html`<uix-icon name=${icon}></uix-icon>` : '';
+
         if (submenu?.length > 0) {
           return html`
-                  <details>
-                      ${iconClass}
-                      <summary>${label}</summary>
-                      <ul class="p-2 ${BgColor[variant] || ""}">
-                          ${submenu.map(subItem => html`
-                              <li><a href=${subItem.href || "#"}>
-                              ${subItem.icon && html`<ion-icon
-                                name=${subItem.icon}
-                                role="img"
-                                ></ion-icon>`}
-                              ${subItem.label}</a></li>
-                          `)}
-                      </ul>
-                  </details>
-              `;
+            <details>
+              ${iconClass}
+              <summary>${label}</summary>
+              <ul class="p-2 ${BgColor[variant] || ''}">
+                ${submenu.map(
+                  (subItem) => html`
+                    <li>
+                      <a href=${subItem.href || '#'}>
+                        ${subItem.icon &&
+                        html`<ion-icon
+                          name=${subItem.icon}
+                          role="img"
+                        ></ion-icon>`}
+                        ${subItem.label}</a
+                      >
+                    </li>
+                  `
+                )}
+              </ul>
+            </details>
+          `;
         }
         return html`<li>
-                      <a class="leading-2 flex items-center gap-2">
-                        ${iconClass}
-                        ${label}
-                      </a>
-                    </li>`;
-      }
+          <a class="leading-2 flex items-center gap-2">
+            ${iconClass} ${label}
+          </a>
+        </li>`;
+      },
     },
-    "uix-navbar": {
+    'uix-navbar': {
       props: {
-        variant: { 
+        variant: {
           type: String,
-          defaultValue: "",
-          enum: Variants
+          defaultValue: '',
+          enum: Variants,
         },
         shadow: { type: Boolean, defaultValue: false },
         rounded: { type: Boolean, defaultValue: false },
-        height: { type: String, defaultValue: "" },
-        width: { type: String, defaultValue: "" },
+        height: { type: String, defaultValue: '' },
+        width: { type: String, defaultValue: '' },
         items: { type: Array, defaultValue: [] },
         vertical: { type: Boolean, defaultValue: false },
-        gap: { type: String, defaultValue: "md" },
-        label: "", 
-        icon: "",
+        gap: { type: String, defaultValue: 'md' },
+        label: '',
+        icon: '',
         classes: { type: Object, defaultValue: {} },
       },
-      render: ({ 
-        classes, 
-        variant, label, icon, shadow, 
-        height, width, gap, rounded, items,
-        vertical
-      }, { html }) => {
+      render: (
+        {
+          classes,
+          variant,
+          label,
+          icon,
+          shadow,
+          height,
+          width,
+          gap,
+          rounded,
+          items,
+          vertical,
+        },
+        { html }
+      ) => {
         const {
-          items: itemsClass = "text-gray-800 hover:text-blue-600",
-          logo: logoClass = "font-bold text-2xl",
+          items: itemsClass = 'text-gray-800 hover:text-blue-600',
+          logo: logoClass = 'font-bold text-2xl',
           container: containerClass,
         } = classes || {};
 
         const baseClasses = [
-          "navbar flex overflow-y-auto overflow-x-hidden p-0", 
-          BgColor[variant],           
-          shadow ? "shadow-xl" : "", 
-          rounded ? "rounded-box" : "",
-          vertical ? "flex-col h-full" : "flex-row w-full"
-        ].filter(c => !!c).join(" ");
+          'navbar flex overflow-y-auto overflow-x-hidden p-0',
+          BgColor[variant],
+          shadow ? 'shadow-xl' : '',
+          rounded ? 'rounded-box' : '',
+          vertical ? 'flex-col h-full' : 'flex-row w-full',
+        ]
+          .filter((c) => !!c)
+          .join(' ');
 
         return html`
-          <div class="${baseClasses} ${height || ""} ${width || ""} ${containerClass}">
-            ${icon && label ? html`
-                <a class=${[`cursor-pointer flex items-center text-center 
-                justify-center gap-2`, 
-  vertical ? "w-full h-16 border-b mb-4" : "h-full w-72 border-r pr-4", 
-  logoClass].join(" ")} href="/">
-                  <ion-icon
-                    name=${icon}
-                    role="img"
-                  ></ion-icon>
-                  <h2>
-                    ${label}
-                  </h2>
-                </a>
-              
-            ` : ""}
+          <div
+            class="${baseClasses} ${height || ''} ${width ||
+            ''} ${containerClass}"
+          >
+            ${icon && label
+              ? html`
+                  <a
+                    class=${[
+                      `cursor-pointer flex items-center text-center 
+                justify-center gap-2`,
+                      vertical
+                        ? 'w-full h-16 border-b mb-4'
+                        : 'h-full w-72 border-r pr-4',
+                      logoClass,
+                    ].join(' ')}
+                    href="/"
+                  >
+                    <ion-icon name=${icon} role="img"></ion-icon>
+                    <h2>${label}</h2>
+                  </a>
+                `
+              : ''}
             <uix-menu
               .items=${items}
               .classes=${{
-    items: itemsClass
-  }}
+                items: itemsClass,
+              }}
               variant=${variant}
               ?vertical=${vertical}
-              gap=${gap || "lg"}
+              gap=${gap || 'lg'}
             ></uix-menu>
           </div>
         `;
-      }
-    },
-    "uix-footer": {
-      props: {
-        sections: { 
-          type: Array, 
-          defaultValue: [] // Each section can be a nav, aside, or form
-        },
-        bgColor: { 
-          type: String,
-          defaultValue: "neutral",
-          enum: Variants
-        },
-        textColor: { 
-          type: String,
-          defaultValue: "neutral-content",
-          enum: Variants
-        },
-        alignCenter: { 
-          type: Boolean,
-          defaultValue: false
-        },
-        rounded: { 
-          type: Boolean,
-          defaultValue: false
-        }
       },
-      render: ({ sections, bgColor, textColor, alignCenter, rounded }, { html }) => {
+    },
+    'uix-footer': {
+      props: {
+        sections: {
+          type: Array,
+          defaultValue: [], // Each section can be a nav, aside, or form
+        },
+        bgColor: {
+          type: String,
+          defaultValue: 'neutral',
+          enum: Variants,
+        },
+        textColor: {
+          type: String,
+          defaultValue: 'neutral-content',
+          enum: Variants,
+        },
+        alignCenter: {
+          type: Boolean,
+          defaultValue: false,
+        },
+        rounded: {
+          type: Boolean,
+          defaultValue: false,
+        },
+      },
+      render: (
+        { sections, bgColor, textColor, alignCenter, rounded },
+        { html }
+      ) => {
         const bgClass = BgColor[bgColor];
         const textClass = TextColor[textColor];
-        const alignClass = alignCenter ? "footer-center" : "";
-        const roundedClass = rounded ? "rounded" : "";
+        const alignClass = alignCenter ? 'footer-center' : '';
+        const roundedClass = rounded ? 'rounded' : '';
 
         return html`
-        <footer class="p-10 footer ${bgClass} ${textClass} ${alignClass} ${roundedClass}">
-          ${sections.map(section => {
-    switch (section.type) {
-    case "nav":
-      return html`
-                  <nav>
-                    <header class="footer-title">${section.title}</header>
-                    ${section.links.map(link => html`
-                      <a class="link link-hover">${link}</a>
-                    `)}
-                  </nav>
-                `;
-    case "aside":
-      return html`
-                  <aside>
-                    ${section.content}
-                  </aside>
-                `;
-    case "form":
-      return html`
-                  <form>
-                    ${section.content}
-                  </form>
-                `;
-    default:
-      return "";
-    }
-  })}
-        </footer>
-      `;
-      }
+          <footer
+            class="p-10 footer ${bgClass} ${textClass} ${alignClass} ${roundedClass}"
+          >
+            ${sections.map((section) => {
+              switch (section.type) {
+                case 'nav':
+                  return html`
+                    <nav>
+                      <header class="footer-title">${section.title}</header>
+                      ${section.links.map(
+                        (link) => html` <a class="link link-hover">${link}</a> `
+                      )}
+                    </nav>
+                  `;
+                case 'aside':
+                  return html` <aside>${section.content}</aside> `;
+                case 'form':
+                  return html` <form>${section.content}</form> `;
+                default:
+                  return '';
+              }
+            })}
+          </footer>
+        `;
+      },
     },
 
-    "uix-hero": {
+    'uix-hero': {
       props: {
-        title: { type: String, defaultValue: "Hello there" },
-        description: { type: String, defaultValue: "" },
-        variant: { type: String, defaultValue: "base", enum: Variants },
+        title: { type: String, defaultValue: 'Hello there' },
+        description: { type: String, defaultValue: '' },
+        variant: { type: String, defaultValue: 'base', enum: Variants },
         imageUrl: { type: String, defaultValue: null },
         overlayOpacity: { type: Number, defaultValue: 60 },
         rounded: { type: Boolean, defaultValue: false },
       },
-      render: ({ title, description, variant, imageUrl, rounded, overlayOpacity }, { html }) => {
+      render: (
+        { title, description, variant, imageUrl, rounded, overlayOpacity },
+        { html }
+      ) => {
         const bgColorClass = BgColor[variant];
         const textColorClass = TextColor[variant];
         return html`
-        <div class="hero min-h-[30rem] ,${rounded && "rounded" || ""} ${imageUrl ? `style="background-image: url(${imageUrl});"` : bgColorClass}">
-          ${imageUrl ? html`<div class="hero-overlay ,${rounded && "rounded" || ""} ${BgOverlayOpacity[overlayOpacity]}"></div>` : ""}
-          <div class="text-center hero-content ${textColorClass}">
-            <div class="max-w-md">
-              <h1 class="mb-5 text-5xl font-bold">${title}</h1>
-              <p class="mb-5">${description}</p>
-              <uix-button variant="${variant}">Get Started</uix-button>
+          <div
+            class="hero min-h-[30rem] ,${(rounded && 'rounded') ||
+            ''} ${imageUrl
+              ? `style="background-image: url(${imageUrl});"`
+              : bgColorClass}"
+          >
+            ${imageUrl
+              ? html`<div
+                  class="hero-overlay ,${(rounded && 'rounded') ||
+                  ''} ${BgOverlayOpacity[overlayOpacity]}"
+                ></div>`
+              : ''}
+            <div class="text-center hero-content ${textColorClass}">
+              <div class="max-w-md">
+                <h1 class="mb-5 text-5xl font-bold">${title}</h1>
+                <p class="mb-5">${description}</p>
+                <uix-button variant="${variant}">Get Started</uix-button>
+              </div>
             </div>
           </div>
-        </div>
-      `;
+        `;
       },
     },
 
-    "uix-stat-container": {
+    'uix-stat-container': {
       props: {
         vertical: { type: Boolean, defaultValue: false },
-        shadow: { type: Boolean, defaultValue: true }
+        shadow: { type: Boolean, defaultValue: true },
       },
       render: ({ vertical, shadow, children }, { html }) => {
-        const directionClass = vertical ? "stats-vertical" : "";
-        const shadowClass = shadow ? "shadow" : "";
+        const directionClass = vertical ? 'stats-vertical' : '';
+        const shadowClass = shadow ? 'shadow' : '';
         return html`
-        <div class="stats ${directionClass} ${shadowClass}">
-          ${children}
-        </div>
-      `;
-      }
+          <div class="stats ${directionClass} ${shadowClass}">${children}</div>
+        `;
+      },
     },
 
-    "uix-chat-message": {
+    'uix-chat-message': {
       props: {
-        message: { type: Object, defaultValue: { content: "", timestamp: "" } },
-        sender: { type: Object, defaultValue: { name: "", avatar: "" } },
+        message: { type: Object, defaultValue: { content: '', timestamp: '' } },
+        sender: { type: Object, defaultValue: { name: '', avatar: '' } },
         alignment: {
           type: String,
-          defaultValue: "start",
-          enum: ["start", "end"]
+          defaultValue: 'start',
+          enum: ['start', 'end'],
         },
         variant: {
           type: String,
-          defaultValue: "primary",
-          enum: Variants
+          defaultValue: 'primary',
+          enum: Variants,
         },
         rounded: { type: Boolean, defaultValue: false },
       },
       render: ({ message, sender, alignment, rounded, variant }, { html }) => {
         const bgColorClass = BgColor[variant];
         const AlignmentClasses = {
-          "start": "chat-start",
-          "end": "chat-end"
+          start: 'chat-start',
+          end: 'chat-end',
         };
         const alignmentClass = AlignmentClasses[alignment];
         return html`
           <div class="${alignmentClass}">
-            ${sender.avatar ? html`
-              <div class="chat-image avatar">
-                <div class="w-10 ${rounded && "rounded-full" || ""}">
-                  <img src=${sender.avatar} />
-                </div>
-              </div>
-            ` : ""}
+            ${sender.avatar
+              ? html`
+                  <div class="chat-image avatar">
+                    <div class="w-10 ${(rounded && 'rounded-full') || ''}">
+                      <img src=${sender.avatar} />
+                    </div>
+                  </div>
+                `
+              : ''}
             <div class="chat-header">
               ${sender.name}
               <time class="text-xs opacity-50">${message.timestamp}</time>
             </div>
-            <div class="chat-bubble ${bgColorClass}">
-              ${message.content}
-            </div>
+            <div class="chat-bubble ${bgColorClass}">${message.content}</div>
           </div>
         `;
-      }
+      },
     },
-    "uix-chat-bubble": {
+    'uix-chat-bubble': {
       props: {
-        messages: { type: Array, defaultValue: [] }
+        messages: { type: Array, defaultValue: [] },
       },
       render: ({ messages }, { html }) => {
         return html`
-        <div class="chat-bubble-container">
-          ${messages.map(({ content, timestamp, sender }) => html`
-            <uix-chat-message .message=${{ content, timestamp }} .sender=${sender}></uix-chat-message>
-          `)}
-        </div>
-      `;
-      }
+          <div class="chat-bubble-container">
+            ${messages.map(
+              ({ content, timestamp, sender }) => html`
+                <uix-chat-message
+                  .message=${{ content, timestamp }}
+                  .sender=${sender}
+                ></uix-chat-message>
+              `
+            )}
+          </div>
+        `;
+      },
     },
   },
 };
-      

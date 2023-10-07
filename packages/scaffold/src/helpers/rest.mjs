@@ -1,6 +1,6 @@
 function formatEndpoint(endpoint) {
-  if (!endpoint.startsWith("http")) {
-    return `/api/${endpoint}`.replace("//", "/");
+  if (!endpoint.startsWith('http')) {
+    return `/api/${endpoint}`.replace('//', '/');
   }
   return endpoint;
 }
@@ -10,7 +10,7 @@ export async function handleResponse(response) {
     const message = `An error has occurred: ${response.statusText}`;
     throw new Error(message);
   }
-  
+
   const text = await response.text();
   if (!text) {
     return null;
@@ -19,23 +19,23 @@ export async function handleResponse(response) {
 }
 
 export async function getMany(endpoint) {
-  if(!endpoint) return;
+  if (!endpoint) return;
   const response = await fetch(formatEndpoint(endpoint));
   return handleResponse(response);
 }
 
 export async function get(endpoint) {
-  if(!endpoint) return;
+  if (!endpoint) return;
   const response = await fetch(formatEndpoint(endpoint));
   return handleResponse(response);
 }
 
 export async function post(endpoint, record) {
-  if(!endpoint) return;
+  if (!endpoint) return;
   const response = await fetch(formatEndpoint(endpoint), {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(record),
   });
@@ -43,11 +43,11 @@ export async function post(endpoint, record) {
 }
 
 export async function patch(endpoint, updates) {
-  if(!endpoint) return;
+  if (!endpoint) return;
   const response = await fetch(formatEndpoint(endpoint), {
-    method: "PATCH",
+    method: 'PATCH',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(updates),
   });
@@ -55,9 +55,9 @@ export async function patch(endpoint, updates) {
 }
 
 export async function remove(endpoint) {
-  if(!endpoint) return;
+  if (!endpoint) return;
   const response = await fetch(formatEndpoint(endpoint), {
-    method: "DELETE",
+    method: 'DELETE',
   });
   return handleResponse(response);
 }

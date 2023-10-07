@@ -1,5 +1,4 @@
-
-const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const BASE62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
 export const fromBase62 = (str) => {
   let num = 0;
@@ -10,7 +9,7 @@ export const fromBase62 = (str) => {
   }
   return num;
 };
-  
+
 export const toBase62 = (num) => {
   if (num === 0) return BASE62[0];
   let arr = [];
@@ -18,7 +17,7 @@ export const toBase62 = (num) => {
     arr.unshift(BASE62[num % 62]);
     num = Math.floor(num / 62);
   }
-  return arr.join("");
+  return arr.join('');
 };
 
 export default { toBase62, fromBase62 };

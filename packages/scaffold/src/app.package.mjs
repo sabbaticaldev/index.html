@@ -1,26 +1,26 @@
 export default {
   i18n: {},
   views: {
-    "uix-router": {
+    'uix-router': {
       props: {
-        routes: { 
+        routes: {
           type: Array,
-          defaultValue: [],          
+          defaultValue: [],
         },
         currentRoute: {
           type: String,
-          defaultValue: "",
+          defaultValue: '',
         },
       },
-      render: ({ routes, currentRoute}, { html }) => {
-        // Find the matching route component, if not find 
-        const routeItem = routes.find(route => route.path === currentRoute);
-        
+      render: ({ routes, currentRoute }, { html }) => {
+        // Find the matching route component, if not find
+        const routeItem = routes.find((route) => route.path === currentRoute);
+
         // Render the matched component, or show a default 404 message
-        return routeItem 
+        return routeItem
           ? html`${routeItem.component}`
           : html`<uix-block>404: Page not found</uix-block>`;
-      }
+      },
     },
   },
 };
