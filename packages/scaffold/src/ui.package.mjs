@@ -743,6 +743,8 @@ export default {
           host.renderRoot.querySelector("#modal").showModal();
         };
         host.closeModal = (msg = "") => host.renderRoot.querySelector("#modal")?.close(msg);
+        host.submitForm = () => host.renderRoot.querySelector("#form")?.submit();
+
         return html`
         ${openButton ? openButton(openclick)
     : html`<button @click=${openclick}>open</button>`}
@@ -751,16 +753,15 @@ export default {
             ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
             <div class="modal-box">
               ${title && html`<div class="modal-title">${title}</div>`}
+              <form method="dialog" id="form">
+                <slot></slot>
 
-              <slot></slot>
-
-              <div class="modal-action">
-                <slot name="footer"></slot>
-                <form method="dialog">
-                  ${actions({host}) || ""}
-                  ${closeButton && html`<button class="btn">Close</button>`}
-                </form>
-              </div>
+                <div class="modal-action">
+                  <slot name="footer"></slot>                
+                    ${actions({host}) || ""}
+                    ${closeButton && html`<button class="btn">Close</button>`}                
+                </div>
+              </form>
             </div>
         </dialog>
       `;
@@ -1260,7 +1261,7 @@ export default {
         label: { type: String, defaultValue: null },
         labelAlt: { type: Array, defaultValue: [] }, // For top-right, bottom-left, bottom-right labels
       },
-      render: ({ autofocus, value, keyup, placeholder, change, disabled, type, maxLength, style, variant, size, hasFormControl, label, labelAlt }, { html }) => {      
+      render: ({ autofocus, value, keyup, placeholder, disabled, type, maxLength, style, variant, size, hasFormControl, label, labelAlt }, { html }) => {      
         const InputVariantClass = {
           "primary": "input-primary",
           "secondary": "input-secondary",
@@ -1295,7 +1296,7 @@ export default {
         const inputElem = html`
         <input 
           class="${inputClass}" 
-          @keyup=${change || keyup}
+          @keyup=${keyup}
           .value=${value || ""}
           placeholder=${placeholder} 
           ?autofocus=${autofocus}
