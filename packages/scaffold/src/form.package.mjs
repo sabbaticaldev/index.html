@@ -141,23 +141,24 @@ export default {
         },
         icon: { type: String, defaultValue: "" },
         openButton: { type: Function, defaultValue: null },
-        closeButton: { type: Boolean, defaultValue: true }
+        closable: { type: Boolean, defaultValue: true }
       },
-      render: (props, { html }) => {
+      render: (host, { html }) => {
         return html`
           <uix-modal
-            title=${props.title}
-            color=${props.color}
-            size=${props.size}
-            name=${props.name}
-            position=${props.position}
-            icon=${props.icon}
-            .openButton=${props.openButton}
-            .closeButton=${props.closeButton}
+            title=${host.title}
+            color=${host.color}
+            size=${host.size}
+            name=${host.name}
+            position=${host.position}
+            icon=${host.icon}
+            .openButton=${host.openButton}
+            .closable=${host.closable}
+            .parent=${host}
           >
             <uix-form
-              .fields=${props.fields}
-              .actions=${props.actions}
+              .fields=${host.fields}
+              .actions=${host.actions?.(host)}
             ></uix-form>
           </uix-modal>
         `;

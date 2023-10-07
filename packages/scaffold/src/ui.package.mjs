@@ -871,9 +871,9 @@ export default {
     "uix-modal": {
       props: {
         actions: { type: Function, defaultValue: () => {} },
+        parent: { type: Object, defaultValue: null },
         title: { type: String, defaultValue: "" },
         content: { type: String, defaultValue: "" },
-        closeButton: { type: Boolean, defaultValue: true },
         openButton: { type: Function, defaultValue: null },
         name: { type: String, defaultValue: "uix-modal" },
         position: {
@@ -884,23 +884,25 @@ export default {
         icon: { type: String, defaultValue: "" }
       },
       render: (host, { html }) => {
-        const { actions, title, position, openButton, icon, closeButton } =
-          host;
+        const { parent, actions, title, position, openButton, icon } = host;
+        const closeModal = (msg = "") =>
+          host.renderRoot.querySelector("#modal")?.close(msg);
+        if (parent) {
+          parent.closeModal = closeModal;
+        }
         const modalClass = `modal ${
           ModalPositions[position] || ModalPositions.middle
         }`;
         const openclick = () => {
           host.renderRoot.querySelector("#modal").showModal();
         };
-        host.closeModal = (msg = "") =>
-          host.renderRoot.querySelector("#modal")?.close(msg);
-        host.submitForm = () =>
-          host.renderRoot.querySelector("#form")?.submit();
 
         return html`
-          ${openButton
+          ${
+  openButton
     ? openButton(openclick)
-    : html`<button @click=${openclick}>open</button>`}
+    : html`<button @click=${openclick}>open</button>`
+}
 
           <dialog id="modal" class=${modalClass}>
             ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
@@ -910,9 +912,18 @@ export default {
                 <slot></slot>
 
                 <div class="modal-action">
+
+                <uix-button
+                .click=${() => closeModal()}
+                  variant="ghost"
+                  shape="circle"
+                  size="sm"
+                  class="absolute right-2 top-2"
+                >
+                  ✕
+                </button>
                   <slot name="footer"></slot>
                   ${actions({ host }) || ""}
-                  ${closeButton && html`<button class="btn">Close</button>`}
                 </div>
               </form>
             </div>
@@ -1144,8 +1155,8 @@ export default {
         rounded: { type: Boolean, defaultValue: false },
         classes: { type: Object, defaultValue: {} }
       },
-      render: (
-        {
+      render: (props, { html }) => {
+        const {
           classes = {},
           items,
           title,
@@ -1159,9 +1170,7 @@ export default {
           rounded,
           size,
           isActive
-        },
-        { html }
-      ) => {
+        } = props;
         const { container: containerClass } = classes || {};
         const { items: itemsClass } = classes;
         const baseClass = [
