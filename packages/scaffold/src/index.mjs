@@ -1,10 +1,11 @@
-import { defineViews } from "./view/reactive-view.mjs";
-import uiKit from "./ui.package.mjs";
-import uxKit from "./ux.package.mjs";
-import appKit from "./app.package.mjs";
-import formKit from "./form.package.mjs";
-import typographyKit from "./typography.package.mjs";
-import docsKit from "./docs.package.mjs";
+import { defineViews } from "./reactive-view.mjs";
+
+import uiKit from "./packages/ui.package.mjs";
+import uxKit from "./packages/ux.package.mjs";
+import appKit from "./packages/app.package.mjs";
+import formKit from "./packages/form.package.mjs";
+import typographyKit from "./packages/typography.package.mjs";
+import docsKit from "./packages/docs.package.mjs";
 
 const bootstrapp = (
   app,

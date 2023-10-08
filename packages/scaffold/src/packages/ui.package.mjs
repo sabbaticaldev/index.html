@@ -26,7 +26,7 @@ import {
   CollapseBgColor,
   CollapseIcon,
   RingColor
-} from "./style-props.mjs";
+} from "../style-props.mjs";
 
 export default {
   views: {

@@ -18,7 +18,7 @@ import {
   SelectSizes,
   ToggleSizeClass,
   ToggleVariantClass
-} from "./style-props.mjs";
+} from "../style-props.mjs";
 
 const InputField = (props, { html }) =>
   html`

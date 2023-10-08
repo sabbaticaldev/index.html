@@ -17,15 +17,14 @@
   "devDependencies": {
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
-    "prettier": "^2.8.8"
-  },
-  "dependencies": {
-    "backend": "workspace:^",
+    "prettier": "^2.8.8",
     "eslint": "^8.19.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "backend": "workspace:^",
     "scaffold": "workspace:^"
   },
+  "dependencies": {},
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"

@@ -4,7 +4,7 @@ import {
   HeadingColors,
   LinkColors,
   FontWeight
-} from "./style-props.mjs";
+} from "../style-props.mjs";
 
 export default {
   views: {

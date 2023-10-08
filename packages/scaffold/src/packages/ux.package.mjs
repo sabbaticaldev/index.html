@@ -3,74 +3,11 @@ import {
   TextColor,
   Colors,
   BgOverlayOpacity
-} from "./style-props.mjs";
+} from "../style-props.mjs";
 
 export default {
   i18n: {},
   views: {
-    "uix-app-shell": {
-      render: (host, { html }) => {
-        return html`
-          <div class="app-shell w-full h-full flex flex-col">
-            <slot name="top-navbar"></slot>
-            <div class="flex h-full">
-              <slot name="left-navbar"></slot>
-              <main class="relative content flex-grow overflow-y-auto">
-                <slot></slot>
-              </main>
-              <slot name="right-navbar"></slot>
-            </div>
-            <slot name="bottom-navbar"></slot>
-          </div>
-        `;
-      }
-    },
-    "uix-navbar-item": {
-      props: {
-        component: { type: Function, defaultValue: null },
-        label: { type: String, defaultValue: "" },
-        icon: "",
-        submenu: { type: Array, defaultValue: [] },
-        color: { type: Array, defaultValue: "" }
-      },
-      render: ({ component, label, icon, submenu, color }, { html }) => {
-        if (component) {
-          return component;
-        }
-
-        const iconClass = icon ? html`<uix-icon name=${icon}></uix-icon>` : "";
-
-        if (submenu?.length > 0) {
-          return html`
-            <details>
-              ${iconClass}
-              <summary>${label}</summary>
-              <ul class="p-2 ${BgColor[color] || ""}">
-                ${submenu.map(
-    (subItem) => html`
-                    <li>
-                      <a href=${subItem.href || "#"}>
-                        ${subItem.icon &&
-                        html`<ion-icon
-                          name=${subItem.icon}
-                          role="img"
-                        ></ion-icon>`}
-                        ${subItem.label}</a
-                      >
-                    </li>
-                  `
-  )}
-              </ul>
-            </details>
-          `;
-        }
-        return html`<li>
-          <a class="leading-2 flex items-center gap-2">
-            ${iconClass} ${label}
-          </a>
-        </li>`;
-      }
-    },
     "uix-navbar": {
       props: {
         color: {

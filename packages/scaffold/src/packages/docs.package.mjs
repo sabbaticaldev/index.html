@@ -1,18 +1,18 @@
-import {} from './style-props.mjs';
+import {} from "../style-props.mjs";
 
 export default {
   i18n: {},
   views: {
-    'uix-docs-page': {
+    "uix-docs-page": {
       props: {
-        title: { type: String, defaultValue: '' },
-        description: { type: String, defaultValue: '' },
+        title: { type: String, defaultValue: "" },
+        description: { type: String, defaultValue: "" },
         tableData: { type: Array, defaultValue: [] },
-        examples: { type: Array, defaultValue: [] },
+        examples: { type: Array, defaultValue: [] }
       },
       render: ({ title, description, tableData, examples }, { html }) => {
         const formattedTitle = (title) =>
-          title.toLowerCase().replace(/ /g, '-');
+          title.toLowerCase().replace(/ /g, "-");
 
         return html`
           <uix-list layout="responsive">
@@ -24,17 +24,17 @@ export default {
               <uix-block>
                 <uix-table
                   .headers=${[
-                    'Type',
-                    'Property',
-                    'Description',
-                    'Lit Property?',
-                  ]}
+    "Type",
+    "Property",
+    "Description",
+    "Lit Property?"
+  ]}
                   .rows=${tableData}
                 ></uix-table>
               </uix-block>
               <uix-divider></uix-divider>
               ${examples.map(
-                (example) => html`
+    (example) => html`
                   <section id="${formattedTitle(example.title)}">
                     <uix-block>
                       <uix-text size="4">${example.title}</uix-text>
@@ -46,7 +46,7 @@ export default {
                     </uix-block>
                   </section>
                 `
-              )}
+  )}
             </uix-block>
 
             <uix-block class="w-1/4 lg:w-1/3 xl:w-1/3">
@@ -56,20 +56,20 @@ export default {
                 <li><a href="#properties">Properties</a></li>
                 <li><a href="#examples">Examples</a></li>
                 ${examples.map(
-                  (example) => html`
+    (example) => html`
                     <li>
                       <a href="#${formattedTitle(example.title)}"
                         >${example.title}</a
                       >
                     </li>
                   `
-                )}
+  )}
                 <li><a href="#source-code">Source Code</a></li>
               </ul>
             </uix-block>
           </uix-list>
         `;
-      },
-    },
-  },
+      }
+    }
+  }
 };
