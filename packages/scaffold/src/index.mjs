@@ -6,6 +6,9 @@ import appKit from "./packages/app.package.mjs";
 import formKit from "./packages/form.package.mjs";
 import typographyKit from "./packages/typography.package.mjs";
 import docsKit from "./packages/docs.package.mjs";
+import navigationKit from "./packages/navigation.package.mjs";
+import layoutKit from "./packages/layout.package.mjs";
+import contentKit from "./packages/content.package.mjs";
 
 const bootstrapp = (
   app,
@@ -21,6 +24,9 @@ const bootstrapp = (
   defineViews(appKit.views, { style, i18n: appKit.i18n });
   defineViews(uiKit.views, { style, i18n: uiKit.i18n });
   defineViews(formKit.views, { style, i18n: formKit.i18n });
+  defineViews(navigationKit.views, { style, i18n: navigationKit.i18n });
+  defineViews(layoutKit.views, { style, i18n: navigationKit.i18n });
+  defineViews(contentKit.views, { style, i18n: contentKit.i18n });
   defineViews(docsKit.views, { style, i18n: docsKit.i18n });
   return views[bootstrappTag];
 };

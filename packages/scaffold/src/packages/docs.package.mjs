@@ -1,5 +1,3 @@
-import {} from "../style-props.mjs";
-
 export default {
   i18n: {},
   views: {

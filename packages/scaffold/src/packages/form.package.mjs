@@ -1,4 +1,10 @@
 import {
+  Shapes,
+  ButtonColors,
+  BorderColor,
+  ButtonSizes,
+  ButtonShapes,
+  ButtonVariants,
   Colors,
   Sizes,
   Variants,
@@ -724,6 +730,107 @@ ${value}</textarea
             </label>
           </div>
         `;
+      }
+    },
+
+    "uix-button": {
+      props: {
+        color: {
+          type: String,
+          defaultValue: "base",
+          enum: Colors
+        },
+        size: {
+          type: String,
+          defaultValue: "md",
+          enum: Sizes
+        },
+        href: {
+          type: String,
+          defaultValue: ""
+        },
+        label: {
+          type: String,
+          defaultValue: ""
+        },
+        type: {
+          type: String,
+          defaultValue: "button"
+        },
+        fullWidth: { type: Boolean, defaultValue: false },
+        shape: {
+          type: String,
+          defaultValue: "default",
+          enum: Shapes
+        },
+        variant: {
+          type: String,
+          defaultValue: "",
+          enum: Variants
+        },
+        click: { type: Function, defaultValue: "" },
+        isLoading: { type: Boolean, defaultValue: false },
+        icon: { type: String, defaultValue: "" },
+        endIcon: { type: String, defaultValue: "" },
+        border: { type: Boolean, defaultValue: false },
+        noAnimation: { type: Boolean, defaultValue: false }
+      },
+      render: (host, { html }) => {
+        const {
+          variant,
+          type,
+          size,
+          label,
+          click,
+          fullWidth,
+          border,
+          href,
+          shape,
+          color,
+          isLoading,
+          icon,
+          endIcon,
+          noAnimation
+        } = host;
+        const btnClass = [
+          "flex flex-row items-center gap-2",
+          href && !variant ? "" : "btn",
+          ButtonColors[color] || "",
+          (border && BorderColor[color]) || "",
+          ButtonSizes[size] || "",
+          fullWidth ? "btn-block" : "",
+          ButtonShapes[shape] || "",
+          ButtonVariants[variant] || "",
+          noAnimation ? "no-animation" : ""
+        ]
+          .filter((c) => !!c)
+          .join(" ");
+        const innerContent = [
+          icon ? html`<uix-icon name=${icon}></uix-icon>` : "",
+          label ? label : html`<slot></slot>`,
+          endIcon ? html`<uix-icon name=${endIcon}></uix-icon>` : "",
+          isLoading && html`<span class="loading loading-spinner"></span>`
+        ];
+
+        return href
+          ? html`
+              <a
+                class=${btnClass}
+                href=${href}
+                @click=${(event) => click?.({ event, host })}
+              >
+                ${innerContent}
+              </a>
+            `
+          : html`
+              <button
+                type=${type || "button"}
+                class=${btnClass}
+                @click=${(event) => click?.({ event, host })}
+              >
+                ${innerContent}
+              </button>
+            `;
       }
     }
   }
