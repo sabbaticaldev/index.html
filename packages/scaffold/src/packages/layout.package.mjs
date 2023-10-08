@@ -126,7 +126,7 @@ export default {
           BgColor[color],
           props.class
         ]
-          .filter((c) => !!c)
+          .filter(Boolean)
           .join(" ");
 
         return html`
@@ -189,7 +189,7 @@ export default {
     alignYClass,
     props.class
   ]
-    .filter((cls) => !!cls)
+    .filter(Boolean)
     .join(" ")}
           >
             <slot></slot>
@@ -230,7 +230,7 @@ export default {
     alignXClass,
     alignYClass
   ]
-    .filter((cls) => !!cls)
+    .filter(Boolean)
     .join(" ")}
           >
             <slot></slot>

@@ -55,7 +55,7 @@ export default {
           rounded ? "rounded-box" : "",
           vertical ? "flex-col h-full" : "flex-row w-full"
         ]
-          .filter((c) => !!c)
+          .filter(Boolean)
           .join(" ");
 
         return html`

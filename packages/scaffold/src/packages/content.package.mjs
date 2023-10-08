@@ -34,7 +34,7 @@ export default {
           border ? BorderColor[color] : "",
           TextColor[color]
         ]
-          .filter((cls) => !!cls)
+          .filter(Boolean)
           .join(" ");
 
         return html`

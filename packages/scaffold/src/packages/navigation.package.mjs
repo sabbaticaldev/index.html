@@ -555,7 +555,7 @@ export default {
           rounded && "rounded-box",
           containerClass
         ]
-          .filter((c) => !!c)
+          .filter(Boolean)
           .join(" ");
 
         const itemClass = [
@@ -563,7 +563,7 @@ export default {
           itemsClass,
           (isActive && "active") || ""
         ]
-          .filter((c) => !!c)
+          .filter(Boolean)
           .join(" ");
 
         return html`
@@ -644,7 +644,7 @@ export default {
             type === "lifted" && "tab-lifted",
             Sizes.includes(size) && TabsSize[size]
           ]
-            .filter((cls) => !!cls)
+            .filter(Boolean)
             .join(" ");
         };
         const gapClass = Gaps[gap] || "";
@@ -694,7 +694,7 @@ export default {
           <div class="${wrapperClass}">
             <ul
               class=${["steps", directionClass, responsiveClass]
-    .filter((c) => !!c)
+    .filter(Boolean)
     .join(" ")}
             >
               ${steps.map((step) => {

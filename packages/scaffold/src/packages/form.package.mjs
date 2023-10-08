@@ -1,13 +1,13 @@
 import {
-  Shapes,
   ButtonColors,
-  BorderColor,
   ButtonSizes,
   ButtonShapes,
   ButtonVariants,
+  Shapes,
+  Variants,
+  BorderColor,
   Colors,
   Sizes,
-  Variants,
   BgColor,
   CheckboxVariant,
   CheckboxSize,
@@ -26,47 +26,51 @@ import {
   ToggleVariantClass
 } from "../style-props.mjs";
 
-const InputField = (props, { html }) =>
+const InputField = (props, { html, ifDefined }) =>
   html`
     <uix-input
-      ?autofocus=${props.autofocus}
-      value=${props.value}
-      .change=${props.change}
       .keydown=${props.keydown}
-      placeholder=${props.placeholder}
+      ?autofocus=${props.autofocus}
       ?disabled=${props.disabled}
-      type=${props.type}
-      maxLength=${props.maxLength}
-      variant=${props.variant}
-      color=${props.color}
-      size=${props.size}
+      ?required=${props.required}
+      name=${props.name}
+      value=${ifDefined(props.value)}
+      placeholder=${ifDefined(props.placeholder)}
+      regex=${ifDefined(props.regex)}
+      type=${ifDefined(props.type)}
+      maxLength=${ifDefined(props.maxLength)}
+      variant=${ifDefined(props.variant)}
+      color=${ifDefined(props.color)}
+      size=${ifDefined(props.size)}
       class="w-full"
     ></uix-input>
   `;
 
-const TextareaField = (props, { html }) => html`
+const TextareaField = (props, { html, ifDefined }) => html`
   <uix-textarea
-    value=${props.value}
-    placeholder=${props.placeholder}
-    ?disabled=${props.disabled}
     .keydown=${props.keydown}
-    rows=${props.rows}
-    variant=${props.variant}
-    color=${props.color}
-    size=${props.size}
-    label=${props.label}
-    labelAlt=${props.labelAlt}
+    ?disabled=${props.disabled}
+    ?required=${props.required}
+    value=${ifDefined(props.value)}
+    placeholder=${ifDefined(props.placeholder)}
+    rows=${ifDefined(props.rows)}
+    variant=${ifDefined(props.variant)}
+    color=${ifDefined(props.color)}
+    size=${ifDefined(props.size)}
+    label=${ifDefined(props.label)}
+    labelAlt=${ifDefined(props.labelAlt)}
     class="w-full"
   ></uix-textarea>
 `;
 
-const SelectField = (props, { html }) => html`
+const SelectField = (props, { html, ifDefined }) => html`
   <uix-select
     .options=${props.options}
-    color=${props.color}
-    label=${props.label}
-    altLabel=${props.altLabel}
-    size=${props.size}
+    ?required=${props.required}
+    color=${ifDefined(props.color)}
+    label=${ifDefined(props.label)}
+    altLabel=${ifDefined(props.altLabel)}
+    size=${ifDefined(props.size)}
     class="w-full"
   ></uix-select>
 `;
@@ -77,7 +81,7 @@ const fieldRenderers = {
   select: SelectField
 };
 
-const renderField = (field, { html, submit }) => {
+const renderField = (field, { html, submit, ifDefined }) => {
   const { type, ...props } = field;
   const FieldRenderer = fieldRenderers[type] || fieldRenderers.input;
   const keydown = (e) => {
@@ -87,7 +91,10 @@ const renderField = (field, { html, submit }) => {
     return props.keydown?.(e);
   };
 
-  const fieldComponent = FieldRenderer({ ...props, keydown }, { html });
+  const fieldComponent = FieldRenderer(
+    { ...props, keydown },
+    { html, ifDefined }
+  );
 
   if (field.label || (field.labelAlt && field.labelAlt.length)) {
     return html`
@@ -117,30 +124,40 @@ export default {
           defaultValue: []
         }
       },
-      render: (host, { html }) => {
+      submit: function () {
+        this.renderRoot.querySelector("form").submit();
+      },
+      render: (host, { html, ifDefined }) => {
         const { fields, actions } = host;
-        const submit = () => host.renderRoot.querySelector("form").submit();
         return html`
           <form>
             ${fields.map((row) => {
     if (Array.isArray(row)) {
-      // It's a multi-field row
       return html`
                   <uix-list responsive>
                     ${row.map(
     (field) =>
       html`<uix-block>
-                          ${renderField(field, { html, submit })}
+                          ${renderField(field, {
+    html,
+    submit: host.submit,
+    ifDefined
+  })}
                         </uix-block>`
   )}
                   </uix-list>
                 `;
     } else {
-      return renderField(row, { html, submit });
+      return renderField(row, {
+        html,
+        submit: host.submit,
+        ifDefined
+      });
     }
   })}
             <div class="modal-action">
-              <uix-menu responsive gap="md" .items=${actions}> </uix-menu>
+              <uix-menu responsive gap="md" .items=${actions({ form: host })}>
+              </uix-menu>
             </div>
           </form>
         `;
@@ -178,7 +195,7 @@ export default {
           >
             <uix-form
               .fields=${host.fields}
-              .actions=${host.actions?.(host)}
+              .actions=${({ form }) => host.actions?.({ modal: host, form })}
             ></uix-form>
           </uix-modal>
         `;
@@ -213,12 +230,24 @@ export default {
       props: {
         autofocus: { type: Boolean, defaultValue: false },
         value: { type: String, defaultValue: "" },
-        placeholder: { type: String, defaultValue: "Enter value" },
+        placeholder: { type: String, defaultValue: undefined },
+        name: { type: String, defaultValue: undefined },
         disabled: { type: Boolean, defaultValue: false },
+        regex: { type: String, defaultValue: "" },
+        required: { type: Boolean, defaultValue: false },
         type: {
           type: String,
           defaultValue: "text",
-          enum: ["text", "password", "email", "number", "search", "tel", "url"]
+          enum: [
+            "text",
+            "password",
+            "email",
+            "number",
+            "decimal",
+            "search",
+            "tel",
+            "url"
+          ]
         },
         maxLength: { type: Number, defaultValue: null },
         variant: { type: String, defaultValue: "bordered", enum: Variants },
@@ -234,31 +263,47 @@ export default {
           defaultValue: undefined
         }
       },
-      firstUpdated: function (host) {
-        host.$input = host.shadowRoot.querySelector("input");
+      _getValue: function () {
+        return this.$input ? this.$input.value : "";
       },
-      render: (props, { html, ifDefined }) => {
+      _setValue: function (value) {
+        if (!this.$input) this.$input = this.shadowRoot.querySelector("input");
+        this.$input.setAttribute("value", value);
+      },
+      formAssociated: true,
+      init: (host) => {
+        host._internals = host.attachInternals();
+      },
+      render: (host, { html, ifDefined }) => {
         const {
           change,
-          keydown,
+          name,
           autofocus,
           value,
           placeholder,
           disabled,
+          required,
+          regex,
           type,
           maxLength,
           variant,
           color,
           size
-        } = props;
+        } = host;
+
+        const keydown = (e) => {
+          host._setValue(e.target.value, host);
+          host.keydown?.(e);
+        };
+
         const inputClass = [
           "input",
           InputStyleClass[variant],
           InputVariantClass[color],
           InputSizeClass[size],
-          props.class
+          host.class
         ]
-          .filter((cls) => !!cls)
+          .filter(Boolean)
           .join(" ");
 
         return html`
@@ -268,8 +313,11 @@ export default {
             placeholder=${placeholder}
             ?autofocus=${autofocus}
             ?disabled=${disabled}
+            ?required=${required}
+            name=${ifDefined(name)}
+            regex=${ifDefined(regex)}
             @change=${ifDefined(change)}
-            @keydown=${ifDefined(keydown)}
+            @keydown=${keydown}
             type=${type}
             ${maxLength !== null ? `maxlength=${maxLength}` : ""}
           />
@@ -534,7 +582,7 @@ ${value}</textarea
           RadioVariantClass[color],
           RadioSizeClass[size]
         ]
-          .filter((cls) => !!cls)
+          .filter(Boolean)
           .join(" ");
 
         return html`
@@ -803,7 +851,7 @@ ${value}</textarea
           ButtonVariants[variant] || "",
           noAnimation ? "no-animation" : ""
         ]
-          .filter((c) => !!c)
+          .filter(Boolean)
           .join(" ");
         const innerContent = [
           icon ? html`<uix-icon name=${icon}></uix-icon>` : "",

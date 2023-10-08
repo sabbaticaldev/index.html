@@ -38,7 +38,14 @@ const checkType = (value) => {
  */
 
 export function defineView(tag, component, config = {}) {
-  const { render, firstUpdated, props, ...litPropsAndEvents } = component;
+  const {
+    render,
+    firstUpdated,
+    init: componentInit,
+    formAssociated,
+    props,
+    ...litPropsAndEvents
+  } = component;
 
   const { style, i18n } = config;
 
@@ -60,9 +67,10 @@ export function defineView(tag, component, config = {}) {
 
   class ReactionView extends LitElement {
     static properties = properties;
-
+    static formAssociated = formAssociated;
     constructor() {
       super();
+      componentInit?.(this);
       this.context = {
         html,
         until,
@@ -73,6 +81,12 @@ export function defineView(tag, component, config = {}) {
         ...DateTimeHelpers,
         ...StringHelpers
       };
+
+      Object.keys(litPropsAndEvents)
+        .filter((method) => method[0] === "_")
+        .forEach((method) => {
+          this[method] = litPropsAndEvents[method];
+        });
 
       const propKeys = Object.keys(properties);
       propKeys.forEach((key) => {
@@ -142,9 +156,11 @@ export function defineView(tag, component, config = {}) {
     }
   }
 
-  Object.keys(litPropsAndEvents).forEach((method) => {
-    ReactionView.prototype[method] = litPropsAndEvents[method];
-  });
+  Object.keys(litPropsAndEvents)
+    .filter((method) => method[0] !== "_")
+    .forEach((method) => {
+      ReactionView.prototype[method] = litPropsAndEvents[method];
+    });
 
   ReactionView.styles = style ? [style] : undefined;
   ReactionView.props = properties;

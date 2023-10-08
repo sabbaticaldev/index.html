@@ -72,7 +72,7 @@ export default {
           underlineOnHover ? "hover:underline" : "",
           (icon && "flex gap-2 items-center") || ""
         ]
-          .filter((cls) => !!cls)
+          .filter(Boolean)
           .join(" ");
         const externalAttrs = external
           ? "target=\"_blank\" rel=\"noopener noreferrer\""
