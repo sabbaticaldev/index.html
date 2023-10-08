@@ -20,12 +20,13 @@ import {
   ToggleVariantClass
 } from "./style-props.mjs";
 
-const InputField = (props, html) =>
+const InputField = (props, { html }) =>
   html`
     <uix-input
       ?autofocus=${props.autofocus}
       value=${props.value}
       .change=${props.change}
+      .keydown=${props.keydown}
       placeholder=${props.placeholder}
       ?disabled=${props.disabled}
       type=${props.type}
@@ -33,30 +34,34 @@ const InputField = (props, html) =>
       variant=${props.variant}
       color=${props.color}
       size=${props.size}
+      class="w-full"
     ></uix-input>
   `;
 
-const TextareaField = (props, html) => html`
+const TextareaField = (props, { html }) => html`
   <uix-textarea
     value=${props.value}
     placeholder=${props.placeholder}
     ?disabled=${props.disabled}
+    .keydown=${props.keydown}
     rows=${props.rows}
     variant=${props.variant}
     color=${props.color}
     size=${props.size}
     label=${props.label}
     labelAlt=${props.labelAlt}
+    class="w-full"
   ></uix-textarea>
 `;
 
-const SelectField = (props, html) => html`
+const SelectField = (props, { html }) => html`
   <uix-select
     .options=${props.options}
     color=${props.color}
     label=${props.label}
     altLabel=${props.altLabel}
     size=${props.size}
+    class="w-full"
   ></uix-select>
 `;
 
@@ -66,11 +71,17 @@ const fieldRenderers = {
   select: SelectField
 };
 
-const renderField = (field, html) => {
+const renderField = (field, { html, submit }) => {
   const { type, ...props } = field;
   const FieldRenderer = fieldRenderers[type] || fieldRenderers.input;
+  const keydown = (e) => {
+    if (e.key === "Enter") {
+      submit();
+    }
+    return props.keydown?.(e);
+  };
 
-  const fieldComponent = FieldRenderer(props, html);
+  const fieldComponent = FieldRenderer({ ...props, keydown }, { html });
 
   if (field.label || (field.labelAlt && field.labelAlt.length)) {
     return html`
@@ -100,7 +111,9 @@ export default {
           defaultValue: []
         }
       },
-      render: ({ fields, actions }, { html }) => {
+      render: (host, { html }) => {
+        const { fields, actions } = host;
+        const submit = () => host.renderRoot.querySelector("form").submit();
         return html`
           <form>
             ${fields.map((row) => {
@@ -111,17 +124,18 @@ export default {
                     ${row.map(
     (field) =>
       html`<uix-block>
-                          ${renderField(field, html)}
+                          ${renderField(field, { html, submit })}
                         </uix-block>`
   )}
                   </uix-list>
                 `;
     } else {
-      // Single field row
-      return renderField(row, html);
+      return renderField(row, { html, submit });
     }
   })}
-            <uix-menu responsive gap="md" .items=${actions}> </uix-menu>
+            <div class="modal-action">
+              <uix-menu responsive gap="md" .items=${actions}> </uix-menu>
+            </div>
           </form>
         `;
       }
@@ -167,11 +181,11 @@ export default {
     "uix-form-control": {
       props: {
         label: { type: String, defaultValue: null },
-        labelAlt: { type: Array, defaultValue: [] } // For top-right, bottom-left, bottom-right labels
+        labelAlt: { type: Array, defaultValue: [] }
       },
       render: ({ label, labelAlt }, { html }) => {
         return html`
-          <div class="form-control">
+          <div class="form-control w-full">
             ${label
     ? html`<label class="label"
                   ><span class="label-text">${label}</span></label
@@ -200,18 +214,24 @@ export default {
           defaultValue: "text",
           enum: ["text", "password", "email", "number", "search", "tel", "url"]
         },
+        maxLength: { type: Number, defaultValue: null },
+        variant: { type: String, defaultValue: "bordered", enum: Variants },
+        color: { type: String, defaultValue: "default", enum: Colors },
+        size: { type: String, defaultValue: "md", enum: Sizes },
+        class: "",
         change: {
           type: Function,
           defaultValue: () => {}
         },
-        maxLength: { type: Number, defaultValue: null },
-        variant: { type: String, defaultValue: "bordered", enum: Variants },
-        color: { type: String, defaultValue: "default", enum: Colors },
-        size: { type: String, defaultValue: "md", enum: Sizes }
+        keydown: {
+          type: Function,
+          defaultValue: () => {}
+        }
       },
-      render: (
-        {
+      render: (props, { html }) => {
+        const {
           change,
+          keydown,
           autofocus,
           value,
           placeholder,
@@ -221,26 +241,26 @@ export default {
           variant,
           color,
           size
-        },
-        { html }
-      ) => {
+        } = props;
         const inputClass = [
           "input",
           InputStyleClass[variant],
           InputVariantClass[color],
-          InputSizeClass[size]
+          InputSizeClass[size],
+          props.class
         ]
           .filter((cls) => !!cls)
           .join(" ");
 
         return html`
           <input
-            class="${inputClass}"
+            class=${inputClass}
             .value=${value || ""}
             placeholder=${placeholder}
             ?autofocus=${autofocus}
             ?disabled=${disabled}
             @change=${change}
+            @keydown=${keydown}
             type=${type}
             ${maxLength !== null ? `maxlength=${maxLength}` : ""}
           />
@@ -291,7 +311,7 @@ export default {
     "uix-textarea": {
       props: {
         value: { type: String, defaultValue: "" },
-        placeholder: { type: String, defaultValue: "Enter text" },
+        placeholder: { type: String, defaultValue: "" },
         disabled: { type: Boolean, defaultValue: false },
         rows: { type: Number, defaultValue: 4 },
         variant: { type: String, defaultValue: "bordered", enum: Variants },
@@ -299,10 +319,20 @@ export default {
         size: { type: String, defaultValue: "md", enum: Sizes },
         hasFormControl: { type: Boolean, defaultValue: false },
         label: { type: String, defaultValue: null },
-        labelAlt: { type: Array, defaultValue: [] } // For alt labels
+        labelAlt: { type: Array, defaultValue: [] }, // For alt labels
+        change: {
+          type: Function,
+          defaultValue: () => {}
+        },
+        keydown: {
+          type: Function,
+          defaultValue: () => {}
+        }
       },
       render: (
         {
+          keydown,
+          change,
           value,
           placeholder,
           disabled,
@@ -326,6 +356,8 @@ export default {
             placeholder=${placeholder}
             ?disabled=${disabled}
             rows=${rows}
+            @change=${change}
+            @keydown=${keydown}
           >
 ${value}</textarea
           >

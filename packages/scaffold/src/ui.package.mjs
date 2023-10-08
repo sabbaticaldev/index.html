@@ -361,7 +361,7 @@ export default {
         },
         type: {
           type: String,
-          defaultValue: ""
+          defaultValue: "button"
         },
         fullWidth: { type: Boolean, defaultValue: false },
         shape: {
@@ -398,7 +398,6 @@ export default {
           endIcon,
           noAnimation
         } = host;
-
         const btnClass = [
           "flex flex-row items-center gap-2",
           href && !variant ? "" : "btn",
@@ -431,7 +430,7 @@ export default {
             `
           : html`
               <button
-                type=${type || ""}
+                type=${type || "button"}
                 class=${btnClass}
                 @click=${(event) => click?.({ event, host })}
               >
@@ -904,10 +903,13 @@ export default {
     : html`<button @click=${openclick}>open</button>`
 }
 
-          <dialog id="modal" class=${modalClass}>
-            ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
+          <dialog id="modal" class=${modalClass}>            
             <div class="modal-box">
-              ${title && html`<div class="modal-title">${title}</div>`}
+              <uix-list vertical>
+                <uix-list class="modal-title">
+                ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
+                <uix-text size="lg">${title || ""}</uix-text>
+              </uix-list>
               <form method="dialog" id="form">
                 <slot></slot>
 
@@ -926,6 +928,7 @@ export default {
                   ${actions({ host }) || ""}
                 </div>
               </form>
+</uix-list>
             </div>
           </dialog>
         `;
@@ -1104,6 +1107,8 @@ export default {
         label: { type: String, defaultValue: "" },
         click: { type: Function, default: () => {} },
         href: { type: String, defaultValue: "" },
+        type: { type: String, defaultValue: "" },
+        variant: { type: String, defaultValue: "" },
         active: { type: Boolean, defaultValue: false },
         classes: { type: Object, defaultValue: {} },
         color: {
@@ -1114,7 +1119,17 @@ export default {
       },
 
       render: (
-        { icon, label, click, href, active, classes = {}, color },
+        {
+          active,
+          classes = {},
+          click,
+          color,
+          icon,
+          href,
+          label,
+          type,
+          variant
+        },
         { html }
       ) => {
         const { item: itemClass = "" } = classes;
@@ -1127,9 +1142,11 @@ export default {
               .click=${click}
               href=${href}
               icon=${icon}
+              variant=${variant}
               class=${menuItemClasses}
               color=${color}
               label=${label}
+              type=${type}
             >
             </uix-button>
           </li>
@@ -1222,7 +1239,9 @@ export default {
                   .classes=${{ item: itemClass }}
                   .click=${item.click}
                   icon=${item.icon}
+                  variant=${item.variant}
                   label=${item.label}
+                  type=${item.type}
                   href=${item.href}
                   active=${isActive}
                 ></uix-menu-item>`;
