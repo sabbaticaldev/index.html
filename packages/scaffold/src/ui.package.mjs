@@ -441,9 +441,9 @@ export default {
     },
     "uix-card": {
       props: {
-        title: { type: String, defaultValue: "Card Title" },
-        subtitle: { type: String, defaultValue: "Subtitle" },
-        content: { type: String, defaultValue: "Card Content" },
+        title: { type: String, defaultValue: "" },
+        subtitle: { type: String, defaultValue: "" },
+        content: { type: String, defaultValue: "" },
         image: { type: String, defaultValue: "" },
         footerContent: { type: String, defaultValue: "" },
         color: { type: String, defaultValue: "base-100", enum: Colors },
@@ -882,10 +882,12 @@ export default {
         },
         icon: { type: String, defaultValue: "" }
       },
+      firstUpdated: (host) => {
+        host.$modal = host.shadowRoot.querySelector("#modal");
+      },
       render: (host, { html }) => {
         const { parent, actions, title, position, openButton, icon } = host;
-        const closeModal = (msg = "") =>
-          host.renderRoot.querySelector("#modal")?.close(msg);
+        const closeModal = (msg = "") => host.$modal.close(msg);
         if (parent) {
           parent.closeModal = closeModal;
         }
@@ -893,7 +895,7 @@ export default {
           ModalPositions[position] || ModalPositions.middle
         }`;
         const openclick = () => {
-          host.renderRoot.querySelector("#modal").showModal();
+          host.$modal.showModal();
         };
 
         return html`

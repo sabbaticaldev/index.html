@@ -228,8 +228,8 @@ export default {
           defaultValue: undefined
         }
       },
-      connectedCallback() {
-        console.log("PASSEI AQUI", this);
+      firstUpdated: function (host) {
+        host.$input = host.shadowRoot.querySelector("input");
       },
       render: (props, { html, ifDefined }) => {
         const {
