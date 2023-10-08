@@ -221,14 +221,17 @@ export default {
         class: "",
         change: {
           type: Function,
-          defaultValue: () => {}
+          defaultValue: undefined
         },
         keydown: {
           type: Function,
-          defaultValue: () => {}
+          defaultValue: undefined
         }
       },
-      render: (props, { html }) => {
+      connectedCallback() {
+        console.log("PASSEI AQUI", this);
+      },
+      render: (props, { html, ifDefined }) => {
         const {
           change,
           keydown,
@@ -259,8 +262,8 @@ export default {
             placeholder=${placeholder}
             ?autofocus=${autofocus}
             ?disabled=${disabled}
-            @change=${change}
-            @keydown=${keydown}
+            @change=${ifDefined(change)}
+            @keydown=${ifDefined(keydown)}
             type=${type}
             ${maxLength !== null ? `maxlength=${maxLength}` : ""}
           />
@@ -276,34 +279,20 @@ export default {
           defaultValue: "base",
           enum: Colors
         },
-        label: { type: String, defaultValue: "" },
-        altLabel: { type: String, defaultValue: "" },
         size: {
           type: String,
           defaultValue: "md",
           enum: Sizes
         }
       },
-      render: ({ options, color, label, altLabel, size }, { html }) => {
+      render: ({ options, color, size }, { html }) => {
         const colorClass = SelectColors[color];
         const sizeClass = SelectSizes[size];
 
         return html`
-          <div class="form-control w-full max-w-xs">
-            ${label
-    ? html`<label class="label"
-                  ><span class="label-text">${label}</span></label
-                >`
-    : ""}
-            <select class="select ${colorClass} ${sizeClass} w-full max-w-xs">
-              ${options.map((option) => html` <option>${option}</option> `)}
-            </select>
-            ${altLabel
-    ? html`<label class="label"
-                  ><span class="label-text-alt">${altLabel}</span></label
-                >`
-    : ""}
-          </div>
+          <select class="select ${colorClass} ${sizeClass} w-full max-w-xs">
+            ${options.map((option) => html` <option>${option}</option> `)}
+          </select>
         `;
       }
     },
@@ -317,9 +306,6 @@ export default {
         variant: { type: String, defaultValue: "bordered", enum: Variants },
         color: { type: String, defaultValue: "default", enum: Colors },
         size: { type: String, defaultValue: "md", enum: Sizes },
-        hasFormControl: { type: Boolean, defaultValue: false },
-        label: { type: String, defaultValue: null },
-        labelAlt: { type: Array, defaultValue: [] }, // For alt labels
         change: {
           type: Function,
           defaultValue: () => {}
@@ -339,10 +325,7 @@ export default {
           rows,
           variant,
           color,
-          size,
-          hasFormControl,
-          label,
-          labelAlt
+          size
         },
         { html }
       ) => {
@@ -350,7 +333,7 @@ export default {
           variant === "bordered" ? "textarea-bordered" : ""
         } textarea-${color} textarea-${size}`;
 
-        const textareaElem = html`
+        return html`
           <textarea
             class="${textareaClass}"
             placeholder=${placeholder}
@@ -362,28 +345,6 @@ export default {
 ${value}</textarea
           >
         `;
-
-        if (hasFormControl) {
-          return html`
-            <div class="form-control">
-              ${label
-    ? html`<label class="label"
-                    ><span class="label-text">${label}</span></label
-                  >`
-    : ""}
-              ${textareaElem}
-              ${labelAlt && labelAlt.length
-    ? html` <label class="label">
-                    ${labelAlt.map(
-    (alt) => html`<span class="label-text-alt">${alt}</span>`
-  )}
-                  </label>`
-    : ""}
-            </div>
-          `;
-        } else {
-          return textareaElem;
-        }
       }
     },
     "uix-file-input": {
@@ -523,16 +484,7 @@ ${value}</textarea
         disabled: { type: Boolean, defaultValue: false },
         change: { type: Function }
       },
-      render: (
-        { on, indeterminate, change, label, disabled, color, size },
-        { html }
-      ) => {
-        // Handle the indeterminate state.
-        const postRender = (el) => {
-          const inputEl = el.querySelector("input[type=\"checkbox\"]");
-          if (inputEl) inputEl.indeterminate = indeterminate;
-        };
-
+      render: ({ on, change, label, disabled, color, size }, { html }) => {
         const colorClass = ToggleVariantClass[color] || "";
         const sizeClass = ToggleSizeClass[size];
 
@@ -546,7 +498,6 @@ ${value}</textarea
                 ?checked=${on}
                 ?disabled=${disabled}
                 class="toggle ${colorClass} ${sizeClass}"
-                @postRender=${postRender}
               />
             </label>
           </div>

@@ -1,24 +1,24 @@
 export default {
-  tag: 'app-i18n',
+  tag: "app-i18n",
   secondary: true,
   props: {
     language: {
-      defaultValue: 'en',
-      scope: 'app',
+      defaultValue: "en",
+      scope: "app"
     },
     dropdown: {
-      defaultValue: false,
+      defaultValue: false
     },
     i18n: {
-      title: 'Change Language',
-    },
+      title: "Change Language"
+    }
   },
-  onLoad: () => {},
+  firstUpdated: () => {},
   render: ({ html, language, setLanguage, dropdown, setDropdown, i18n: t }) => {
     const languages = {
-      en: 'English',
-      es: 'Español',
-      pt: 'Português',
+      en: "English",
+      es: "Español",
+      pt: "Português"
     };
 
     const handleLanguageChange = (code) => (
@@ -27,12 +27,12 @@ export default {
 
     return html` <div
       id="language-dropdown"
-      title=${t('title')}
+      title=${t("title")}
       class="dropdown"
     >
       <div tabindex="0" class="btn btn-ghost normal-case">
         <button
-          class=${language === 'en' ? 'active' : ''}
+          class=${language === "en" ? "active" : ""}
           @click=${() => setDropdown(true)}
         >
           <span
@@ -45,14 +45,14 @@ export default {
       </div>
       <div
         class="dropdown-content bg-base-200 text-base-content rounded-box top-px mt-12 -ml-6 w-40 overflow-y-auto shadow ${dropdown
-          ? 'dropdown-open'
-          : 'hidden'}"
+    ? "dropdown-open"
+    : "hidden"}"
       >
         <ul class="menu menu-sm gap-1" tabindex="0">
           ${Object.entries(languages).map(
-            ([code, name]) => html` <li>
+    ([code, name]) => html` <li>
               <button
-                class=${language === code ? 'active' : ''}
+                class=${language === code ? "active" : ""}
                 @click=${() => handleLanguageChange(code)}
               >
                 <span
@@ -63,9 +63,9 @@ export default {
                 ${name}
               </button>
             </li>`
-          )}
+  )}
         </ul>
       </div>
     </div>`;
-  },
+  }
 };

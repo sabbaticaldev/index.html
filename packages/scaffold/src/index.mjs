@@ -8,10 +8,10 @@ import docsKit from "./docs.package.mjs";
 
 const bootstrapp = (
   app,
-  { style, onLoad, bootstrappTag = "app-index" } = {}
+  { style, firstUpdated, bootstrappTag = "app-index" } = {}
 ) => {
-  if (onLoad) {
-    onLoad();
+  if (firstUpdated) {
+    firstUpdated();
   }
 
   const views = defineViews(app.views, { style, i18n: app.i18n });

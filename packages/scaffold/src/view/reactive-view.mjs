@@ -1,14 +1,15 @@
-import { LitElement, html } from 'lit';
-import { until } from 'lit/directives/until.js';
-import { repeat } from 'lit/directives/repeat.js';
-import { customElement } from 'lit/decorators.js';
-import I18N from '../helpers/i18n/i18n.mjs';
-import url from '../helpers/url.mjs';
-import CRUD from '../helpers/rest.mjs';
-import DateTimeHelpers from '../helpers/datetime.mjs';
-import StringHelpers from '../helpers/string.mjs';
+import { LitElement, html } from "lit";
+import { until } from "lit/directives/until.js";
+import { ifDefined } from "lit/directives/if-defined.js";
+import { repeat } from "lit/directives/repeat.js";
+import { customElement } from "lit/decorators.js";
+import I18N from "../helpers/i18n/i18n.mjs";
+import url from "../helpers/url.mjs";
+import CRUD from "../helpers/rest.mjs";
+import DateTimeHelpers from "../helpers/datetime.mjs";
+import StringHelpers from "../helpers/string.mjs";
 
-const isServer = typeof localStorage === 'undefined';
+const isServer = typeof localStorage === "undefined";
 
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
 
@@ -17,12 +18,12 @@ const TYPE_MAP = {
   number: Number,
   string: String,
   object: Object,
-  array: Array,
+  array: Array
 };
 
 const checkType = (value) => {
-  const type = Array.isArray(value) ? 'array' : typeof value;
-  if (type === 'object' && value !== null && 'type' in value) {
+  const type = Array.isArray(value) ? "array" : typeof value;
+  if (type === "object" && value !== null && "type" in value) {
     return value.type;
   }
   return type === TYPE_MAP[type] || String;
@@ -37,44 +38,45 @@ const checkType = (value) => {
  */
 
 export function defineView(tag, component, config = {}) {
-  const { render, onLoad } = component;
+  const { render, firstUpdated, props, ...litPropsAndEvents } = component;
 
   const { style, i18n } = config;
 
   // Map the new props format to the structure used in the original code
-  const props = !component.props
+  const properties = !props
     ? {}
-    : Object.keys(component.props).reduce((acc, key) => {
-        const value = component.props[key];
-        acc[key] = {
-          type: checkType(value),
-          defaultValue: value,
-        };
-        if (value.type) {
-          // If the user supply an object like {type: String, key: "propKey", sync: "url"} we add those values to the prop so it can be used later
-          acc[key] = { ...acc[key], ...value };
-        }
-        return acc;
-      }, {});
+    : Object.keys(props).reduce((acc, key) => {
+      const value = props[key];
+      acc[key] = {
+        type: checkType(value),
+        defaultValue: value
+      };
+      if (value.type) {
+        // If the user supply an object like {type: String, key: "propKey", sync: "url"} we add those values to the prop so it can be used later
+        acc[key] = { ...acc[key], ...value };
+      }
+      return acc;
+    }, {});
 
   class ReactionView extends LitElement {
-    static properties = props;
+    static properties = properties;
 
     constructor() {
       super();
       this.context = {
         html,
         until,
+        ifDefined,
         repeat,
         i18n: I18N(i18n),
         ...CRUD,
         ...DateTimeHelpers,
-        ...StringHelpers,
+        ...StringHelpers
       };
 
-      const propKeys = Object.keys(props);
+      const propKeys = Object.keys(properties);
       propKeys.forEach((key) => {
-        const prop = props[key];
+        const prop = properties[key];
         if (prop.defaultValue) {
           this[key] = prop.defaultValue;
         }
@@ -97,11 +99,11 @@ export function defineView(tag, component, config = {}) {
         }
       });
 
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         this.boundServiceWorkerMessageHandler =
           this.handleServiceWorkerMessage.bind(this);
         navigator.serviceWorker.addEventListener(
-          'message',
+          "message",
           this.boundServiceWorkerMessageHandler
         );
       }
@@ -109,7 +111,7 @@ export function defineView(tag, component, config = {}) {
 
     // Handler for service worker messages
     handleServiceWorkerMessage(event) {
-      if (event.data === 'REQUEST_UPDATE') {
+      if (event.data === "REQUEST_UPDATE") {
         // TODO: it should update only the specific element, not all elements - prototype
         // one way to implement is to store all IDs used by this component and have a event.data.updatedIds to match
         this.requestUpdate();
@@ -120,16 +122,16 @@ export function defineView(tag, component, config = {}) {
       if (this instanceof LitElement) {
         super.disconnectedCallback();
       }
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         navigator.serviceWorker.removeEventListener(
-          'message',
+          "message",
           this.boundServiceWorkerMessageHandler
         );
       }
     }
 
     firstUpdated() {
-      onLoad?.(this);
+      firstUpdated?.(this);
     }
 
     render() {
@@ -140,8 +142,12 @@ export function defineView(tag, component, config = {}) {
     }
   }
 
+  Object.keys(litPropsAndEvents).forEach((method) => {
+    ReactionView.prototype[method] = litPropsAndEvents[method];
+  });
+
   ReactionView.styles = style ? [style] : undefined;
-  ReactionView.props = props;
+  ReactionView.props = properties;
 
   // Register the custom element
   customElement(tag)(ReactionView);
@@ -156,8 +162,8 @@ export const defineViews = (views, { style, i18n }) => {
         tag,
         defineView(tag, component, {
           style,
-          i18n,
-        }),
+          i18n
+        })
       ];
     })
   );
