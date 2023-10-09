@@ -13,20 +13,46 @@ const isServer = typeof localStorage === "undefined";
 
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
 
-const TYPE_MAP = {
-  boolean: Boolean,
-  number: Number,
-  string: String,
-  object: Object,
-  array: Array
+export const T = {
+  boolean: (options = {}) => ({
+    type: Boolean,
+    defaultValue: options.defaultValue || false
+  }),
+
+  string: (options = {}) => ({
+    type: String,
+    defaultValue: options.defaultValue || "",
+    enum: options.enum || []
+  }),
+
+  array: (options = {}) => ({
+    type: Array,
+    defaultValue: options.defaultValue || [],
+    enum: options.enum || []
+  }),
+
+  number: (options = {}) => ({
+    type: Number,
+    defaultValue: options.defaultValue || undefined
+  }),
+
+  function: (options = {}) => ({
+    type: Function,
+    defaultValue: options.defaultValue || undefined
+  }),
+
+  object: (options = {}) => ({
+    type: Object,
+    defaultValue: options.defaultValue || undefined
+  })
 };
 
 const checkType = (value) => {
-  const type = Array.isArray(value) ? "array" : typeof value;
-  if (type === "object" && value !== null && "type" in value) {
+  if (value && value.type) {
     return value.type;
   }
-  return type === TYPE_MAP[type] || String;
+  const type = Array.isArray(value) ? "array" : typeof value;
+  return type === type || String;
 };
 
 /**

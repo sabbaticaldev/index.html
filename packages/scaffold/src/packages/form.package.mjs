@@ -26,11 +26,13 @@ import {
   ToggleVariantClass
 } from "../style-props.mjs";
 
+import { T } from "../reactive-view.mjs";
+
 const FormControls = {
   reportValidity: function () {
     const validity = this.$input.reportValidity();
     if (!validity) {
-      //this.$input.setCustomValidity("Your custom error message here");
+      //this.$input.setCustomValidity("");
       this.$input.classList.add("input-error");
     } else {
       this.$input.classList.remove("input-error");
@@ -58,6 +60,7 @@ const FormControls = {
   },
   formAssociated: true,
   init: (host) => {
+    host._defaultValue = host.value;
     host._internals = host.attachInternals();
   },
   firstUpdated(host) {
@@ -69,6 +72,15 @@ const FormControls = {
         host.$input
       );
     }
+  },
+  formResetCallback() {
+    this.$input.value = this._defaultValue;
+  },
+  formDisabledCallback(disabled) {
+    this.$input.disabled = disabled;
+  },
+  formStateRestoreCallback(state) {
+    this.$input.value = state;
   }
 };
 
@@ -161,21 +173,12 @@ export default {
   views: {
     "uix-form": {
       props: {
-        fields: {
-          type: Array,
-          defaultValue: []
-        },
-        actions: {
-          type: Array,
-          defaultValue: []
-        }
+        fields: T.array(),
+        actions: T.array()
       },
       getForm: function () {
         if (!this.$form) this.$form = this.renderRoot.querySelector("form");
         return this.$form;
-      },
-      submit: function () {
-        this.renderRoot.querySelector("form").submit();
       },
       validate: function () {
         const formControls = this.getForm().querySelectorAll(
@@ -242,20 +245,19 @@ export default {
     },
     "uix-form-modal": {
       props: {
-        fields: { type: Array, defaultValue: [] },
-        actions: { type: Array, defaultValue: [] },
-        title: { type: String, defaultValue: "" },
-        color: { type: String, defaultValue: "default", enum: Colors },
-        size: { type: String, defaultValue: "md", enum: Sizes },
-        name: { type: String, defaultValue: "uix-form-modal" },
-        position: {
-          type: String,
+        fields: T.array(),
+        actions: T.array(),
+        title: T.string(),
+        color: T.string({ defaultValue: "default", enum: Colors }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        name: T.string({ defaultValue: "uix-form-modal" }),
+        position: T.string({
           defaultValue: "middle",
           enum: ["top", "middle", "bottom"]
-        },
-        icon: { type: String, defaultValue: "" },
-        openButton: { type: Function, defaultValue: null },
-        closable: { type: Boolean, defaultValue: true }
+        }),
+        icon: T.string({ defaultValue: "" }),
+        openButton: T.function({}),
+        closable: T.boolean({ defaultValue: true })
       },
       render: (host, { html }) => {
         return html`
@@ -305,15 +307,14 @@ export default {
     },
     "uix-input": {
       props: {
-        autofocus: { type: Boolean, defaultValue: false },
-        value: { type: String, defaultValue: "" },
-        placeholder: { type: String, defaultValue: undefined },
-        name: { type: String, defaultValue: undefined },
-        disabled: { type: Boolean, defaultValue: false },
-        regex: { type: String, defaultValue: "" },
-        required: { type: Boolean, defaultValue: false },
-        type: {
-          type: String,
+        autofocus: T.boolean(),
+        value: T.string(),
+        placeholder: T.string({ defaultValue: undefined }),
+        name: T.string({ defaultValue: undefined }),
+        disabled: T.boolean(),
+        regex: T.string(),
+        required: T.boolean(),
+        type: T.string({
           defaultValue: "text",
           enum: [
             "text",
@@ -325,20 +326,23 @@ export default {
             "tel",
             "url"
           ]
-        },
-        maxLength: { type: Number, defaultValue: null },
-        variant: { type: String, defaultValue: "bordered", enum: Variants },
-        color: { type: String, defaultValue: "default", enum: Colors },
-        size: { type: String, defaultValue: "md", enum: Sizes },
-        class: "",
-        change: {
-          type: Function,
-          defaultValue: undefined
-        },
-        keydown: {
-          type: Function,
-          defaultValue: undefined
-        }
+        }),
+        maxLength: T.number(),
+        variant: T.string({
+          defaultValue: "bordered",
+          enum: Variants
+        }),
+        color: T.string({
+          defaultValue: "default",
+          enum: Colors
+        }),
+        size: T.string({
+          defaultValue: "md",
+          enum: Sizes
+        }),
+        class: T.string(),
+        change: T.function(),
+        keydown: T.function()
       },
       ...FormControls,
       render: (host, { html, ifDefined }) => {
@@ -398,17 +402,9 @@ export default {
 
     "uix-select": {
       props: {
-        options: { type: Array, defaultValue: [] },
-        color: {
-          type: String,
-          defaultValue: "base",
-          enum: Colors
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        }
+        options: T.array(),
+        color: T.string({ defaultValue: "base", enum: Colors }),
+        size: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: ({ options, color, size }, { html }) => {
         const colorClass = SelectColors[color];
@@ -424,21 +420,15 @@ export default {
 
     "uix-textarea": {
       props: {
-        value: { type: String, defaultValue: "" },
-        placeholder: { type: String, defaultValue: "" },
-        disabled: { type: Boolean, defaultValue: false },
-        rows: { type: Number, defaultValue: 4 },
-        variant: { type: String, defaultValue: "bordered", enum: Variants },
-        color: { type: String, defaultValue: "default", enum: Colors },
-        size: { type: String, defaultValue: "md", enum: Sizes },
-        change: {
-          type: Function,
-          defaultValue: () => {}
-        },
-        keydown: {
-          type: Function,
-          defaultValue: () => {}
-        }
+        value: T.string(),
+        placeholder: T.string(),
+        disabled: T.boolean(),
+        rows: T.number({ defaultValue: 4 }),
+        variant: T.string({ defaultValue: "bordered", enum: Variants }),
+        color: T.string({ defaultValue: "default", enum: Colors }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        change: T.function(),
+        keydown: T.function()
       },
       render: (
         {
@@ -474,23 +464,15 @@ ${value}</textarea
     },
     "uix-file-input": {
       props: {
-        acceptedTypes: { type: String, defaultValue: "*/*" },
-        multiple: { type: Boolean, defaultValue: false },
-        label: { type: String, defaultValue: null },
-        altLabel: { type: String, defaultValue: null },
-        color: {
-          type: String,
-          defaultValue: "neutral",
-          enum: Colors
-        },
-        bordered: { type: Boolean, defaultValue: false },
-        ghost: { type: Boolean, defaultValue: false },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        },
-        disabled: { type: Boolean, defaultValue: false }
+        acceptedTypes: T.string({ defaultValue: "*/*" }),
+        multiple: T.boolean(),
+        label: T.string({ defaultValue: null }),
+        altLabel: T.string({ defaultValue: null }),
+        color: T.string({ defaultValue: "neutral", enum: Colors }),
+        bordered: T.boolean(),
+        ghost: T.boolean(),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        disabled: T.boolean()
       },
       render: (
         {
@@ -560,20 +542,12 @@ ${value}</textarea
     },
     "uix-range-slider": {
       props: {
-        min: { type: Number, defaultValue: 0 },
-        max: { type: Number, defaultValue: 100 },
-        step: { type: Number, defaultValue: 1 },
-        value: { type: Number, defaultValue: 50 },
-        color: {
-          type: String,
-          defaultValue: "neutral",
-          enum: Colors
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        }
+        min: T.number({ defaultValue: 0 }),
+        max: T.number({ defaultValue: 100 }),
+        step: T.number({ defaultValue: 1 }),
+        value: T.number({ defaultValue: 50 }),
+        color: T.string({ defaultValue: "neutral", enum: Colors }),
+        size: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: ({ min, max, step, value, color, size }, { html }) => {
         const colorClass = RangeColor[color];
@@ -593,21 +567,13 @@ ${value}</textarea
     },
     "uix-toggle": {
       props: {
-        on: { type: Boolean, defaultValue: false },
-        indeterminate: { type: Boolean, defaultValue: false },
-        color: {
-          type: String,
-          defaultValue: "default",
-          enum: Colors
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        },
-        label: { type: String, defaultValue: "Toggle" },
-        disabled: { type: Boolean, defaultValue: false },
-        change: { type: Function }
+        on: T.boolean(),
+        indeterminate: T.boolean(),
+        color: T.string({ defaultValue: "default", enum: Colors }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        label: T.string({ defaultValue: "Toggle" }),
+        disabled: T.boolean(),
+        change: T.function()
       },
       render: ({ on, change, label, disabled, color, size }, { html }) => {
         const colorClass = ToggleVariantClass[color] || "";
@@ -632,20 +598,12 @@ ${value}</textarea
 
     "uix-radio": {
       props: {
-        selected: { type: Boolean, defaultValue: false },
-        value: { type: String, defaultValue: "" },
-        color: {
-          type: String,
-          defaultValue: "",
-          enum: Colors
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        },
-        disabled: { type: Boolean, defaultValue: false },
-        label: { type: String, defaultValue: "" }
+        selected: T.boolean(),
+        value: T.string(),
+        color: T.string({ defaultValue: "", enum: Colors }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        disabled: T.boolean(),
+        label: T.string()
       },
       render: ({ selected, value, disabled, color, size, label }, { html }) => {
         const radioClass = [
@@ -674,20 +632,12 @@ ${value}</textarea
     },
     "uix-radio-group": {
       props: {
-        selectedValue: { type: String, defaultValue: "" },
-        options: { type: Array, defaultValue: [] },
-        color: {
-          type: String,
-          defaultValue: "default",
-          enum: Colors
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        },
-        disabled: { type: Boolean, defaultValue: false },
-        withCustomColors: { type: Boolean, defaultValue: false }
+        selectedValue: T.string(),
+        options: T.array(),
+        color: T.string({ defaultValue: "default", enum: Colors }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        disabled: T.boolean(),
+        withCustomColors: T.boolean()
       },
       render: (
         { selectedValue, options, disabled, color, size, withCustomColors },
@@ -716,17 +666,16 @@ ${value}</textarea
     "uix-rating": {
       // TODO: expand daisyUI tags as the JIT can't get dynamic ones
       props: {
-        maxValue: { type: Number, defaultValue: 5 },
-        value: { type: Number, defaultValue: 0 },
-        mask: { type: String, defaultValue: "star", enum: ["star", "heart"] },
-        color: {
-          type: String,
+        maxValue: T.number({ defaultValue: 5 }),
+        value: T.number({ defaultValue: 0 }),
+        mask: T.string({ defaultValue: "star", enum: ["star", "heart"] }),
+        color: T.string({
           defaultValue: "neutral",
           enum: ["orange", "red", "yellow", "lime", "green"]
-        },
-        size: { type: String, defaultValue: "md", enum: Sizes },
-        allowReset: { type: Boolean, defaultValue: false },
-        half: { type: Boolean, defaultValue: false }
+        }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        allowReset: T.boolean(),
+        half: T.boolean()
       },
       render: (
         { maxValue, value, mask, color, size, allowReset, half },
@@ -776,14 +725,10 @@ ${value}</textarea
 
     "uix-swap": {
       props: {
-        isActive: { type: Boolean, defaultValue: false },
-        isRotated: { type: Boolean, defaultValue: false },
-        isFlipped: { type: Boolean, defaultValue: false },
-        color: {
-          type: String,
-          defaultValue: "base",
-          enum: Colors
-        }
+        isActive: T.boolean(),
+        isRotated: T.boolean(),
+        isFlipped: T.boolean(),
+        color: T.string({ defaultValue: "base", enum: Colors })
       },
       render: ({ isActive, isRotated, isFlipped, color }, { html }) => {
         const baseClass = "swap";
@@ -806,21 +751,13 @@ ${value}</textarea
 
     "uix-checkbox": {
       props: {
-        checked: { type: Boolean, defaultValue: false },
-        indeterminate: { type: Boolean, defaultValue: false },
-        color: {
-          type: String,
-          defaultValue: "default",
-          enum: Colors
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        },
-        label: { type: String, defaultValue: "" },
-        disabled: { type: Boolean, defaultValue: false },
-        change: { type: Function }
+        checked: T.boolean(),
+        indeterminate: T.boolean(),
+        color: T.string({ defaultValue: "default", enum: Colors }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        label: T.string(),
+        disabled: T.boolean(),
+        change: T.function()
       },
       render: (
         { checked, indeterminate, change, label, disabled, color, size },
@@ -854,45 +791,20 @@ ${value}</textarea
 
     "uix-button": {
       props: {
-        color: {
-          type: String,
-          defaultValue: "base",
-          enum: Colors
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        },
-        href: {
-          type: String,
-          defaultValue: ""
-        },
-        label: {
-          type: String,
-          defaultValue: ""
-        },
-        type: {
-          type: String,
-          defaultValue: "button"
-        },
-        fullWidth: { type: Boolean, defaultValue: false },
-        shape: {
-          type: String,
-          defaultValue: "default",
-          enum: Shapes
-        },
-        variant: {
-          type: String,
-          defaultValue: "",
-          enum: Variants
-        },
-        click: { type: Function, defaultValue: "" },
-        isLoading: { type: Boolean, defaultValue: false },
-        icon: { type: String, defaultValue: "" },
-        endIcon: { type: String, defaultValue: "" },
-        border: { type: Boolean, defaultValue: false },
-        noAnimation: { type: Boolean, defaultValue: false }
+        color: T.string({ defaultValue: "base", enum: Colors }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        href: T.string(),
+        label: T.string(),
+        type: T.string({ defaultValue: "button" }),
+        fullWidth: T.boolean(),
+        shape: T.string({ defaultValue: "default", enum: Shapes }),
+        variant: T.string({ defaultValue: "", enum: Variants }),
+        click: T.function(),
+        isLoading: T.boolean(),
+        icon: T.string(),
+        endIcon: T.string(),
+        border: T.boolean(),
+        noAnimation: T.boolean()
       },
       render: (host, { html }) => {
         const {
