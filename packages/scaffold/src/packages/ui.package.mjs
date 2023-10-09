@@ -1,3 +1,5 @@
+import { T } from "../reactive-view.mjs";
+
 import {
   AnimationTypes,
   Sizes,
@@ -13,11 +15,10 @@ export default {
   views: {
     "uix-avatar": {
       props: {
-        src: { type: String },
-        alt: { type: String, defaultValue: "" },
-        size: { type: Number, defaultValue: 24 },
-        shape: {
-          type: String,
+        src: T.string(),
+        alt: T.string({ defaultValue: "" }),
+        size: T.number({ defaultValue: 24 }),
+        shape: T.string({
           defaultValue: "rounded",
           enum: [
             "rounded",
@@ -26,11 +27,11 @@ export default {
             "mask-hexagon",
             "mask-triangle"
           ]
-        },
-        status: { type: String, enum: ["online", "offline", ""] },
-        placeholder: { type: String, defaultValue: "" },
-        hasRing: { type: Boolean, defaultValue: false },
-        ringColor: { type: String, defaultValue: "primary", enum: Colors }
+        }),
+        status: T.string({ enum: ["online", "offline", ""] }),
+        placeholder: T.string({ defaultValue: "" }),
+        hasRing: T.boolean(),
+        ringColor: T.string({ defaultValue: "primary", enum: Colors })
       },
       render: (
         { src, alt, size, shape, status, placeholder, hasRing, ringColor },
@@ -60,8 +61,8 @@ export default {
     },
     "uix-avatar-group": {
       props: {
-        avatars: { type: Array, defaultValue: [] },
-        count: { type: Number, defaultValue: 0 }
+        avatars: T.array(),
+        count: T.number({ defaultValue: 0 })
       },
       render: ({ avatars, count }, { html }) => {
         return html`
@@ -95,19 +96,11 @@ export default {
     },
     "uix-badge": {
       props: {
-        content: { type: String, defaultValue: "" },
-        color: {
-          type: String,
-          defaultValue: "default",
-          enum: Colors
-        },
-        outline: { type: Boolean, defaultValue: false },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: ["lg", "md", "sm", "xs"]
-        },
-        icon: { type: String, defaultValue: null }
+        content: T.string(),
+        color: T.string({ defaultValue: "default", enum: Colors }),
+        outline: T.boolean(),
+        size: T.string({ defaultValue: "md", enum: ["lg", "md", "sm", "xs"] }),
+        icon: T.string({ defaultValue: null })
       },
       render: ({ color, outline, size }, { html }) => {
         const baseClass = "badge";
@@ -129,8 +122,8 @@ export default {
     },
     "uix-icon": {
       props: {
-        name: "",
-        classes: {}
+        name: T.string(),
+        classes: T.object()
       },
       render: (
         { name, classes: { container: containerClass = "text-2xl" } },
@@ -145,12 +138,8 @@ export default {
     },
     "uix-kbd": {
       props: {
-        keyContent: { type: String, defaultValue: "Key" },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        }
+        keyContent: T.string({ defaultValue: "Key" }),
+        size: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: ({ keyContent, size }, { html }) => {
         const sizeClassMap = {
@@ -166,12 +155,8 @@ export default {
     },
     "uix-countdown": {
       props: {
-        endDate: { type: String, defaultValue: "YYYY-MM-DD HH:MM:SS" },
-        format: {
-          type: String,
-          defaultValue: "DHMS",
-          enum: Formats
-        }
+        endDate: T.string({ defaultValue: "YYYY-MM-DD HH:MM:SS" }),
+        format: T.string({ defaultValue: "DHMS", enum: Formats })
       },
       render: ({ endDate, format }, { html }) => {
         const calculateCountdown = (end) => {
@@ -221,8 +206,8 @@ export default {
     },
     "uix-mask": {
       props: {
-        variant: { type: String, defaultValue: "squircle" },
-        src: String
+        variant: T.string({ defaultValue: "squircle" }),
+        src: T.string()
       },
       render: ({ variant, src }, { html }) => {
         return html`<img class="mask ${variant}" src=${src} />`;
@@ -230,23 +215,11 @@ export default {
     },
     "uix-loading": {
       props: {
-        isVisible: { type: Boolean, defaultValue: false },
-        message: { type: String, defaultValue: null },
-        type: {
-          type: String,
-          defaultValue: "spinner",
-          enum: AnimationTypes
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        },
-        color: {
-          type: String,
-          defaultValue: "primary",
-          enum: Colors
-        }
+        isVisible: T.boolean(),
+        message: T.string({ defaultValue: null }),
+        type: T.string({ defaultValue: "spinner", enum: AnimationTypes }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        color: T.string({ defaultValue: "primary", enum: Colors })
       },
       render: ({ isVisible, message, type, size, color }, { html }) => {
         if (!isVisible) return html``;
@@ -280,14 +253,10 @@ export default {
     "uix-progress": {
       // TODO: expand daisyui tags
       props: {
-        value: { type: Number, defaultValue: 0 },
-        max: { type: Number, defaultValue: 100 },
-        width: { type: String, defaultValue: "w-56" },
-        color: {
-          type: String,
-          defaultValue: "base",
-          enum: Colors
-        }
+        value: T.number({ defaultValue: 0 }),
+        max: T.number({ defaultValue: 100 }),
+        width: T.string({ defaultValue: "w-56" }),
+        color: T.string({ defaultValue: "base", enum: Colors })
       },
       render: ({ value, max, width, color }, { html }) => {
         const progressClass = `progress ${width}`;
@@ -305,39 +274,14 @@ export default {
     "uix-radial-progress": {
       // TODO: expand daisyui tags
       props: {
-        value: {
-          type: Number,
-          defaultValue: 0
-        },
-        size: {
-          type: String,
-          defaultValue: "4rem"
-        },
-        thickness: {
-          type: String,
-          defaultValue: "0.4rem"
-        },
-        color: {
-          type: String,
-          defaultValue: "primary",
-          enum: Colors
-        },
-        backgroundColor: {
-          type: String,
-          defaultValue: "default"
-        },
-        borderColor: {
-          type: String,
-          defaultValue: "default"
-        },
-        borderWidth: {
-          type: String,
-          defaultValue: "0px"
-        },
-        textColor: {
-          type: String,
-          defaultValue: "default-content"
-        }
+        value: T.number({ defaultValue: 0 }),
+        size: T.string({ defaultValue: "4rem" }),
+        thickness: T.string({ defaultValue: "0.4rem" }),
+        color: T.string({ defaultValue: "primary", enum: Colors }),
+        backgroundColor: T.string({ defaultValue: "default" }),
+        borderColor: T.string({ defaultValue: "default" }),
+        borderWidth: T.string({ defaultValue: "0px" }),
+        textColor: T.string({ defaultValue: "default-content" })
       },
       render: (
         {

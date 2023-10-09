@@ -1,12 +1,14 @@
+import { T } from "../reactive-view.mjs";
+
 export default {
   i18n: {},
   views: {
     "uix-docs-page": {
       props: {
-        title: { type: String, defaultValue: "" },
-        description: { type: String, defaultValue: "" },
-        tableData: { type: Array, defaultValue: [] },
-        examples: { type: Array, defaultValue: [] }
+        title: T.string(),
+        description: T.string(),
+        tableData: T.array(),
+        examples: T.array()
       },
       render: ({ title, description, tableData, examples }, { html }) => {
         const formattedTitle = (title) =>

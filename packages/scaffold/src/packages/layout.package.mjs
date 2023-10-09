@@ -1,3 +1,5 @@
+import { T } from "../reactive-view.mjs";
+
 import {
   BgColor,
   AlignX,
@@ -12,35 +14,13 @@ export default {
   views: {
     "uix-block": {
       props: {
-        color: {
-          type: String,
-          defaultValue: "",
-          enum: Colors
-        },
-        bgColor: {
-          type: String,
-          defaultValue: ""
-        },
-        textColor: {
-          type: String,
-          defaultValue: ""
-        },
-        spacing: {
-          type: Number,
-          defaultValue: "md"
-        },
-        rounded: {
-          type: Boolean,
-          defaultValue: false
-        },
-        shadow: {
-          type: Boolean,
-          defaultValue: false
-        },
-        class: {
-          type: String,
-          defaultValue: ""
-        }
+        color: T.string({ enum: Colors }),
+        bgColor: T.string(),
+        textColor: T.string(),
+        spacing: T.number({ defaultValue: "md" }),
+        rounded: T.boolean(),
+        shadow: T.boolean(),
+        class: T.string()
       },
       render: (props, { html }) => {
         const { color, bgColor, textColor, spacing, rounded, shadow } = props;
@@ -85,12 +65,8 @@ export default {
     },
     "uix-stack": {
       props: {
-        vertical: { type: Boolean, defaultValue: false },
-        gap: {
-          type: String,
-          defaultValue: "md",
-          enum: Spacings
-        }
+        vertical: T.boolean(),
+        gap: T.string({ defaultValue: "md", enum: Spacings })
       },
       render: ({ vertical, gap }, { html }) => {
         const gapClass = Gaps[gap] || "";
@@ -104,16 +80,12 @@ export default {
     },
     "uix-divider": {
       props: {
-        thickness: { type: String, defaultValue: "1px" },
-        color: {
-          type: String,
-          defaultValue: "primary",
-          enum: Colors
-        },
-        text: { type: String, defaultValue: "" },
-        vertical: { type: Boolean, defaultValue: false },
-        responsive: { type: Boolean, defaultValue: false },
-        class: { type: String, default: "" }
+        thickness: T.string({ defaultValue: "1px" }),
+        color: T.string({ defaultValue: "primary", enum: Colors }),
+        text: T.string(),
+        vertical: T.boolean(),
+        responsive: T.boolean(),
+        class: T.string()
       },
 
       render: (props, { html }) => {
@@ -138,28 +110,13 @@ export default {
     },
     "uix-list": {
       props: {
-        vertical: { type: Boolean, defaultValue: false },
-        responsive: { type: Boolean, defaultValue: false },
-        gap: {
-          type: String,
-          defaultValue: "sm",
-          enum: Sizes
-        },
-        rounded: { type: Boolean, defaultValue: false },
-        alignX: {
-          type: String,
-          enum: Object.keys(AlignX),
-          defaultValue: ""
-        },
-        alignY: {
-          type: String,
-          enum: Object.keys(AlignY),
-          defaultValue: ""
-        },
-        class: {
-          type: String,
-          defaultValue: ""
-        }
+        vertical: T.boolean(),
+        responsive: T.boolean(),
+        gap: T.string({ defaultValue: "sm", enum: Sizes }),
+        rounded: T.boolean(),
+        alignX: T.string({ enum: Object.keys(AlignX) }),
+        alignY: T.string({ enum: Object.keys(AlignY) }),
+        class: T.string()
       },
       render: (props, { html }) => {
         const { vertical, gap, responsive, rounded, alignX, alignY } = props;
@@ -199,12 +156,12 @@ export default {
     },
     "uix-grid": {
       props: {
-        templateColumns: { type: String, defaultValue: "1fr" },
-        templateRows: { type: String, defaultValue: "" },
-        gap: { type: String, defaultValue: "sm", enum: Sizes },
-        rounded: { type: Boolean, defaultValue: false },
-        alignX: { type: String, enum: Object.keys(AlignX), defaultValue: "" },
-        alignY: { type: String, enum: Object.keys(AlignY), defaultValue: "" }
+        templateColumns: T.string({ defaultValue: "1fr" }),
+        templateRows: T.string(),
+        gap: T.string({ defaultValue: "sm", enum: Sizes }),
+        rounded: T.boolean(),
+        alignX: T.string({ enum: Object.keys(AlignX) }),
+        alignY: T.string({ enum: Object.keys(AlignY) })
       },
       render: (
         { templateColumns, templateRows, gap, rounded, alignX, alignY },

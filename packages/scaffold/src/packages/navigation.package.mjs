@@ -1,3 +1,4 @@
+import { T } from "../reactive-view.mjs";
 import {
   Positions,
   TabsSize,

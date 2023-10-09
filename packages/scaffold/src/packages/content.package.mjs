@@ -1,3 +1,4 @@
+import { T } from "../reactive-view.mjs";
 import {
   Positions,
   Resolutions,
@@ -13,17 +14,13 @@ export default {
   views: {
     "uix-alert": {
       props: {
-        title: { type: String, defaultValue: "" },
-        message: { type: String, defaultValue: "" },
-        color: {
-          type: String,
-          defaultValue: "",
-          enum: Colors
-        },
-        closable: { type: Boolean, defaultValue: false },
-        rounded: { type: Boolean, defaultValue: false },
-        border: { type: Boolean, defaultValue: false },
-        actions: { type: Array, defaultValue: [] }
+        title: T.string(),
+        message: T.string(),
+        color: T.string({ enum: Colors }),
+        closable: T.boolean(),
+        rounded: T.boolean(),
+        border: T.boolean(),
+        actions: T.array()
       },
       render: (
         { title, message, rounded, color, closable, actions, border },
@@ -78,17 +75,17 @@ export default {
     },
     "uix-card": {
       props: {
-        title: { type: String, defaultValue: "" },
-        subtitle: { type: String, defaultValue: "" },
-        content: { type: String, defaultValue: "" },
-        image: { type: String, defaultValue: "" },
-        footerContent: { type: String, defaultValue: "" },
-        color: { type: String, defaultValue: "base-100", enum: Colors },
-        compact: { type: Boolean, defaultValue: false },
-        bordered: { type: Boolean, defaultValue: false },
-        sideImage: { type: Boolean, defaultValue: false },
-        centeredContent: { type: Boolean, defaultValue: false },
-        imageOverlay: { type: Boolean, defaultValue: false }
+        title: T.string(),
+        subtitle: T.string(),
+        content: T.string(),
+        image: T.string(),
+        footerContent: T.string(),
+        color: T.string({ defaultValue: "base-100", enum: Colors }),
+        compact: T.boolean(),
+        bordered: T.boolean(),
+        sideImage: T.boolean(),
+        centeredContent: T.boolean(),
+        imageOverlay: T.boolean()
       },
       render: (
         {
@@ -139,23 +136,10 @@ export default {
     },
     "uix-mockup-code": {
       props: {
-        prefix: {
-          type: String,
-          defaultValue: ""
-        },
-        code: {
-          type: String,
-          defaultValue: ""
-        },
-        highlight: {
-          type: Boolean,
-          defaultValue: false
-        },
-        color: {
-          type: String,
-          defaultValue: "",
-          enum: Colors
-        }
+        prefix: T.string(),
+        code: T.string(),
+        highlight: T.boolean(),
+        color: T.string({ enum: Colors })
       },
       render: ({ prefix, code, highlight, color }, { html }) => {
         const colorSchema = color
@@ -175,11 +159,11 @@ export default {
     },
     "uix-tooltip": {
       props: {
-        content: { type: String, defaultValue: "Tooltip Content" },
-        position: { type: String, defaultValue: "top", enum: Positions },
-        trigger: { type: String, defaultValue: "hover", enum: Triggers },
-        isOpen: { type: Boolean, defaultValue: false },
-        color: { type: String, defaultValue: "primary", enum: Colors }
+        content: T.string({ defaultValue: "Tooltip Content" }),
+        position: T.string({ defaultValue: "top", enum: Positions }),
+        trigger: T.string({ defaultValue: "hover", enum: Triggers }),
+        isOpen: T.boolean(),
+        color: T.string({ defaultValue: "primary", enum: Colors })
       },
       render: (
         { content, position, trigger, isOpen, setIsOpen, color },
@@ -209,21 +193,10 @@ export default {
     },
     "uix-toast": {
       props: {
-        content: {
-          type: Array,
-          defaultValue: []
-        }, // Assuming a list of alerts
-        duration: { type: Number, defaultValue: 3000 },
-        horizontalPosition: {
-          type: String,
-          defaultValue: "end",
-          enum: Positions
-        },
-        verticalPosition: {
-          type: String,
-          defaultValue: "bottom",
-          enum: Positions
-        }
+        content: T.array(),
+        duration: T.number({ defaultValue: 3000 }),
+        horizontalPosition: T.string({ defaultValue: "end", enum: Positions }),
+        verticalPosition: T.string({ defaultValue: "bottom", enum: Positions })
       },
       render: (
         { content, duration, horizontalPosition, verticalPosition },
@@ -280,12 +253,11 @@ export default {
       }
     },
     "uix-artboard": {
-      // TODO: expand daisyUI tags as the JIT can't get dynamic ones
       props: {
-        content: { type: String, defaultValue: "Artboard Content" },
-        demo: { type: Boolean, defaultValue: false }, // artboard-demo for shadow, radius, and centering
-        size: { type: Number, defaultValue: 1, enum: [1, 2, 3, 4, 5, 6] },
-        horizontal: { type: Boolean, defaultValue: false }
+        content: T.string({ defaultValue: "Artboard Content" }),
+        demo: T.boolean(),
+        size: T.number({ defaultValue: 1, enum: [1, 2, 3, 4, 5, 6] }),
+        horizontal: T.boolean()
       },
       render: ({ content, size, horizontal, demo }, { html }) => {
         const PhoneSize = {
@@ -309,12 +281,12 @@ export default {
     "uix-stat": {
       // TODO: expand daisyui tags for tailwind JIT
       props: {
-        title: { type: String, required: true },
-        value: { type: String, required: true },
-        desc: { type: String, required: true },
-        figure: { type: String, defaultValue: null },
-        valueColor: { type: String, defaultValue: "default", enum: Colors },
-        descColor: { type: String, defaultValue: "default", enum: Colors }
+        title: T.string(),
+        value: T.string(),
+        desc: T.string(),
+        figure: T.string(),
+        valueColor: T.string({ defaultValue: "default", enum: Colors }),
+        descColor: T.string({ defaultValue: "default", enum: Colors })
       },
       render: (
         { title, value, desc, figure, valueColor, descColor },
@@ -338,16 +310,12 @@ export default {
     },
     "uix-table": {
       props: {
-        rows: { type: Array, defaultValue: [] },
-        headers: { type: Array, defaultValue: [] },
-        zebra: { type: Boolean, defaultValue: false },
-        pinRows: { type: Boolean, defaultValue: false },
-        pinCols: { type: Boolean, defaultValue: false },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        }
+        rows: T.array(),
+        headers: T.array(),
+        zebra: T.boolean(),
+        pinRows: T.boolean(),
+        pinCols: T.boolean(),
+        size: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: ({ rows, headers, zebra, pinRows, pinCols, size }, { html }) => {
         const tableClass = `table 
@@ -378,27 +346,18 @@ export default {
     "uix-indicator": {
       // TODO: expand daisyui tags
       props: {
-        content: { type: String, defaultValue: "" },
-        badge: { type: String, defaultValue: "" }, // This can be text, number or any label
-        horizontalPosition: {
-          type: String,
+        content: T.string(),
+        badge: T.string(),
+        horizontalPosition: T.string({
           defaultValue: "end",
-          enum: Positions.filter((p) => ["start", "center", "end"].includes(p))
-        },
-        verticalPosition: {
-          type: String,
+          enum: Positions
+        }),
+        verticalPosition: T.string({
           defaultValue: "top",
-          enum: Positions.filter((p) => ["top", "middle", "bottom"].includes(p))
-        },
-        responsivePositions: {
-          type: Object,
-          defaultValue: {}
-        },
-        badgeColor: {
-          type: String,
-          defaultValue: "secondary",
-          enum: Colors
-        }
+          enum: Positions
+        }),
+        responsivePositions: T.object(),
+        badgeColor: T.string({ defaultValue: "secondary", enum: Colors })
       },
       render: (
         {

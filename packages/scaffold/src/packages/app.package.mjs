@@ -1,3 +1,5 @@
+import { T } from "../reactive-view.mjs";
+
 export default {
   i18n: {},
   views: {
@@ -20,14 +22,8 @@ export default {
     },
     "uix-router": {
       props: {
-        routes: {
-          type: Array,
-          defaultValue: []
-        },
-        currentRoute: {
-          type: String,
-          defaultValue: ""
-        }
+        routes: T.array(),
+        currentRoute: T.string()
       },
       render: ({ routes, currentRoute }, { html }) => {
         const routeItem = routes.find((route) => route.path === currentRoute);

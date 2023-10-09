@@ -1,3 +1,5 @@
+import { T } from "../reactive-view.mjs";
+
 import {
   BgColor,
   TextColor,
@@ -10,21 +12,17 @@ export default {
   views: {
     "uix-navbar": {
       props: {
-        color: {
-          type: String,
-          defaultValue: "",
-          enum: Colors
-        },
-        shadow: { type: Boolean, defaultValue: false },
-        rounded: { type: Boolean, defaultValue: false },
-        height: { type: String, defaultValue: "" },
-        width: { type: String, defaultValue: "" },
-        items: { type: Array, defaultValue: [] },
-        vertical: { type: Boolean, defaultValue: false },
-        gap: { type: String, defaultValue: "md" },
-        label: "",
-        icon: "",
-        classes: { type: Object, defaultValue: {} }
+        color: T.string({ enum: Colors }),
+        shadow: T.boolean(),
+        rounded: T.boolean(),
+        height: T.string(),
+        width: T.string(),
+        items: T.array(),
+        vertical: T.boolean(),
+        gap: T.string({ defaultValue: "md" }),
+        label: T.string(),
+        icon: T.string(),
+        classes: T.object()
       },
       render: (
         {
@@ -96,28 +94,11 @@ export default {
     },
     "uix-footer": {
       props: {
-        sections: {
-          type: Array,
-          defaultValue: [] // Each section can be a nav, aside, or form
-        },
-        bgColor: {
-          type: String,
-          defaultValue: "neutral",
-          enum: Colors
-        },
-        textColor: {
-          type: String,
-          defaultValue: "neutral-content",
-          enum: Colors
-        },
-        alignCenter: {
-          type: Boolean,
-          defaultValue: false
-        },
-        rounded: {
-          type: Boolean,
-          defaultValue: false
-        }
+        sections: T.array(),
+        bgColor: T.string({ defaultValue: "neutral", enum: Colors }),
+        textColor: T.string({ defaultValue: "neutral-content", enum: Colors }),
+        alignCenter: T.boolean(),
+        rounded: T.boolean()
       },
       render: (
         { sections, bgColor, textColor, alignCenter, rounded },
@@ -158,12 +139,12 @@ export default {
 
     "uix-hero": {
       props: {
-        title: { type: String, defaultValue: "Hello there" },
-        description: { type: String, defaultValue: "" },
-        color: { type: String, defaultValue: "base", enum: Colors },
-        imageUrl: { type: String, defaultValue: null },
-        overlayOpacity: { type: Number, defaultValue: 60 },
-        rounded: { type: Boolean, defaultValue: false }
+        title: T.string({ defaultValue: "Hello there" }),
+        description: T.string(),
+        color: T.string({ defaultValue: "base", enum: Colors }),
+        imageUrl: T.string({ defaultValue: null }),
+        overlayOpacity: T.number({ defaultValue: 60 }),
+        rounded: T.boolean()
       },
       render: (
         { title, description, color, imageUrl, rounded, overlayOpacity },
@@ -198,8 +179,8 @@ export default {
 
     "uix-stat-container": {
       props: {
-        vertical: { type: Boolean, defaultValue: false },
-        shadow: { type: Boolean, defaultValue: true }
+        vertical: T.boolean(),
+        shadow: T.boolean({ defaultValue: true })
       },
       render: ({ vertical, shadow, children }, { html }) => {
         const directionClass = vertical ? "stats-vertical" : "";
@@ -212,19 +193,11 @@ export default {
 
     "uix-chat-message": {
       props: {
-        message: { type: Object, defaultValue: { content: "", timestamp: "" } },
-        sender: { type: Object, defaultValue: { name: "", avatar: "" } },
-        alignment: {
-          type: String,
-          defaultValue: "start",
-          enum: ["start", "end"]
-        },
-        color: {
-          type: String,
-          defaultValue: "primary",
-          enum: Colors
-        },
-        rounded: { type: Boolean, defaultValue: false }
+        message: T.object({ defaultValue: { content: "", timestamp: "" } }),
+        sender: T.object({ defaultValue: { name: "", avatar: "" } }),
+        alignment: T.string({ defaultValue: "start", enum: ["start", "end"] }),
+        color: T.string({ defaultValue: "primary", enum: Colors }),
+        rounded: T.boolean()
       },
       render: ({ message, sender, alignment, rounded, color }, { html }) => {
         const bgColorClass = BgColor[color];
@@ -255,7 +228,7 @@ export default {
     },
     "uix-chat-bubble": {
       props: {
-        messages: { type: Array, defaultValue: [] }
+        messages: T.array()
       },
       render: ({ messages }, { html }) => {
         return html`

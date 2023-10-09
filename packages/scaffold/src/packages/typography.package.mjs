@@ -1,3 +1,4 @@
+import { T } from "../reactive-view.mjs";
 import {
   Colors,
   Sizes,
@@ -10,10 +11,10 @@ export default {
   views: {
     "uix-text": {
       props: {
-        size: { type: String, defaultValue: "", enum: Sizes },
-        color: { type: String, defaultValue: "primary", enum: Colors },
-        weight: { type: String, defaultValue: "semibold", enum: Colors },
-        class: { type: String, defaultValue: "" }
+        size: T.string({ enum: Sizes }),
+        color: T.string({ defaultValue: "primary", enum: Colors }),
+        weight: T.string({ defaultValue: "semibold", enum: Colors }),
+        class: T.string()
       },
       render: (props, { html }) => {
         const { size, color, weight } = props;
@@ -51,16 +52,12 @@ export default {
     },
     "uix-link": {
       props: {
-        href: { type: String, defaultValue: "#" },
-        label: { type: String, defaultValue: "" },
-        external: { type: Boolean, defaultValue: false },
-        color: {
-          type: String,
-          defaultValue: "",
-          enum: Colors
-        },
-        underlineOnHover: { type: Boolean, defaultValue: false },
-        icon: { type: String, defaultValue: null }
+        href: T.string({ defaultValue: "#" }),
+        label: T.string(),
+        external: T.boolean(),
+        color: T.string({ enum: Colors }),
+        underlineOnHover: T.boolean(),
+        icon: T.string({ defaultValue: null })
       },
       render: (
         { href, label, external, color, underlineOnHover, icon },
