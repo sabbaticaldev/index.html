@@ -278,8 +278,8 @@ export default ({ T, html, ifDefined }) => {
       },
       "uix-form-control": {
         props: {
-          label: { type: String, defaultValue: null },
-          labelAlt: { type: Array, defaultValue: [] }
+          label: T.string({ type: String, defaultValue: null }),
+          labelAlt: T.array({ defaultValue: [] })
         },
         render: ({ label, labelAlt }) => {
           return html`

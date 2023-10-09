@@ -16,36 +16,43 @@ const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
 export const T = {
   boolean: (options = {}) => ({
     type: Boolean,
-    defaultValue: options.defaultValue || false
+    defaultValue: options.defaultValue || false,
+    ...options
   }),
 
   string: (options = {}) => ({
     type: String,
     defaultValue: options.defaultValue || "",
-    enum: options.enum || []
+    enum: options.enum || [],
+    ...options
   }),
 
   array: (options = {}) => ({
     type: Array,
     defaultValue: options.defaultValue || [],
-    enum: options.enum || []
+    enum: options.enum || [],
+    ...options
   }),
 
   number: (options = {}) => ({
     type: Number,
-    defaultValue: options.defaultValue || undefined
+    defaultValue: options.defaultValue || undefined,
+    ...options
   }),
 
   function: (options = {}) => ({
     type: Function,
-    defaultValue: options.defaultValue || undefined
+    defaultValue: options.defaultValue || undefined,
+    ...options
   }),
 
   object: (options = {}) => ({
     type: Object,
-    defaultValue: options.defaultValue || undefined
+    defaultValue: options.defaultValue || undefined,
+    ...options
   })
 };
+
 export const F = {
   text: (options = {}) => ({
     formType: "text",
@@ -92,9 +99,9 @@ export const F = {
     type: T.string(options)
   }),
 
-  custom: (formType, tTypeOptions) => ({
-    formType,
-    type: T[formType](tTypeOptions)
+  custom: (customFormType, options) => ({
+    customFormType,
+    type: T[customFormType](options)
   })
 };
 
@@ -123,6 +130,10 @@ export function defineView(tag, component, config = {}) {
     ? {}
     : Object.keys(props).reduce((acc, key) => {
       const value = props[key];
+      if (typeof value.type === "function") {
+        console.log("teste", value);
+        //value.type = value.type();
+      }
       acc[key] = value;
       return acc;
     }, {});
