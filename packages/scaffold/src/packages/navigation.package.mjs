@@ -18,14 +18,16 @@ export default {
   views: {
     "uix-accordion": {
       props: {
-        items: { type: Array, defaultValue: [] },
-        color: { type: String, defaultValue: "base", enum: Colors },
-        method: {
-          type: String,
+        items: T.array(),
+        color: T.string({ defaultValue: "base", enum: Colors }),
+        method: T.string({
           defaultValue: "focus",
           enum: ["focus", "checkbox", "details"]
-        }, // Propagate the method of collapsing.
-        icon: { type: String, defaultValue: "", enum: ["", "arrow", "plus"] } // Propagate the icon type.
+        }),
+        icon: T.string({
+          defaultValue: "",
+          enum: ["", "arrow", "plus"]
+        })
       },
       render: ({ items, color, method, icon }, { html }) => {
         return html`
@@ -45,18 +47,17 @@ export default {
     },
     "uix-breadcrumbs": {
       props: {
-        items: {
-          type: Array,
+        items: T.array({
           defaultValue: [],
           format: [
             {
-              label: String,
-              href: String,
-              icon: String // This will be a string referencing the icon name
+              label: T.string(),
+              href: T.string(),
+              icon: T.string()
             }
           ]
-        },
-        separator: { type: String, defaultValue: "/" }
+        }),
+        separator: T.string({ defaultValue: "/" })
       },
       render: ({ content, color, outline, size, icon }, { html }) => {
         const BadgeSizes = {
@@ -81,19 +82,9 @@ export default {
     },
     "uix-bottom-navigation": {
       props: {
-        items: {
-          type: Array,
-          defaultValue: []
-        },
-        activeIndex: {
-          type: Number,
-          defaultValue: 0
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        }
+        items: T.array(),
+        activeIndex: T.number({ defaultValue: 0 }),
+        size: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: ({ items, activeIndex, size }, { html }) => {
         const BtmClasses = {
@@ -130,24 +121,14 @@ export default {
     },
     "uix-carousel": {
       props: {
-        items: {
-          type: Array,
-          defaultValue: []
-        },
-        alignment: {
-          type: String,
+        items: T.array(),
+        alignment: T.string({
           defaultValue: "start",
           enum: ["start", "center", "end"]
-        },
-        vertical: { type: Boolean, defaultValue: false },
-        indicatorButtons: {
-          type: Boolean,
-          defaultValue: false
-        },
-        navigationButtons: {
-          type: Boolean,
-          defaultValue: false
-        }
+        }),
+        vertical: T.boolean(),
+        indicatorButtons: T.boolean(),
+        navigationButtons: T.boolean()
       },
       render: (
         { items, alignment, vertical, indicatorButtons, navigationButtons },
@@ -200,21 +181,23 @@ export default {
     },
     "uix-collapse": {
       props: {
-        method: {
-          type: String,
+        method: T.string({
           defaultValue: "focus",
           enum: ["focus", "checkbox", "details"]
-        }, // Method of collapsing.
-        color: { type: String, defaultValue: "base", enum: Colors }, // Color color.
-        title: { type: String, defaultValue: "Click to open/close" }, // Title of the collapse.
-        content: { type: String, defaultValue: "Collapse Content" }, // Content of the collapse.
-        icon: { type: String, defaultValue: "", enum: ["", "arrow", "plus"] }, // Icon for the collapse (if any).
-        isOpen: { type: Boolean, defaultValue: false } // Determines if the collapse is initially open or closed.
+        }),
+        color: T.string({ defaultValue: "base", enum: Colors }),
+        title: T.string({ defaultValue: "Click to open/close" }),
+        content: T.string({ defaultValue: "Collapse Content" }),
+        icon: T.string({
+          defaultValue: "",
+          enum: ["", "arrow", "plus"]
+        }),
+        open: T.boolean()
       },
-      render: ({ method, color, title, content, icon, isOpen }, { html }) => {
+      render: ({ method, color, title, content, icon, open }, { html }) => {
         const baseClass = `collapse ${CollapseBgColor[color]}`;
         const iconClass = CollapseIcon[icon];
-        const openClass = isOpen ? "collapse-open" : "";
+        const openClass = open ? "collapse-open" : "";
 
         if (method === "focus") {
           return html`
@@ -247,22 +230,15 @@ export default {
     },
     "uix-drawer": {
       props: {
-        isOpen: { type: Boolean, defaultValue: false },
-        position: {
-          type: String,
-          defaultValue: "left",
-          enum: Positions
-        },
-        setIsOpen: {
-          type: Function,
-          defaultValue: null
-        }
+        open: T.boolean(),
+        position: T.string({ defaultValue: "left", enum: Positions }),
+        setOpen: T.function({ defaultValue: null })
       },
-      render: ({ isOpen, position, setIsOpen }, { html }) => {
+      render: ({ open, position, setOpen }, { html }) => {
         const positionClass = position === "right" ? "drawer-end" : "";
         const toggleDrawer = () => {
-          if (setIsOpen) {
-            setIsOpen(!isOpen);
+          if (setOpen) {
+            setOpen(!open);
           }
         };
 
@@ -272,7 +248,7 @@ export default {
               id="uix-drawer-toggle"
               type="checkbox"
               class="drawer-toggle"
-              ?checked=${isOpen}
+              ?checked=${open}
               @change=${toggleDrawer}
             />
             <div
@@ -301,27 +277,15 @@ export default {
     },
     "uix-dropdown": {
       props: {
-        label: { type: String, defaultValue: "Click" },
-        items: { type: Array, defaultValue: [] },
-        color: {
-          type: String,
-          defaultValue: "base",
-          enum: Colors
-        },
-        method: {
-          type: String,
-          defaultValue: "focus",
-          enum: Methods
-        },
-        position: {
-          type: String,
-          defaultValue: "bottom",
-          enum: Positions
-        },
-        isOpen: { type: Boolean, defaultValue: false },
-        openOnHover: { type: Boolean, defaultValue: false },
-        forceOpen: { type: Boolean, defaultValue: false },
-        rounded: { type: Boolean, defaultValue: false }
+        label: T.string({ defaultValue: "Click" }),
+        items: T.array(),
+        color: T.string({ defaultValue: "base", enum: Colors }),
+        method: T.string({ defaultValue: "focus", enum: Methods }),
+        position: T.string({ defaultValue: "bottom", enum: Positions }),
+        isOpen: T.boolean(),
+        openOnHover: T.boolean(),
+        forceOpen: T.boolean(),
+        rounded: T.boolean()
       },
       render: (
         {
@@ -331,10 +295,10 @@ export default {
           rounded,
           method,
           position,
-          isOpen,
+          open,
           openOnHover,
           forceOpen,
-          setIsOpen
+          setOpen
         },
         { html }
       ) => {
@@ -365,10 +329,10 @@ export default {
                   <label
                     tabindex="0"
                     class="m-1 btn"
-                    @click=${() => setIsOpen(!isOpen)}
+                    @click=${() => setOpen(!open)}
                     >${label}</label
                   >
-                  ${isOpen
+                  ${open
     ? html`
                         <ul
                           tabindex="0"
@@ -387,18 +351,17 @@ export default {
     },
     "uix-modal": {
       props: {
-        actions: { type: Function, defaultValue: () => {} },
-        parent: { type: Object, defaultValue: null },
-        title: { type: String, defaultValue: "" },
-        content: { type: String, defaultValue: "" },
-        openButton: { type: Function, defaultValue: null },
-        name: { type: String, defaultValue: "uix-modal" },
-        position: {
-          type: String,
+        actions: T.function(),
+        parent: T.object({ defaultValue: null }),
+        title: T.string({ defaultValue: "" }),
+        content: T.string({ defaultValue: "" }),
+        openButton: T.function({ defaultValue: null }),
+        name: T.string({ defaultValue: "uix-modal" }),
+        position: T.string({
           defaultValue: "middle",
           enum: ["top", "middle", "bottom"]
-        },
-        icon: { type: String, defaultValue: "" }
+        }),
+        icon: T.string({ defaultValue: "" })
       },
       firstUpdated: (host) => {
         host.$modal = host.shadowRoot.querySelector("#modal");
@@ -443,7 +406,7 @@ export default {
 
                   <uix-list>
                     <slot name="footer"></slot>
-                    ${actions({ host }) || ""}
+                    ${actions?.({ host }) || ""}
                   </uix-list>
                 </form>
               </uix-list>
@@ -454,19 +417,15 @@ export default {
     },
     "uix-menu-item": {
       props: {
-        icon: { type: String, defaultValue: "" },
-        label: { type: String, defaultValue: "" },
-        click: { type: Function, default: () => {} },
-        href: { type: String, defaultValue: "" },
-        type: { type: String, defaultValue: "" },
-        variant: { type: String, defaultValue: "" },
-        active: { type: Boolean, defaultValue: false },
-        classes: { type: Object, defaultValue: {} },
-        color: {
-          type: String,
-          defaultValue: "base",
-          enum: Colors
-        }
+        icon: T.string({ defaultValue: "" }),
+        label: T.string({ defaultValue: "" }),
+        click: T.function(),
+        href: T.string({ defaultValue: "" }),
+        type: T.string({ defaultValue: "" }),
+        variant: T.string({ defaultValue: "" }),
+        active: T.boolean(),
+        classes: T.object(),
+        color: T.string({ defaultValue: "base", enum: Colors })
       },
 
       render: (
@@ -506,22 +465,22 @@ export default {
     },
     "uix-menu": {
       props: {
-        items: { type: Array, defaultValue: [] },
-        title: { type: String, defaultValue: null },
-        color: { type: String, defaultValue: "", enum: Colors },
-        vertical: { type: Boolean, defaultValue: false },
-        size: { type: String, defaultValue: "md", enum: Sizes },
-        gap: { type: String, defaultValue: "md", enum: Sizes },
-        click: { type: Function, default: () => {} },
-        isActive: { type: Boolean, defaultValue: false },
-        isCollapsible: { type: Boolean, defaultValue: false },
-        iconOnly: { type: Boolean, defaultValue: false },
-        width: "",
-        height: "",
-        fullHeight: { type: Boolean, defaultValue: false },
-        fullWidth: { type: Boolean, defaultValue: false },
-        rounded: { type: Boolean, defaultValue: false },
-        classes: { type: Object, defaultValue: {} }
+        items: T.array(),
+        title: T.string({ defaultValue: null }),
+        color: T.string({ defaultValue: "", enum: Colors }),
+        vertical: T.boolean(),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        gap: T.string({ defaultValue: "md", enum: Sizes }),
+        click: T.function({ default: () => {} }),
+        isActive: T.boolean(),
+        isCollapsible: T.boolean(),
+        iconOnly: T.boolean(),
+        width: T.string(),
+        height: T.string(),
+        fullHeight: T.boolean(),
+        fullWidth: T.boolean(),
+        rounded: T.boolean(),
+        classes: T.object({ defaultValue: {} })
       },
       render: (props, { html }) => {
         const {
@@ -604,29 +563,14 @@ export default {
     },
     "uix-tabs": {
       props: {
-        items: {
-          type: Array,
-          defaultValue: []
-        },
-        selectedValue: {
-          type: String,
-          defaultValue: ""
-        },
-        type: {
-          type: String,
+        items: T.array(),
+        selectedValue: T.string({ defaultValue: "" }),
+        type: T.string({
           defaultValue: "default",
           enum: ["default", "boxed", "bordered", "lifted"]
-        },
-        size: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        },
-        gap: {
-          type: String,
-          defaultValue: "md",
-          enum: Sizes
-        }
+        }),
+        size: T.string({ defaultValue: "md", enum: Sizes }),
+        gap: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: (
         { items, selectedValue, setSelectedValue, type, size, gap },
@@ -673,14 +617,10 @@ export default {
     "uix-steps": {
       // TODO: expand daisyui tags
       props: {
-        steps: {
-          type: Array,
-          defaultValue: [],
-          enum: Colors
-        }, // Array of objects with properties: label, icon, color.
-        vertical: { type: Boolean, defaultValue: false },
-        responsive: { type: Boolean, defaultValue: false },
-        scrollable: { type: Boolean, defaultValue: false }
+        steps: T.array({ defaultValue: [], enum: Colors }),
+        vertical: T.boolean(),
+        responsive: T.boolean(),
+        scrollable: T.boolean()
       },
       render: ({ steps, responsive, vertical, scrollable }, { html }) => {
         const directionClass = vertical ? "steps-vertical" : "steps-horizontal";

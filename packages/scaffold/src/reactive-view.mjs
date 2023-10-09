@@ -47,14 +47,6 @@ export const T = {
   })
 };
 
-const checkType = (value) => {
-  if (value && value.type) {
-    return value.type;
-  }
-  const type = Array.isArray(value) ? "array" : typeof value;
-  return type === type || String;
-};
-
 /**
  * Defines and registers a custom element based on the provided configuration.
  *
@@ -80,14 +72,7 @@ export function defineView(tag, component, config = {}) {
     ? {}
     : Object.keys(props).reduce((acc, key) => {
       const value = props[key];
-      acc[key] = {
-        type: checkType(value),
-        defaultValue: value
-      };
-      if (value.type) {
-        // If the user supply an object like {type: String, key: "propKey", sync: "url"} we add those values to the prop so it can be used later
-        acc[key] = { ...acc[key], ...value };
-      }
+      acc[key] = value;
       return acc;
     }, {});
 

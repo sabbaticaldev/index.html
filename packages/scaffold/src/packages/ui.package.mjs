@@ -125,10 +125,8 @@ export default {
         name: T.string(),
         classes: T.object()
       },
-      render: (
-        { name, classes: { container: containerClass = "text-2xl" } },
-        { html }
-      ) => {
+      render: ({ name, classes }, { html }) => {
+        const { container: containerClass = "text-2xl" } = classes || {};
         return html`<ion-icon
           name=${name}
           class=${containerClass}
