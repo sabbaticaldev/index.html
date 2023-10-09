@@ -52,8 +52,15 @@ self.addEventListener("fetch", async (event) => {
         const { regex } = api[endpointKey];
         return regex.test(request);
       });
-      if (!matchedEndpointKey) return;
-
+      if (!matchedEndpointKey)
+        return new Response(
+          JSON.stringify({ error: "ERROR: endpoint not found" }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
       try {
         const {
           callback,
@@ -74,10 +81,10 @@ self.addEventListener("fetch", async (event) => {
         const bodyMethods = ["POST", "PATCH"];
         const bodyParams = bodyMethods.includes(event.request.method)
           ? await event.request
-              .json()
-              .catch((err) =>
-                console.error("Failed to parse request body", err),
-              )
+            .json()
+            .catch((err) =>
+              console.error("Failed to parse request body", err),
+            )
           : {};
 
         const allParams = { ...pathParams, ...bodyParams, ...queryParams };
