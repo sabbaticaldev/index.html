@@ -1,5 +1,3 @@
-import { T } from "../reactive-view.mjs";
-
 import {
   AnimationTypes,
   Sizes,
@@ -11,7 +9,7 @@ import {
   RingColor
 } from "../style-props.mjs";
 
-export default {
+export default ({ T, html }) => ({
   views: {
     "uix-avatar": {
       props: {
@@ -33,10 +31,16 @@ export default {
         hasRing: T.boolean(),
         ringColor: T.string({ defaultValue: "primary", enum: Colors })
       },
-      render: (
-        { src, alt, size, shape, status, placeholder, hasRing, ringColor },
-        { html }
-      ) => {
+      render: ({
+        src,
+        alt,
+        size,
+        shape,
+        status,
+        placeholder,
+        hasRing,
+        ringColor
+      }) => {
         const sizeClass = `w-${size}`;
         const ringClass = hasRing
           ? `${RingColor[ringColor]} ring-offset-base-100 ring-offset-2`
@@ -64,7 +68,7 @@ export default {
         avatars: T.array(),
         count: T.number({ defaultValue: 0 })
       },
-      render: ({ avatars, count }, { html }) => {
+      render: ({ avatars, count }) => {
         return html`
           <div class="avatar-group -space-x-6">
             ${avatars.map(
@@ -102,7 +106,7 @@ export default {
         size: T.string({ defaultValue: "md", enum: ["lg", "md", "sm", "xs"] }),
         icon: T.string({ defaultValue: null })
       },
-      render: ({ color, outline, size }, { html }) => {
+      render: ({ color, outline, size }) => {
         const baseClass = "badge";
         const colorClass = BgColor[color] + (outline ? "-outline" : "");
         const sizeClassMapping = {
@@ -125,7 +129,7 @@ export default {
         name: T.string(),
         classes: T.object()
       },
-      render: ({ name, classes }, { html }) => {
+      render: ({ name, classes }) => {
         const { container: containerClass = "text-2xl" } = classes || {};
         return html`<ion-icon
           name=${name}
@@ -139,7 +143,7 @@ export default {
         keyContent: T.string({ defaultValue: "Key" }),
         size: T.string({ defaultValue: "md", enum: Sizes })
       },
-      render: ({ keyContent, size }, { html }) => {
+      render: ({ keyContent, size }) => {
         const sizeClassMap = {
           lg: "text-lg px-3 py-2",
           md: "text-md px-2 py-1", // default
@@ -156,7 +160,7 @@ export default {
         endDate: T.string({ defaultValue: "YYYY-MM-DD HH:MM:SS" }),
         format: T.string({ defaultValue: "DHMS", enum: Formats })
       },
-      render: ({ endDate, format }, { html }) => {
+      render: ({ endDate, format }) => {
         const calculateCountdown = (end) => {
           const now = new Date();
           const endDateTime = new Date(end);
@@ -207,7 +211,7 @@ export default {
         variant: T.string({ defaultValue: "squircle" }),
         src: T.string()
       },
-      render: ({ variant, src }, { html }) => {
+      render: ({ variant, src }) => {
         return html`<img class="mask ${variant}" src=${src} />`;
       }
     },
@@ -219,7 +223,7 @@ export default {
         size: T.string({ defaultValue: "md", enum: Sizes }),
         color: T.string({ defaultValue: "primary", enum: Colors })
       },
-      render: ({ isVisible, message, type, size, color }, { html }) => {
+      render: ({ isVisible, message, type, size, color }) => {
         if (!isVisible) return html``;
         const Loading = {
           spinner: "loading loading-spinner",
@@ -256,7 +260,7 @@ export default {
         width: T.string({ defaultValue: "w-56" }),
         color: T.string({ defaultValue: "base", enum: Colors })
       },
-      render: ({ value, max, width, color }, { html }) => {
+      render: ({ value, max, width, color }) => {
         const progressClass = `progress ${width}`;
         const colorClass = color !== "base" ? `progress-${color}` : "";
         return html`
@@ -281,19 +285,16 @@ export default {
         borderWidth: T.string({ defaultValue: "0px" }),
         textColor: T.string({ defaultValue: "default-content" })
       },
-      render: (
-        {
-          value,
-          size,
-          thickness,
-          color,
-          backgroundColor,
-          borderColor,
-          borderWidth,
-          textColor
-        },
-        { html }
-      ) => {
+      render: ({
+        value,
+        size,
+        thickness,
+        color,
+        backgroundColor,
+        borderColor,
+        borderWidth,
+        textColor
+      }) => {
         const textStyle = `text-${textColor}`;
         const bgColor =
           backgroundColor !== "default" ? BgColor[backgroundColor] : "";
@@ -313,4 +314,4 @@ export default {
       }
     }
   }
-};
+});

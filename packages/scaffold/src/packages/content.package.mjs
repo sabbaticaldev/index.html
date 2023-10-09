@@ -1,4 +1,3 @@
-import { T } from "../reactive-view.mjs";
 import {
   Positions,
   Resolutions,
@@ -10,7 +9,7 @@ import {
   BorderColor
 } from "../style-props.mjs";
 
-export default {
+export default ({ T, html }) => ({
   views: {
     "uix-alert": {
       props: {
@@ -22,10 +21,15 @@ export default {
         border: T.boolean(),
         actions: T.array()
       },
-      render: (
-        { title, message, rounded, color, closable, actions, border },
-        { html }
-      ) => {
+      render: ({
+        title,
+        message,
+        rounded,
+        color,
+        closable,
+        actions,
+        border
+      }) => {
         const colorClass = [
           BgColor[color],
           border ? BorderColor[color] : "",
@@ -68,7 +72,7 @@ export default {
     "uix-alerts-container": {
       // TODO: create a container for alerts that knows how to close alert
       props: {},
-      render: (props, { html }) => {
+      render: () => {
         console.log("NEED TO IMPLEMENT");
         return html`NEED TO IMPLEMENT`;
       }
@@ -87,22 +91,19 @@ export default {
         centeredContent: T.boolean(),
         imageOverlay: T.boolean()
       },
-      render: (
-        {
-          title,
-          subtitle,
-          content,
-          image,
-          footerContent,
-          color,
-          compact,
-          bordered,
-          sideImage,
-          centeredContent,
-          imageOverlay
-        },
-        { html }
-      ) => {
+      render: ({
+        title,
+        subtitle,
+        content,
+        image,
+        footerContent,
+        color,
+        compact,
+        bordered,
+        sideImage,
+        centeredContent,
+        imageOverlay
+      }) => {
         const bgClass = BgColor[color];
         const textColorClass = color === "base-100" ? "" : TextColor[color];
         const compactClass = compact ? "card-compact" : "";
@@ -141,7 +142,7 @@ export default {
         highlight: T.boolean(),
         color: T.string({ enum: Colors })
       },
-      render: ({ prefix, code, highlight, color }, { html }) => {
+      render: ({ prefix, code, highlight, color }) => {
         const colorSchema = color
           ? [BgColor[color], TextColor[color]].join(" ")
           : "";
@@ -165,10 +166,7 @@ export default {
         isOpen: T.boolean(),
         color: T.string({ defaultValue: "primary", enum: Colors })
       },
-      render: (
-        { content, position, trigger, isOpen, setIsOpen, color },
-        { html }
-      ) => {
+      render: ({ content, position, trigger, isOpen, setIsOpen, color }) => {
         const tooltipPositionClass = `tooltip-${position}`;
         const tooltipColorClass = `tooltip-${color}`;
 
@@ -198,10 +196,7 @@ export default {
         horizontalPosition: T.string({ defaultValue: "end", enum: Positions }),
         verticalPosition: T.string({ defaultValue: "bottom", enum: Positions })
       },
-      render: (
-        { content, duration, horizontalPosition, verticalPosition },
-        { html }
-      ) => {
+      render: ({ content, duration, horizontalPosition, verticalPosition }) => {
         const ToastPositionHorizontalClass = {
           start: "toast-start",
           center: "toast-center",
@@ -259,7 +254,7 @@ export default {
         size: T.number({ defaultValue: 1, enum: [1, 2, 3, 4, 5, 6] }),
         horizontal: T.boolean()
       },
-      render: ({ content, size, horizontal, demo }, { html }) => {
+      render: ({ content, size, horizontal, demo }) => {
         const PhoneSize = {
           1: "phone-1",
           2: "phone-2",
@@ -288,10 +283,7 @@ export default {
         valueColor: T.string({ defaultValue: "default", enum: Colors }),
         descColor: T.string({ defaultValue: "default", enum: Colors })
       },
-      render: (
-        { title, value, desc, figure, valueColor, descColor },
-        { html }
-      ) => {
+      render: ({ title, value, desc, figure, valueColor, descColor }) => {
         const valueColorClass = `text-${valueColor}-focus`;
         const descColorClass = `text-${descColor}-focus`;
         return html`
@@ -317,7 +309,7 @@ export default {
         pinCols: T.boolean(),
         size: T.string({ defaultValue: "md", enum: Sizes })
       },
-      render: ({ rows, headers, zebra, pinRows, pinCols, size }, { html }) => {
+      render: ({ rows, headers, zebra, pinRows, pinCols, size }) => {
         const tableClass = `table 
       ${zebra ? "table-zebra" : ""} 
       ${pinRows ? "table-pin-rows" : ""} 
@@ -359,17 +351,14 @@ export default {
         responsivePositions: T.object(),
         badgeColor: T.string({ defaultValue: "secondary", enum: Colors })
       },
-      render: (
-        {
-          content,
-          badge,
-          horizontalPosition,
-          verticalPosition,
-          responsivePositions,
-          badgeColor
-        },
-        { html }
-      ) => {
+      render: ({
+        content,
+        badge,
+        horizontalPosition,
+        verticalPosition,
+        responsivePositions,
+        badgeColor
+      }) => {
         const colorClass = `badge-${badgeColor}`;
         let positionClasses = `indicator-item indicator-${horizontalPosition} indicator-${verticalPosition}`;
 
@@ -389,4 +378,4 @@ export default {
       }
     }
   }
-};
+});

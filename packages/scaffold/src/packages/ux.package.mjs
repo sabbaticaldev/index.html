@@ -1,5 +1,3 @@
-import { T } from "../reactive-view.mjs";
-
 import {
   BgColor,
   TextColor,
@@ -7,7 +5,7 @@ import {
   BgOverlayOpacity
 } from "../style-props.mjs";
 
-export default {
+export default ({ T, html }) => ({
   i18n: {},
   views: {
     "uix-navbar": {
@@ -24,22 +22,19 @@ export default {
         icon: T.string(),
         classes: T.object()
       },
-      render: (
-        {
-          classes,
-          color,
-          label,
-          icon,
-          shadow,
-          height,
-          width,
-          gap,
-          rounded,
-          items,
-          vertical
-        },
-        { html }
-      ) => {
+      render: ({
+        classes,
+        color,
+        label,
+        icon,
+        shadow,
+        height,
+        width,
+        gap,
+        rounded,
+        items,
+        vertical
+      }) => {
         const {
           items: itemsClass = "text-gray-800 hover:text-blue-600",
           logo: logoClass = "font-bold text-2xl",
@@ -100,10 +95,7 @@ export default {
         alignCenter: T.boolean(),
         rounded: T.boolean()
       },
-      render: (
-        { sections, bgColor, textColor, alignCenter, rounded },
-        { html }
-      ) => {
+      render: ({ sections, bgColor, textColor, alignCenter, rounded }) => {
         const bgClass = BgColor[bgColor];
         const textClass = TextColor[textColor];
         const alignClass = alignCenter ? "footer-center" : "";
@@ -146,18 +138,22 @@ export default {
         overlayOpacity: T.number({ defaultValue: 60 }),
         rounded: T.boolean()
       },
-      render: (
-        { title, description, color, imageUrl, rounded, overlayOpacity },
-        { html }
-      ) => {
+      render: ({
+        title,
+        description,
+        color,
+        imageUrl,
+        rounded,
+        overlayOpacity
+      }) => {
         const bgColorClass = BgColor[color];
         const textColorClass = TextColor[color];
         return html`
           <div
             class="hero min-h-[30rem] ,${(rounded && "rounded") ||
             ""} ${imageUrl
-  ? `style="background-image: url(${imageUrl});"`
-  : bgColorClass}"
+    ? `style="background-image: url(${imageUrl});"`
+    : bgColorClass}"
           >
             ${imageUrl
     ? html`<div
@@ -182,7 +178,7 @@ export default {
         vertical: T.boolean(),
         shadow: T.boolean({ defaultValue: true })
       },
-      render: ({ vertical, shadow, children }, { html }) => {
+      render: ({ vertical, shadow, children }) => {
         const directionClass = vertical ? "stats-vertical" : "";
         const shadowClass = shadow ? "shadow" : "";
         return html`
@@ -199,7 +195,7 @@ export default {
         color: T.string({ defaultValue: "primary", enum: Colors }),
         rounded: T.boolean()
       },
-      render: ({ message, sender, alignment, rounded, color }, { html }) => {
+      render: ({ message, sender, alignment, rounded, color }) => {
         const bgColorClass = BgColor[color];
         const AlignmentClasses = {
           start: "chat-start",
@@ -230,7 +226,7 @@ export default {
       props: {
         messages: T.array()
       },
-      render: ({ messages }, { html }) => {
+      render: ({ messages }) => {
         return html`
           <div class="chat-bubble-container">
             ${messages.map(
@@ -246,4 +242,4 @@ export default {
       }
     }
   }
-};
+});

@@ -1,4 +1,4 @@
-import { defineViews } from "./reactive-view.mjs";
+import { definePackage } from "./reactive-view.mjs";
 
 import uiKit from "./packages/ui.package.mjs";
 import uxKit from "./packages/ux.package.mjs";
@@ -18,16 +18,16 @@ const bootstrapp = (
     firstUpdated();
   }
 
-  const views = defineViews(app.views, { style, i18n: app.i18n });
-  defineViews(uxKit.views, { style, i18n: uxKit.i18n });
-  defineViews(typographyKit.views, { style });
-  defineViews(appKit.views, { style, i18n: appKit.i18n });
-  defineViews(uiKit.views, { style, i18n: uiKit.i18n });
-  defineViews(formKit.views, { style, i18n: formKit.i18n });
-  defineViews(navigationKit.views, { style, i18n: navigationKit.i18n });
-  defineViews(layoutKit.views, { style, i18n: navigationKit.i18n });
-  defineViews(contentKit.views, { style, i18n: contentKit.i18n });
-  defineViews(docsKit.views, { style, i18n: docsKit.i18n });
+  const views = definePackage(app, { style });
+  definePackage(appKit, { style });
+  definePackage(navigationKit, { style });
+  definePackage(docsKit, { style });
+  definePackage(uxKit, { style });
+  definePackage(typographyKit, { style });
+  definePackage(uiKit, { style });
+  definePackage(formKit, { style });
+  definePackage(layoutKit, { style });
+  definePackage(contentKit, { style });
   return views[bootstrappTag];
 };
 

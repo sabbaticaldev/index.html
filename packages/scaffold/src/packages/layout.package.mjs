@@ -1,5 +1,3 @@
-import { T } from "../reactive-view.mjs";
-
 import {
   BgColor,
   AlignX,
@@ -10,7 +8,7 @@ import {
   Colors
 } from "../style-props.mjs";
 
-export default {
+export default ({ T, html }) => ({
   views: {
     "uix-block": {
       props: {
@@ -22,7 +20,7 @@ export default {
         shadow: T.boolean(),
         class: T.string()
       },
-      render: (props, { html }) => {
+      render: (props) => {
         const { color, bgColor, textColor, spacing, rounded, shadow } = props;
         const BlockColors = {
           primary: "bg-primary text-primary-content",
@@ -68,7 +66,7 @@ export default {
         vertical: T.boolean(),
         gap: T.string({ defaultValue: "md", enum: Spacings })
       },
-      render: ({ vertical, gap }, { html }) => {
+      render: ({ vertical, gap }) => {
         const gapClass = Gaps[gap] || "";
         const directionClass = vertical ? "flex-col" : "flex-row";
         return html`
@@ -88,7 +86,7 @@ export default {
         class: T.string()
       },
 
-      render: (props, { html }) => {
+      render: (props) => {
         const { thickness, color, vertical, responsive } = props;
         const baseClass = [
           "divider",
@@ -118,7 +116,7 @@ export default {
         alignY: T.string({ enum: Object.keys(AlignY) }),
         class: T.string()
       },
-      render: (props, { html }) => {
+      render: (props) => {
         const { vertical, gap, responsive, rounded, alignX, alignY } = props;
         const directionClass = vertical ? "flex-col" : "flex-row";
         const responsiveClass =
@@ -163,10 +161,14 @@ export default {
         alignX: T.string({ enum: Object.keys(AlignX) }),
         alignY: T.string({ enum: Object.keys(AlignY) })
       },
-      render: (
-        { templateColumns, templateRows, gap, rounded, alignX, alignY },
-        { html }
-      ) => {
+      render: ({
+        templateColumns,
+        templateRows,
+        gap,
+        rounded,
+        alignX,
+        alignY
+      }) => {
         const borderRadiusClass = rounded
           ? "rounded-l-full rounded-r-full"
           : "";
@@ -196,4 +198,4 @@ export default {
       }
     }
   }
-};
+});

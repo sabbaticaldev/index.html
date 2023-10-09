@@ -1,4 +1,3 @@
-import { T } from "../reactive-view.mjs";
 import {
   Colors,
   Sizes,
@@ -7,7 +6,7 @@ import {
   FontWeight
 } from "../style-props.mjs";
 
-export default {
+export default ({ T, html }) => ({
   views: {
     "uix-text": {
       props: {
@@ -16,7 +15,7 @@ export default {
         weight: T.string({ defaultValue: "semibold", enum: Colors }),
         class: T.string()
       },
-      render: (props, { html }) => {
+      render: (props) => {
         const { size, color, weight } = props;
         const baseClass = [
           "prose",
@@ -59,10 +58,7 @@ export default {
         underlineOnHover: T.boolean(),
         icon: T.string({ defaultValue: null })
       },
-      render: (
-        { href, label, external, color, underlineOnHover, icon },
-        { html }
-      ) => {
+      render: ({ href, label, external, color, underlineOnHover, icon }) => {
         const baseClass = [
           "link",
           LinkColors[color],
@@ -84,4 +80,4 @@ export default {
       }
     }
   }
-};
+});

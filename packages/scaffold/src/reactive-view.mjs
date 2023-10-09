@@ -3,7 +3,7 @@ import { until } from "lit/directives/until.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { repeat } from "lit/directives/repeat.js";
 import { customElement } from "lit/decorators.js";
-import I18N from "./helpers/i18n/i18n.mjs";
+import i18n from "./helpers/i18n/i18n.mjs";
 import url from "./helpers/url.mjs";
 import CRUD from "./helpers/rest.mjs";
 import DateTimeHelpers from "./helpers/datetime.mjs";
@@ -46,6 +46,57 @@ export const T = {
     defaultValue: options.defaultValue || undefined
   })
 };
+export const F = {
+  text: (options = {}) => ({
+    formType: "text",
+    type: T.string(options)
+  }),
+
+  number: (options = {}) => ({
+    formType: "number",
+    type: T.number(options)
+  }),
+
+  date: (options = {}) => ({
+    formType: "date",
+    type: T.string(options)
+  }),
+
+  datetime: (options = {}) => ({
+    formType: "datetime",
+    type: T.string(options)
+  }),
+
+  time: (options = {}) => ({
+    formType: "time",
+    type: T.string(options)
+  }),
+
+  checkbox: (options = {}) => ({
+    formType: "checkbox",
+    type: T.boolean(options)
+  }),
+
+  radio: (options = {}) => ({
+    formType: "radio",
+    type: T.boolean(options)
+  }),
+
+  toggle: (options = {}) => ({
+    formType: "toggle",
+    type: T.boolean(options)
+  }),
+
+  richText: (options = {}) => ({
+    formType: "richText",
+    type: T.string(options)
+  }),
+
+  custom: (formType, tTypeOptions) => ({
+    formType,
+    type: T[formType](tTypeOptions)
+  })
+};
 
 /**
  * Defines and registers a custom element based on the provided configuration.
@@ -65,7 +116,7 @@ export function defineView(tag, component, config = {}) {
     ...litPropsAndEvents
   } = component;
 
-  const { style, i18n } = config;
+  const { style } = config;
 
   // Map the new props format to the structure used in the original code
   const properties = !props
@@ -82,16 +133,6 @@ export function defineView(tag, component, config = {}) {
     constructor() {
       super();
       componentInit?.(this);
-      this.context = {
-        html,
-        until,
-        ifDefined,
-        repeat,
-        i18n: I18N(i18n),
-        ...CRUD,
-        ...DateTimeHelpers,
-        ...StringHelpers
-      };
 
       Object.keys(litPropsAndEvents)
         .filter((method) => method[0] === "_")
@@ -182,14 +223,27 @@ export function defineView(tag, component, config = {}) {
   return ReactionView;
 }
 
-export const defineViews = (views, { style, i18n }) => {
+export const definePackage = (packageFn, { style }) => {
+  const context = {
+    T,
+    F,
+    html,
+    until,
+    ifDefined,
+    repeat,
+
+    i18n,
+    ...CRUD,
+    ...DateTimeHelpers,
+    ...StringHelpers
+  };
+  const pkg = packageFn(context);
   return Object.fromEntries(
-    Object.entries(views).map(([tag, component]) => {
+    Object.entries(pkg.views).map(([tag, component]) => {
       return [
         tag,
         defineView(tag, component, {
-          style,
-          i18n
+          style
         })
       ];
     })

@@ -1,10 +1,8 @@
-import { T } from "../reactive-view.mjs";
-
-export default {
+export default ({ T, html }) => ({
   i18n: {},
   views: {
     "uix-app-shell": {
-      render: (host, { html }) => {
+      render: () => {
         return html`
           <div class="app-shell w-full h-full flex flex-col">
             <slot name="top-navbar"></slot>
@@ -25,7 +23,7 @@ export default {
         routes: T.array(),
         currentRoute: T.string()
       },
-      render: ({ routes, currentRoute }, { html }) => {
+      render: ({ routes, currentRoute }) => {
         const routeItem = routes.find((route) => route.path === currentRoute);
         return routeItem
           ? html`${routeItem.component}`
@@ -33,4 +31,4 @@ export default {
       }
     }
   }
-};
+});

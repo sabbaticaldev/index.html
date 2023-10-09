@@ -1,4 +1,3 @@
-import { T } from "../reactive-view.mjs";
 import {
   Positions,
   TabsSize,
@@ -14,7 +13,7 @@ import {
   CollapseIcon
 } from "../style-props.mjs";
 
-export default {
+export default ({ T, html }) => ({
   views: {
     "uix-accordion": {
       props: {
@@ -29,7 +28,7 @@ export default {
           enum: ["", "arrow", "plus"]
         })
       },
-      render: ({ items, color, method, icon }, { html }) => {
+      render: ({ items, color, method, icon }) => {
         return html`
           ${items.map(
     (item) => html`
@@ -59,7 +58,7 @@ export default {
         }),
         separator: T.string({ defaultValue: "/" })
       },
-      render: ({ content, color, outline, size, icon }, { html }) => {
+      render: ({ content, color, outline, size, icon }) => {
         const BadgeSizes = {
           lg: "badge-lg",
           md: "",
@@ -86,7 +85,7 @@ export default {
         activeIndex: T.number({ defaultValue: 0 }),
         size: T.string({ defaultValue: "md", enum: Sizes })
       },
-      render: ({ items, activeIndex, size }, { html }) => {
+      render: ({ items, activeIndex, size }) => {
         const BtmClasses = {
           md: "btm-nav-md",
           sm: "btm-nav-sm",
@@ -130,10 +129,13 @@ export default {
         indicatorButtons: T.boolean(),
         navigationButtons: T.boolean()
       },
-      render: (
-        { items, alignment, vertical, indicatorButtons, navigationButtons },
-        { html }
-      ) => {
+      render: ({
+        items,
+        alignment,
+        vertical,
+        indicatorButtons,
+        navigationButtons
+      }) => {
         const AlignmentClasses = {
           start: "carousel-start",
           center: "carousel-center",
@@ -194,7 +196,7 @@ export default {
         }),
         open: T.boolean()
       },
-      render: ({ method, color, title, content, icon, open }, { html }) => {
+      render: ({ method, color, title, content, icon, open }) => {
         const baseClass = `collapse ${CollapseBgColor[color]}`;
         const iconClass = CollapseIcon[icon];
         const openClass = open ? "collapse-open" : "";
@@ -234,7 +236,7 @@ export default {
         position: T.string({ defaultValue: "left", enum: Positions }),
         setOpen: T.function({ defaultValue: null })
       },
-      render: ({ open, position, setOpen }, { html }) => {
+      render: ({ open, position, setOpen }) => {
         const positionClass = position === "right" ? "drawer-end" : "";
         const toggleDrawer = () => {
           if (setOpen) {
@@ -287,21 +289,18 @@ export default {
         forceOpen: T.boolean(),
         rounded: T.boolean()
       },
-      render: (
-        {
-          label,
-          items,
-          color,
-          rounded,
-          method,
-          position,
-          open,
-          openOnHover,
-          forceOpen,
-          setOpen
-        },
-        { html }
-      ) => {
+      render: ({
+        label,
+        items,
+        color,
+        rounded,
+        method,
+        position,
+        open,
+        openOnHover,
+        forceOpen,
+        setOpen
+      }) => {
         const bgColorClass = BgColor[color];
         const textColorClass = TextColor[color];
         return html`
@@ -309,8 +308,8 @@ export default {
             class="dropdown ${position === "end"
     ? "dropdown-end"
     : ""} ${openOnHover ? "dropdown-hover" : ""} ${forceOpen
-  ? "dropdown-open"
-  : ""}"
+    ? "dropdown-open"
+    : ""}"
           >
             ${method === "details"
     ? html`
@@ -366,7 +365,7 @@ export default {
       firstUpdated: (host) => {
         host.$modal = host.shadowRoot.querySelector("#modal");
       },
-      render: (host, { html }) => {
+      render: (host) => {
         const { parent, actions, title, position, openButton, icon } = host;
         const closeModal = (msg = "") => host.$modal.close(msg);
         if (parent) {
@@ -428,20 +427,17 @@ export default {
         color: T.string({ defaultValue: "base", enum: Colors })
       },
 
-      render: (
-        {
-          active,
-          classes = {},
-          click,
-          color,
-          icon,
-          href,
-          label,
-          type,
-          variant
-        },
-        { html }
-      ) => {
+      render: ({
+        active,
+        classes = {},
+        click,
+        color,
+        icon,
+        href,
+        label,
+        type,
+        variant
+      }) => {
         const { item: itemClass = "" } = classes;
         const activeClass = active ? "active" : "";
         const menuItemClasses = `${itemClass} ${activeClass} items-center gap-2 px-4`;
@@ -482,7 +478,7 @@ export default {
         rounded: T.boolean(),
         classes: T.object({ defaultValue: {} })
       },
-      render: (props, { html }) => {
+      render: (props) => {
         const {
           classes = {},
           items,
@@ -572,10 +568,7 @@ export default {
         size: T.string({ defaultValue: "md", enum: Sizes }),
         gap: T.string({ defaultValue: "md", enum: Sizes })
       },
-      render: (
-        { items, selectedValue, setSelectedValue, type, size, gap },
-        { html }
-      ) => {
+      render: ({ items, selectedValue, setSelectedValue, type, size, gap }) => {
         let selected = selectedValue;
 
         const getTabClass = (item) => {
@@ -622,7 +615,7 @@ export default {
         responsive: T.boolean(),
         scrollable: T.boolean()
       },
-      render: ({ steps, responsive, vertical, scrollable }, { html }) => {
+      render: ({ steps, responsive, vertical, scrollable }) => {
         const directionClass = vertical ? "steps-vertical" : "steps-horizontal";
         const responsiveClass =
           responsive &&
@@ -650,4 +643,4 @@ export default {
       }
     }
   }
-};
+});

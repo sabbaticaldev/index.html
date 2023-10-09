@@ -1,6 +1,4 @@
-import { T } from "../reactive-view.mjs";
-
-export default {
+export default ({ T, html }) => ({
   i18n: {},
   views: {
     "uix-docs-page": {
@@ -10,7 +8,7 @@ export default {
         tableData: T.array(),
         examples: T.array()
       },
-      render: ({ title, description, tableData, examples }, { html }) => {
+      render: ({ title, description, tableData, examples }) => {
         const formattedTitle = (title) =>
           title.toLowerCase().replace(/ /g, "-");
 
@@ -72,4 +70,4 @@ export default {
       }
     }
   }
-};
+});
