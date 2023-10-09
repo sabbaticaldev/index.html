@@ -416,38 +416,36 @@ export default {
         };
 
         return html`
-          ${
-  openButton
+          ${openButton
     ? openButton(openclick)
-    : html`<button @click=${openclick}>open</button>`
-}
+    : html`<button @click=${openclick}>open</button>`}
 
-          <dialog id="modal" class=${modalClass}>            
+          <dialog id="modal" class=${modalClass}>
             <div class="modal-box">
               <uix-list vertical>
                 <uix-list class="modal-title">
-                ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
-                <uix-text size="lg">${title || ""}</uix-text>
+                  ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
+                  <uix-text size="lg">${title || ""}</uix-text>
+                </uix-list>
+                <form method="dialog" id="form">
+                  <slot></slot>
+
+                  <uix-button
+                    .click=${() => closeModal()}
+                    variant="ghost"
+                    shape="circle"
+                    size="sm"
+                    class="absolute right-2 top-2"
+                  >
+                    ✕
+                  </uix-button>
+
+                  <uix-list>
+                    <slot name="footer"></slot>
+                    ${actions({ host }) || ""}
+                  </uix-list>
+                </form>
               </uix-list>
-              <form method="dialog" id="form">
-                <slot></slot>
-
-                <div class="modal-action">
-
-                <uix-button
-                .click=${() => closeModal()}
-                  variant="ghost"
-                  shape="circle"
-                  size="sm"
-                  class="absolute right-2 top-2"
-                >
-                  ✕
-                </button>
-                  <slot name="footer"></slot>
-                  ${actions({ host }) || ""}
-                </div>
-              </form>
-</uix-list>
             </div>
           </dialog>
         `;

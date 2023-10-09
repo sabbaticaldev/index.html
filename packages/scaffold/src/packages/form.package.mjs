@@ -26,6 +26,52 @@ import {
   ToggleVariantClass
 } from "../style-props.mjs";
 
+const FormControls = {
+  reportValidity: function () {
+    const validity = this.$input.reportValidity();
+    if (!validity) {
+      //this.$input.setCustomValidity("Your custom error message here");
+      this.$input.classList.add("input-error");
+    } else {
+      this.$input.classList.remove("input-error");
+    }
+    return validity;
+  },
+  _getValue: function () {
+    return this.$input ? this.$input.value : "";
+  },
+  _setValue: function (value) {
+    this.$input.value = value;
+    let formData = new FormData();
+    const name = this.$input.name;
+    formData.append(name, value);
+
+    setTimeout(() => {
+      this._internals.setFormValue(formData);
+      this._internals.setValidity(
+        this.$input.validity,
+        this.$input.validationMessage,
+        this.$input
+      );
+      this.reportValidity();
+    }, 0);
+  },
+  formAssociated: true,
+  init: (host) => {
+    host._internals = host.attachInternals();
+  },
+  firstUpdated(host) {
+    if (!host.$input) {
+      host.$input = host.shadowRoot.querySelector("input");
+      host._internals.setValidity(
+        host.$input.validity,
+        host.$input.validationMessage,
+        host.$input
+      );
+    }
+  }
+};
+
 const InputField = (props, { html, ifDefined }) =>
   html`
     <uix-input
@@ -124,13 +170,39 @@ export default {
           defaultValue: []
         }
       },
+      getForm: function () {
+        if (!this.$form) this.$form = this.renderRoot.querySelector("form");
+        return this.$form;
+      },
       submit: function () {
         this.renderRoot.querySelector("form").submit();
+      },
+      validate: function () {
+        const formControls = this.getForm().querySelectorAll(
+          "uix-input, uix-select, uix-textarea, uix-file-input"
+        );
+        let isFormValid = true;
+        formControls.forEach((control) => {
+          if (!control.reportValidity()) {
+            isFormValid = false;
+          }
+        });
+
+        return isFormValid;
+      },
+      formData: function () {
+        const form = this.getForm();
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => {
+          data[key] = value;
+        });
+        return data;
       },
       render: (host, { html, ifDefined }) => {
         const { fields, actions } = host;
         return html`
-          <form>
+          <form class="m-0">
             ${fields.map((row) => {
     if (Array.isArray(row)) {
       return html`
@@ -155,10 +227,15 @@ export default {
       });
     }
   })}
-            <div class="modal-action">
-              <uix-menu responsive gap="md" .items=${actions({ form: host })}>
+            <uix-list>
+              <uix-menu
+                responsive
+                gap="md"
+                class="mx-auto mt-10"
+                .items=${actions({ form: host })}
+              >
               </uix-menu>
-            </div>
+            </uix-list>
           </form>
         `;
       }
@@ -263,20 +340,9 @@ export default {
           defaultValue: undefined
         }
       },
-      _getValue: function () {
-        return this.$input ? this.$input.value : "";
-      },
-      _setValue: function (value) {
-        if (!this.$input) this.$input = this.shadowRoot.querySelector("input");
-        this.$input.setAttribute("value", value);
-      },
-      formAssociated: true,
-      init: (host) => {
-        host._internals = host.attachInternals();
-      },
+      ...FormControls,
       render: (host, { html, ifDefined }) => {
         const {
-          change,
           name,
           autofocus,
           value,
@@ -290,6 +356,11 @@ export default {
           color,
           size
         } = host;
+
+        const change = (e) => {
+          host._setValue(e.target.value, host);
+          host.change?.(e);
+        };
 
         const keydown = (e) => {
           host._setValue(e.target.value, host);
@@ -316,7 +387,7 @@ export default {
             ?required=${required}
             name=${ifDefined(name)}
             regex=${ifDefined(regex)}
-            @change=${ifDefined(change)}
+            @change=${change}
             @keydown=${keydown}
             type=${type}
             ${maxLength !== null ? `maxlength=${maxLength}` : ""}
@@ -705,9 +776,9 @@ ${value}</textarea
 
     "uix-swap": {
       props: {
-        isActive: { type: Boolean, defaultValue: false }, // To represent the swap-active state
-        isRotated: { type: Boolean, defaultValue: false }, // To represent the swap-rotate effect
-        isFlipped: { type: Boolean, defaultValue: false }, // To represent the swap-flip effect
+        isActive: { type: Boolean, defaultValue: false },
+        isRotated: { type: Boolean, defaultValue: false },
+        isFlipped: { type: Boolean, defaultValue: false },
         color: {
           type: String,
           defaultValue: "base",
