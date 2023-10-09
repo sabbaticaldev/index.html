@@ -126,17 +126,7 @@ export function defineView(tag, component, config = {}) {
   const { style } = config;
 
   // Map the new props format to the structure used in the original code
-  const properties = !props
-    ? {}
-    : Object.keys(props).reduce((acc, key) => {
-      const value = props[key];
-      if (typeof value.type === "function") {
-        console.log("teste", value);
-        //value.type = value.type();
-      }
-      acc[key] = value;
-      return acc;
-    }, {});
+  const properties = props || {};
 
   class ReactionView extends LitElement {
     static properties = properties;
@@ -226,7 +216,6 @@ export function defineView(tag, component, config = {}) {
     });
 
   ReactionView.styles = style ? [style] : undefined;
-  ReactionView.props = properties;
 
   // Register the custom element
   customElement(tag)(ReactionView);
@@ -242,7 +231,6 @@ export const definePackage = (packageFn, { style }) => {
     until,
     ifDefined,
     repeat,
-
     i18n,
     ...CRUD,
     ...DateTimeHelpers,
