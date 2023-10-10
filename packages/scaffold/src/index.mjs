@@ -10,24 +10,36 @@ import navigationKit from "./packages/navigation.package.mjs";
 import layoutKit from "./packages/layout.package.mjs";
 import contentKit from "./packages/content.package.mjs";
 
-const bootstrapp = (
-  app,
-  { style, firstUpdated, bootstrappTag = "app-index" } = {}
-) => {
-  if (firstUpdated) {
-    firstUpdated();
-  }
+const definePackages = (packages, options) => {
+  return packages.reduce(
+    (acc, pkg) => {
+      const result = definePackage(pkg, options);
+      return {
+        models: { ...acc.models, ...result.models },
+        views: { ...acc.views, ...result.views }
+      };
+    },
+    { models: {}, views: {} }
+  );
+};
 
-  const views = definePackage(app, { style });
-  definePackage(appKit, { style });
-  definePackage(navigationKit, { style });
-  definePackage(docsKit, { style });
-  definePackage(uxKit, { style });
-  definePackage(typographyKit, { style });
-  definePackage(uiKit, { style });
-  definePackage(formKit, { style });
-  definePackage(layoutKit, { style });
-  definePackage(contentKit, { style });
+const bootstrapp = (app, { style, init, bootstrappTag = "app-index" } = {}) => {
+  const kits = [
+    app,
+    appKit,
+    navigationKit,
+    docsKit,
+    uxKit,
+    typographyKit,
+    uiKit,
+    formKit,
+    layoutKit,
+    contentKit
+  ];
+  const { models, views } = definePackages(kits, { style });
+  console.log({ models });
+  init?.({ models });
+
   return views[bootstrappTag];
 };
 

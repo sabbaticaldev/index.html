@@ -6,7 +6,7 @@ let oplog;
 let queue;
 
 class ReactiveRecord {
-  async init({ importData, ...properties }, name, appId) {
+  async init({ _initialData, ...properties }, name, appId) {
     this.name = name;
     this.adapter = indexeddbAdapter;
     this.properties = properties;
@@ -16,8 +16,8 @@ class ReactiveRecord {
     // TODO: create one store and reuse it globally
     oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
     queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
-    if (importData && (await this.adapter.isEmpty(this.store))) {
-      this.addMany(importData);
+    if (_initialData && (await this.adapter.isEmpty(this.store))) {
+      this.addMany(_initialData);
     }
   }
 

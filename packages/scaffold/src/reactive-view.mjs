@@ -15,39 +15,39 @@ const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
 
 export const T = {
   boolean: (options = {}) => ({
-    type: Boolean,
-    defaultValue: options.defaultValue || false,
+    type: "boolean",
+    defaultValue: options.defaultValue ?? false,
     ...options
   }),
 
   string: (options = {}) => ({
-    type: String,
+    type: "string",
     defaultValue: options.defaultValue || "",
     enum: options.enum || [],
     ...options
   }),
 
   array: (options = {}) => ({
-    type: Array,
+    type: "array",
     defaultValue: options.defaultValue || [],
     enum: options.enum || [],
     ...options
   }),
 
   number: (options = {}) => ({
-    type: Number,
+    type: "number",
     defaultValue: options.defaultValue || undefined,
     ...options
   }),
 
   function: (options = {}) => ({
-    type: Function,
+    type: "function",
     defaultValue: options.defaultValue || undefined,
     ...options
   }),
 
   object: (options = {}) => ({
-    type: Object,
+    type: "object",
     defaultValue: options.defaultValue || undefined,
     ...options
   })
@@ -113,6 +113,14 @@ export const F = {
  * @returns {typeof LitElement}
  */
 
+const TYPE_MAP = {
+  boolean: Boolean,
+  number: Number,
+  string: String,
+  object: Object,
+  array: Array
+};
+
 export function defineView(tag, component, config = {}) {
   const {
     render,
@@ -125,16 +133,23 @@ export function defineView(tag, component, config = {}) {
 
   const { style } = config;
 
-  // Map the new props format to the structure used in the original code
   const properties = props || {};
-
   class ReactionView extends LitElement {
-    static properties = properties;
+    static properties = !props
+      ? {}
+      : Object.keys(props).reduce((acc, key) => {
+        const value = props[key];
+        acc[key] = {
+          ...value,
+          type: TYPE_MAP[value.type] || TYPE_MAP["string"]
+        };
+        return acc;
+      }, {});
+
     static formAssociated = formAssociated;
     constructor() {
       super();
       componentInit?.(this);
-
       Object.keys(litPropsAndEvents)
         .filter((method) => method[0] === "_")
         .forEach((method) => {
@@ -237,7 +252,7 @@ export const definePackage = (packageFn, { style }) => {
     ...StringHelpers
   };
   const pkg = packageFn(context);
-  return Object.fromEntries(
+  const views = Object.fromEntries(
     Object.entries(pkg.views).map(([tag, component]) => {
       return [
         tag,
@@ -247,4 +262,6 @@ export const definePackage = (packageFn, { style }) => {
       ];
     })
   );
+
+  return { views, models: pkg.models };
 };
