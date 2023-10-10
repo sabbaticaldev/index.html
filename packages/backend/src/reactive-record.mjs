@@ -4,25 +4,27 @@ import P2P from "./rtc-worker.mjs";
 
 let oplog;
 let queue;
-
+export const models = {};
 class ReactiveRecord {
-  async init({ _initialData, ...properties }, name, appId) {
+  async init(initialData) {
+    this.store = this.adapter.createStore(`${this.appId}_${this.name}`, "kv");
+    // TODO: create one store and reuse it globally
+    oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
+    queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
+    if (initialData && (await this.adapter.isEmpty(this.store))) {
+      this.addMany(initialData);
+    }
+  }
+
+  constructor({ _initialData, ...properties }, name, appId) {
+    console.log({ _initialData, properties, name, appId });
     this.name = name;
+    this.models = models;
     this.adapter = indexeddbAdapter;
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
     this.appId = appId;
-    this.store = this.adapter.createStore(`${this.appId}_${name}`, "kv");
-    // TODO: create one store and reuse it globally
-    oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
-    queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
-    if (_initialData && (await this.adapter.isEmpty(this.store))) {
-      this.addMany(_initialData);
-    }
-  }
-
-  constructor(properties, name, appId) {
-    this.init(properties, name, appId);
+    this.init(_initialData);
   }
 
   async logOp(key, value = null) {
@@ -45,11 +47,11 @@ class ReactiveRecord {
       properties[this.referenceKey] = "";
     }
 
-    return properties.map((prop) => [`${prop}_${id}`, value[prop]]);
+    return properties.map((prop) => [prop, id, value[prop]]);
   }
   async add(value) {
     const entries = this._generateEntries(value);
-    await this._setMany(entries);
+    await this._set(entries);
     return { ...value, id: this.lastId };
   }
 
@@ -59,25 +61,26 @@ class ReactiveRecord {
       const entries = this._generateEntries(value);
       allEntries.push(...entries);
     }
-    await this._setMany(allEntries);
+    await this._set(allEntries);
   }
 
-  async _setMany(entries) {
-    for (const [key, value] of entries) {
+  async _set(entries) {
+    const entriesToAdd = [];
+    for (const [prop, id, value] of entries) {
+      const key = `${prop}_${id}`;
       this.logOp(key, value);
+      if (this.properties[prop]?.relationship === prop) {
+        console.log(this.properties[prop], this.models);
+      }
       P2P.postMessage({
         type: "OPLOG_WRITE",
         store: [this.appId, this.name].join("_"),
         key,
         value,
       });
+      entriesToAdd.push([key, value]);
     }
-
-    return this.adapter.setMany(entries, this.store);
-  }
-
-  async _set(key, value) {
-    await this._setMany([[key, value]]);
+    return this.adapter.setMany(entriesToAdd, this.store);
   }
 
   async edit({ id, ...value }) {
@@ -85,7 +88,7 @@ class ReactiveRecord {
       `${prop}_${id}`,
       value[prop],
     ]);
-    await this._setMany(entries);
+    await this._set(entries);
   }
 
   async editMany(records) {
@@ -99,7 +102,7 @@ class ReactiveRecord {
       ]);
       allEntries.push(...entries);
     }
-    await this._setMany(allEntries);
+    await this._set(allEntries);
   }
 
   async _unsetMany(keys) {
@@ -171,13 +174,12 @@ class ReactiveRecord {
   }
 }
 
-const defineModels = (models, appId) => {
-  return Object.fromEntries(
-    Object.entries(models).map(([name, module]) => [
-      name,
-      new ReactiveRecord(module, name, appId),
-    ]),
-  );
+const defineModels = (files, appId) => {
+  Object.entries(files).map(([name, module]) => {
+    const model = new ReactiveRecord(module, name, appId);
+    models[name] = model;
+  });
+  return models;
 };
 
 export { defineModels };
