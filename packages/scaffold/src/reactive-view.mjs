@@ -50,6 +50,18 @@ export const T = {
     type: "object",
     defaultValue: options.defaultValue || undefined,
     ...options
+  }),
+  one: (relationship, options = {}) => ({
+    type: "one",
+    relationship,
+    defaultValue: options.defaultValue ?? undefined,
+    ...options
+  }),
+  many: (relationship, options = {}) => ({
+    type: "many",
+    relationship,
+    defaultValue: options.defaultValue ?? undefined,
+    ...options
   })
 };
 
