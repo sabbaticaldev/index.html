@@ -17,7 +17,6 @@ class ReactiveRecord {
   }
 
   constructor({ _initialData, ...properties }, name, appId) {
-    console.log({ _initialData, properties, name, appId });
     this.name = name;
     this.models = models;
     this.adapter = indexeddbAdapter;
@@ -69,9 +68,23 @@ class ReactiveRecord {
     for (const [prop, id, value] of entries) {
       const key = `${prop}_${id}`;
       this.logOp(key, value);
-      if (this.properties[prop]?.relationship === prop) {
-        console.log(this.properties[prop], this.models);
+      // check if the prop exists and if it is a relationship
+      if (this.properties[prop]?.type === "one") {
+        const related = this.properties[prop];
+        const relatedId = value;
+        const relatedModel = this.models[prop];
+        const relatedObj = await relatedModel.get(relatedId);
+        console.log({ relatedObj });
       }
+
+      if (this.properties[prop]?.type === "many") {
+        const related = this.properties[prop];
+        const relatedId = value;
+        const relatedModel = this.models[prop];
+        const relatedObj = await relatedModel.get(relatedId);
+        console.log({ relatedObj });
+      }
+
       P2P.postMessage({
         type: "OPLOG_WRITE",
         store: [this.appId, this.name].join("_"),

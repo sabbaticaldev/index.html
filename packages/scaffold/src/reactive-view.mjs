@@ -1,6 +1,7 @@
 import { LitElement, html } from "lit";
 import { until } from "lit/directives/until.js";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { keyed } from "lit/directives/keyed.js";
 import { repeat } from "lit/directives/repeat.js";
 import { customElement } from "lit/decorators.js";
 import i18n from "./helpers/i18n/i18n.mjs";
@@ -51,16 +52,16 @@ export const T = {
     defaultValue: options.defaultValue || undefined,
     ...options
   }),
-  one: (relationship, options = {}) => ({
+  one: (relationship, targetForeignKey, options = {}) => ({
     type: "one",
     relationship,
-    defaultValue: options.defaultValue ?? undefined,
+    targetForeignKey: targetForeignKey,
     ...options
   }),
-  many: (relationship, options = {}) => ({
+  many: (relationship, targetForeignKey, options = {}) => ({
     type: "many",
     relationship,
-    defaultValue: options.defaultValue ?? undefined,
+    targetForeignKey: targetForeignKey,
     ...options
   })
 };
@@ -258,6 +259,7 @@ export const definePackage = (packageFn, { style }) => {
     until,
     ifDefined,
     repeat,
+    keyed,
     i18n,
     ...CRUD,
     ...DateTimeHelpers,

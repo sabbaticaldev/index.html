@@ -351,10 +351,10 @@ export default ({ T, html }) => ({
     "uix-modal": {
       props: {
         actions: T.function(),
-        parent: T.object({ defaultValue: null }),
-        title: T.string({ defaultValue: "" }),
-        content: T.string({ defaultValue: "" }),
-        openButton: T.function({ defaultValue: null }),
+        parent: T.object(),
+        title: T.string(),
+        content: T.string(),
+        openButton: T.function(),
         name: T.string({ defaultValue: "uix-modal" }),
         position: T.string({
           defaultValue: "middle",
