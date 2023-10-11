@@ -57,11 +57,9 @@ const FormControls = {
     }, 0);
   },
   formAssociated: true,
-  init: (host) => {
+  firstUpdated(host) {
     host._defaultValue = host.value;
     host._internals = host.attachInternals();
-  },
-  firstUpdated(host) {
     if (!host.$input) {
       host.$input = host.shadowRoot.querySelector("input");
       host._internals.setValidity(
@@ -72,7 +70,7 @@ const FormControls = {
     }
   },
   formResetCallback() {
-    this.$input.value = this._defaultValue;
+    this.$input.value = this._defaultValue || "";
   },
   formDisabledCallback(disabled) {
     this.$input.disabled = disabled;
@@ -138,12 +136,36 @@ export default ({ T, html, ifDefined }) => {
     select: SelectField
   };
 
-  const renderField = (field, { submit }) => {
+  const renderFieldConnected = (host) => (row) => {
+    if (Array.isArray(row)) {
+      return html`
+        <uix-list responsive>
+          ${row.map(
+    (field) =>
+      html`<uix-block>
+                ${renderField(field, {
+    html,
+    host,
+    ifDefined
+  })}
+              </uix-block>`
+  )}
+        </uix-list>
+      `;
+    } else {
+      return renderField(row, {
+        html,
+        host,
+        ifDefined
+      });
+    }
+  };
+  const renderField = (field, { host }) => {
     const { type, ...props } = field;
     const FieldRenderer = fieldRenderers[type] || fieldRenderers.input;
     const keydown = (e) => {
       if (e.key === "Enter") {
-        submit();
+        host.submit();
       }
       return props.keydown?.(e);
     };
@@ -170,7 +192,9 @@ export default ({ T, html, ifDefined }) => {
       "uix-form": {
         props: {
           fields: T.array(),
-          actions: T.array()
+          actions: T.array(),
+          method: T.string({ defaultValue: "post" }),
+          endpoint: T.string()
         },
         getForm: function () {
           if (!this.$form) this.$form = this.renderRoot.querySelector("form");
@@ -189,6 +213,19 @@ export default ({ T, html, ifDefined }) => {
 
           return isFormValid;
         },
+        submit: function () {
+          if (this.validate()) {
+            this.getForm().submit();
+          }
+        },
+        clear: function () {
+          const formControls = this.getForm().querySelectorAll(
+            "uix-input, uix-select, uix-textarea, uix-file-input"
+          );
+          formControls.forEach((control) => {
+            control.formResetCallback?.();
+          });
+        },
         formData: function () {
           const form = this.getForm();
           const formData = new FormData(form);
@@ -199,41 +236,25 @@ export default ({ T, html, ifDefined }) => {
           return data;
         },
         render: (host) => {
-          const { fields, actions } = host;
+          const { fields, actions, method, endpoint } = host;
+          const actionList = actions?.({ form: host });
           return html`
-            <form class="m-0">
-              ${fields.map((row) => {
-    if (Array.isArray(row)) {
-      return html`
-                    <uix-list responsive>
-                      ${row.map(
-    (field) =>
-      html`<uix-block>
-                            ${renderField(field, {
-    html,
-    submit: host.submit,
-    ifDefined
-  })}
-                          </uix-block>`
-  )}
-                    </uix-list>
-                  `;
-    } else {
-      return renderField(row, {
-        html,
-        submit: host.submit,
-        ifDefined
-      });
-    }
-  })}
+            <form class="m-0" method=${method} action=${endpoint}>
+              ${fields.map(renderFieldConnected(host))}
               <uix-list>
-                <uix-menu
-                  responsive
-                  gap="md"
-                  class="mx-auto mt-10"
-                  .items=${actions({ form: host })}
-                >
-                </uix-menu>
+                ${actionList
+    ? html`<uix-list responsive gap="md" class="mx-auto mt-10">
+                      ${actionList.map(
+    (action) => html`<uix-input
+                          type=${action.type}
+                          @click=${action.click}
+                          class=${action.class}
+                          value=${action.value}
+                        >
+                        </uix-input>`
+  )}
+                    </uix-list>`
+    : ""}
               </uix-list>
             </form>
           `;
@@ -244,6 +265,8 @@ export default ({ T, html, ifDefined }) => {
           fields: T.array(),
           actions: T.array(),
           title: T.string(),
+          method: T.string({ defaultValue: "post" }),
+          endpoint: T.string(),
           color: T.string({ defaultValue: "default", enum: Colors }),
           size: T.string({ defaultValue: "md", enum: Sizes }),
           name: T.string({ defaultValue: "uix-form-modal" }),
@@ -270,6 +293,8 @@ export default ({ T, html, ifDefined }) => {
             >
               <uix-form
                 .fields=${host.fields}
+                method=${host.method}
+                endpoint=${host.endpoint}
                 .actions=${({ form }) => host.actions?.({ modal: host, form })}
               ></uix-form>
             </uix-modal>
@@ -366,12 +391,13 @@ export default ({ T, html, ifDefined }) => {
             host._setValue(e.target.value, host);
             host.keydown?.(e);
           };
-
+          const buttonTypes = ["submit", "reset", "button"];
           const inputClass = [
             "input",
             InputStyleClass[variant],
             InputVariantClass[color],
             InputSizeClass[size],
+            buttonTypes.includes(type) && `btn ${ButtonColors[color]}`,
             host.class
           ]
             .filter(Boolean)
@@ -795,6 +821,7 @@ ${value}</textarea
           color: T.string({ defaultValue: "base", enum: Colors }),
           size: T.string({ defaultValue: "md", enum: Sizes }),
           href: T.string(),
+          class: T.string(),
           label: T.string(),
           type: T.string({ defaultValue: "button" }),
           fullWidth: T.boolean(),
@@ -833,7 +860,8 @@ ${value}</textarea
             fullWidth ? "btn-block" : "",
             ButtonShapes[shape] || "",
             ButtonVariants[variant] || "",
-            noAnimation ? "no-animation" : ""
+            noAnimation ? "no-animation" : "",
+            host.class
           ]
             .filter(Boolean)
             .join(" ");

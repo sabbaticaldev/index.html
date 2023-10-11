@@ -52,7 +52,6 @@ self.addEventListener("fetch", async (event) => {
     (async () => {
       const { api } = await getApiModel();
       const request = `${event.request.method} ${url.pathname}`;
-      console.log({ request });
       const matchedEndpointKey = Object.keys(api).find((endpointKey) => {
         const { regex } = api[endpointKey];
         return regex.test(request);
