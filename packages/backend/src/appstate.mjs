@@ -6,6 +6,25 @@ const APP_STATE_DB = "app-state-db";
 
 const store = indexeddb.createStore(APP_STATE_DB);
 
+const convertFunctionsToString = (obj) => {
+  let newObj = {};
+
+  for (let key in obj) {
+    if (typeof obj[key] === "function") {
+      console.log(obj[key]);
+      // If the current property is a function, convert it to a string
+      newObj[key] = obj[key].toString();
+    } else if (typeof obj[key] === "object") {
+      // If the current property is an object (including arrays), recursively process it
+      newObj[key] = convertFunctionsToString(obj[key]);
+    } else {
+      // For other data types, just copy the value
+      newObj[key] = obj[key];
+    }
+  }
+
+  return newObj;
+};
 const indexedDBWrapper = {
   get: async (appId, prop = null) => {
     const appData = (await indexeddb.getItem(appId, store)) || {};
@@ -48,6 +67,18 @@ export const getModels = async (appId) => {
 
 export const setModels = async (appId, models) => {
   await indexedDBWrapper.set(appId, { models });
+  return models;
+};
+
+export const getControllers = async (appId) => {
+  return (await indexedDBWrapper.get(appId, "controllers")) || {};
+};
+
+export const setControllers = async (appId, controllers) => {
+  const stringifiedControllers = convertFunctionsToString(controllers);
+  await indexedDBWrapper.set(appId, {
+    controllers: stringifiedControllers || {},
+  });
   return models;
 };
 
@@ -96,6 +127,7 @@ export async function getApiModel() {
 
   const appId = await getAppId();
   const modelList = await getModels(appId);
+  const controllerList = await getControllers(appId);
   models = defineModels(modelList, appId);
   api = Object.entries(modelList).reduce((acc, [name, model]) => {
     const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);

@@ -291,6 +291,5 @@ export const definePackage = (packageFn, { style }) => {
       ];
     })
   );
-
-  return { views, models: pkg.models };
+  return { views, models: pkg.models, controllers: pkg.controllers };
 };

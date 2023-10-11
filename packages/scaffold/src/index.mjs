@@ -16,10 +16,11 @@ const definePackages = (packages, options) => {
       const result = definePackage(pkg, options);
       return {
         models: { ...acc.models, ...result.models },
-        views: { ...acc.views, ...result.views }
+        views: { ...acc.views, ...result.views },
+        controllers: { ...acc.controllers, ...result.controllers }
       };
     },
-    { models: {}, views: {} }
+    { models: {}, views: {}, controllers: {} }
   );
 };
 
@@ -36,9 +37,8 @@ const bootstrapp = (app, { style, init, bootstrappTag = "app-index" } = {}) => {
     layoutKit,
     contentKit
   ];
-  const { models, views } = definePackages(kits, { style });
-  console.log({ models });
-  init?.({ models });
+  const { models, views, controllers } = definePackages(kits, { style });
+  init?.({ models, controllers });
 
   return views[bootstrappTag];
 };
