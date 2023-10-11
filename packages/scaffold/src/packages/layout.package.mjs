@@ -8,7 +8,7 @@ import {
   Colors
 } from "../style-props.mjs";
 
-export default ({ T, html }) => ({
+export default ({ T, html, dropzone }) => ({
   views: {
     "uix-block": {
       props: {
@@ -17,6 +17,7 @@ export default ({ T, html }) => ({
         textColor: T.string(),
         spacing: T.number({ defaultValue: "md" }),
         rounded: T.boolean(),
+        draggable: T.boolean(),
         shadow: T.boolean(),
         class: T.string()
       },
@@ -44,16 +45,15 @@ export default ({ T, html }) => ({
           "3xl": "p-16",
           "4xl": "p-24"
         };
-
         const bgClass = bgColor ? `bg-${bgColor}` : "";
         const textClass = textColor ? `text-${textColor}` : "";
         const spacingClass = SpacingSizes[spacing || "md"];
         const colorClass = BlockColors[color];
         const roundedClass = rounded ? "rounded" : "";
         const shadowClass = shadow ? "shadow-md" : "";
-
         return html`
           <div
+            draggable="true"
             class="${spacingClass} ${colorClass} ${bgClass} ${textClass} ${roundedClass} ${shadowClass} ${props.class}"
           >
             <slot></slot>
@@ -110,12 +110,14 @@ export default ({ T, html }) => ({
       props: {
         vertical: T.boolean(),
         responsive: T.boolean(),
+        dropzone: T.boolean(),
         gap: T.string({ defaultValue: "sm", enum: Sizes }),
         rounded: T.boolean(),
         alignX: T.string({ enum: Object.keys(AlignX) }),
         alignY: T.string({ enum: Object.keys(AlignY) }),
         class: T.string()
       },
+      ...dropzone,
       render: (props) => {
         const { vertical, gap, responsive, rounded, alignX, alignY } = props;
         const directionClass = vertical ? "flex-col" : "flex-row";
@@ -134,6 +136,7 @@ export default ({ T, html }) => ({
 
         return html`
           <div
+            id="uix-list"
             class=${[
     "flex",
     gapClass,

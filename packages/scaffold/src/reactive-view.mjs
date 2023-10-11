@@ -9,7 +9,7 @@ import url from "./helpers/url.mjs";
 import CRUD from "./helpers/rest.mjs";
 import DateTimeHelpers from "./helpers/datetime.mjs";
 import StringHelpers from "./helpers/string.mjs";
-
+import DropzoneHelpers from "./helpers/dropzone.mjs";
 const isServer = typeof localStorage === "undefined";
 
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
@@ -141,6 +141,8 @@ export function defineView(tag, component, config = {}) {
     init: componentInit,
     formAssociated,
     props,
+    domReady,
+    domDisconnect,
     ...litPropsAndEvents
   } = component;
 
@@ -213,7 +215,19 @@ export function defineView(tag, component, config = {}) {
       }
     }
 
+    connectedCallback() {
+      if (domReady) {
+        domReady(this);
+      }
+      if (this instanceof LitElement) {
+        super.connectedCallback();
+      }
+    }
+
     disconnectedCallback() {
+      if (domDisconnect) {
+        domDisconnect(this);
+      }
       if (this instanceof LitElement) {
         super.disconnectedCallback();
       }
@@ -263,7 +277,8 @@ export const definePackage = (packageFn, { style }) => {
     i18n,
     ...CRUD,
     ...DateTimeHelpers,
-    ...StringHelpers
+    ...StringHelpers,
+    ...DropzoneHelpers
   };
   const pkg = packageFn(context);
   const views = Object.fromEntries(

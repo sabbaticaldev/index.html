@@ -79,6 +79,7 @@ export default ({ T, html }) => ({
     },
     "uix-card": {
       props: {
+        id: T.string(),
         title: T.string(),
         subtitle: T.string(),
         content: T.string(),
@@ -91,19 +92,20 @@ export default ({ T, html }) => ({
         centeredContent: T.boolean(),
         imageOverlay: T.boolean()
       },
-      render: ({
-        title,
-        subtitle,
-        content,
-        image,
-        footerContent,
-        color,
-        compact,
-        bordered,
-        sideImage,
-        centeredContent,
-        imageOverlay
-      }) => {
+      render: (host) => {
+        const {
+          title,
+          subtitle,
+          content,
+          image,
+          footerContent,
+          color,
+          compact,
+          bordered,
+          sideImage,
+          centeredContent,
+          imageOverlay
+        } = host;
         const bgClass = BgColor[color];
         const textColorClass = color === "base-100" ? "" : TextColor[color];
         const compactClass = compact ? "card-compact" : "";
