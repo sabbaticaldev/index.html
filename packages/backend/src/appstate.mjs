@@ -59,8 +59,8 @@ export const getTimestamp = async (id) => {
 
 function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
   return {
-    [`GET /api/${modelName}`]: function () {
-      return this.getMany();
+    [`GET /api/${modelName}`]: function (opts) {
+      return this.getMany(null, opts);
     },
     [`GET /api/${modelName}/:id`]: function ({ id }) {
       return this.get(id);
@@ -77,8 +77,6 @@ function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
     ...endpoints,
   };
 }
-
-// Convert the endpoint string to a regular expression.
 const endpointToRegex = (endpoint) => {
   const [method, path] = endpoint.split(" ");
   const regexPath = path
@@ -143,8 +141,13 @@ const messageHandlers = {
     requestUpdate();
   },
 
+  REQUEST_UPDATE: async (data, { requestUpdate }) => {
+    const { store } = data || {};
+    requestUpdate(store);
+  },
+
   OPLOG_WRITE: async (data, { requestUpdate, P2P }) => {
-    const { store, modelName, key, value } = data;
+    const { bridge, store, modelName, key, value } = data;
     const { models } = await getApiModel();
     const model = models[modelName];
     if (model) {
@@ -155,7 +158,8 @@ const messageHandlers = {
       }
 
       // TODO: When sending the message to another user, we need to append the user id who sent it
-      P2P.postMessage({ type: "OPLOG_WRITE", store, modelName, key, value });
+      if (!bridge)
+        P2P.postMessage({ type: "OPLOG_WRITE", store, modelName, key, value });
 
       if (data.requestUpdate) requestUpdate();
     }

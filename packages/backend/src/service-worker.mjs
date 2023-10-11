@@ -19,13 +19,18 @@ const P2P = {
 
 self.addEventListener("message", messageHandler({ P2P, requestUpdate }));
 
+const BOOL_TABLE = { false: false, true: true };
+
 const extractPathParams = (endpoint, requestPath, regex) => {
   const paramNames = [...endpoint.matchAll(/:([a-z]+)/gi)].map(
     (match) => match[1],
   );
   const paramValues = requestPath.match(regex).slice(1);
   return paramNames.reduce(
-    (acc, name, index) => ({ ...acc, [name]: paramValues[index] }),
+    (acc, name, index) => ({
+      ...acc,
+      [name]: paramValues[index],
+    }),
     {},
   );
 };
@@ -47,7 +52,7 @@ self.addEventListener("fetch", async (event) => {
     (async () => {
       const { api } = await getApiModel();
       const request = `${event.request.method} ${url.pathname}`;
-
+      console.log({ request });
       const matchedEndpointKey = Object.keys(api).find((endpointKey) => {
         const { regex } = api[endpointKey];
         return regex.test(request);
@@ -74,7 +79,12 @@ self.addEventListener("fetch", async (event) => {
           endpointRegex,
         );
         const queryParams = [...url.searchParams.entries()].reduce(
-          (acc, [key, value]) => ({ ...acc, [key]: value }),
+          (acc, [key, value]) => ({
+            ...acc,
+            [key]: ["false", "true"].includes(value)
+              ? BOOL_TABLE[value]
+              : value,
+          }),
           {},
         );
 
@@ -86,9 +96,11 @@ self.addEventListener("fetch", async (event) => {
               console.error("Failed to parse request body", err),
             )
           : {};
-
         const allParams = { ...pathParams, ...bodyParams, ...queryParams };
-        const response = await callback.call(model, allParams);
+        const response = await callback.call(model, allParams, {
+          P2P,
+          requestUpdate,
+        });
 
         if (["POST", "PATCH", "DELETE"].includes(event.request.method)) {
           requestUpdate();

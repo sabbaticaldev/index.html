@@ -18,9 +18,15 @@ export async function handleResponse(response) {
   return JSON.parse(text);
 }
 
-export async function getMany(endpoint) {
+export async function getMany(endpoint, params) {
   if (!endpoint) return;
-  const response = await fetch(formatEndpoint(endpoint));
+  let url = endpoint;
+  if (params) {
+    const queryString = new URLSearchParams(params).toString();
+    url += `?${queryString}`;
+  }
+
+  const response = await fetch(formatEndpoint(url));
   return handleResponse(response);
 }
 
@@ -30,14 +36,14 @@ export async function get(endpoint) {
   return handleResponse(response);
 }
 
-export async function post(endpoint, record) {
+export async function post(endpoint, params) {
   if (!endpoint) return;
   const response = await fetch(formatEndpoint(endpoint), {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(record)
+    body: JSON.stringify(params)
   });
   return handleResponse(response);
 }

@@ -6,16 +6,6 @@ let oplog;
 let queue;
 export const models = {};
 class ReactiveRecord {
-  async init(initialData) {
-    this.store = this.adapter.createStore(`${this.appId}_${this.name}`, "kv");
-    // TODO: create one store and reuse it globally
-    oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
-    queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
-    if (initialData && (await this.adapter.isEmpty(this.store))) {
-      this.addMany(initialData);
-    }
-  }
-
   constructor({ _initialData, ...properties }, name, appId) {
     this.name = name;
     this.models = models;
@@ -23,7 +13,22 @@ class ReactiveRecord {
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
     this.appId = appId;
-    this.init(_initialData);
+    this.store = this.adapter.createStore(`${this.appId}_${this.name}`, "kv");
+    // TODO: create one store and reuse it globally
+    oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
+    queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
+
+    if (_initialData) {
+      this.adapter.isEmpty(this.store).then((empty) => {
+        if (empty) {
+          this.addMany(_initialData);
+          P2P.postMessage({
+            type: "REQUEST_UPDATE",
+            store: [this.appId, this.name].join("_"),
+          });
+        }
+      });
+    }
   }
 
   async logOp(key, value = null) {
@@ -63,37 +68,8 @@ class ReactiveRecord {
     await this._set(allEntries);
   }
 
-  async _set(entries) {
-    const entriesToAdd = [];
-    for (const [prop, id, value] of entries) {
-      const key = `${prop}_${id}`;
-      this.logOp(key, value);
-      // check if the prop exists and if it is a relationship
-      if (this.properties[prop]?.type === "one") {
-        const related = this.properties[prop];
-        const relatedId = value;
-        const relatedModel = this.models[prop];
-        const relatedObj = await relatedModel.get(relatedId);
-        console.log({ relatedObj });
-      }
-
-      if (this.properties[prop]?.type === "many") {
-        const related = this.properties[prop];
-        const relatedId = value;
-        const relatedModel = this.models[prop];
-        const relatedObj = await relatedModel.get(relatedId);
-        console.log({ relatedObj });
-      }
-
-      P2P.postMessage({
-        type: "OPLOG_WRITE",
-        store: [this.appId, this.name].join("_"),
-        key,
-        value,
-      });
-      entriesToAdd.push([key, value]);
-    }
-    return this.adapter.setMany(entriesToAdd, this.store);
+  async _setProperty(key, value) {
+    return this.adapter.setItem(key, value, this.store);
   }
 
   async edit({ id, ...value }) {
@@ -152,25 +128,97 @@ class ReactiveRecord {
     return allOperations; // Filtering removed, as the flattened approach doesn't have timestamps. Can be re-added if needed.
   }
 
-  async get(id, selectedProps) {
-    const propNames = selectedProps || Object.keys(this.properties);
+  async _set(entries) {
+    const entriesToAdd = [];
+    for (const [propKey, id, value] of entries) {
+      const key = `${propKey}_${id}`;
+      this.logOp(key, value);
+      const prop = this.properties[propKey];
+      // check if the prop exists and if it is a relationship
+      if (prop?.relationship) {
+        const relatedModel = this.models[propKey];
+        const { targetForeignKey } = prop;
+        const relatedId = value;
+        const target = await relatedModel.get(relatedId, [targetForeignKey]);
+        const targetKey = `${targetForeignKey}_${relatedId}`;
+        const index = target[targetForeignKey];
+        if (!index) await relatedModel._setProperty(targetKey, id);
+        else if (!new RegExp(`\\b${id}\\b`).test(index)) {
+          console.log("I have being here");
+          await relatedModel._setProperty(targetKey, index + "|" + id);
+        }
+      }
+
+      P2P.postMessage({
+        type: "OPLOG_WRITE",
+        store: [this.appId, this.name].join("_"),
+        key,
+        value,
+      });
+      entriesToAdd.push([key, value]);
+    }
+    return this.adapter.setMany(entriesToAdd, this.store);
+  }
+
+  async get(id, opts = {}) {
+    const { props, nested = false } = opts;
+    const propNames = props || Object.keys(this.properties);
+    if (Array.isArray(props) && props.length === 1) {
+      const key = `${props[0]}_${id}`;
+      const value = await this.adapter.getItem(key, this.store);
+      return { [props[0]]: value };
+    }
     const keys = propNames.map((prop) => `${prop}_${id}`);
     const values = await this.adapter.getMany(keys, this.store);
     const obj = { id };
-    propNames.forEach((prop, idx) => {
-      obj[prop] = values[idx] || this.properties[prop]?.defaultValue;
+
+    // Use map to create an array of promises
+    const promises = propNames.map(async (propKey, idx) => {
+      const prop = this.properties[propKey];
+      if (!prop) return;
+
+      let value = values[idx];
+      if (nested && prop.relationship) {
+        const relatedModel = this.models[prop.relationship];
+        if (!relatedModel) return;
+
+        if (prop.type === "one") {
+          const relatedId = values[idx];
+          if (relatedId) {
+            const target = await relatedModel.get(relatedId);
+            value = target;
+          }
+        }
+
+        if (prop.type === "many") {
+          const ids = (values[idx] || "").split("|").filter(Boolean);
+          if (ids.length > 0) {
+            value = await Promise.all(
+              ids.map(async (id) => await relatedModel.get(id)),
+            );
+          }
+        }
+      }
+
+      obj[propKey] = value || prop.defaultValue;
     });
+
+    // Wait for all promises to resolve
+    await Promise.all(promises);
     return obj;
   }
 
-  async getMany(key, props, indexOnly = true) {
+  async getMany(key, opts = {}) {
+    const { props, indexOnly = true, nested = false } = opts;
     const items = await this.adapter.startsWith(
       key || this.referenceKey,
       this.store,
       { index: indexOnly },
     );
     return indexOnly
-      ? Promise.all(items.map(async (key) => await this.get(key, props)))
+      ? Promise.all(
+        items.map(async (key) => await this.get(key, { props, nested })),
+      )
       : Promise.resolve(items);
   }
 

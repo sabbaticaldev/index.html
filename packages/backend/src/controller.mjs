@@ -52,6 +52,15 @@ const syncData = async ({ data, appId }) => {
   });
 };
 
+const requestUpdate = async ({ store }) => {
+  console.log("DEBUG: Request Update from Reactive Record:", { store });
+  postMessage({
+    type: "REQUEST_UPDATE",
+    bridge: true,
+    requestUpdate: true,
+  });
+};
+
 const handleOplogWrite = async ({ store, key, value }) => {
   console.log("DEBUG: Oplog write received:", { store, key, value });
   postMessage({
@@ -65,6 +74,7 @@ const handleOplogWrite = async ({ store, key, value }) => {
 };
 
 registerEvent("OPLOG_WRITE", handleOplogWrite);
+registerEvent("REQUEST_UPDATE", requestUpdate);
 registerEvent("SYNC_REQUEST", syncRequest);
 registerEvent("SYNC_DATA", syncData);
 
@@ -165,15 +175,15 @@ export const connect = (opts = {}) => {
   ws.onmessage = (event) => {
     const msg = JSON.parse(event.data);
     switch (msg.type) {
-      case "offer":
-        handleOffer(msg.offer, msg.fromUsername);
-        break;
-      case "answer":
-        handleAnswer(msg.answer);
-        break;
-      case "ice-candidate":
-        handleIceCandidate(msg.candidate);
-        break;
+    case "offer":
+      handleOffer(msg.offer, msg.fromUsername);
+      break;
+    case "answer":
+      handleAnswer(msg.answer);
+      break;
+    case "ice-candidate":
+      handleIceCandidate(msg.candidate);
+      break;
     }
   };
 
