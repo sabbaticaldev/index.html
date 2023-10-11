@@ -115,7 +115,8 @@ export default ({ T, html, dropzone }) => ({
         rounded: T.boolean(),
         alignX: T.string({ enum: Object.keys(AlignX) }),
         alignY: T.string({ enum: Object.keys(AlignY) }),
-        class: T.string()
+        class: T.string(),
+        id: T.string()
       },
       ...dropzone,
       render: (props) => {
