@@ -56,6 +56,32 @@ async function updateSingleRelationship(
       await relatedModel._setProperty(`${targetForeignKey}_${value}`, id);
     }
   }
+  if (value) {
+    let target;
+    let relatedId;
+    if (Array.isArray(value) && value.length === 2) {
+      // The value format is [position, id]
+      const [position = 0, newId] = value;
+      relatedId = newId;
+      target = await relatedModel.get(relatedId, [targetForeignKey]);
+      const index = target[targetForeignKey];
+      target[targetForeignKey] = updateIndexPosition(index, id, position);
+    } else {
+      // The value is just the id, handle as usual
+      relatedId = value;
+      target = await relatedModel.get(relatedId, [targetForeignKey]);
+      const index = target[targetForeignKey];
+      if (!index) {
+        await relatedModel._setProperty(`${targetForeignKey}_${relatedId}`, id);
+      } else if (!new RegExp(`\\b${id}\\b`).test(index)) {
+        target[targetForeignKey] = index + "|" + id;
+      }
+    }
+    await relatedModel._setProperty(
+      `${targetForeignKey}_${relatedId}`,
+      target[targetForeignKey],
+    );
+  }
 }
 
 // Update for a 'many' relationship type
