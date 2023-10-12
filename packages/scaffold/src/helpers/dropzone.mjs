@@ -1,10 +1,11 @@
 let currentDropzone;
 let currentDraggedItem;
 let currentPosition;
-
+let placeholderElement;
 const createPlaceholderElement = () => {
-  const elem = document.createElement("div");
-  elem.classList.add(
+  if (placeholderElement) return placeholderElement;
+  placeholderElement = document.createElement("div");
+  placeholderElement.classList.add(
     "drag-placeholder",
     "w-full",
     "h-16",
@@ -12,7 +13,7 @@ const createPlaceholderElement = () => {
     "border",
     "transition-all"
   );
-  return elem;
+  return placeholderElement;
 };
 
 const removeExistingPlaceholder = (parent) => {
@@ -24,9 +25,11 @@ export default {
   draggable: {
     dragstart: function (event) {
       currentDraggedItem = this.id;
+      this.style.opacity = "0.1";
     },
 
     dragend: function () {
+      this.style.opacity = "1";
       if (currentDropzone && currentDraggedItem && currentPosition) {
         this.dropItem?.({
           dropzone: currentDropzone,
@@ -38,6 +41,10 @@ export default {
         currentDropzone = null;
         currentDraggedItem = null;
         currentPosition = null;
+      }
+
+      if (placeholderElement) {
+        placeholderElement.remove();
       }
     },
 
@@ -86,14 +93,24 @@ export default {
 
     dragover: function (event) {
       event.preventDefault();
-      const items = Array.from(event.currentTarget.children);
+      const dropzone = event.currentTarget;
+      const items = Array.from(dropzone.children);
+      const existingPlaceholder = dropzone.querySelector(".drag-placeholder");
 
-      removeExistingPlaceholder(event.currentTarget);
+      if (!items.length) {
+        if (!existingPlaceholder) {
+          const placeholderElem = createPlaceholderElement();
+          dropzone.appendChild(placeholderElem);
+        }
+        currentPosition = 0;
+        currentDropzone = dropzone.id;
+        return;
+      }
 
       let targetItem = items.find((item, index) => {
         if (item.getBoundingClientRect().top > event.clientY) {
           currentPosition = index;
-          currentDropzone = event.currentTarget.id;
+          currentDropzone = dropzone.id;
           return true;
         }
         return false;
@@ -104,13 +121,20 @@ export default {
         event.clientY > items[items.length - 1].getBoundingClientRect().bottom
       ) {
         currentPosition = items.length;
-        currentDropzone = event.currentTarget.id;
+        currentDropzone = dropzone.id;
       }
 
-      const placeholderElem = createPlaceholderElement();
-      targetItem
-        ? event.currentTarget.insertBefore(placeholderElem, targetItem)
-        : event.currentTarget.appendChild(placeholderElem);
+      // If placeholder doesn't exist or if it's not in its right position, adjust it
+      if (
+        !existingPlaceholder ||
+        (targetItem && existingPlaceholder.nextSibling !== targetItem)
+      ) {
+        const placeholderElem =
+          existingPlaceholder || createPlaceholderElement();
+        targetItem
+          ? dropzone.insertBefore(placeholderElem, targetItem)
+          : dropzone.appendChild(placeholderElem);
+      }
     },
 
     domReady: function (host) {

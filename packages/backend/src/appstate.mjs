@@ -11,7 +11,6 @@ const convertFunctionsToString = (obj) => {
 
   for (let key in obj) {
     if (typeof obj[key] === "function") {
-      console.log(obj[key]);
       // If the current property is a function, convert it to a string
       newObj[key] = obj[key].toString();
     } else if (typeof obj[key] === "object") {
@@ -128,12 +127,15 @@ export async function getApiModel() {
   const appId = await getAppId();
   const modelList = await getModels(appId);
   const controllerList = await getControllers(appId);
+
   models = defineModels(modelList, appId);
+
+  // Using modelList to generate the api
   api = Object.entries(modelList).reduce((acc, [name, model]) => {
     const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);
     Object.entries(endpoints).forEach(([endpoint, callback]) => {
       const regex = endpointToRegex(endpoint);
-      acc[String(endpoint)] = {
+      acc[endpoint] = {
         regex,
         model: models[name],
         callback,
@@ -141,6 +143,19 @@ export async function getApiModel() {
     });
     return acc;
   }, {});
+
+  // Enhancing or adding to the api using controllerList
+  Object.values(controllerList).forEach((controller) => {
+    Object.entries(controller).forEach(([endpoint, callback]) => {
+      const regex = endpointToRegex(endpoint);
+      // Assuming you want to override if the endpoint already exists
+      api[endpoint] = {
+        regex,
+        models,
+        callback: typeof callback === "string" ? eval(callback) : callback,
+      };
+    });
+  });
 
   return { models, api };
 }

@@ -69,6 +69,7 @@ self.addEventListener("fetch", async (event) => {
         const {
           callback,
           model,
+          models = {},
           regex: endpointRegex,
         } = api[matchedEndpointKey];
 
@@ -96,9 +97,11 @@ self.addEventListener("fetch", async (event) => {
             )
           : {};
         const allParams = { ...pathParams, ...bodyParams, ...queryParams };
+        console.log({ model, models, allParams });
         const response = await callback.call(model, allParams, {
           P2P,
           requestUpdate,
+          models,
         });
 
         if (["POST", "PATCH", "DELETE"].includes(event.request.method)) {
