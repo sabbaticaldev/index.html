@@ -16,6 +16,9 @@
     "src",
     "dist"
   ],
+  "dependencies": {
+    "bootstrapp-helpers": "workspace:^"
+  },
   "devDependencies": {
     "rimraf": "^3.0.2"
   },

@@ -1,9 +1,10 @@
 import indexeddbAdapter from "./indexeddb.mjs";
-import { generateId } from "./string.mjs";
+import { generateId, updateIndexPosition, removeIndexItem } from "./string.mjs";
 import P2P from "./rtc-worker.mjs";
 
 let oplog;
 let queue;
+
 export const models = {};
 class ReactiveRecord {
   constructor({ _initialData, ...properties }, name, appId) {
@@ -73,10 +74,7 @@ class ReactiveRecord {
   }
 
   async edit({ id, ...value }) {
-    const entries = Object.keys(value).map((prop) => [
-      `${prop}_${id}`,
-      value[prop],
-    ]);
+    const entries = Object.keys(value).map((prop) => [prop, id, value[prop]]);
     await this._set(entries);
   }
 
@@ -127,24 +125,36 @@ class ReactiveRecord {
     const allOperations = await this.adapter.getMany([], this.oplog);
     return allOperations; // Filtering removed, as the flattened approach doesn't have timestamps. Can be re-added if needed.
   }
-
   async _set(entries) {
     const entriesToAdd = [];
+
     for (const [propKey, id, value] of entries) {
       const key = `${propKey}_${id}`;
       this.logOp(key, value);
       const prop = this.properties[propKey];
-      // check if the prop exists and if it is a relationship
+
       if (prop?.relationship) {
-        const relatedModel = this.models[propKey];
+        const relatedModel = this.models[prop?.relationship];
         const { targetForeignKey } = prop;
         const relatedId = value;
         const target = await relatedModel.get(relatedId, [targetForeignKey]);
         const targetKey = `${targetForeignKey}_${relatedId}`;
         const index = target[targetForeignKey];
-        if (!index) await relatedModel._setProperty(targetKey, id);
-        else if (!new RegExp(`\\b${id}\\b`).test(index)) {
-          console.log("I have being here");
+
+        if (propKey === "board") {
+          // Let's add this condition to narrow down to the 'board' relationship only.
+          if (!index) {
+            await relatedModel._setProperty(targetKey, id);
+          } else {
+            if (new RegExp(`\\b${id}\\b`).test(index)) {
+              target[targetForeignKey] = removeIndexItem(index, id); // removing old occurrence
+            }
+            const position = 1;
+            target[targetForeignKey] = updateIndexPosition(index, id, position); // inserting in new position
+          }
+        } else if (!index) {
+          await relatedModel._setProperty(targetKey, id);
+        } else if (!new RegExp(`\\b${id}\\b`).test(index)) {
           await relatedModel._setProperty(targetKey, index + "|" + id);
         }
       }
@@ -157,6 +167,7 @@ class ReactiveRecord {
       });
       entriesToAdd.push([key, value]);
     }
+
     return this.adapter.setMany(entriesToAdd, this.store);
   }
 

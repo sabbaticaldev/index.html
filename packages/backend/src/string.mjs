@@ -45,3 +45,30 @@ export const toBase62 = (num) => {
   }
   return arr.join("");
 };
+
+export const updateIndexPosition = function (indexStr = "", taskId, position) {
+  const tasksArray = indexStr.split("|");
+
+  // Remove the task if it exists
+  const index = tasksArray.indexOf(taskId);
+  if (index !== -1) {
+    tasksArray.splice(index, 1);
+  }
+
+  // Correct the position if it's out of range
+  const correctedPosition = Math.min(position, tasksArray.length);
+
+  // Insert task at the new position
+  tasksArray.splice(correctedPosition, 0, taskId);
+
+  return tasksArray.join("|");
+};
+
+export const removeIndexItem = function (indexStr = "", taskId) {
+  const tasksArray = indexStr.split("|");
+  const index = tasksArray.indexOf(taskId);
+  if (index !== -1) {
+    tasksArray.splice(index, 1);
+  }
+  return tasksArray.join("|");
+};

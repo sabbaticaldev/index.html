@@ -4,11 +4,11 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { keyed } from "lit/directives/keyed.js";
 import { repeat } from "lit/directives/repeat.js";
 import { customElement } from "lit/decorators.js";
+import CRUD from "bootstrapp-helpers/src/rest.mjs";
+import DateTimeHelpers from "bootstrapp-helpers/src/datetime.mjs";
+
 import i18n from "./helpers/i18n/i18n.mjs";
 import url from "./helpers/url.mjs";
-import CRUD from "./helpers/rest.mjs";
-import DateTimeHelpers from "./helpers/datetime.mjs";
-import StringHelpers from "./helpers/string.mjs";
 import DropzoneHelpers from "./helpers/dropzone.mjs";
 const isServer = typeof localStorage === "undefined";
 
@@ -277,7 +277,6 @@ export const definePackage = (packageFn, { style }) => {
     i18n,
     ...CRUD,
     ...DateTimeHelpers,
-    ...StringHelpers,
     ...DropzoneHelpers
   };
   const pkg = packageFn(context);

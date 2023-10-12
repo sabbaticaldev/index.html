@@ -1,5 +1,4 @@
 import { messageHandler, getApiModel } from "./appstate.mjs";
-
 const requestUpdate = () =>
   self.clients
     .matchAll()
@@ -36,7 +35,7 @@ const extractPathParams = (endpoint, requestPath, regex) => {
 };
 
 self.addEventListener("activate", (event) => {
-  console.log("Service Worker Activated");
+  console.info("Service Worker Activated");
   event.waitUntil(self.clients.claim());
 });
 
@@ -97,7 +96,7 @@ self.addEventListener("fetch", async (event) => {
             )
           : {};
         const allParams = { ...pathParams, ...bodyParams, ...queryParams };
-        console.log({ model, models, allParams });
+
         const response = await callback.call(model, allParams, {
           P2P,
           requestUpdate,

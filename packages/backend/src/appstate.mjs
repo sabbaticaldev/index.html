@@ -74,6 +74,7 @@ export const getControllers = async (appId) => {
 };
 
 export const setControllers = async (appId, controllers) => {
+  console.log({ controllers });
   const stringifiedControllers = convertFunctionsToString(controllers);
   await indexedDBWrapper.set(appId, {
     controllers: stringifiedControllers || {},
@@ -102,6 +103,7 @@ function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
       return this.remove(id);
     },
     [`PATCH /api/${modelName}/:id`]: function ({ id, ...rest }) {
+      console.log({ id, rest });
       return this.edit({ id, ...rest });
     },
     ...endpoints,
