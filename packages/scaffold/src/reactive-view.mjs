@@ -41,6 +41,12 @@ export const T = {
     ...options
   }),
 
+  date: (options = {}) => ({
+    type: "date",
+    defaultValue: options.defaultValue || undefined,
+    ...options
+  }),
+
   function: (options = {}) => ({
     type: "function",
     defaultValue: options.defaultValue || undefined,
@@ -79,7 +85,7 @@ export const F = {
 
   date: (options = {}) => ({
     formType: "date",
-    type: T.string(options)
+    type: T.date(options)
   }),
 
   datetime: (options = {}) => ({
@@ -131,6 +137,7 @@ const TYPE_MAP = {
   number: Number,
   string: String,
   object: Object,
+  date: Date,
   array: Array
 };
 

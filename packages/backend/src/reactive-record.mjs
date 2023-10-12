@@ -68,7 +68,6 @@ async function updateSingleRelationship(
   }
 }
 
-// Update for a 'many' relationship type
 async function updateMultipleRelationship(
   oldValue,
   value,
@@ -77,32 +76,51 @@ async function updateMultipleRelationship(
   propKey,
   targetForeignKey,
 ) {
-  if (oldValue && oldValue !== value) {
-    const oldTarget = await relatedModel.get(oldValue, [targetForeignKey]);
-    if (oldTarget && oldTarget[targetForeignKey]) {
-      oldTarget[targetForeignKey] = removeIndexItem(
-        oldTarget[targetForeignKey],
-        id,
-      );
-      await relatedModel._setProperty(
-        `${targetForeignKey}_${oldValue}`,
-        oldTarget[targetForeignKey],
-      );
+  // If the value is not an array, convert it into one for easier processing.
+  const oldIds = Array.isArray(oldValue) ? oldValue : [oldValue];
+  const newIds = Array.isArray(value) ? value : [value];
+
+  // Find the ids which are added and the ones which are removed.
+  const addedIds = newIds.filter((v) => !oldIds.includes(v));
+  const removedIds = oldIds.filter((v) => !newIds.includes(v));
+
+  for (const relatedId of addedIds) {
+    const target = await relatedModel.get(relatedId, [targetForeignKey]);
+    const targetType = relatedModel.properties[targetForeignKey]?.type;
+
+    if (targetType === "one") {
+      await relatedModel._setProperty(`${targetForeignKey}_${relatedId}`, id);
+    } else {
+      // Handle the "many" case
+      let index = target[targetForeignKey] || "";
+      if (!new RegExp(`\\b${id}\\b`).test(index)) {
+        target[targetForeignKey] = `${index}|${id}`;
+        await relatedModel._setProperty(
+          `${targetForeignKey}_${relatedId}`,
+          target[targetForeignKey],
+        );
+      }
     }
   }
 
-  if (value) {
-    const relatedId = value;
+  for (const relatedId of removedIds) {
     const target = await relatedModel.get(relatedId, [targetForeignKey]);
-    const index = target[targetForeignKey];
-    if (!index) {
-      await relatedModel._setProperty(`${targetForeignKey}_${relatedId}`, id);
-    } else if (!new RegExp(`\\b${id}\\b`).test(index)) {
-      target[targetForeignKey] = index + "|" + id;
-      await relatedModel._setProperty(
-        `${targetForeignKey}_${relatedId}`,
-        target[targetForeignKey],
-      );
+    const targetType = relatedModel.properties[targetForeignKey]?.type;
+
+    if (targetType === "one") {
+      await relatedModel._setProperty(`${targetForeignKey}_${relatedId}`, null);
+    } else {
+      // Handle the "many" case
+      if (target && target[targetForeignKey]) {
+        target[targetForeignKey] = removeIndexItem(
+          target[targetForeignKey],
+          id,
+        );
+        await relatedModel._setProperty(
+          `${targetForeignKey}_${relatedId}`,
+          target[targetForeignKey],
+        );
+      }
     }
   }
 }
@@ -254,8 +272,8 @@ class ReactiveRecord {
           );
         } else if (type === "many") {
           await updateMultipleRelationship(
-            oldValue[propKey],
-            value,
+            (oldValue[propKey] || "").split("|").filter(Boolean),
+            (value || "").split("|").filter(Boolean),
             relatedModel,
             id,
             propKey,
