@@ -4,6 +4,100 @@ import P2P from "./rtc-worker.mjs";
 
 let oplog;
 let queue;
+// Update for a 'one' relationship type
+async function updateSingleRelationship(
+  oldValue,
+  value,
+  relatedModel,
+  id,
+  propKey,
+  targetForeignKey,
+) {
+  const targetType = relatedModel.properties[targetForeignKey]?.type;
+
+  if (oldValue?.[propKey] && oldValue[propKey] !== value[propKey]) {
+    if (targetType === "many") {
+      const oldTarget = await relatedModel.get(oldValue[propKey], [
+        targetForeignKey,
+      ]);
+      if (oldTarget && oldTarget[targetForeignKey]) {
+        oldTarget[targetForeignKey] = removeIndexItem(
+          oldTarget[targetForeignKey],
+          id,
+        );
+        await relatedModel._setProperty(
+          `${targetForeignKey}_${oldValue[propKey]}`,
+          oldTarget[targetForeignKey],
+        );
+      }
+    } else {
+      await relatedModel._setProperty(
+        `${targetForeignKey}_${oldValue[propKey]}`,
+        null,
+      );
+    }
+  }
+
+  if (value) {
+    if (targetType === "many") {
+      const relatedId = value;
+      const target = await relatedModel.get(relatedId, [targetForeignKey]);
+      const index = target[targetForeignKey];
+      if (!index) {
+        await relatedModel._setProperty(`${targetForeignKey}_${relatedId}`, id);
+      } else if (!new RegExp(`\\b${id}\\b`).test(index)) {
+        target[targetForeignKey] = index + "|" + id;
+        await relatedModel._setProperty(
+          `${targetForeignKey}_${relatedId}`,
+          target[targetForeignKey],
+        );
+      }
+    } else {
+      await relatedModel._setProperty(`${targetForeignKey}_${value}`, id);
+    }
+  }
+}
+
+// Update for a 'many' relationship type
+async function updateMultipleRelationship(
+  oldValue,
+  value,
+  relatedModel,
+  id,
+  propKey,
+  targetForeignKey,
+) {
+  if (oldValue && oldValue[propKey] !== value) {
+    const oldTarget = await relatedModel.get(oldValue[propKey], [
+      targetForeignKey,
+    ]);
+    if (oldTarget && oldTarget[targetForeignKey]) {
+      oldTarget[targetForeignKey] = removeIndexItem(
+        oldTarget[targetForeignKey],
+        id,
+      );
+      await relatedModel._setProperty(
+        `${targetForeignKey}_${oldValue[propKey]}`,
+        oldTarget[targetForeignKey],
+      );
+    }
+  }
+
+  if (value) {
+    const relatedId = value;
+    const target = await relatedModel.get(relatedId, [targetForeignKey]);
+    const index = target[targetForeignKey];
+    if (!index) {
+      await relatedModel._setProperty(`${targetForeignKey}_${relatedId}`, id);
+    } else if (!new RegExp(`\\b${id}\\b`).test(index)) {
+      target[targetForeignKey] = index + "|" + id;
+      await relatedModel._setProperty(
+        `${targetForeignKey}_${relatedId}`,
+        target[targetForeignKey],
+      );
+    }
+  }
+}
 
 export const models = {};
 class ReactiveRecord {
@@ -125,6 +219,7 @@ class ReactiveRecord {
     const allOperations = await this.adapter.getMany([], this.oplog);
     return allOperations; // Filtering removed, as the flattened approach doesn't have timestamps. Can be re-added if needed.
   }
+
   async _set(entries) {
     const entriesToAdd = [];
 
@@ -134,28 +229,30 @@ class ReactiveRecord {
       const prop = this.properties[propKey];
 
       if (prop?.relationship) {
-        const relatedModel = this.models[prop?.relationship];
-        const { targetForeignKey } = prop;
-        const relatedId = value;
-        const target = await relatedModel.get(relatedId, [targetForeignKey]);
-        const targetKey = `${targetForeignKey}_${relatedId}`;
-        const index = target[targetForeignKey];
+        const relatedModel = this.models[prop.relationship];
+        const { targetForeignKey, type } = prop;
 
-        if (propKey === "board") {
-          // Let's add this condition to narrow down to the 'board' relationship only.
-          if (!index) {
-            await relatedModel._setProperty(targetKey, id);
-          } else {
-            if (new RegExp(`\\b${id}\\b`).test(index)) {
-              target[targetForeignKey] = removeIndexItem(index, id); // removing old occurrence
-            }
-            const position = 1;
-            target[targetForeignKey] = updateIndexPosition(index, id, position); // inserting in new position
-          }
-        } else if (!index) {
-          await relatedModel._setProperty(targetKey, id);
-        } else if (!new RegExp(`\\b${id}\\b`).test(index)) {
-          await relatedModel._setProperty(targetKey, index + "|" + id);
+        const oldValue = await this.get(id, [propKey]);
+
+        // Choose the update method based on the relationship type
+        if (type === "one") {
+          await updateSingleRelationship(
+            oldValue,
+            value,
+            relatedModel,
+            id,
+            propKey,
+            targetForeignKey,
+          );
+        } else if (type === "many") {
+          await updateMultipleRelationship(
+            oldValue,
+            value,
+            relatedModel,
+            id,
+            propKey,
+            targetForeignKey,
+          );
         }
       }
 
