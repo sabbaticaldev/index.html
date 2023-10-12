@@ -30,13 +30,7 @@ export default {
 
     dragend: function () {
       this.style.opacity = "1";
-      console.log("passou aqui tnm", {
-        currentDropzone,
-        currentDraggedItem,
-        currentPosition
-      });
       if (currentDropzone && currentDraggedItem && !isNaN(currentPosition)) {
-        console.log("mas nap aqui");
         this.dropItem?.({
           dropzone: currentDropzone,
           item: currentDraggedItem,
@@ -71,7 +65,6 @@ export default {
 
   dropzone: {
     drop: function (event) {
-      console.log("passou aqui");
       event.preventDefault();
       const children = Array.from(event.currentTarget.children);
       currentPosition = children.findIndex((child) =>
