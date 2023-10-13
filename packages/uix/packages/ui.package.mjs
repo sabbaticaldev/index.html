@@ -6,8 +6,8 @@ import {
   BgColor,
   TextColor,
   BorderColor,
-  RingColor
-} from "../style-props.mjs";
+  RingColor,
+} from "../uix.theme.mjs";
 
 export default ({ T, html }) => ({
   views: {
@@ -23,13 +23,13 @@ export default ({ T, html }) => ({
             "rounded-full",
             "mask-squircle",
             "mask-hexagon",
-            "mask-triangle"
-          ]
+            "mask-triangle",
+          ],
         }),
         status: T.string({ enum: ["online", "offline", ""] }),
         placeholder: T.string({ defaultValue: "" }),
         hasRing: T.boolean(),
-        ringColor: T.string({ defaultValue: "primary", enum: Colors })
+        ringColor: T.string({ defaultValue: "primary", enum: Colors }),
       },
       render: ({
         src,
@@ -39,7 +39,7 @@ export default ({ T, html }) => ({
         status,
         placeholder,
         hasRing,
-        ringColor
+        ringColor,
       }) => {
         const sizeClass = `w-${size}`;
         const ringClass = hasRing
@@ -61,12 +61,12 @@ export default ({ T, html }) => ({
             <div class="${sizeClass} ${shape}">${content}</div>
           </div>
         `;
-      }
+      },
     },
     "uix-avatar-group": {
       props: {
         avatars: T.array(),
-        count: T.number({ defaultValue: 0 })
+        count: T.number({ defaultValue: 0 }),
       },
       render: ({ avatars, count }) => {
         return html`
@@ -83,7 +83,7 @@ export default ({ T, html }) => ({
                   hasRing=${avatar.hasRing}
                   ringColor=${avatar.ringColor}
                 ></uix-avatar>
-              `
+              `,
   )}
             ${count > 0
     ? html`
@@ -96,7 +96,7 @@ export default ({ T, html }) => ({
     : ""}
           </div>
         `;
-      }
+      },
     },
     "uix-badge": {
       props: {
@@ -104,7 +104,7 @@ export default ({ T, html }) => ({
         color: T.string({ defaultValue: "default", enum: Colors }),
         outline: T.boolean(),
         size: T.string({ defaultValue: "md", enum: ["lg", "md", "sm", "xs"] }),
-        icon: T.string({ defaultValue: null })
+        icon: T.string({ defaultValue: null }),
       },
       render: ({ color, outline, size }) => {
         const baseClass = "badge";
@@ -113,7 +113,7 @@ export default ({ T, html }) => ({
           lg: "badge-lg",
           md: "",
           sm: "badge-sm",
-          xs: "badge-xs"
+          xs: "badge-xs",
         };
         const sizeClass = sizeClassMapping[size];
 
@@ -122,12 +122,12 @@ export default ({ T, html }) => ({
             <slot></slot>
           </span>
         `;
-      }
+      },
     },
     "uix-icon": {
       props: {
         name: T.string(),
-        classes: T.object()
+        classes: T.object(),
       },
       render: ({ name, classes }) => {
         const { container: containerClass = "text-2xl" } = classes || {};
@@ -136,29 +136,29 @@ export default ({ T, html }) => ({
           class=${containerClass}
           role="img"
         ></ion-icon>`;
-      }
+      },
     },
     "uix-kbd": {
       props: {
         keyContent: T.string({ defaultValue: "Key" }),
-        size: T.string({ defaultValue: "md", enum: Sizes })
+        size: T.string({ defaultValue: "md", enum: Sizes }),
       },
       render: ({ keyContent, size }) => {
         const sizeClassMap = {
           lg: "text-lg px-3 py-2",
           md: "text-md px-2 py-1", // default
           sm: "text-sm px-1 py-0.5",
-          xs: "text-xs px-0.5 py-0.25"
+          xs: "text-xs px-0.5 py-0.25",
         };
         const sizeClasses = sizeClassMap[size];
         const kbdClass = `bg-primary-200 rounded ${sizeClasses}`;
         return html`<kbd class=${kbdClass}>${keyContent}</kbd>`;
-      }
+      },
     },
     "uix-countdown": {
       props: {
         endDate: T.string({ defaultValue: "YYYY-MM-DD HH:MM:SS" }),
-        format: T.string({ defaultValue: "DHMS", enum: Formats })
+        format: T.string({ defaultValue: "DHMS", enum: Formats }),
       },
       render: ({ endDate, format }) => {
         const calculateCountdown = (end) => {
@@ -168,7 +168,7 @@ export default ({ T, html }) => ({
 
           const days = Math.floor(diff / (1000 * 60 * 60 * 24));
           const hours = Math.floor(
-            (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
           );
           const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((diff % (1000 * 60)) / 1000);
@@ -204,16 +204,16 @@ export default ({ T, html }) => ({
         });
 
         return html` <div class="countdown">${formattedCountdown}</div> `;
-      }
+      },
     },
     "uix-mask": {
       props: {
         variant: T.string({ defaultValue: "squircle" }),
-        src: T.string()
+        src: T.string(),
       },
       render: ({ variant, src }) => {
         return html`<img class="mask ${variant}" src=${src} />`;
-      }
+      },
     },
     "uix-loading": {
       props: {
@@ -221,7 +221,7 @@ export default ({ T, html }) => ({
         message: T.string({ defaultValue: null }),
         type: T.string({ defaultValue: "spinner", enum: AnimationTypes }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
-        color: T.string({ defaultValue: "primary", enum: Colors })
+        color: T.string({ defaultValue: "primary", enum: Colors }),
       },
       render: ({ isVisible, message, type, size, color }) => {
         if (!isVisible) return html``;
@@ -231,13 +231,13 @@ export default ({ T, html }) => ({
           ring: "loading loading-ring",
           ball: "loading loading-ball",
           bars: "loading loading-bars",
-          infinity: "loading loading-infinity"
+          infinity: "loading loading-infinity",
         };
         const LoadingSize = {
           lg: "loading-lg",
           md: "loading-md",
           sm: "loading-sm",
-          xs: "loading-xs"
+          xs: "loading-xs",
         };
 
         const loadingClass = `${Loading[type]} ${LoadingSize[size]} ${TextColor[color]}`;
@@ -250,7 +250,7 @@ export default ({ T, html }) => ({
     : ""}
           </span>
         `;
-      }
+      },
     },
     "uix-progress": {
       // TODO: expand daisyui tags
@@ -258,7 +258,7 @@ export default ({ T, html }) => ({
         value: T.number({ defaultValue: 0 }),
         max: T.number({ defaultValue: 100 }),
         width: T.string({ defaultValue: "w-56" }),
-        color: T.string({ defaultValue: "base", enum: Colors })
+        color: T.string({ defaultValue: "base", enum: Colors }),
       },
       render: ({ value, max, width, color }) => {
         const progressClass = `progress ${width}`;
@@ -270,7 +270,7 @@ export default ({ T, html }) => ({
             max="${max}"
           ></progress>
         `;
-      }
+      },
     },
 
     "uix-radial-progress": {
@@ -283,7 +283,7 @@ export default ({ T, html }) => ({
         backgroundColor: T.string({ defaultValue: "default" }),
         borderColor: T.string({ defaultValue: "default" }),
         borderWidth: T.string({ defaultValue: "0px" }),
-        textColor: T.string({ defaultValue: "default-content" })
+        textColor: T.string({ defaultValue: "default-content" }),
       },
       render: ({
         value,
@@ -293,7 +293,7 @@ export default ({ T, html }) => ({
         backgroundColor,
         borderColor,
         borderWidth,
-        textColor
+        textColor,
       }) => {
         const textStyle = `text-${textColor}`;
         const bgColor =
@@ -311,7 +311,7 @@ export default ({ T, html }) => ({
             ${value}%
           </div>
         `;
-      }
-    }
-  }
+      },
+    },
+  },
 });

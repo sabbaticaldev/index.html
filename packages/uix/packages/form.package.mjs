@@ -24,7 +24,7 @@ import {
   SelectSizes,
   ToggleSizeClass,
   ToggleVariantClass,
-} from "../style-props.mjs";
+} from "../uix.theme.mjs";
 
 const FormControls = {
   reportValidity: function () {

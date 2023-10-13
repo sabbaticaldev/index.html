@@ -10,8 +10,8 @@ import {
   BgColor,
   TextColor,
   CollapseBgColor,
-  CollapseIcon
-} from "../style-props.mjs";
+  CollapseIcon,
+} from "../uix.theme.mjs";
 
 export default ({ T, html }) => ({
   views: {
@@ -21,12 +21,12 @@ export default ({ T, html }) => ({
         color: T.string({ defaultValue: "base", enum: Colors }),
         method: T.string({
           defaultValue: "focus",
-          enum: ["focus", "checkbox", "details"]
+          enum: ["focus", "checkbox", "details"],
         }),
         icon: T.string({
           defaultValue: "",
-          enum: ["", "arrow", "plus"]
-        })
+          enum: ["", "arrow", "plus"],
+        }),
       },
       render: ({ items, color, method, icon }) => {
         return html`
@@ -39,10 +39,10 @@ export default ({ T, html }) => ({
                 method=${method}
                 icon=${icon}
               ></uix-collapse>
-            `
+            `,
   )}
         `;
-      }
+      },
     },
     "uix-breadcrumbs": {
       props: {
@@ -52,18 +52,18 @@ export default ({ T, html }) => ({
             {
               label: T.string(),
               href: T.string(),
-              icon: T.string()
-            }
-          ]
+              icon: T.string(),
+            },
+          ],
         }),
-        separator: T.string({ defaultValue: "/" })
+        separator: T.string({ defaultValue: "/" }),
       },
       render: ({ content, color, outline, size, icon }) => {
         const BadgeSizes = {
           lg: "badge-lg",
           md: "",
           sm: "badge-sm",
-          xs: "badge-xs"
+          xs: "badge-xs",
         };
         const baseClass = "badge";
         const colorClass = BgColor[color] + (outline ? "-outline" : "");
@@ -77,20 +77,20 @@ export default ({ T, html }) => ({
             ${iconRender} ${content}
           </span>
         `;
-      }
+      },
     },
     "uix-bottom-navigation": {
       props: {
         items: T.array(),
         activeIndex: T.number({ defaultValue: 0 }),
-        size: T.string({ defaultValue: "md", enum: Sizes })
+        size: T.string({ defaultValue: "md", enum: Sizes }),
       },
       render: ({ items, activeIndex, size }) => {
         const BtmClasses = {
           md: "btm-nav-md",
           sm: "btm-nav-sm",
           lg: "btm-nav-lg",
-          xl: "btm-nav-xl"
+          xl: "btm-nav-xl",
         };
         const sizeClass = BtmClasses[size];
 
@@ -116,30 +116,30 @@ export default ({ T, html }) => ({
   })}
           </div>
         `;
-      }
+      },
     },
     "uix-carousel": {
       props: {
         items: T.array(),
         alignment: T.string({
           defaultValue: "start",
-          enum: ["start", "center", "end"]
+          enum: ["start", "center", "end"],
         }),
         vertical: T.boolean(),
         indicatorButtons: T.boolean(),
-        navigationButtons: T.boolean()
+        navigationButtons: T.boolean(),
       },
       render: ({
         items,
         alignment,
         vertical,
         indicatorButtons,
-        navigationButtons
+        navigationButtons,
       }) => {
         const AlignmentClasses = {
           start: "carousel-start",
           center: "carousel-center",
-          end: "carousel-end"
+          end: "carousel-end",
         };
 
         const alignmentClass = AlignmentClasses[alignment];
@@ -173,28 +173,28 @@ export default ({ T, html }) => ({
     (_, index) =>
       html`<a href="#item${index}" class="btn btn-xs"
                         >${index + 1}</a
-                      >`
+                      >`,
   )}
                 </div>
               `
     : ""}
         `;
-      }
+      },
     },
     "uix-collapse": {
       props: {
         method: T.string({
           defaultValue: "focus",
-          enum: ["focus", "checkbox", "details"]
+          enum: ["focus", "checkbox", "details"],
         }),
         color: T.string({ defaultValue: "base", enum: Colors }),
         title: T.string({ defaultValue: "Click to open/close" }),
         content: T.string({ defaultValue: "Collapse Content" }),
         icon: T.string({
           defaultValue: "",
-          enum: ["", "arrow", "plus"]
+          enum: ["", "arrow", "plus"],
         }),
-        open: T.boolean()
+        open: T.boolean(),
       },
       render: ({ method, color, title, content, icon, open }) => {
         const baseClass = `collapse ${CollapseBgColor[color]}`;
@@ -228,13 +228,13 @@ export default ({ T, html }) => ({
             </details>
           `;
         }
-      }
+      },
     },
     "uix-drawer": {
       props: {
         open: T.boolean(),
         position: T.string({ defaultValue: "left", enum: Positions }),
-        setOpen: T.function({ defaultValue: null })
+        setOpen: T.function({ defaultValue: null }),
       },
       render: ({ open, position, setOpen }) => {
         const positionClass = position === "right" ? "drawer-end" : "";
@@ -275,7 +275,7 @@ export default ({ T, html }) => ({
             </div>
           </div>
         `;
-      }
+      },
     },
     "uix-dropdown": {
       props: {
@@ -287,7 +287,7 @@ export default ({ T, html }) => ({
         isOpen: T.boolean(),
         openOnHover: T.boolean(),
         forceOpen: T.boolean(),
-        rounded: T.boolean()
+        rounded: T.boolean(),
       },
       render: ({
         label,
@@ -299,7 +299,7 @@ export default ({ T, html }) => ({
         open,
         openOnHover,
         forceOpen,
-        setOpen
+        setOpen,
       }) => {
         const bgColorClass = BgColor[color];
         const textColorClass = TextColor[color];
@@ -346,7 +346,7 @@ export default ({ T, html }) => ({
                 `}
           </div>
         `;
-      }
+      },
     },
     "uix-modal": {
       props: {
@@ -358,9 +358,9 @@ export default ({ T, html }) => ({
         name: T.string({ defaultValue: "uix-modal" }),
         position: T.string({
           defaultValue: "middle",
-          enum: ["top", "middle", "bottom"]
+          enum: ["top", "middle", "bottom"],
         }),
-        icon: T.string({ defaultValue: "" })
+        icon: T.string({ defaultValue: "" }),
       },
       firstUpdated: (host) => {
         host.$modal = host.shadowRoot.querySelector("#modal");
@@ -412,7 +412,7 @@ export default ({ T, html }) => ({
             </div>
           </dialog>
         `;
-      }
+      },
     },
     "uix-menu-item": {
       props: {
@@ -424,7 +424,7 @@ export default ({ T, html }) => ({
         variant: T.string({ defaultValue: "" }),
         active: T.boolean(),
         classes: T.object(),
-        color: T.string({ defaultValue: "base", enum: Colors })
+        color: T.string({ defaultValue: "base", enum: Colors }),
       },
 
       render: ({
@@ -436,7 +436,7 @@ export default ({ T, html }) => ({
         href,
         label,
         type,
-        variant
+        variant,
       }) => {
         const { item: itemClass = "" } = classes;
         const activeClass = active ? "active" : "";
@@ -457,7 +457,7 @@ export default ({ T, html }) => ({
             </uix-button>
           </li>
         `;
-      }
+      },
     },
     "uix-menu": {
       props: {
@@ -476,7 +476,7 @@ export default ({ T, html }) => ({
         fullHeight: T.boolean(),
         fullWidth: T.boolean(),
         rounded: T.boolean(),
-        classes: T.object({ defaultValue: {} })
+        classes: T.object({ defaultValue: {} }),
       },
       render: (props) => {
         const {
@@ -492,7 +492,7 @@ export default ({ T, html }) => ({
           vertical,
           rounded,
           size,
-          isActive
+          isActive,
         } = props;
         const { container: containerClass } = classes || {};
         const { items: itemsClass } = classes;
@@ -507,7 +507,7 @@ export default ({ T, html }) => ({
           fullWidth && "w-full",
           vertical ? "menu-vertical" : "menu-horizontal",
           rounded && "rounded-box",
-          containerClass
+          containerClass,
         ]
           .filter(Boolean)
           .join(" ");
@@ -515,7 +515,7 @@ export default ({ T, html }) => ({
         const itemClass = [
           "flex flex-row items-center",
           itemsClass,
-          (isActive && "active") || ""
+          (isActive && "active") || "",
         ]
           .filter(Boolean)
           .join(" ");
@@ -555,7 +555,7 @@ export default ({ T, html }) => ({
   })}
           </ul>
         `;
-      }
+      },
     },
     "uix-tabs": {
       props: {
@@ -563,10 +563,10 @@ export default ({ T, html }) => ({
         selectedValue: T.string({ defaultValue: "" }),
         type: T.string({
           defaultValue: "default",
-          enum: ["default", "boxed", "bordered", "lifted"]
+          enum: ["default", "boxed", "bordered", "lifted"],
         }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
-        gap: T.string({ defaultValue: "md", enum: Sizes })
+        gap: T.string({ defaultValue: "md", enum: Sizes }),
       },
       render: ({ items, selectedValue, setSelectedValue, type, size, gap }) => {
         let selected = selectedValue;
@@ -578,7 +578,7 @@ export default ({ T, html }) => ({
             item.disabled && "tab-disabled",
             type === "bordered" && "tab-bordered",
             type === "lifted" && "tab-lifted",
-            Sizes.includes(size) && TabsSize[size]
+            Sizes.includes(size) && TabsSize[size],
           ]
             .filter(Boolean)
             .join(" ");
@@ -601,11 +601,11 @@ export default ({ T, html }) => ({
     : ""}
                   ${item.label}
                 </button>
-              `
+              `,
   )}
           </div>
         `;
-      }
+      },
     },
     "uix-steps": {
       // TODO: expand daisyui tags
@@ -613,7 +613,7 @@ export default ({ T, html }) => ({
         steps: T.array({ defaultValue: [], enum: Colors }),
         vertical: T.boolean(),
         responsive: T.boolean(),
-        scrollable: T.boolean()
+        scrollable: T.boolean(),
       },
       render: ({ steps, responsive, vertical, scrollable }) => {
         const directionClass = vertical ? "steps-vertical" : "steps-horizontal";
@@ -640,7 +640,7 @@ export default ({ T, html }) => ({
             </ul>
           </div>
         `;
-      }
-    }
-  }
+      },
+    },
+  },
 });

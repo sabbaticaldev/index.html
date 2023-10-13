@@ -5,8 +5,8 @@ import {
   Gaps,
   Spacings,
   Sizes,
-  Colors
-} from "../style-props.mjs";
+  Colors,
+} from "../uix.theme.mjs";
 
 export default ({ T, html, dropzone }) => ({
   views: {
@@ -19,7 +19,7 @@ export default ({ T, html, dropzone }) => ({
         rounded: T.boolean(),
         draggable: T.boolean(),
         shadow: T.boolean(),
-        class: T.string()
+        class: T.string(),
       },
       render: (props) => {
         const { color, bgColor, textColor, spacing, rounded, shadow } = props;
@@ -32,7 +32,7 @@ export default ({ T, html, dropzone }) => ({
           info: "bg-info text-info-content",
           success: "bg-success text-success-content",
           warning: "bg-warning text-warning-content",
-          error: "bg-error text-error-content"
+          error: "bg-error text-error-content",
         };
 
         const SpacingSizes = {
@@ -43,7 +43,7 @@ export default ({ T, html, dropzone }) => ({
           xl: "p-8",
           "2xl": "p-12",
           "3xl": "p-16",
-          "4xl": "p-24"
+          "4xl": "p-24",
         };
         const bgClass = bgColor ? `bg-${bgColor}` : "";
         const textClass = textColor ? `text-${textColor}` : "";
@@ -59,12 +59,12 @@ export default ({ T, html, dropzone }) => ({
             <slot></slot>
           </div>
         `;
-      }
+      },
     },
     "uix-stack": {
       props: {
         vertical: T.boolean(),
-        gap: T.string({ defaultValue: "md", enum: Spacings })
+        gap: T.string({ defaultValue: "md", enum: Spacings }),
       },
       render: ({ vertical, gap }) => {
         const gapClass = Gaps[gap] || "";
@@ -74,7 +74,7 @@ export default ({ T, html, dropzone }) => ({
             <slot></slot>
           </div>
         `;
-      }
+      },
     },
     "uix-divider": {
       props: {
@@ -83,7 +83,7 @@ export default ({ T, html, dropzone }) => ({
         text: T.string(),
         vertical: T.boolean(),
         responsive: T.boolean(),
-        class: T.string()
+        class: T.string(),
       },
 
       render: (props) => {
@@ -94,7 +94,7 @@ export default ({ T, html, dropzone }) => ({
           responsive &&
             (vertical ? "lg:divider-horizontal" : "lg:divider-vertical"),
           BgColor[color],
-          props.class
+          props.class,
         ]
           .filter(Boolean)
           .join(" ");
@@ -104,7 +104,7 @@ export default ({ T, html, dropzone }) => ({
             <slot></slot>
           </div>
         `;
-      }
+      },
     },
     "uix-list": {
       props: {
@@ -116,7 +116,7 @@ export default ({ T, html, dropzone }) => ({
         alignX: T.string({ enum: Object.keys(AlignX) }),
         alignY: T.string({ enum: Object.keys(AlignY) }),
         class: T.string(),
-        id: T.string()
+        id: T.string(),
       },
       ...dropzone,
       render: (props) => {
@@ -146,7 +146,7 @@ export default ({ T, html, dropzone }) => ({
     borderRadiusClass,
     alignXClass,
     alignYClass,
-    props.class
+    props.class,
   ]
     .filter(Boolean)
     .join(" ")}
@@ -154,7 +154,7 @@ export default ({ T, html, dropzone }) => ({
             <slot></slot>
           </div>
         `;
-      }
+      },
     },
     "uix-grid": {
       props: {
@@ -163,7 +163,7 @@ export default ({ T, html, dropzone }) => ({
         gap: T.string({ defaultValue: "sm", enum: Sizes }),
         rounded: T.boolean(),
         alignX: T.string({ enum: Object.keys(AlignX) }),
-        alignY: T.string({ enum: Object.keys(AlignY) })
+        alignY: T.string({ enum: Object.keys(AlignY) }),
       },
       render: ({
         templateColumns,
@@ -171,7 +171,7 @@ export default ({ T, html, dropzone }) => ({
         gap,
         rounded,
         alignX,
-        alignY
+        alignY,
       }) => {
         const borderRadiusClass = rounded
           ? "rounded-l-full rounded-r-full"
@@ -191,7 +191,7 @@ export default ({ T, html, dropzone }) => ({
     rowsClass,
     borderRadiusClass,
     alignXClass,
-    alignYClass
+    alignYClass,
   ]
     .filter(Boolean)
     .join(" ")}
@@ -199,7 +199,7 @@ export default ({ T, html, dropzone }) => ({
             <slot></slot>
           </div>
         `;
-      }
-    }
-  }
+      },
+    },
+  },
 });

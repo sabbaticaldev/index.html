@@ -1,9 +1,4 @@
-import {
-  BgColor,
-  TextColor,
-  Colors,
-  BgOverlayOpacity
-} from "../style-props.mjs";
+import { BgColor, TextColor, Colors, BgOverlayOpacity } from "../uix.theme.mjs";
 
 export default ({ T, html }) => ({
   i18n: {},
@@ -20,7 +15,7 @@ export default ({ T, html }) => ({
         gap: T.string({ defaultValue: "md" }),
         label: T.string(),
         icon: T.string(),
-        classes: T.object()
+        classes: T.object(),
       },
       render: ({
         classes,
@@ -33,12 +28,12 @@ export default ({ T, html }) => ({
         gap,
         rounded,
         items,
-        vertical
+        vertical,
       }) => {
         const {
           items: itemsClass = "text-gray-800 hover:text-blue-600",
           logo: logoClass = "font-bold text-2xl",
-          container: containerClass
+          container: containerClass,
         } = classes || {};
 
         const baseClasses = [
@@ -46,7 +41,7 @@ export default ({ T, html }) => ({
           BgColor[color],
           shadow ? "shadow-xl" : "",
           rounded ? "rounded-box" : "",
-          vertical ? "flex-col h-full" : "flex-row w-full"
+          vertical ? "flex-col h-full" : "flex-row w-full",
         ]
           .filter(Boolean)
           .join(" ");
@@ -65,7 +60,7 @@ export default ({ T, html }) => ({
     vertical
       ? "w-full h-16 border-b mb-4"
       : "h-full w-72 border-r pr-4",
-    logoClass
+    logoClass,
   ].join(" ")}
                     href="/"
                   >
@@ -77,7 +72,7 @@ export default ({ T, html }) => ({
             <uix-menu
               .items=${items}
               .classes=${{
-    items: itemsClass
+    items: itemsClass,
   }}
               color=${color}
               ?vertical=${vertical}
@@ -85,7 +80,7 @@ export default ({ T, html }) => ({
             ></uix-menu>
           </div>
         `;
-      }
+      },
     },
     "uix-footer": {
       props: {
@@ -93,7 +88,7 @@ export default ({ T, html }) => ({
         bgColor: T.string({ defaultValue: "neutral", enum: Colors }),
         textColor: T.string({ defaultValue: "neutral-content", enum: Colors }),
         alignCenter: T.boolean(),
-        rounded: T.boolean()
+        rounded: T.boolean(),
       },
       render: ({ sections, bgColor, textColor, alignCenter, rounded }) => {
         const bgClass = BgColor[bgColor];
@@ -112,7 +107,8 @@ export default ({ T, html }) => ({
                     <nav>
                       <header class="footer-title">${section.title}</header>
                       ${section.links.map(
-    (link) => html` <a class="link link-hover">${link}</a> `
+    (link) =>
+      html` <a class="link link-hover">${link}</a> `,
   )}
                     </nav>
                   `;
@@ -126,7 +122,7 @@ export default ({ T, html }) => ({
   })}
           </footer>
         `;
-      }
+      },
     },
 
     "uix-hero": {
@@ -136,7 +132,7 @@ export default ({ T, html }) => ({
         color: T.string({ defaultValue: "base", enum: Colors }),
         imageUrl: T.string({ defaultValue: null }),
         overlayOpacity: T.number({ defaultValue: 60 }),
-        rounded: T.boolean()
+        rounded: T.boolean(),
       },
       render: ({
         title,
@@ -144,7 +140,7 @@ export default ({ T, html }) => ({
         color,
         imageUrl,
         rounded,
-        overlayOpacity
+        overlayOpacity,
       }) => {
         const bgColorClass = BgColor[color];
         const textColorClass = TextColor[color];
@@ -170,13 +166,13 @@ export default ({ T, html }) => ({
             </div>
           </div>
         `;
-      }
+      },
     },
 
     "uix-stat-container": {
       props: {
         vertical: T.boolean(),
-        shadow: T.boolean({ defaultValue: true })
+        shadow: T.boolean({ defaultValue: true }),
       },
       render: ({ vertical, shadow, children }) => {
         const directionClass = vertical ? "stats-vertical" : "";
@@ -184,7 +180,7 @@ export default ({ T, html }) => ({
         return html`
           <div class="stats ${directionClass} ${shadowClass}">${children}</div>
         `;
-      }
+      },
     },
 
     "uix-chat-message": {
@@ -193,13 +189,13 @@ export default ({ T, html }) => ({
         sender: T.object({ defaultValue: { name: "", avatar: "" } }),
         alignment: T.string({ defaultValue: "start", enum: ["start", "end"] }),
         color: T.string({ defaultValue: "primary", enum: Colors }),
-        rounded: T.boolean()
+        rounded: T.boolean(),
       },
       render: ({ message, sender, alignment, rounded, color }) => {
         const bgColorClass = BgColor[color];
         const AlignmentClasses = {
           start: "chat-start",
-          end: "chat-end"
+          end: "chat-end",
         };
         const alignmentClass = AlignmentClasses[alignment];
         return html`
@@ -220,11 +216,11 @@ export default ({ T, html }) => ({
             <div class="chat-bubble ${bgColorClass}">${message.content}</div>
           </div>
         `;
-      }
+      },
     },
     "uix-chat-bubble": {
       props: {
-        messages: T.array()
+        messages: T.array(),
       },
       render: ({ messages }) => {
         return html`
@@ -235,11 +231,11 @@ export default ({ T, html }) => ({
                   .message=${{ content, timestamp }}
                   .sender=${sender}
                 ></uix-chat-message>
-              `
+              `,
   )}
           </div>
         `;
-      }
-    }
-  }
+      },
+    },
+  },
 });

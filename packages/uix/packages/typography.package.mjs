@@ -3,8 +3,8 @@ import {
   Sizes,
   HeadingColors,
   LinkColors,
-  FontWeight
-} from "../style-props.mjs";
+  FontWeight,
+} from "../uix.theme.mjs";
 
 export default ({ T, html }) => ({
   views: {
@@ -13,7 +13,7 @@ export default ({ T, html }) => ({
         size: T.string({ enum: Sizes }),
         color: T.string({ defaultValue: "primary", enum: Colors }),
         weight: T.string({ defaultValue: "semibold", enum: Colors }),
-        class: T.string()
+        class: T.string(),
       },
       render: (props) => {
         const { size, color, weight } = props;
@@ -21,7 +21,7 @@ export default ({ T, html }) => ({
           "prose",
           HeadingColors[color],
           FontWeight[weight],
-          props.class
+          props.class,
         ];
 
         const HeadingTemplates = {
@@ -43,11 +43,11 @@ export default ({ T, html }) => ({
           xs: html`<h6 class="text-xs mt-0 mb-1 ${baseClass}">
             <slot></slot>
           </h6>`,
-          "": html`<p class="text-base ${baseClass}"><slot></slot></p>`
+          "": html`<p class="text-base ${baseClass}"><slot></slot></p>`,
         };
 
         return HeadingTemplates[size || ""];
-      }
+      },
     },
     "uix-link": {
       props: {
@@ -56,14 +56,14 @@ export default ({ T, html }) => ({
         external: T.boolean(),
         color: T.string({ enum: Colors }),
         underlineOnHover: T.boolean(),
-        icon: T.string({ defaultValue: null })
+        icon: T.string({ defaultValue: null }),
       },
       render: ({ href, label, external, color, underlineOnHover, icon }) => {
         const baseClass = [
           "link",
           LinkColors[color],
           underlineOnHover ? "hover:underline" : "",
-          (icon && "flex gap-2 items-center") || ""
+          (icon && "flex gap-2 items-center") || "",
         ]
           .filter(Boolean)
           .join(" ");
@@ -77,7 +77,7 @@ export default ({ T, html }) => ({
             ${label || html`<slot></slot>`}
           </a>
         `;
-      }
-    }
-  }
+      },
+    },
+  },
 });
