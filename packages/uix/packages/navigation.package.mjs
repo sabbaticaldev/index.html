@@ -281,70 +281,40 @@ export default ({ T, html }) => ({
       props: {
         label: T.string({ defaultValue: "Click" }),
         items: T.array(),
-        color: T.string({ defaultValue: "base", enum: Colors }),
-        method: T.string({ defaultValue: "focus", enum: Methods }),
-        position: T.string({ defaultValue: "bottom", enum: Positions }),
+        color: T.string({ defaultValue: "", enum: Colors }),
         isOpen: T.boolean(),
-        openOnHover: T.boolean(),
-        forceOpen: T.boolean(),
-        rounded: T.boolean(),
+        rounded: T.boolean({ defaultValue: true }),
       },
-      render: ({
-        label,
-        items,
-        color,
-        rounded,
-        method,
-        position,
-        open,
-        openOnHover,
-        forceOpen,
-        setOpen,
-      }) => {
+      render: ({ label, items, color, rounded, position }) => {
         const bgColorClass = BgColor[color];
         const textColorClass = TextColor[color];
+
+        const baseClass = [
+          "dropdown",
+          position === "end" ? "dropdown-end" : "",
+          bgColorClass,
+          textColorClass,
+        ]
+          .filter(Boolean)
+          .join(" ");
         return html`
-          <div
-            class="dropdown ${position === "end"
-    ? "dropdown-end"
-    : ""} ${openOnHover ? "dropdown-hover" : ""} ${forceOpen
-    ? "dropdown-open"
-    : ""}"
-          >
-            ${method === "details"
-    ? html`
-                  <details class="${bgColorClass} ${textColorClass} mb-32">
-                    <summary class="m-1 btn">${label}</summary>
-                    <ul
-                      class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} ${(rounded &&
-                        "rounded-box") ||
-                      ""} w-52"
+          <details class=${baseClass}>
+            <summary class="btn">${label}</summary>
+            <ul
+              class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} ${(rounded &&
+                "rounded-box") ||
+              ""} w-52"
+            >
+              ${items.map(
+    (item) =>
+      html`<li>
+                    <a @click=${item.click} href=${item.href || "#"}
+                      >${item.label}</a
                     >
-                      ${items.map((item) => html`<li><a>${item}</a></li>`)}
-                    </ul>
-                  </details>
-                `
-    : html`
-                  <label
-                    tabindex="0"
-                    class="m-1 btn"
-                    @click=${() => setOpen(!open)}
-                    >${label}</label
-                  >
-                  ${open
-    ? html`
-                        <ul
-                          tabindex="0"
-                          class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} ${(rounded &&
-                            "rounded-box") ||
-                          ""} w-52"
-                        >
-                          ${items.map((item) => html`<li><a>${item}</a></li>`)}
-                        </ul>
-                      `
-    : ""}
-                `}
-          </div>
+                  </li>`,
+  )}
+            </ul>
+          </details>
         `;
       },
     },
@@ -424,7 +394,8 @@ export default ({ T, html }) => ({
         variant: T.string({ defaultValue: "" }),
         active: T.boolean(),
         classes: T.object(),
-        color: T.string({ defaultValue: "base", enum: Colors }),
+        color: T.string({ defaultValue: "", enum: Colors }),
+        dropdown: T.array(),
       },
 
       render: ({
@@ -432,6 +403,7 @@ export default ({ T, html }) => ({
         classes = {},
         click,
         color,
+        dropdown,
         icon,
         href,
         label,
@@ -440,21 +412,33 @@ export default ({ T, html }) => ({
       }) => {
         const { item: itemClass = "" } = classes;
         const activeClass = active ? "active" : "";
-        const menuItemClasses = `${itemClass} ${activeClass} items-center gap-2 px-4`;
+        const menuItemClasses = `${itemClass} ${activeClass} items-center px-4`;
 
         return html`
           <li>
-            <uix-button
-              .click=${click}
-              href=${href}
-              icon=${icon}
-              variant=${variant}
-              class=${menuItemClasses}
-              color=${color}
-              label=${label}
-              type=${type}
-            >
-            </uix-button>
+            ${dropdown
+    ? html`<uix-dropdown
+                  .click=${click}
+                  href=${href}
+                  icon=${icon}
+                  variant=${variant}
+                  class=${menuItemClasses}
+                  color=${color}
+                  label=${label}
+                  type=${type}
+                  .items=${dropdown}
+                ></uix-dropdown>`
+    : html`<uix-button
+                  .click=${click}
+                  href=${href}
+                  icon=${icon}
+                  variant=${variant}
+                  class=${menuItemClasses}
+                  color=${color}
+                  label=${label}
+                  type=${type}
+                >
+                </uix-button>`}
           </li>
         `;
       },
@@ -546,6 +530,7 @@ export default ({ T, html }) => ({
                   .click=${item.click}
                   icon=${item.icon}
                   variant=${item.variant}
+                  .dropdown=${item.dropdown}
                   label=${item.label}
                   type=${item.type}
                   href=${item.href}

@@ -463,7 +463,7 @@ export default ({ T, html, ifDefined }) => {
           color,
           size,
         }) => {
-          const textareaClass = `textarea ${
+          const textareaClass = `w-full textarea ${
             variant === "bordered" ? "textarea-bordered" : ""
           } textarea-${color} textarea-${size}`;
 
