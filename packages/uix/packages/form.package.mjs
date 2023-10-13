@@ -26,9 +26,9 @@ import {
   ToggleVariantClass,
 } from "../uix.theme.mjs";
 
-const FormControls = {
+const FormControls = (element) => ({
   reportValidity: function () {
-    const validity = this.$input.reportValidity();
+    const validity = this.$input?.reportValidity();
     if (!validity) {
       //this.$input.setCustomValidity("");
       this.$input.classList.add("input-error");
@@ -61,7 +61,7 @@ const FormControls = {
     host._defaultValue = host.value;
     host._internals = host.attachInternals();
     if (!host.$input) {
-      host.$input = host.shadowRoot.querySelector("input");
+      host.$input = host.shadowRoot.querySelector(element || "input");
       host._internals.setValidity(
         host.$input.validity,
         host.$input.validationMessage,
@@ -78,7 +78,7 @@ const FormControls = {
   formStateRestoreCallback(state) {
     this.$input.value = state;
   },
-};
+});
 
 export default ({ T, html, ifDefined }) => {
   const InputField = (props) =>
@@ -365,7 +365,7 @@ export default ({ T, html, ifDefined }) => {
           change: T.function(),
           keydown: T.function(),
         },
-        ...FormControls,
+        ...FormControls("input"),
         render: (host) => {
           const {
             name,
@@ -376,7 +376,6 @@ export default ({ T, html, ifDefined }) => {
             required,
             regex,
             type,
-            maxLength,
             variant,
             color,
             size,
@@ -416,7 +415,6 @@ export default ({ T, html, ifDefined }) => {
               @change=${change}
               @keydown=${keydown}
               type=${type}
-              ${maxLength !== null ? `maxlength=${maxLength}` : ""}
             />
           `;
         },
@@ -452,6 +450,7 @@ export default ({ T, html, ifDefined }) => {
           change: T.function(),
           keydown: T.function(),
         },
+        ...FormControls("textarea"),
         render: ({
           keydown,
           change,
