@@ -16,7 +16,9 @@
     "src",
     "dist"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "uix": "workspace:^"
+  },
   "devDependencies": {
     "rimraf": "^3.0.2"
   },

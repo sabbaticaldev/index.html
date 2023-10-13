@@ -127,10 +127,15 @@ importers:
       lit:
         specifier: ^3.0.0
         version: 3.0.0
+      uix:
+        specifier: workspace:^
+        version: link:../uix
     devDependencies:
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
+
+  packages/uix: {}
 
 packages:
 
