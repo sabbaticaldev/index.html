@@ -10,7 +10,5 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "bootstrapp-helpers": "workspace:^"
-  }
+  "dependencies": {}
 }

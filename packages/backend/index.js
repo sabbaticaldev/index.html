@@ -29,10 +29,7 @@ const ServiceWorkerPlugin = () => ({
 
   async transform(code, id) {
     console.log(id.toString());
-    if (
-      id.toString().includes("backend") ||
-      id.toString().includes("bootstrapp-helpers")
-    ) {
+    if (id.toString().includes("backend")) {
       const name = path.basename(id, path.extname(id));
       console.log(path.basename(id));
       fs.copyFileSync(id, path.join(outputDir, name + ".mjs"));
