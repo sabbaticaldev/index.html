@@ -2,8 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const srcDir = path.join(__dirname, "src");
+const srcDir = path.dirname(fileURLToPath(import.meta.url));
 const outputDir = "./public";
 
 const copyFilesFromSrc = () => {
@@ -20,7 +19,7 @@ const copyFilesFromSrc = () => {
   });
 };
 
-const ServiceWorkerPlugin = () => ({
+const VitePlugin = () => ({
   name: "service-worker-plugin",
 
   buildStart() {
@@ -34,7 +33,7 @@ const ServiceWorkerPlugin = () => ({
       console.log(path.basename(id));
       fs.copyFileSync(id, path.join(outputDir, name + ".mjs"));
     }
-  },
+  }
 });
 
-export default ServiceWorkerPlugin;
+export default VitePlugin;
