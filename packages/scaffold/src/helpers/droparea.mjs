@@ -1,4 +1,4 @@
-let currentDropzone;
+let currentDroparea;
 let currentDraggedItem;
 let currentPosition;
 let placeholderElement;
@@ -36,22 +36,22 @@ const removeExistingPlaceholder = (parent) => {
 
 export default {
   draggable: {
-    dragstart: function (event) {
+    dragstart: function () {
       currentDraggedItem = this.id;
       this.style.opacity = "0.1";
     },
 
     dragend: function () {
       this.style.opacity = "1";
-      if (currentDropzone && currentDraggedItem && !isNaN(currentPosition)) {
+      if (currentDroparea && currentDraggedItem && !isNaN(currentPosition)) {
         this.dropItem?.({
-          dropzone: currentDropzone,
+          droparea: currentDroparea,
           item: currentDraggedItem,
           position: currentPosition
         });
 
         // Reset state
-        currentDropzone = null;
+        currentDroparea = null;
         currentDraggedItem = null;
         currentPosition = null;
       }
@@ -76,7 +76,7 @@ export default {
     }
   },
 
-  dropzone: {
+  droparea: {
     drop: function (event) {
       event.preventDefault();
       const children = Array.from(event.currentTarget.children);
@@ -85,19 +85,19 @@ export default {
     },
 
     dragleave: function (event) {
-      const dropzoneBounds = event.currentTarget.getBoundingClientRect();
+      const dropareaBounds = event.currentTarget.getBoundingClientRect();
       removeExistingPlaceholder(event.currentTarget);
 
       if (
         (this.vertical && event.clientY === 0) ||
         (!this.vertical && event.clientX === 0)
       ) {
-        currentDropzone = null;
+        currentDroparea = null;
         currentDraggedItem = null;
         currentPosition = null;
       } else if (
-        (this.vertical && event.clientY < dropzoneBounds.top) ||
-        (!this.vertical && event.clientX < dropzoneBounds.left)
+        (this.vertical && event.clientY < dropareaBounds.top) ||
+        (!this.vertical && event.clientX < dropareaBounds.left)
       ) {
         insertPlaceholder(event.currentTarget, "start");
         currentPosition = 0;
@@ -106,17 +106,17 @@ export default {
 
     dragover: function (event) {
       event.preventDefault();
-      const dropzone = event.currentTarget;
-      const items = Array.from(dropzone.children).filter(
+      const droparea = event.currentTarget;
+      const items = Array.from(droparea.children).filter(
         (child) => !child.classList.contains("drag-placeholder")
       );
 
       if (!items.length) {
         if (!placeholderElement) {
-          insertPlaceholder(dropzone);
+          insertPlaceholder(droparea);
         }
         currentPosition = 0;
-        currentDropzone = dropzone.id;
+        currentDroparea = droparea.id;
         return;
       }
 
@@ -127,7 +127,7 @@ export default {
           (!this.vertical && item.getBoundingClientRect().left > compareVal)
         ) {
           currentPosition = index;
-          currentDropzone = dropzone.id;
+          currentDroparea = droparea.id;
           return true;
         }
         return false;
@@ -142,19 +142,19 @@ export default {
             compareVal > items[items.length - 1].getBoundingClientRect().right))
       ) {
         currentPosition = items.length;
-        currentDropzone = dropzone.id;
+        currentDroparea = droparea.id;
       }
 
       if (
         !placeholderElement ||
         (targetItem && placeholderElement.nextSibling !== targetItem)
       ) {
-        insertPlaceholder(dropzone, "before", targetItem);
+        insertPlaceholder(droparea, "before", targetItem);
       }
     },
 
     domReady: function (host) {
-      if (host.dropzone) {
+      if (host.droparea) {
         host.addEventListener("drop", host.drop);
         host.addEventListener("dragover", host.dragover);
         host.addEventListener("dragleave", host.dragleave);
@@ -162,7 +162,7 @@ export default {
     },
 
     domDisconnect: function (host) {
-      if (host.dropzone) {
+      if (host.droparea) {
         host.removeEventListener("drop", host.drop);
         host.removeEventListener("dragover", host.dragover);
         host.removeEventListener("dragleave", host.dragleave);

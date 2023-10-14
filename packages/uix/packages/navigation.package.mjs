@@ -285,7 +285,12 @@ export default ({ T, html }) => ({
         isOpen: T.boolean(),
         rounded: T.boolean({ defaultValue: true }),
       },
-      render: ({ label, items, color, rounded, position }) => {
+      close: function () {
+        const $dropdown = this.shadowRoot.querySelector("details");
+        $dropdown?.removeAttribute("open");
+      },
+      render: (host) => {
+        const { label, items, color, rounded, position } = host;
         const bgColorClass = BgColor[color];
         const textColorClass = TextColor[color];
 
@@ -298,21 +303,22 @@ export default ({ T, html }) => ({
           .filter(Boolean)
           .join(" ");
         return html`
-          <details class=${baseClass}>
+          <details id="dropdown" class=${baseClass}>
             <summary class="btn">${label}</summary>
             <ul
               class="p-2 shadow menu dropdown-content z-[1] ${bgColorClass} ${(rounded &&
                 "rounded-box") ||
               ""} w-52"
             >
-              ${items.map(
-    (item) =>
-      html`<li>
-                    <a @click=${item.click} href=${item.href || "#"}
-                      >${item.label}</a
-                    >
-                  </li>`,
-  )}
+              ${items.map((item) => {
+    const click = (e) => {
+      host.close();
+      item?.click?.(e);
+    };
+    return html`<li>
+                  <a @click=${click} href=${item.href || "#"}>${item.label}</a>
+                </li>`;
+  })}
             </ul>
           </details>
         `;

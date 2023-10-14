@@ -8,7 +8,7 @@ import CRUD from "./helpers/rest.mjs";
 import DateTimeHelpers from "./helpers/datetime.mjs";
 import i18n from "./helpers/i18n/i18n.mjs";
 import url from "./helpers/url.mjs";
-import DropzoneHelpers from "./helpers/dropzone.mjs";
+import DropareaHelpers from "./helpers/droparea.mjs";
 const isServer = typeof localStorage === "undefined";
 
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
@@ -283,7 +283,7 @@ export const definePackage = (packageFn, { style }) => {
     i18n,
     ...CRUD,
     ...DateTimeHelpers,
-    ...DropzoneHelpers
+    ...DropareaHelpers
   };
   const pkg = packageFn(context);
   const views = Object.fromEntries(

@@ -8,7 +8,7 @@ import {
   Colors,
 } from "../uix.theme.mjs";
 
-export default ({ T, html, dropzone }) => ({
+export default ({ T, html, droparea }) => ({
   views: {
     "uix-block": {
       props: {
@@ -110,7 +110,7 @@ export default ({ T, html, dropzone }) => ({
       props: {
         vertical: T.boolean(),
         responsive: T.boolean(),
-        dropzone: T.boolean(),
+        droparea: T.boolean(),
         gap: T.string({ defaultValue: "sm", enum: Sizes }),
         rounded: T.boolean(),
         alignX: T.string({ enum: Object.keys(AlignX) }),
@@ -118,7 +118,7 @@ export default ({ T, html, dropzone }) => ({
         class: T.string(),
         id: T.string(),
       },
-      ...dropzone,
+      ...droparea,
       render: (props) => {
         const { vertical, gap, responsive, rounded, alignX, alignY } = props;
         const directionClass = vertical ? "flex-col" : "flex-row";

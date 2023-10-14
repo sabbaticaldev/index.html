@@ -170,7 +170,7 @@ export default ({ T, html, ifDefined }) => {
       return props.keydown?.(e);
     };
 
-    const fieldComponent = FieldRenderer({ ...props, keydown });
+    const fieldComponent = FieldRenderer({ ...props, type, keydown });
 
     if (field.label || (field.labelAlt && field.labelAlt.length)) {
       return html`

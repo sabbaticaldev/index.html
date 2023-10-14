@@ -9,6 +9,7 @@ import docsKit from "uix/packages/docs.package.mjs";
 import navigationKit from "uix/packages/navigation.package.mjs";
 import layoutKit from "uix/packages/layout.package.mjs";
 import contentKit from "uix/packages/content.package.mjs";
+import datetimeKit from "uix/packages/datetime.package.mjs";
 
 const definePackages = (packages, options) => {
   return packages.reduce(
@@ -35,7 +36,8 @@ const bootstrapp = (app, { style, init, bootstrappTag = "app-index" } = {}) => {
     uiKit,
     formKit,
     layoutKit,
-    contentKit
+    contentKit,
+    datetimeKit
   ];
   const { models, views, controllers } = definePackages(kits, { style });
   init?.({ models, controllers });
