@@ -326,6 +326,7 @@ class ReactiveRecord {
 
   async getMany(key, opts = {}) {
     const { props, indexOnly = true, nested = false } = opts;
+    console.log({ key }, this.referenceKey);
     const items = await this.adapter.startsWith(
       key || this.referenceKey,
       this.store,

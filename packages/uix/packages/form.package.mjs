@@ -70,7 +70,8 @@ const FormControls = (element) => ({
     }
   },
   formResetCallback() {
-    this.$input.value = this._defaultValue || "";
+    if (!["submit", "button", "reset"].includes(this.$input.type))
+      this.$input.value = this._defaultValue || "";
   },
   formDisabledCallback(disabled) {
     this.$input.disabled = disabled;
@@ -114,6 +115,7 @@ export default ({ T, html, ifDefined }) => {
       size=${ifDefined(props.size)}
       label=${ifDefined(props.label)}
       labelAlt=${ifDefined(props.labelAlt)}
+      name=${props.name}
       class="w-full"
     ></uix-textarea>
   `;
@@ -125,6 +127,7 @@ export default ({ T, html, ifDefined }) => {
       color=${ifDefined(props.color)}
       label=${ifDefined(props.label)}
       altLabel=${ifDefined(props.altLabel)}
+      name=${props.name}
       size=${ifDefined(props.size)}
       class="w-full"
     ></uix-select>
@@ -229,6 +232,7 @@ export default ({ T, html, ifDefined }) => {
         formData: function () {
           const form = this.getForm();
           const formData = new FormData(form);
+          console.log({ formData }, form);
           const data = {};
           formData.forEach((value, key) => {
             data[key] = value;
@@ -425,13 +429,17 @@ export default ({ T, html, ifDefined }) => {
           options: T.array(),
           color: T.string({ defaultValue: "base", enum: Colors }),
           size: T.string({ defaultValue: "md", enum: Sizes }),
+          name: T.string(),
         },
-        render: ({ options, color, size }) => {
+        render: ({ options, color, size, name }) => {
           const colorClass = SelectColors[color];
           const sizeClass = SelectSizes[size];
 
           return html`
-            <select class="select ${colorClass} ${sizeClass} w-full max-w-xs">
+            <select
+              name=${name}
+              class="select ${colorClass} ${sizeClass} w-full max-w-xs"
+            >
               ${options.map((option) => html` <option>${option}</option> `)}
             </select>
           `;
@@ -442,7 +450,9 @@ export default ({ T, html, ifDefined }) => {
         props: {
           value: T.string(),
           placeholder: T.string(),
+          name: T.string(),
           disabled: T.boolean(),
+          required: T.boolean(),
           rows: T.number({ defaultValue: 4 }),
           variant: T.string({ defaultValue: "bordered", enum: Variants }),
           color: T.string({ defaultValue: "default", enum: Colors }),
@@ -451,27 +461,40 @@ export default ({ T, html, ifDefined }) => {
           keydown: T.function(),
         },
         ...FormControls("textarea"),
-        render: ({
-          keydown,
-          change,
-          value,
-          placeholder,
-          disabled,
-          rows,
-          variant,
-          color,
-          size,
-        }) => {
+        render: (host) => {
+          const {
+            value,
+            name,
+            placeholder,
+            disabled,
+            rows,
+            variant,
+            color,
+            size,
+            required,
+          } = host;
+
+          const change = (e) => {
+            host._setValue(e.target.value, host);
+            host.change?.(e);
+          };
+
+          const keydown = (e) => {
+            host._setValue(e.target.value, host);
+            host.keydown?.(e);
+          };
           const textareaClass = `w-full textarea ${
             variant === "bordered" ? "textarea-bordered" : ""
           } textarea-${color} textarea-${size}`;
 
           return html`
             <textarea
-              class="${textareaClass}"
+              class=${textareaClass}
               placeholder=${placeholder}
               ?disabled=${disabled}
+              name=${name}
               rows=${rows}
+              ?required=${required}
               @change=${change}
               @keydown=${keydown}
             >
