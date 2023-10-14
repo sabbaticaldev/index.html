@@ -17,7 +17,6 @@ export default ({ T, html, droparea }) => ({
         textColor: T.string(),
         spacing: T.number({ defaultValue: "md" }),
         rounded: T.boolean(),
-        draggable: T.boolean(),
         shadow: T.boolean(),
         class: T.string(),
       },
@@ -34,8 +33,8 @@ export default ({ T, html, droparea }) => ({
           warning: "bg-warning text-warning-content",
           error: "bg-error text-error-content",
         };
-
         const SpacingSizes = {
+          "": "",
           xs: "p-1",
           sm: "p-2",
           md: "p-4",
@@ -47,13 +46,12 @@ export default ({ T, html, droparea }) => ({
         };
         const bgClass = bgColor ? `bg-${bgColor}` : "";
         const textClass = textColor ? `text-${textColor}` : "";
-        const spacingClass = SpacingSizes[spacing || "md"];
+        const spacingClass = SpacingSizes[spacing];
         const colorClass = BlockColors[color];
         const roundedClass = rounded ? "rounded" : "";
         const shadowClass = shadow ? "shadow-md" : "";
         return html`
           <div
-            draggable="true"
             class="${spacingClass} ${colorClass} ${bgClass} ${textClass} ${roundedClass} ${shadowClass} ${props.class}"
           >
             <slot></slot>

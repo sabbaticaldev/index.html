@@ -145,7 +145,7 @@ export default ({ T, html, ifDefined }) => {
         <uix-list responsive>
           ${row.map(
     (field) =>
-      html`<uix-block>
+      html`<uix-block spacing="0" class="w-full">
                 ${renderField(field, {
     html,
     host,
@@ -232,7 +232,6 @@ export default ({ T, html, ifDefined }) => {
         formData: function () {
           const form = this.getForm();
           const formData = new FormData(form);
-          console.log({ formData }, form);
           const data = {};
           formData.forEach((value, key) => {
             data[key] = value;
@@ -244,7 +243,9 @@ export default ({ T, html, ifDefined }) => {
           const actionList = actions?.({ form: host });
           return html`
             <form class="m-0" method=${method} action=${endpoint}>
-              ${fields.map(renderFieldConnected(host))}
+              <uix-list gap="lg" vertical>
+                ${fields.map(renderFieldConnected(host))}
+              </uix-list>
               <uix-list>
                 ${actionList
     ? html`<uix-list responsive gap="md" class="mx-auto mt-10">
