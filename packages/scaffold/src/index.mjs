@@ -1,5 +1,4 @@
 import { definePackage } from "./reactive-view.mjs";
-
 import uiKit from "uix/packages/ui.package.mjs";
 import uxKit from "uix/packages/ux.package.mjs";
 import appKit from "uix/packages/app.package.mjs";
@@ -25,7 +24,10 @@ const definePackages = (packages, options) => {
   );
 };
 
-const bootstrapp = (app, { style, init, bootstrappTag = "app-index" } = {}) => {
+const bootstrapp = async (
+  app,
+  { style, init, bootstrappTag = "app-index" } = {}
+) => {
   const kits = [
     app,
     appKit,
@@ -40,7 +42,7 @@ const bootstrapp = (app, { style, init, bootstrappTag = "app-index" } = {}) => {
     datetimeKit
   ];
   const { models, views, controllers } = definePackages(kits, { style });
-  init?.({ models, controllers });
+  await init?.({ models, controllers });
 
   return views[bootstrappTag];
 };

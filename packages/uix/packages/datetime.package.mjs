@@ -3,7 +3,6 @@ const getFirstDayOfMonth = (month, year) =>
   new Date(year, month - 1, 1).getDay();
 const getLastDayOfMonth = (month, year) =>
   new Date(year, month - 1, getDaysInMonth(month, year)).getDay();
-console.log("Passei aqui?");
 
 export default ({ T, html }) => ({
   i18n: {},

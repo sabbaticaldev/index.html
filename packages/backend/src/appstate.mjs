@@ -3,8 +3,22 @@ import { defineModels } from "./reactive-record.mjs";
 import { generateId, fromBase62, toBase62 } from "./string.mjs";
 
 const APP_STATE_DB = "app-state-db";
+let isLocked = false;
+
+const acquireLock = async () => {
+  while (isLocked) {
+    await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
+  }
+  isLocked = true;
+};
+
+const releaseLock = () => {
+  isLocked = false;
+};
 
 const store = indexeddb.createStore(APP_STATE_DB);
+let appId;
+export let userId;
 
 const convertFunctionsToString = (obj) => {
   let newObj = {};
@@ -30,9 +44,15 @@ const indexedDBWrapper = {
     return prop ? appData[prop] : appData;
   },
   set: async (appId, data) => {
-    const currentData = (await indexeddb.getItem(appId, store)) || {};
-    const updatedData = { ...currentData, ...data };
-    return await indexeddb.setItem(appId, updatedData, store);
+    await acquireLock();
+
+    try {
+      const currentData = (await indexeddb.getItem(appId, store)) || {};
+      const updatedData = { ...currentData, ...data };
+      return await indexeddb.setItem(appId, updatedData, store);
+    } finally {
+      releaseLock();
+    }
   },
 };
 
@@ -42,7 +62,7 @@ export const getAppId = async () => {
     const timestamp = Date.now();
     appId = toBase62(timestamp);
     await setAppId(appId);
-    await indexedDBWrapper.set(appId, { userId: 1 });
+    await indexedDBWrapper.set(appId, { timestamp });
   }
   return appId;
 };
@@ -50,33 +70,29 @@ export const getAppId = async () => {
 export const setAppId = async (appId) => {
   await indexedDBWrapper.set("default", { appId });
 };
-
-export const getUserId = async (appId) => {
-  let userId = await indexedDBWrapper.get(appId, "userId");
-  if (!userId) {
-    userId = generateId(appId);
-    await indexedDBWrapper.set(appId, { userId });
-  }
-  return userId;
+export const getModel = async (model) => {
+  const { models } = await getApiModel();
+  return models[model];
 };
 
 export const getModels = async (appId) => {
-  return (await indexedDBWrapper.get(appId, "models")) || {};
+  return (await indexedDBWrapper.get(appId + "-models", "models")) || {};
 };
 
 export const setModels = async (appId, models) => {
-  await indexedDBWrapper.set(appId, { models });
+  await indexedDBWrapper.set(appId + "-models", { models });
   return models;
 };
 
 export const getControllers = async (appId) => {
-  return (await indexedDBWrapper.get(appId, "controllers")) || {};
+  return (
+    (await indexedDBWrapper.get(appId + "-controllers", "controllers")) || {}
+  );
 };
 
 export const setControllers = async (appId, controllers) => {
-  console.log({ controllers });
   const stringifiedControllers = convertFunctionsToString(controllers);
-  await indexedDBWrapper.set(appId, {
+  await indexedDBWrapper.set(appId + "-controllers", {
     controllers: stringifiedControllers || {},
   });
   return models;
@@ -130,8 +146,6 @@ export async function getApiModel() {
   const modelList = await getModels(appId);
   const controllerList = await getControllers(appId);
 
-  models = defineModels(modelList, appId);
-
   // Using modelList to generate the api
   api = Object.entries(modelList).reduce((acc, [name, model]) => {
     const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);
@@ -163,17 +177,28 @@ export async function getApiModel() {
 }
 
 const messageHandlers = {
-  INIT_APP: async (data, { source }) => {
+  INIT_BACKEND: async (data, { source }) => {
     let appId = data.appId;
     if (appId) {
       await setAppId(appId);
     } else {
       appId = await getAppId();
     }
-    const userId = await getUserId(appId);
+
+    const modelList = await getModels(appId);
+    models = defineModels(modelList, appId);
+    userId = await indexedDBWrapper.get(appId, "userId");
+    if (!userId) {
+      userId = generateId(appId);
+      await indexedDBWrapper.set(appId, { userId });
+      const usersModel = models.users;
+      if (usersModel) {
+        await usersModel.add({ id: userId, name: "user" });
+      }
+    }
 
     source.postMessage({
-      type: "INIT_APP",
+      type: "BACKEND_INITIALIZED",
       appId,
       userId,
     });
@@ -239,7 +264,6 @@ export const messageHandler =
 export default {
   getApiModel,
   getAppId,
-  getUserId,
   generateId,
   getTimestamp,
   getModels,

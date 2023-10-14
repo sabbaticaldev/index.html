@@ -17,6 +17,7 @@
     "dist"
   ],
   "dependencies": {
+    "backend": "workspace:^",
     "uix": "workspace:^"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 import indexeddbAdapter from "./indexeddb.mjs";
 import { generateId, updateIndexPosition, removeIndexItem } from "./string.mjs";
-import P2P from "./rtc-worker.mjs";
+import P2P from "./web-worker.mjs";
 
 let oplog;
 let queue;
@@ -326,7 +326,6 @@ class ReactiveRecord {
 
   async getMany(key, opts = {}) {
     const { props, indexOnly = true, nested = false } = opts;
-    console.log({ key }, this.referenceKey);
     const items = await this.adapter.startsWith(
       key || this.referenceKey,
       this.store,

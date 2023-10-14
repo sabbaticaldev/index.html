@@ -9,6 +9,7 @@ import DateTimeHelpers from "./helpers/datetime.mjs";
 import i18n from "./helpers/i18n/i18n.mjs";
 import url from "./helpers/url.mjs";
 import DropareaHelpers from "./helpers/droparea.mjs";
+import { WebWorker } from "backend/src/web-worker.mjs";
 const isServer = typeof localStorage === "undefined";
 
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
@@ -283,7 +284,8 @@ export const definePackage = (packageFn, { style }) => {
     i18n,
     ...CRUD,
     ...DateTimeHelpers,
-    ...DropareaHelpers
+    ...DropareaHelpers,
+    WebWorker
   };
   const pkg = packageFn(context);
   const views = Object.fromEntries(

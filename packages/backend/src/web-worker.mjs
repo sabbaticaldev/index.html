@@ -16,7 +16,7 @@ export const postMessage = (payload) => {
   }
 };
 
-export const getRTCWorker = ({ appId, userId, models }) => {
+export const WebWorker = ({ appId }) => {
   if (!worker) {
     worker = new Worker("./controller.mjs", { type: "module" });
     worker.onmessage = (event) => {
@@ -31,12 +31,10 @@ export const getRTCWorker = ({ appId, userId, models }) => {
         }
       }
     };
-
+    console.log("TO PASSANDO POR AQUI NORMAL");
     navigator.serviceWorker.controller.postMessage({
-      type: "INIT_APP",
+      type: "INIT_BACKEND",
       appId,
-      userId,
-      models,
       bridge: true,
     });
 
@@ -45,7 +43,7 @@ export const getRTCWorker = ({ appId, userId, models }) => {
       connection.connected = true;
     };
 
-    const connection = connect({
+    /*    const connection = connect({
       username: appId + "|" + userId,
       callback: connectCallback,
     });
@@ -56,9 +54,9 @@ export const getRTCWorker = ({ appId, userId, models }) => {
           .call(appId, userId, [appId, "1"].join("|"), models)
           .then(connectCallback);
       }
-    }
+    } */
   }
   return worker;
 };
 
-export default { postMessage, getRTCWorker, worker };
+export default { postMessage, WebWorker, worker };
