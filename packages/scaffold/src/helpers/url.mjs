@@ -1,4 +1,4 @@
-const isServer = typeof window === 'undefined';
+const isServer = typeof window === "undefined";
 // TODO: fix, URL adapter isn't working because service worker can't access replaceState
 export default {
   getItem: (key) => {
@@ -13,7 +13,7 @@ export default {
     params.set(key, value);
     window.history?.replaceState?.(
       {},
-      '',
+      "",
       `${window.location.pathname}?${params}`
     );
     return { key };
@@ -24,9 +24,9 @@ export default {
     params.delete(key);
     window.history.replaceState?.(
       {},
-      '',
+      "",
       `${window.location.pathname}?${params}`
     );
     return { key };
-  },
+  }
 };
