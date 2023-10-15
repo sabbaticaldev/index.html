@@ -3,22 +3,8 @@ import { defineModels } from "./reactive-record.mjs";
 import { generateId, fromBase62, toBase62 } from "./string.mjs";
 
 const APP_STATE_DB = "app-state-db";
-let isLocked = false;
-
-const acquireLock = async () => {
-  while (isLocked) {
-    await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
-  }
-  isLocked = true;
-};
-
-const releaseLock = () => {
-  isLocked = false;
-};
 
 const store = indexeddb.createStore(APP_STATE_DB);
-let appId;
-export let userId;
 
 const convertFunctionsToString = (obj) => {
   let newObj = {};
@@ -44,15 +30,9 @@ const indexedDBWrapper = {
     return prop ? appData[prop] : appData;
   },
   set: async (appId, data) => {
-    await acquireLock();
-
-    try {
-      const currentData = (await indexeddb.getItem(appId, store)) || {};
-      const updatedData = { ...currentData, ...data };
-      return await indexeddb.setItem(appId, updatedData, store);
-    } finally {
-      releaseLock();
-    }
+    const currentData = (await indexeddb.getItem(appId, store)) || {};
+    const updatedData = { ...currentData, ...data };
+    return await indexeddb.setItem(appId, updatedData, store);
   },
 };
 
@@ -65,6 +45,13 @@ export const getAppId = async () => {
     await indexedDBWrapper.set(appId, { timestamp });
   }
   return appId;
+};
+
+export let userId;
+
+export const getUserId = async () => {
+  userId = await indexedDBWrapper.get("default", "userId");
+  return userId;
 };
 
 export const setAppId = async (appId) => {
@@ -119,12 +106,12 @@ function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
       return this.remove(id);
     },
     [`PATCH /api/${modelName}/:id`]: function ({ id, ...rest }) {
-      console.log({ id, rest });
       return this.edit({ id, ...rest });
     },
     ...endpoints,
   };
 }
+
 const endpointToRegex = (endpoint) => {
   const [method, path] = endpoint.split(" ");
   const regexPath = path

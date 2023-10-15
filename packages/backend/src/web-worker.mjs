@@ -31,7 +31,6 @@ export const WebWorker = ({ appId }) => {
         }
       }
     };
-    console.log("TO PASSANDO POR AQUI NORMAL");
     navigator.serviceWorker.controller.postMessage({
       type: "INIT_BACKEND",
       appId,
