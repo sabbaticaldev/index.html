@@ -1,3 +1,4 @@
+import { html } from "lit";
 import {
   Colors,
   Sizes,
@@ -6,7 +7,7 @@ import {
   FontWeight,
 } from "../uix.theme.mjs";
 
-export default ({ T, html }) => ({
+export default ({ T }) => ({
   views: {
     "uix-text": {
       props: {

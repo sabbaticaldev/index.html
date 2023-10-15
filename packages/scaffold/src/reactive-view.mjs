@@ -1,8 +1,4 @@
-import { LitElement, html } from "lit";
-import { until } from "lit/directives/until.js";
-import { ifDefined } from "lit/directives/if-defined.js";
-import { keyed } from "lit/directives/keyed.js";
-import { repeat } from "lit/directives/repeat.js";
+import { LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import CRUD from "./helpers/rest.mjs";
 import DateTimeHelpers from "./helpers/datetime.mjs";
@@ -10,6 +6,7 @@ import i18n from "./helpers/i18n/i18n.mjs";
 import url from "./helpers/url.mjs";
 import DropareaHelpers from "./helpers/droparea.mjs";
 import { WebWorker } from "backend/src/web-worker.mjs";
+
 const isServer = typeof localStorage === "undefined";
 
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
@@ -251,10 +248,7 @@ export function defineView(tag, component, config = {}) {
     }
 
     render() {
-      return (
-        render?.(this, this.context) ||
-        html`<h1>Error: no render function or template.</h1>`
-      );
+      return render?.(this, this.context);
     }
   }
 
@@ -276,11 +270,6 @@ export const definePackage = (packageFn, { style }) => {
   const context = {
     T,
     F,
-    html,
-    until,
-    ifDefined,
-    repeat,
-    keyed,
     i18n,
     ...CRUD,
     ...DateTimeHelpers,

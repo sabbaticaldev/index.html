@@ -1,3 +1,5 @@
+import { html } from "lit";
+
 import {
   Positions,
   Resolutions,
@@ -9,7 +11,7 @@ import {
   BorderColor,
 } from "../uix.theme.mjs";
 
-export default ({ T, html }) => ({
+export default ({ T }) => ({
   views: {
     "uix-alert": {
       props: {

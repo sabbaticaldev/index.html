@@ -1,3 +1,6 @@
+//import { T } from "shared";
+import { html } from "lit";
+
 import {
   AnimationTypes,
   Sizes,
@@ -9,7 +12,7 @@ import {
   RingColor,
 } from "../uix.theme.mjs";
 
-export default ({ T, html }) => ({
+export default ({ T }) => ({
   views: {
     "uix-avatar": {
       props: {

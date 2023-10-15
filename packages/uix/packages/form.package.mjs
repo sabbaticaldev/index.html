@@ -1,3 +1,6 @@
+import { html } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
+
 import {
   ButtonColors,
   ButtonSizes,
@@ -81,7 +84,7 @@ const FormControls = (element) => ({
   },
 });
 
-export default ({ T, html, ifDefined }) => {
+export default ({ T }) => {
   const InputField = (props) =>
     html`
       <uix-input
@@ -147,7 +150,6 @@ export default ({ T, html, ifDefined }) => {
     (field) =>
       html`<uix-block spacing="0" class="w-full">
                 ${renderField(field, {
-    html,
     host,
     ifDefined,
   })}
@@ -157,7 +159,6 @@ export default ({ T, html, ifDefined }) => {
       `;
     } else {
       return renderField(row, {
-        html,
         host,
         ifDefined,
       });

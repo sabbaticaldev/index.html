@@ -1,7 +1,7 @@
 import {} from "../style-props.mjs";
 
 // TODO: create a package that supports creating / running tests
-export default ({ T, html }) => ({
+export default () => ({
   i18n: {},
-  views: {}
+  views: {},
 });

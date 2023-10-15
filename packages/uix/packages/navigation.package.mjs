@@ -1,10 +1,11 @@
+//import { T } from "shared";
+import { html } from "lit";
 import {
   Positions,
   TabsSize,
   Gaps,
   MenuSize,
   ModalPositions,
-  Methods,
   Sizes,
   Colors,
   BgColor,
@@ -13,7 +14,7 @@ import {
   CollapseIcon,
 } from "../uix.theme.mjs";
 
-export default ({ T, html }) => ({
+export default ({ T }) => ({
   views: {
     "uix-accordion": {
       props: {

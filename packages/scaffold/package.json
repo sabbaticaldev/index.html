@@ -18,6 +18,7 @@
   ],
   "dependencies": {
     "backend": "workspace:^",
+    "shared": "^0.2.0",
     "uix": "workspace:^"
   },
   "devDependencies": {

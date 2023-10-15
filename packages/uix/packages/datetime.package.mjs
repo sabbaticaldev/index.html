@@ -1,10 +1,12 @@
+import { html } from "lit";
+
 const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
 const getFirstDayOfMonth = (month, year) =>
   new Date(year, month - 1, 1).getDay();
 const getLastDayOfMonth = (month, year) =>
   new Date(year, month - 1, getDaysInMonth(month, year)).getDay();
 
-export default ({ T, html }) => ({
+export default ({ T }) => ({
   i18n: {},
   views: {
     "uix-calendar-day": {

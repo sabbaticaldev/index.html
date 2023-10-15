@@ -1,3 +1,5 @@
+import { html } from "lit";
+
 import {
   BgColor,
   AlignX,
@@ -8,7 +10,7 @@ import {
   Colors,
 } from "../uix.theme.mjs";
 
-export default ({ T, html, droparea }) => ({
+export default ({ droparea, T }) => ({
   views: {
     "uix-block": {
       props: {

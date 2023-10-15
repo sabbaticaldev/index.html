@@ -1,4 +1,6 @@
-export default ({ T, html }) => ({
+import { html } from "lit";
+
+export default ({ T }) => ({
   i18n: {},
   views: {
     "uix-docs-page": {
@@ -6,7 +8,7 @@ export default ({ T, html }) => ({
         title: T.string(),
         description: T.string(),
         tableData: T.array(),
-        examples: T.array()
+        examples: T.array(),
       },
       render: ({ title, description, tableData, examples }) => {
         const formattedTitle = (title) =>
@@ -25,7 +27,7 @@ export default ({ T, html }) => ({
     "Type",
     "Property",
     "Description",
-    "Lit Property?"
+    "Lit Property?",
   ]}
                   .rows=${tableData}
                 ></uix-table>
@@ -43,7 +45,7 @@ export default ({ T, html }) => ({
                       <uix-mockup-code code=${example.code}></uix-mockup-code>
                     </uix-block>
                   </section>
-                `
+                `,
   )}
             </uix-block>
 
@@ -60,14 +62,14 @@ export default ({ T, html }) => ({
                         >${example.title}</a
                       >
                     </li>
-                  `
+                  `,
   )}
                 <li><a href="#source-code">Source Code</a></li>
               </ul>
             </uix-block>
           </uix-list>
         `;
-      }
-    }
-  }
+      },
+    },
+  },
 });
