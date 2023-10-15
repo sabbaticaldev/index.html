@@ -57,40 +57,48 @@ export const T = {
   text: (options = {}) => ({
     formType: "text",
     type: T.string(options),
+    ...options,
   }),
   datetime: (options = {}) => ({
     formType: "datetime",
     type: T.string(options),
+    ...options,
   }),
 
   time: (options = {}) => ({
     formType: "time",
     type: T.string(options),
+    ...options,
   }),
 
   checkbox: (options = {}) => ({
     formType: "checkbox",
     type: T.boolean(options),
+    ...options,
   }),
 
   radio: (options = {}) => ({
     formType: "radio",
     type: T.boolean(options),
+    ...options,
   }),
 
   toggle: (options = {}) => ({
     formType: "toggle",
     type: T.boolean(options),
+    ...options,
   }),
 
   textarea: (options = {}) => ({
     formType: "textarea",
     type: T.string(options),
+    ...options,
   }),
 
   custom: (customFormType, options) => ({
     customFormType,
     type: T[customFormType](options),
+    ...options,
   }),
 };
 

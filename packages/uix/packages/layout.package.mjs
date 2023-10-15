@@ -115,14 +115,12 @@ export default {
         droparea: T.boolean(),
         gap: T.string({ defaultValue: "sm", enum: Sizes }),
         rounded: T.boolean(),
-        alignX: T.string({ enum: Object.keys(AlignX) }),
-        alignY: T.string({ enum: Object.keys(AlignY) }),
         class: T.string(),
         id: T.string(),
       },
       ...droparea,
       render: (props) => {
-        const { vertical, gap, responsive, rounded, alignX, alignY } = props;
+        const { vertical, gap, responsive, rounded } = props;
         const directionClass = vertical ? "flex-col" : "flex-row";
         const responsiveClass =
           (responsive &&
@@ -134,20 +132,15 @@ export default {
           ? "rounded-l-full rounded-r-full"
           : "";
         const gapClass = Gaps[gap] || "";
-        const alignXClass = alignX ? "w-full " + AlignX[alignX] : "";
-        const alignYClass = alignY ? "h-full " + AlignY[alignY] : "";
-
         return html`
           <div
             id="uix-list"
             class=${[
-    "flex",
+    "flex w-full h-full",
     gapClass,
     directionClass,
     responsiveClass,
     borderRadiusClass,
-    alignXClass,
-    alignYClass,
     props.class,
   ]
     .filter(Boolean)

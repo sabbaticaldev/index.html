@@ -85,6 +85,7 @@ const FormControls = (element) => ({
   },
 });
 const InputField = (props) =>
+  !console.log({ props }) &&
   html`
     <uix-input
       .keydown=${props.keydown}
@@ -95,7 +96,7 @@ const InputField = (props) =>
       value=${ifDefined(props.value)}
       placeholder=${ifDefined(props.placeholder)}
       regex=${ifDefined(props.regex)}
-      type=${ifDefined(props.type)}
+      type=${ifDefined(props.formType || props.type)}
       maxLength=${ifDefined(props.maxLength)}
       variant=${ifDefined(props.variant)}
       color=${ifDefined(props.color)}
@@ -141,39 +142,38 @@ const fieldRenderers = {
   select: SelectField,
 };
 
-const renderFieldConnected = (host) => (row) => {
+const renderFields = (row) => {
   if (Array.isArray(row)) {
     return html`
-      <uix-list responsive>
+      <uix-list>
         ${row.map(
     (field) =>
       html`<uix-block spacing="0" class="w-full">
-              ${renderField(field, {
-    host,
-    ifDefined,
-  })}
+              ${renderField(field)}
             </uix-block>`,
   )}
       </uix-list>
     `;
   } else {
-    return renderField(row, {
-      host,
-      ifDefined,
-    });
+    return renderField(row);
   }
 };
-const renderField = (field, { host }) => {
-  const { type, ...props } = field;
-  const FieldRenderer = fieldRenderers[type] || fieldRenderers.input;
+const renderField = (field) => {
+  const { type, formType, ...props } = field;
+  const FieldRenderer =
+    fieldRenderers[formType || type] || fieldRenderers.input;
   const keydown = (e) => {
-    if (e.key === "Enter") {
-      host.submit();
-    }
+    //if (e.key === "Enter") {
+    //   host.submit();
+    //}
     return props.keydown?.(e);
   };
 
-  const fieldComponent = FieldRenderer({ ...props, type, keydown });
+  const fieldComponent = FieldRenderer({
+    ...props,
+    type: formType || type,
+    keydown,
+  });
 
   if (field.label || (field.labelAlt && field.labelAlt.length)) {
     return html`
@@ -242,9 +242,7 @@ export default {
         const actionList = actions?.({ form: host });
         return html`
           <form class="m-0" method=${method} action=${endpoint}>
-            <uix-list gap="lg" vertical>
-              ${fields.map(renderFieldConnected(host))}
-            </uix-list>
+            <uix-list gap="lg" vertical> ${fields.map(renderFields)} </uix-list>
             <uix-list>
               ${actionList
     ? html`<uix-list responsive gap="md" class="mx-auto mt-10">

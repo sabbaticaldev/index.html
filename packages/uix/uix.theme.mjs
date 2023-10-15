@@ -92,7 +92,7 @@ export const TabsSize = {
   sm: "tab-sm",
   xs: "tab-xs",
 };
-export const Shapes = ["default", "circle", "square"];
+export const Shapes = ["default", "circle", "square", "metro"];
 
 export const ButtonSizes = {
   lg: "btn-lg",
@@ -102,7 +102,8 @@ export const ButtonSizes = {
 };
 
 export const ButtonShapes = {
-  default: "",
+  default: "rounded-none",
+  rounded: "",
   circle: "btn-circle",
   square: "btn-square",
 };

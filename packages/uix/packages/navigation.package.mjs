@@ -337,7 +337,7 @@ export default {
           defaultValue: "middle",
           enum: ["top", "middle", "bottom"],
         }),
-        icon: T.string({ defaultValue: "" }),
+        icon: T.string(),
       },
       firstUpdated: (host) => {
         host.$modal = host.shadowRoot.querySelector("#modal");
@@ -393,12 +393,13 @@ export default {
     },
     "uix-menu-item": {
       props: {
-        icon: T.string({ defaultValue: "" }),
-        label: T.string({ defaultValue: "" }),
+        icon: T.string(),
+        iconOnly: T.boolean(),
+        label: T.string(),
         click: T.function(),
-        href: T.string({ defaultValue: "" }),
-        type: T.string({ defaultValue: "" }),
-        variant: T.string({ defaultValue: "" }),
+        href: T.string(),
+        type: T.string(),
+        variant: T.string(),
         active: T.boolean(),
         classes: T.object(),
         color: T.string({ defaultValue: "", enum: Colors }),
@@ -412,6 +413,7 @@ export default {
         color,
         dropdown,
         icon,
+        iconOnly,
         href,
         label,
         type,
@@ -419,7 +421,7 @@ export default {
       }) => {
         const { item: itemClass = "" } = classes;
         const activeClass = active ? "active" : "";
-        const menuItemClasses = `${itemClass} ${activeClass} items-center px-4`;
+        const menuItemClasses = `${itemClass} ${activeClass} items-center`;
 
         return html`
           <li>
@@ -431,7 +433,7 @@ export default {
                   variant=${variant}
                   class=${menuItemClasses}
                   color=${color}
-                  label=${label}
+                  label=${iconOnly ? undefined : label}
                   type=${type}
                   .items=${dropdown}
                 ></uix-dropdown>`
@@ -442,7 +444,7 @@ export default {
                   variant=${variant}
                   class=${menuItemClasses}
                   color=${color}
-                  label=${label}
+                  label=${iconOnly ? undefined : label}
                   type=${type}
                 >
                 </uix-button>`}
@@ -480,6 +482,7 @@ export default {
           fullWidth,
           height,
           width,
+          iconOnly,
           vertical,
           rounded,
           size,
@@ -523,7 +526,7 @@ export default {
                       ${item.icon
     ? html`<uix-icon name=${item.icon}></uix-icon>`
     : ""}
-                      ${item.label || ""}
+                      ${iconOnly ? "" : item.label}
                     </summary>
                     <uix-menu
                       .items=${submenu}
@@ -539,6 +542,7 @@ export default {
                   variant=${item.variant}
                   .dropdown=${item.dropdown}
                   label=${item.label}
+                  ?iconOnly=${iconOnly}
                   type=${item.type}
                   href=${item.href}
                   active=${isActive}
@@ -552,7 +556,7 @@ export default {
     "uix-tabs": {
       props: {
         items: T.array(),
-        selectedValue: T.string({ defaultValue: "" }),
+        selectedValue: T.string(),
         type: T.string({
           defaultValue: "default",
           enum: ["default", "boxed", "bordered", "lifted"],
@@ -630,6 +634,89 @@ export default {
       : html`<li class="${stepClass}">${step.label}</li>`;
   })}
             </ul>
+          </div>
+        `;
+      },
+    },
+    "uix-navbar": {
+      props: {
+        color: T.string({ enum: Colors }),
+        shadow: T.boolean(),
+        rounded: T.boolean(),
+        height: T.string(),
+        width: T.string(),
+        items: T.array(),
+        vertical: T.boolean(),
+        gap: T.string({ defaultValue: "md" }),
+        label: T.string(),
+        iconOnly: T.boolean(),
+        icon: T.string(),
+        classes: T.object(),
+      },
+      render: ({
+        classes,
+        color,
+        label,
+        icon,
+        iconOnly,
+        shadow,
+        height,
+        width,
+        gap,
+        rounded,
+        items,
+        vertical,
+      }) => {
+        const {
+          items: itemsClass = "text-gray-800 hover:text-blue-600",
+          logo: logoClass = "font-bold text-2xl",
+          container: containerClass,
+        } = classes || {};
+
+        const baseClasses = [
+          "navbar flex overflow-y-auto overflow-x-hidden p-0",
+          BgColor[color],
+          shadow ? "shadow-xl" : "",
+          rounded ? "rounded-box" : "",
+          vertical ? "flex-col h-full" : "flex-row w-full",
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        return html`
+          <div
+            class="${baseClasses} ${height || ""} ${width ||
+            ""} ${containerClass}"
+          >
+            ${icon && label
+    ? html`
+                  <a
+                    class=${[
+    `cursor-pointer flex items-center text-center 
+                justify-center gap-2`,
+    vertical
+      ? "w-full h-16 border-b"
+      : "h-full w-72 border-r",
+    logoClass,
+  ].join(" ")}
+                    href="/"
+                  >
+                    <ion-icon name=${icon} role="img"></ion-icon>
+                    ${iconOnly ? "" : html`<h2>${label}</h2>`}
+                  </a>
+                `
+    : ""}
+            <uix-menu
+              .items=${items}
+              .classes=${{
+    container: "p-0",
+    items: itemsClass,
+  }}
+              color=${color}
+              ?vertical=${vertical}
+              ?iconOnly=${iconOnly}
+              gap=${gap || "lg"}
+            ></uix-menu>
           </div>
         `;
       },
