@@ -1,6 +1,5 @@
 import { LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import CRUD from "./helpers/rest.mjs";
 import DateTimeHelpers from "./helpers/datetime.mjs";
 import i18n from "./helpers/i18n/i18n.mjs";
 import url from "./helpers/url.mjs";
@@ -271,7 +270,6 @@ export const definePackage = (packageFn, { style }) => {
     T,
     F,
     i18n,
-    ...CRUD,
     ...DateTimeHelpers,
     ...DropareaHelpers,
     WebWorker
