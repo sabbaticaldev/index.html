@@ -23,13 +23,13 @@ export const timeAgo = (timestamp) => {
   const week = day * 7;
 
   if (difference < minute) {
-    return 'Just now';
+    return "Just now";
   } else if (difference < hour) {
-    return Math.round(difference / minute) + ' minutes ago';
+    return Math.round(difference / minute) + " minutes ago";
   } else if (difference < day) {
-    return Math.round(difference / hour) + ' hours ago';
+    return Math.round(difference / hour) + " hours ago";
   } else if (difference < week) {
-    return Math.round(difference / day) + ' days ago';
+    return Math.round(difference / day) + " days ago";
   } else {
     return formatDate(timestamp);
   }

@@ -1,124 +1,12 @@
 import { LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import DateTimeHelpers from "./helpers/datetime.mjs";
-import i18n from "./helpers/i18n/i18n.mjs";
-import url from "./helpers/url.mjs";
-import DropareaHelpers from "./helpers/droparea.mjs";
+import url from "bootstrapp-shared/url.mjs";
 import { WebWorker } from "backend/src/web-worker.mjs";
+import i18n from "./i18n/i18n.mjs";
 
 const isServer = typeof localStorage === "undefined";
 
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
-
-export const T = {
-  boolean: (options = {}) => ({
-    type: "boolean",
-    defaultValue: options.defaultValue ?? false,
-    ...options
-  }),
-
-  string: (options = {}) => ({
-    type: "string",
-    defaultValue: options.defaultValue || "",
-    enum: options.enum || [],
-    ...options
-  }),
-
-  array: (options = {}) => ({
-    type: "array",
-    defaultValue: options.defaultValue || [],
-    enum: options.enum || [],
-    ...options
-  }),
-
-  number: (options = {}) => ({
-    type: "number",
-    defaultValue: options.defaultValue || undefined,
-    ...options
-  }),
-
-  date: (options = {}) => ({
-    type: "date",
-    defaultValue: options.defaultValue || undefined,
-    ...options
-  }),
-
-  function: (options = {}) => ({
-    type: "function",
-    defaultValue: options.defaultValue || undefined,
-    ...options
-  }),
-
-  object: (options = {}) => ({
-    type: "object",
-    defaultValue: options.defaultValue || undefined,
-    ...options
-  }),
-  one: (relationship, targetForeignKey, options = {}) => ({
-    type: "one",
-    relationship,
-    targetForeignKey: targetForeignKey,
-    ...options
-  }),
-  many: (relationship, targetForeignKey, options = {}) => ({
-    type: "many",
-    relationship,
-    targetForeignKey: targetForeignKey,
-    ...options
-  })
-};
-
-export const F = {
-  text: (options = {}) => ({
-    formType: "text",
-    type: T.string(options)
-  }),
-
-  number: (options = {}) => ({
-    formType: "number",
-    type: T.number(options)
-  }),
-
-  date: (options = {}) => ({
-    formType: "date",
-    type: T.date(options)
-  }),
-
-  datetime: (options = {}) => ({
-    formType: "datetime",
-    type: T.string(options)
-  }),
-
-  time: (options = {}) => ({
-    formType: "time",
-    type: T.string(options)
-  }),
-
-  checkbox: (options = {}) => ({
-    formType: "checkbox",
-    type: T.boolean(options)
-  }),
-
-  radio: (options = {}) => ({
-    formType: "radio",
-    type: T.boolean(options)
-  }),
-
-  toggle: (options = {}) => ({
-    formType: "toggle",
-    type: T.boolean(options)
-  }),
-
-  richText: (options = {}) => ({
-    formType: "richText",
-    type: T.string(options)
-  }),
-
-  custom: (customFormType, options) => ({
-    customFormType,
-    type: T[customFormType](options)
-  })
-};
 
 /**
  * Defines and registers a custom element based on the provided configuration.
@@ -164,6 +52,7 @@ export function defineView(tag, component, config = {}) {
         return acc;
       }, {});
 
+    i18n = i18n;
     static formAssociated = formAssociated;
     constructor() {
       super();
@@ -267,11 +156,6 @@ export function defineView(tag, component, config = {}) {
 
 export const definePackage = (packageFn, { style }) => {
   const context = {
-    T,
-    F,
-    i18n,
-    ...DateTimeHelpers,
-    ...DropareaHelpers,
     WebWorker
   };
   const pkg = packageFn(context);
