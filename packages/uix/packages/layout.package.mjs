@@ -1,4 +1,4 @@
-import { T } from "bootstrapp-shared";
+import T from "bootstrapp-shared/types.mjs";
 import { droparea } from "bootstrapp-shared/droparea.mjs";
 import { html } from "lit";
 

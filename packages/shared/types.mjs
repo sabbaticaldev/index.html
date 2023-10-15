@@ -83,8 +83,8 @@ export const T = {
     type: T.boolean(options),
   }),
 
-  richText: (options = {}) => ({
-    formType: "richText",
+  textarea: (options = {}) => ({
+    formType: "textarea",
     type: T.string(options),
   }),
 
@@ -93,3 +93,5 @@ export const T = {
     type: T[customFormType](options),
   }),
 };
+
+export default T;

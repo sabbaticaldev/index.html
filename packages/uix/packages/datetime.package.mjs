@@ -1,4 +1,4 @@
-import { T } from "bootstrapp-shared";
+import T from "bootstrapp-shared/types.mjs";
 import { html } from "lit";
 
 const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
