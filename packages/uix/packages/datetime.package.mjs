@@ -7,7 +7,7 @@ const getFirstDayOfMonth = (month, year) =>
 const getLastDayOfMonth = (month, year) =>
   new Date(year, month - 1, getDaysInMonth(month, year)).getDay();
 
-export default () => ({
+export default {
   i18n: {},
   views: {
     "uix-calendar-day": {
@@ -123,4 +123,4 @@ export default () => ({
       },
     },
   },
-});
+};

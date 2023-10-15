@@ -12,7 +12,7 @@ import {
   Colors,
 } from "../uix.theme.mjs";
 
-export default () => ({
+export default {
   views: {
     "uix-block": {
       props: {
@@ -204,4 +204,4 @@ export default () => ({
       },
     },
   },
-});
+};

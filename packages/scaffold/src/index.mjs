@@ -9,6 +9,7 @@ import navigationKit from "uix/packages/navigation.package.mjs";
 import layoutKit from "uix/packages/layout.package.mjs";
 import contentKit from "uix/packages/content.package.mjs";
 import datetimeKit from "uix/packages/datetime.package.mjs";
+import { WebWorker } from "backend/src/web-worker.mjs";
 
 const definePackages = (packages, options) => {
   return packages.reduce(
@@ -49,4 +50,4 @@ const bootstrapp = async (
 
 export default bootstrapp;
 
-export { bootstrapp };
+export { bootstrapp, WebWorker };

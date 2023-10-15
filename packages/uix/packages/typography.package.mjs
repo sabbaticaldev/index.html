@@ -8,7 +8,7 @@ import {
   FontWeight,
 } from "../uix.theme.mjs";
 
-export default () => ({
+export default {
   views: {
     "uix-text": {
       props: {
@@ -82,4 +82,4 @@ export default () => ({
       },
     },
   },
-});
+};

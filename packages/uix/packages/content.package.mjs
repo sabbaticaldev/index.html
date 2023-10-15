@@ -12,7 +12,7 @@ import {
   BorderColor,
 } from "../uix.theme.mjs";
 
-export default () => ({
+export default {
   views: {
     "uix-alert": {
       props: {
@@ -383,4 +383,4 @@ export default () => ({
       },
     },
   },
-});
+};

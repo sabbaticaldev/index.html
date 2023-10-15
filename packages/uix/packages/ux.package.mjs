@@ -3,7 +3,7 @@ import { html } from "lit";
 
 import { BgColor, TextColor, Colors, BgOverlayOpacity } from "../uix.theme.mjs";
 
-export default () => ({
+export default {
   i18n: {},
   views: {
     "uix-navbar": {
@@ -151,8 +151,8 @@ export default () => ({
           <div
             class="hero min-h-[30rem] ,${(rounded && "rounded") ||
             ""} ${imageUrl
-    ? `style="background-image: url(${imageUrl});"`
-    : bgColorClass}"
+  ? `style="background-image: url(${imageUrl});"`
+  : bgColorClass}"
           >
             ${imageUrl
     ? html`<div
@@ -241,4 +241,4 @@ export default () => ({
       },
     },
   },
-});
+};

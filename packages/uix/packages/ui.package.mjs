@@ -12,7 +12,7 @@ import {
   RingColor,
 } from "../uix.theme.mjs";
 
-export default () => ({
+export default {
   views: {
     "uix-avatar": {
       props: {
@@ -317,4 +317,4 @@ export default () => ({
       },
     },
   },
-});
+};

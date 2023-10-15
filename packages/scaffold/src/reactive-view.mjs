@@ -1,7 +1,6 @@
 import { LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import url from "bootstrapp-shared/url.mjs";
-import { WebWorker } from "backend/src/web-worker.mjs";
 import i18n from "./i18n/i18n.mjs";
 
 const isServer = typeof localStorage === "undefined";
@@ -154,11 +153,7 @@ export function defineView(tag, component, config = {}) {
   return ReactionView;
 }
 
-export const definePackage = (packageFn, { style }) => {
-  const context = {
-    WebWorker
-  };
-  const pkg = packageFn(context);
+export const definePackage = (pkg, { style }) => {
   const views = Object.fromEntries(
     Object.entries(pkg.views).map(([tag, component]) => {
       return [

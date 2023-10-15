@@ -14,7 +14,7 @@ import {
   CollapseIcon,
 } from "../uix.theme.mjs";
 
-export default () => ({
+export default {
   views: {
     "uix-accordion": {
       props: {
@@ -635,4 +635,4 @@ export default () => ({
       },
     },
   },
-});
+};

@@ -1,7 +1,7 @@
 import { T } from "bootstrapp-shared";
 import { html } from "lit";
 
-export default () => ({
+export default {
   i18n: {},
   views: {
     "uix-docs-page": {
@@ -73,4 +73,4 @@ export default () => ({
       },
     },
   },
-});
+};
