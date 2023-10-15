@@ -1,3 +1,4 @@
+import { T } from "bootstrapp-shared";
 import { html } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 
@@ -84,7 +85,7 @@ const FormControls = (element) => ({
   },
 });
 
-export default ({ T }) => {
+export default () => {
   const InputField = (props) =>
     html`
       <uix-input

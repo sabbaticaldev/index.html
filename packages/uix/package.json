@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "shared": "^0.2.0",
+    "bootstrapp-shared": "workspace:^",
     "lit": "^3.0.0"
   }
 }

@@ -11,6 +11,6 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "shared": "^0.2.0"
+    "bootstrapp-shared": "^workspace"
   }
 }

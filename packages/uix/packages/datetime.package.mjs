@@ -1,3 +1,4 @@
+import { T } from "bootstrapp-shared";
 import { html } from "lit";
 
 const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
@@ -6,7 +7,7 @@ const getFirstDayOfMonth = (month, year) =>
 const getLastDayOfMonth = (month, year) =>
   new Date(year, month - 1, getDaysInMonth(month, year)).getDay();
 
-export default ({ T }) => ({
+export default () => ({
   i18n: {},
   views: {
     "uix-calendar-day": {

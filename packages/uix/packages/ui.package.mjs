@@ -1,4 +1,4 @@
-//import { T } from "shared";
+import { T } from "bootstrapp-shared";
 import { html } from "lit";
 
 import {
@@ -12,7 +12,7 @@ import {
   RingColor,
 } from "../uix.theme.mjs";
 
-export default ({ T }) => ({
+export default () => ({
   views: {
     "uix-avatar": {
       props: {

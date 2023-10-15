@@ -1,3 +1,4 @@
+import { T } from "bootstrapp-shared";
 import { html } from "lit";
 
 import {
@@ -10,7 +11,7 @@ import {
   Colors,
 } from "../uix.theme.mjs";
 
-export default ({ droparea, T }) => ({
+export default ({ droparea }) => ({
   views: {
     "uix-block": {
       props: {

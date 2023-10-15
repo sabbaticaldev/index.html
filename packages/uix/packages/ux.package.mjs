@@ -1,9 +1,9 @@
-//import { T } from "shared";
+import { T } from "bootstrapp-shared";
 import { html } from "lit";
 
 import { BgColor, TextColor, Colors, BgOverlayOpacity } from "../uix.theme.mjs";
 
-export default ({ T }) => ({
+export default () => ({
   i18n: {},
   views: {
     "uix-navbar": {

@@ -1,3 +1,4 @@
+import { T } from "bootstrapp-shared";
 import { html } from "lit";
 import {
   Colors,
@@ -7,7 +8,7 @@ import {
   FontWeight,
 } from "../uix.theme.mjs";
 
-export default ({ T }) => ({
+export default () => ({
   views: {
     "uix-text": {
       props: {

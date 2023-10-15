@@ -1,5 +1,7 @@
+import { T } from "bootstrapp-shared";
+
 import { html } from "lit";
-export default ({ T }) => ({
+export default () => ({
   i18n: {},
   views: {
     "uix-app-shell": {

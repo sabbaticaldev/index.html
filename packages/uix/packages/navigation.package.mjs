@@ -1,4 +1,4 @@
-//import { T } from "shared";
+import { T } from "bootstrapp-shared";
 import { html } from "lit";
 import {
   Positions,
@@ -14,7 +14,7 @@ import {
   CollapseIcon,
 } from "../uix.theme.mjs";
 
-export default ({ T }) => ({
+export default () => ({
   views: {
     "uix-accordion": {
       props: {
