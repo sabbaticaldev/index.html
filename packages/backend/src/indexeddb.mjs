@@ -6,6 +6,7 @@ export const clear = (db) => {
 };
 
 export const createStore = (dbName = "bootstrapp") => {
+  console.log({ dbName });
   const storeName = "kv";
   const request = indexedDB.open(dbName);
   request.onupgradeneeded = () => request.result.createObjectStore(storeName);

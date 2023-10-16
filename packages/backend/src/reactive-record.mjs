@@ -1,6 +1,6 @@
 import indexeddbAdapter from "./indexeddb.mjs";
 import { generateId, updateIndexPosition, removeIndexItem } from "./string.mjs";
-import P2P from "./web-worker.mjs";
+import WebWorker from "./web-worker.mjs";
 
 let oplog;
 let queue;
@@ -118,13 +118,14 @@ const UpdateRelationship = {
 
 export const models = {};
 class ReactiveRecord {
-  constructor({ _initialData, ...properties }, name, appId) {
+  constructor({ _initialData, ...properties }, name, appId, userId) {
     this.name = name;
     this.models = models;
     this.adapter = indexeddbAdapter;
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
     this.appId = appId;
+    this.userId = userId;
     this.store = this.adapter.createStore(`${this.appId}_${this.name}`, "kv");
     // TODO: create one store and reuse it globally
     oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
@@ -134,7 +135,7 @@ class ReactiveRecord {
       this.adapter.isEmpty(this.store).then((empty) => {
         if (empty) {
           this.addMany(_initialData);
-          P2P.postMessage({
+          WebWorker.postMessage({
             type: "REQUEST_UPDATE",
             store: [this.appId, this.name].join("_"),
           });
@@ -145,7 +146,7 @@ class ReactiveRecord {
 
   async logOp(key, value = null) {
     if (oplog) {
-      const operationId = generateId(this.appId);
+      const operationId = generateId(this.appId, this.userId);
       const propKey = `${this.name}_${key}`;
       await this.adapter.setItem(`${propKey}_${operationId}`, value, oplog);
       await this.adapter.setLastOp(`${propKey}_${operationId}`, value, {
@@ -156,7 +157,7 @@ class ReactiveRecord {
   }
 
   _generateEntries(value) {
-    let id = value?.id ? value.id : generateId(this.appId, this.lastId);
+    let id = value?.id ? value.id : generateId(this.appId, this.userId);
     this.lastId = id;
     const properties = Object.keys(value);
     if (!properties[this.referenceKey]) {
@@ -264,7 +265,7 @@ class ReactiveRecord {
         );
       }
 
-      P2P.postMessage({
+      WebWorker.postMessage({
         type: "OPLOG_WRITE",
         store: [this.appId, this.name].join("_"),
         key,
@@ -351,9 +352,10 @@ class ReactiveRecord {
   }
 }
 
-const defineModels = (files, appId) => {
+const defineModels = (files, appId, userId) => {
+  console.log({ appId, userId });
   Object.entries(files).map(([name, module]) => {
-    const model = new ReactiveRecord(module, name, appId);
+    const model = new ReactiveRecord(module, name, appId, userId);
     models[name] = model;
   });
   return models;

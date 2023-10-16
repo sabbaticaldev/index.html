@@ -42,7 +42,6 @@ export const getAppId = async () => {
     const timestamp = Date.now();
     appId = toBase62(timestamp);
     await setAppId(appId);
-    await indexedDBWrapper.set(appId, { timestamp });
   }
   return appId;
 };
@@ -85,8 +84,16 @@ export const setControllers = async (appId, controllers) => {
   return models;
 };
 
+let timestamp;
+export const getBaseTimestamp = async () => {
+  if (timestamp) return timestamp;
+  const appId = await getAppId();
+  timestamp = fromBase62(appId);
+  return timestamp;
+};
+
 export const getTimestamp = async (id) => {
-  let timestamp = await indexedDBWrapper.get("timestamp");
+  const timestamp = await getBaseTimestamp();
   const offset = fromBase62(id);
   return Number.parseInt(timestamp) + Number.parseInt(offset);
 };
@@ -173,15 +180,15 @@ const messageHandlers = {
     }
 
     const modelList = await getModels(appId);
-    models = defineModels(modelList, appId);
     userId = await indexedDBWrapper.get(appId, "userId");
     if (!userId) {
       userId = generateId(appId);
-      await indexedDBWrapper.set(appId, { userId });
-      const usersModel = models.users;
-      if (usersModel) {
-        await usersModel.add({ id: userId, name: "user" });
-      }
+    }
+    models = defineModels(modelList, appId, userId);
+    await indexedDBWrapper.set(appId, { userId });
+    const usersModel = models.users;
+    if (usersModel) {
+      await usersModel.add({ id: userId, name: "user" });
     }
 
     source.postMessage({

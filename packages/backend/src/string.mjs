@@ -11,19 +11,14 @@ export const generateIdByTimestamp = (timestamp) => {
 
   const timeDifference = Date.now() - parseInt(timestamp, 10);
   let id = toBase62(timeDifference + sequentialCounter);
-
   sequentialCounter++;
-
-  while (id.length < 5) {
-    id = "0" + id;
-  }
   return id;
 };
 
-export const generateId = (appId) => {
+export const generateId = (appId, userId) => {
   const referenceTimestamp = fromBase62(appId);
   let id = generateIdByTimestamp(referenceTimestamp);
-  return id;
+  return userId ? `${userId}-${id}` : id;
 };
 
 export const fromBase62 = (str) => {
