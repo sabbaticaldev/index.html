@@ -427,3 +427,26 @@ export const LinkColors = {
   warning: "link-warning hover:text-warning-dark",
   error: "link-error hover:text-error-dark",
 };
+
+export const BlockColors = {
+  primary: "bg-primary text-primary-content",
+  secondary: "bg-secondary text-secondary-content",
+  accent: "bg-accent text-accent-content",
+  neutral: "bg-neutral text-neutral-content",
+  base: "bg-base text-base-content",
+  info: "bg-info text-info-content",
+  success: "bg-success text-success-content",
+  warning: "bg-warning text-warning-content",
+  error: "bg-error text-error-content",
+};
+export const SpacingSizes = {
+  "": "",
+  xs: "p-1",
+  sm: "p-2",
+  md: "p-4",
+  lg: "p-6",
+  xl: "p-8",
+  "2xl": "p-12",
+  "3xl": "p-16",
+  "4xl": "p-24",
+};

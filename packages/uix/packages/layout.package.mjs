@@ -10,6 +10,8 @@ import {
   Spacings,
   Sizes,
   Colors,
+  SpacingSizes,
+  BlockColors,
 } from "../uix.theme.mjs";
 
 export default {
@@ -22,42 +24,31 @@ export default {
         spacing: T.string({ defaultValue: "md" }),
         rounded: T.boolean(),
         shadow: T.boolean(),
-        class: T.string(),
+        containerClass: T.string(),
       },
       render: (props) => {
-        const { color, bgColor, textColor, spacing, rounded, shadow } = props;
-        const BlockColors = {
-          primary: "bg-primary text-primary-content",
-          secondary: "bg-secondary text-secondary-content",
-          accent: "bg-accent text-accent-content",
-          neutral: "bg-neutral text-neutral-content",
-          base: "bg-base text-base-content",
-          info: "bg-info text-info-content",
-          success: "bg-success text-success-content",
-          warning: "bg-warning text-warning-content",
-          error: "bg-error text-error-content",
-        };
-        const SpacingSizes = {
-          "": "",
-          xs: "p-1",
-          sm: "p-2",
-          md: "p-4",
-          lg: "p-6",
-          xl: "p-8",
-          "2xl": "p-12",
-          "3xl": "p-16",
-          "4xl": "p-24",
-        };
-        const bgClass = bgColor ? `bg-${bgColor}` : "";
-        const textClass = textColor ? `text-${textColor}` : "";
-        const spacingClass = SpacingSizes[spacing];
-        const colorClass = BlockColors[color];
-        const roundedClass = rounded ? "rounded" : "";
-        const shadowClass = shadow ? "shadow-md" : "";
+        const {
+          containerClass,
+          color,
+          bgColor,
+          textColor,
+          spacing,
+          rounded,
+          shadow,
+        } = props;
+        const baseClass = [
+          bgColor ? `bg-${bgColor}` : "",
+          textColor ? `text-${textColor}` : "",
+          SpacingSizes[spacing],
+          BlockColors[color],
+          rounded ? "rounded" : "",
+          shadow ? "shadow-md" : "",
+          containerClass,
+        ]
+          .filter(Boolean)
+          .join(" ");
         return html`
-          <div
-            class="${spacingClass} ${colorClass} ${bgClass} ${textClass} ${roundedClass} ${shadowClass} ${props.class}"
-          >
+          <div class=${baseClass}>
             <slot></slot>
           </div>
         `;
@@ -115,12 +106,12 @@ export default {
         droparea: T.boolean(),
         gap: T.string({ defaultValue: "sm", enum: Sizes }),
         rounded: T.boolean(),
-        class: T.string(),
+        containerClass: T.string(),
         id: T.string(),
       },
       ...droparea,
       render: (props) => {
-        const { vertical, gap, responsive, rounded } = props;
+        const { containerClass, vertical, gap, responsive, rounded } = props;
         const directionClass = vertical ? "flex-col" : "flex-row";
         const responsiveClass =
           (responsive &&
@@ -136,12 +127,12 @@ export default {
           <div
             id="uix-list"
             class=${[
-    "flex w-full",
+    "flex w-full h-full",
     gapClass,
     directionClass,
     responsiveClass,
     borderRadiusClass,
-    props.class,
+    containerClass,
   ]
     .filter(Boolean)
     .join(" ")}
