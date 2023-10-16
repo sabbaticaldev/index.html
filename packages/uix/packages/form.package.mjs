@@ -16,6 +16,8 @@ import {
   CheckboxVariant,
   CheckboxSize,
   InputVariantClass,
+  TextareaColors,
+  TextareaSizes,
   InputStyleClass,
   InputSizeClass,
   RadioVariantClass,
@@ -481,10 +483,15 @@ export default {
           host._setValue(e.target.value, host);
           host.keydown?.(e);
         };
-        const textareaClass = `w-full textarea ${
-          variant === "bordered" ? "textarea-bordered" : ""
-        } textarea-${color} textarea-${size}`;
-
+        const textareaClass = [
+          "w-full textarea",
+          variant === "bordered" ? "textarea-bordered" : "",
+          color ? TextareaColors[color] : "",
+          size ? TextareaSizes[size] : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+        console.log({ textareaClass });
         return html`
           <textarea
             class=${textareaClass}

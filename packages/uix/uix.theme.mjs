@@ -249,6 +249,26 @@ export const SelectColors = {
   warning: "select-warning",
   error: "select-error",
 };
+
+export const TextareaColors = {
+  primary: "textarea-primary",
+  secondary: "textarea-secondary",
+  accent: "textarea-accent",
+  neutral: "textarea-neutral",
+  base: "textarea-base",
+  info: "textarea-info",
+  success: "textarea-success",
+  warning: "textarea-warning",
+  error: "textarea-error",
+};
+
+export const TextareaSizes = {
+  lg: "textarea-lg",
+  md: "textarea-md",
+  sm: "textarea-sm",
+  xs: "textarea-xs",
+};
+
 export const SelectSizes = {
   lg: "select-lg",
   md: "select-md",
@@ -261,6 +281,7 @@ export const Directions = ["horizontal", "vertical", "responsive"];
 export const Formats = ["DHMS", "HMS", "MS", "S"];
 
 export const Colors = [
+  "default",
   "primary",
   "secondary",
   "accent",
@@ -282,6 +303,19 @@ export const BgColor = {
   success: "bg-success-200",
   warning: "bg-warning-200",
   error: "bg-error-200",
+};
+
+export const BadgeColor = {
+  neutral: "badge-neutral",
+  primary: "badge-primary",
+  secondary: "badge-secondary",
+  accent: "badge-accent",
+  ghost: "badge-ghost",
+  info: "badge-info",
+  success: "badge-success",
+  warning: "badge-warning",
+  error: "badge-error",
+  outline: "badge-outline",
 };
 
 export const TextColor = {

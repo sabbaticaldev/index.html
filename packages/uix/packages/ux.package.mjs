@@ -142,6 +142,37 @@ export default {
         `;
       },
     },
+
+    "uix-chat-card": {
+      props: {
+        message: T.string(),
+        timestamp: T.string(),
+        avatar: T.string(),
+        sender: T.string(),
+        rounded: T.boolean(),
+      },
+      render: ({ message, avatar, timestamp, sender, rounded }) => {
+        return html`
+          <uix-block spacing="sm">
+            <uix-list>
+              ${avatar
+    ? html`
+                    <uix-avatar src=${avatar} rounded=${rounded}></uix-avatar>
+                  `
+    : ""}
+              <uix-list vertical class="justify-center">
+                <div>${sender}</div>
+                <div>${message}</div>
+              </uix-list>
+              <uix-list vertical class="justify-between h-20 divide-y">
+                <time class="text-xs opacity-50">${timestamp}</time>
+                <uix-badge>2</uix-badge>
+              </uix-list>
+            </uix-list>
+          </uix-block>
+        `;
+      },
+    },
     "uix-chat-bubble": {
       props: {
         messages: T.array(),

@@ -7,6 +7,7 @@ import {
   Formats,
   Colors,
   BgColor,
+  BadgeColor,
   TextColor,
   BorderColor,
   RingColor,
@@ -18,9 +19,9 @@ export default {
       props: {
         src: T.string(),
         alt: T.string({ defaultValue: "" }),
-        size: T.number({ defaultValue: 24 }),
+        size: T.string({ defaultValue: "sm", enums: Sizes }),
         shape: T.string({
-          defaultValue: "rounded",
+          defaultValue: "rounded-full",
           enum: [
             "rounded",
             "rounded-full",
@@ -44,12 +45,18 @@ export default {
         hasRing,
         ringColor,
       }) => {
-        const sizeClass = `w-${size}`;
+        const WidthSizes = {
+          xs: "w-12",
+          sm: "w-20",
+          lg: "w-28",
+          xl: "w-36",
+          "2xl": "w-52",
+        };
+        const sizeClass = WidthSizes[size];
         const ringClass = hasRing
           ? `${RingColor[ringColor]} ring-offset-base-100 ring-offset-2`
           : "";
         let content;
-
         if (src) {
           content = html`<img src=${src} alt=${alt} />`;
         } else if (placeholder) {
@@ -103,25 +110,31 @@ export default {
     },
     "uix-badge": {
       props: {
-        content: T.string(),
-        color: T.string({ defaultValue: "default", enum: Colors }),
+        color: T.string({ defaultValue: "primary", enum: Colors }),
         outline: T.boolean(),
+        rounded: T.boolean(),
         size: T.string({ defaultValue: "md", enum: ["lg", "md", "sm", "xs"] }),
         icon: T.string({ defaultValue: null }),
       },
-      render: ({ color, outline, size }) => {
-        const baseClass = "badge";
-        const colorClass = BgColor[color] + (outline ? "-outline" : "");
+      render: ({ color, outline, size, rounded }) => {
         const sizeClassMapping = {
           lg: "badge-lg",
           md: "",
           sm: "badge-sm",
           xs: "badge-xs",
         };
-        const sizeClass = sizeClassMapping[size];
+
+        const baseClass = [
+          "badge",
+          rounded ? "" : "rounded-none",
+          BadgeColor[color] + (outline ? "-outline" : ""),
+          sizeClassMapping[size] || "",
+        ]
+          .filter(Boolean)
+          .join(" ");
 
         return html`
-          <span class="${baseClass} ${colorClass} ${sizeClass}">
+          <span class=${baseClass}>
             <slot></slot>
           </span>
         `;
