@@ -136,7 +136,7 @@ export default {
           <div
             id="uix-list"
             class=${[
-    "flex w-full h-full",
+    "flex w-full",
     gapClass,
     directionClass,
     responsiveClass,
