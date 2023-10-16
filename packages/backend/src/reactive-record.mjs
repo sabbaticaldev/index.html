@@ -261,16 +261,19 @@ class ReactiveRecord {
         const prevRelationship =
           type === "one"
             ? prevValue[propKey]
-            : (prevValue[propKey] || "").split("|").filter(Boolean);
+            : String(prevValue[propKey]).split("|").filter(Boolean);
         const newRelationship =
-          type === "one" ? value : (value || "").split("|").filter(Boolean);
-        await UpdateRelationship[type](
-          prevRelationship,
-          newRelationship,
-          relatedModel,
-          id,
-          targetForeignKey,
-        );
+          type === "one" ? value : String(value).split("|");
+        const relatedProp = relatedModel.properties[targetForeignKey];
+
+        if (relatedProp.targetForeignKey)
+          await UpdateRelationship[type](
+            prevRelationship,
+            newRelationship,
+            relatedModel,
+            id,
+            targetForeignKey,
+          );
       }
 
       WebWorker.postMessage({
@@ -308,13 +311,16 @@ class ReactiveRecord {
 
         if (prop.type === "one") {
           const relatedId = values[idx];
+
           if (relatedId) {
             value = await relatedModel.get(relatedId);
           }
         }
 
         if (prop.type === "many") {
-          const ids = (values[idx] || "").split("|").filter(Boolean);
+          const ids = values[idx]
+            ? String(values[idx]).split("|").filter(Boolean)
+            : [];
           if (ids.length > 0) {
             value = await Promise.all(
               ids.map(async (id) => await relatedModel.get(id)),
@@ -367,7 +373,6 @@ class ReactiveRecord {
 }
 
 const defineModels = (files, appId, userId) => {
-  console.log({ appId, userId });
   Object.entries(files).map(([name, module]) => {
     const model = new ReactiveRecord(module, name, appId, userId);
     models[name] = model;
