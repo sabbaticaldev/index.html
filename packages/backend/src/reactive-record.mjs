@@ -86,7 +86,7 @@ const UpdateRelationship = {
         // Handle the "many" case
         let index = target[targetForeignKey] || "";
         if (!new RegExp(`\\b${id}\\b`).test(index)) {
-          target[targetForeignKey] = `${index}|${id}`;
+          target[targetForeignKey] = index ? `${index}|${id}` : id;
           await relatedModel._setProperty(
             `${targetForeignKey}_${relatedId}`,
             target[targetForeignKey],
@@ -161,18 +161,19 @@ class ReactiveRecord {
     }
   }
 
-  _generateEntries({ _userId, ...value }) {
-    let id = _userId ? value?.id + "-" + _userId : value?.id; // TODO: refactor this, big chances of bug
-    if (!value?.id) id = generateId(this.appId, _userId || this.userId);
+  _generateEntries({ _userId, id: _id, ...value }) {
+    let newId = _userId ? _id + "-" + _userId : _id; // TODO: refactor this, big chances of bug
+    if (!_id) newId = generateId(this.appId, _userId || this.userId);
 
-    this.lastId = id;
+    this.lastId = newId;
     const properties = Object.keys(value);
     if (!properties[this.referenceKey]) {
       properties[this.referenceKey] = "";
     }
 
-    return properties.map((prop) => [prop, id, value[prop]]);
+    return properties.map((prop) => [prop, newId, value[prop]]);
   }
+
   async add(value) {
     const entries = this._generateEntries(value);
     await this._set(entries);
