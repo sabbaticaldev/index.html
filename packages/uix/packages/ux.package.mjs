@@ -109,13 +109,14 @@ export default {
 
     "uix-chat-message": {
       props: {
-        message: T.object({ defaultValue: { content: "", timestamp: "" } }),
+        message: T.string(),
+        timestamp: T.object(),
         sender: T.object({ defaultValue: { name: "", avatar: "" } }),
         alignment: T.string({ defaultValue: "start", enum: ["start", "end"] }),
-        color: T.string({ defaultValue: "primary", enum: Colors }),
+        color: T.string({ defaultValue: "", enum: Colors }),
         rounded: T.boolean(),
       },
-      render: ({ message, sender, alignment, rounded, color }) => {
+      render: ({ message, timestamp, sender, alignment, rounded, color }) => {
         const bgColorClass = BgColor[color];
         const AlignmentClasses = {
           start: "chat-start",
@@ -135,9 +136,9 @@ export default {
     : ""}
             <div class="chat-header">
               ${sender.name}
-              <time class="text-xs opacity-50">${message.timestamp}</time>
+              <time class="text-xs opacity-50">${timestamp}</time>
             </div>
-            <div class="chat-bubble ${bgColorClass}">${message.content}</div>
+            <div class="chat-bubble ${bgColorClass}">${message}</div>
           </div>
         `;
       },

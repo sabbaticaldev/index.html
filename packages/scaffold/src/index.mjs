@@ -10,6 +10,7 @@ import layoutKit from "uix/packages/layout.package.mjs";
 import contentKit from "uix/packages/content.package.mjs";
 import datetimeKit from "uix/packages/datetime.package.mjs";
 import { WebWorker } from "backend/src/web-worker.mjs";
+import "backend/src/service-worker.mjs"; // hack for vite to import service worker, should remove
 
 const definePackages = (packages, options) => {
   return packages.reduce(

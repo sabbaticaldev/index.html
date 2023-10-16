@@ -87,10 +87,9 @@ const FormControls = (element) => ({
   },
 });
 const InputField = (props) =>
-  !console.log({ props }) &&
   html`
     <uix-input
-      .keydown=${props.keydown}
+      .input=${props.input}
       ?autofocus=${props.autofocus}
       ?disabled=${props.disabled}
       ?required=${props.required}
@@ -109,7 +108,7 @@ const InputField = (props) =>
 
 const TextareaField = (props) => html`
   <uix-textarea
-    .keydown=${props.keydown}
+    .input=${props.input}
     ?disabled=${props.disabled}
     ?required=${props.required}
     value=${ifDefined(props.value)}
@@ -385,15 +384,11 @@ export default {
           size,
         } = host;
 
-        const change = (e) => {
+        const input = (e) => {
           host._setValue(e.target.value, host);
-          host.change?.(e);
+          host.input?.(e);
         };
 
-        const keydown = (e) => {
-          host._setValue(e.target.value, host);
-          host.keydown?.(e);
-        };
         const buttonTypes = ["submit", "reset", "button"];
         const inputClass = [
           "input",
@@ -416,8 +411,7 @@ export default {
             ?required=${required}
             name=${ifDefined(name)}
             regex=${ifDefined(regex)}
-            @change=${change}
-            @keydown=${keydown}
+            @input=${input}
             type=${type}
           />
         `;
@@ -457,8 +451,7 @@ export default {
         variant: T.string({ defaultValue: "bordered", enum: Variants }),
         color: T.string({ defaultValue: "default", enum: Colors }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
-        change: T.function(),
-        keydown: T.function(),
+        input: T.function(),
       },
       ...FormControls("textarea"),
       render: (host) => {
@@ -474,14 +467,9 @@ export default {
           required,
         } = host;
 
-        const change = (e) => {
+        const input = (e) => {
           host._setValue(e.target.value, host);
-          host.change?.(e);
-        };
-
-        const keydown = (e) => {
-          host._setValue(e.target.value, host);
-          host.keydown?.(e);
+          host.input?.(e);
         };
         const textareaClass = [
           "w-full textarea",
@@ -491,7 +479,6 @@ export default {
         ]
           .filter(Boolean)
           .join(" ");
-        console.log({ textareaClass });
         return html`
           <textarea
             class=${textareaClass}
@@ -500,8 +487,7 @@ export default {
             name=${name}
             rows=${rows}
             ?required=${required}
-            @change=${change}
-            @keydown=${keydown}
+            @input=${input}
           >
 ${value}</textarea
           >
