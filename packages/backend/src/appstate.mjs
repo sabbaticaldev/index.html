@@ -42,6 +42,7 @@ export const getAppId = async () => {
     const timestamp = Date.now();
     appId = toBase62(timestamp);
     await setAppId(appId);
+    await indexedDBWrapper.set(appId, { userId: 1 });
   }
   return appId;
 };

@@ -161,8 +161,10 @@ class ReactiveRecord {
     }
   }
 
-  _generateEntries(value) {
-    let id = value?.id ? value.id : generateId(this.appId, this.userId);
+  _generateEntries({ _userId, ...value }) {
+    let id = _userId ? value?.id + "-" + _userId : value?.id; // TODO: refactor this, big chances of bug
+    if (!value?.id) id = generateId(this.appId, _userId || this.userId);
+
     this.lastId = id;
     const properties = Object.keys(value);
     if (!properties[this.referenceKey]) {
@@ -294,7 +296,6 @@ class ReactiveRecord {
     const values = await this.adapter.getMany(keys, this.store);
     const obj = { id };
 
-    // Use map to create an array of promises
     const promises = propNames.map(async (propKey, idx) => {
       const prop = this.properties[propKey];
       if (!prop) return;
