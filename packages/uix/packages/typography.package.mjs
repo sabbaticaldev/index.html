@@ -27,22 +27,22 @@ export default {
         ];
 
         const HeadingTemplates = {
-          "2xl": html`<h1 class="text-5xl mt-0 mb-2 ${baseClass}">
+          "2xl": html`<h1 class="text-5xl ${baseClass}">
             <slot></slot>
           </h1>`,
-          xl: html`<h2 class="text-3xl mt-0 mb-2 ${baseClass}">
+          xl: html`<h2 class="text-3xl ${baseClass}">
             <slot></slot>
           </h2>`,
-          lg: html`<h3 class="text-2xl mt-0 mb-2 ${baseClass}">
+          lg: html`<h3 class="text-2xl ${baseClass}">
             <slot></slot>
           </h3>`,
-          md: html`<h4 class="text-xl  mt-0 mb-2 ${baseClass}">
+          md: html`<h4 class="text-xl ${baseClass}">
             <slot></slot>
           </h4>`,
-          sm: html`<h5 class="text-lg mt-0 mb-2 ${baseClass}">
+          sm: html`<h5 class="text-lg ${baseClass}">
             <slot></slot>
           </h5>`,
-          xs: html`<h6 class="text-xs mt-0 mb-1 ${baseClass}">
+          xs: html`<h6 class="text-xs ${baseClass}">
             <slot></slot>
           </h6>`,
           "": html`<p class="text-base ${baseClass}"><slot></slot></p>`,

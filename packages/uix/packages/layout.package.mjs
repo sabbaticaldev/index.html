@@ -19,7 +19,7 @@ export default {
         color: T.string({ enum: Colors }),
         bgColor: T.string(),
         textColor: T.string(),
-        spacing: T.number({ defaultValue: "md" }),
+        spacing: T.string({ defaultValue: "md" }),
         rounded: T.boolean(),
         shadow: T.boolean(),
         class: T.string(),

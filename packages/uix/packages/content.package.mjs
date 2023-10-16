@@ -90,9 +90,11 @@ export default {
         footerContent: T.string(),
         color: T.string({ defaultValue: "base-100", enum: Colors }),
         compact: T.boolean(),
-        bordered: T.boolean(),
+        bordered: T.boolean({ defaultValue: true }),
         sideImage: T.boolean(),
         centeredContent: T.boolean(),
+        rounded: T.boolean(),
+        shadow: T.boolean({ defaultValue: true }),
         imageOverlay: T.boolean(),
       },
       render: (host) => {
@@ -105,31 +107,43 @@ export default {
           color,
           compact,
           bordered,
+          rounded,
+          shadow,
           sideImage,
           centeredContent,
           imageOverlay,
         } = host;
-        const bgClass = BgColor[color];
-        const textColorClass = color === "base-100" ? "" : TextColor[color];
-        const compactClass = compact ? "card-compact" : "";
-        const borderedClass = bordered ? "card-bordered" : "";
-        const sideImageClass = sideImage ? "card-side" : "";
+        const baseClass = [
+          "card",
+          rounded ? "" : "rounded-none",
+          BgColor[color],
+          color === "base-100" ? "" : TextColor[color],
+          shadow ? " shadow-md" : "",
+          compact ? "card-compact" : "",
+          bordered ? "card-bordered" : "",
+          sideImage ? "card-side" : "",
+          imageOverlay ? "image-full" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+
         const centeredContentClass = centeredContent
           ? "items-center text-center"
           : "";
-        const imageOverlayClass = imageOverlay ? "image-full" : "";
 
         return html`
-          <div
-            class="card ${bgClass} ${textColorClass} ${compactClass} ${borderedClass} ${sideImageClass} ${imageOverlayClass} shadow-xl"
-          >
+          <div class=${baseClass}>
             ${image
     ? html` <figure><img src=${image} alt="Card Image" /></figure> `
     : ""}
             <div class="card-body ${centeredContentClass}">
-              <h2 class="card-title">${title}</h2>
-              ${subtitle ? html`<h3 class="subtitle">${subtitle}</h3>` : ""}
-              <p>${content}</p>
+              <uix-text size="sm" class="card-title">${title}</uix-text>
+              ${subtitle
+    ? html`<uix-text size="xs" class="subtitle"
+                    >${subtitle}</uix-text
+                  >`
+    : ""}
+              <uix-text>${content}</uix-text>
               ${footerContent
     ? html`
                     <div class="justify-end card-actions">${footerContent}</div>
