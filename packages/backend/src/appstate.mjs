@@ -92,12 +92,6 @@ export const getBaseTimestamp = async () => {
   return timestamp;
 };
 
-export const getTimestamp = async (id) => {
-  const timestamp = await getBaseTimestamp();
-  const offset = fromBase62(id);
-  return Number.parseInt(timestamp) + Number.parseInt(offset);
-};
-
 function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
   return {
     [`GET /api/${modelName}`]: function (opts) {
@@ -259,7 +253,6 @@ export default {
   getApiModel,
   getAppId,
   generateId,
-  getTimestamp,
   getModels,
   setModels,
   messageHandler,

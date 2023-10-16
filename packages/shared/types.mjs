@@ -54,6 +54,20 @@ export const T = {
     targetForeignKey: targetForeignKey,
     ...options,
   }),
+
+  created_by: (referenceField, options = {}) => ({
+    type: "object",
+    metadata: "user",
+    referenceField,
+    ...options,
+  }),
+  created_at: (referenceField, options = {}) => ({
+    type: "string",
+    metadata: "timestamp",
+    referenceField,
+    ...options,
+  }),
+
   text: (options = {}) => ({
     formType: "text",
     type: T.string(options),

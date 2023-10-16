@@ -124,22 +124,26 @@ export default {
         };
         const alignmentClass = AlignmentClasses[alignment];
         return html`
-          <div class="${alignmentClass}">
-            ${sender.avatar
-    ? html`
-                  <div class="chat-image avatar">
-                    <div class="w-10 ${(rounded && "rounded-full") || ""}">
-                      <img src=${sender.avatar} />
-                    </div>
-                  </div>
-                `
-    : ""}
-            <div class="chat-header">
-              ${sender.name}
-              <time class="text-xs opacity-50">${timestamp}</time>
+          <uix-list class="${alignmentClass}">
+            <div class="chat-image avatar">
+              <div class="w-10 ${(rounded && "rounded-full") || ""}">
+                <uix-avatar rounded src=${sender.avatar}></uix-avatar>
+              </div>
             </div>
-            <div class="chat-bubble ${bgColorClass}">${message}</div>
-          </div>
+
+            <div class="chat-header">${sender.name}</div>
+            <uix-list
+              vertical
+              class="chat-bubble ${bgColorClass} ${(rounded && "") ||
+              "rounded-none"}"
+            >
+              ${message}
+              <uix-time
+                class="text-xs opacity-50 text-right"
+                timestamp=${timestamp}
+              ></uix-time>
+            </uix-list>
+          </uix-list>
         `;
       },
     },
@@ -182,12 +186,15 @@ export default {
         return html`
           <div class="chat-bubble-container">
             ${messages.map(
-    ({ content, timestamp, sender }) => html`
-                <uix-chat-message
-                  .message=${{ content, timestamp }}
-                  .sender=${sender}
-                ></uix-chat-message>
-              `,
+    (message) =>
+      !console.log({ message }) &&
+                html`
+                  <uix-chat-message
+                    message=${message.message}
+                    timestamp=${message.timestamp}
+                    .sender=${message.sender}
+                  ></uix-chat-message>
+                `,
   )}
           </div>
         `;

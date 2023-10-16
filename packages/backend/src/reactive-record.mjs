@@ -1,5 +1,10 @@
 import indexeddbAdapter from "./indexeddb.mjs";
-import { generateId, updateIndexPosition, removeIndexItem } from "./string.mjs";
+import {
+  generateId,
+  updateIndexPosition,
+  removeIndexItem,
+  getTimestamp,
+} from "./string.mjs";
 import WebWorker from "./web-worker.mjs";
 
 let oplog;
@@ -302,8 +307,7 @@ class ReactiveRecord {
         if (prop.type === "one") {
           const relatedId = values[idx];
           if (relatedId) {
-            const target = await relatedModel.get(relatedId);
-            value = target;
+            value = await relatedModel.get(relatedId);
           }
         }
 
@@ -317,10 +321,18 @@ class ReactiveRecord {
         }
       }
 
+      if (prop.metadata && prop.referenceField) {
+        const [timestamp, userId] = id.split("-");
+        if (prop.metadata === "user" && this.models.users) {
+          value = await this.models.users.get(userId);
+        }
+        if (prop.metadata === "timestamp") {
+          value = getTimestamp(timestamp, this.appId);
+        }
+      }
       obj[propKey] = value || prop.defaultValue;
     });
 
-    // Wait for all promises to resolve
     await Promise.all(promises);
     return obj;
   }

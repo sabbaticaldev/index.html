@@ -1,3 +1,4 @@
+import { formatTime } from "bootstrapp-shared/datetime.mjs";
 import T from "bootstrapp-shared/types.mjs";
 import { html } from "lit";
 
@@ -10,6 +11,12 @@ const getLastDayOfMonth = (month, year) =>
 export default {
   i18n: {},
   views: {
+    "uix-time": {
+      props: { timestamp: T.number() },
+      render: ({ timestamp }) => {
+        return html`<time>${formatTime(timestamp)}</time>`;
+      },
+    },
     "uix-calendar-day": {
       props: {
         previous: T.boolean(),
