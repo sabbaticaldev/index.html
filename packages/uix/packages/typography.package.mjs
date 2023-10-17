@@ -20,7 +20,7 @@ export default {
       render: (props) => {
         const { size, color, weight, containerClass } = props;
         const baseClass = [
-          "prose",
+          "prose font-roboto",
           HeadingColors[color],
           FontWeight[weight],
           containerClass,
