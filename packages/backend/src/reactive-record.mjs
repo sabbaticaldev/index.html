@@ -123,7 +123,10 @@ const UpdateRelationship = {
 
 export const models = {};
 class ReactiveRecord {
-  constructor({ _initialData, ...properties }, name, appId, userId) {
+  constructor(
+    { _initialData, ...properties },
+    { name, appId, userId, logOperations },
+  ) {
     this.name = name;
     this.models = models;
     this.adapter = indexeddbAdapter;
@@ -132,9 +135,12 @@ class ReactiveRecord {
     this.appId = appId;
     this.userId = userId;
     this.store = this.adapter.createStore(`${this.appId}_${this.name}`, "kv");
-    // TODO: create one store and reuse it globally
-    oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
-    queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
+
+    if (logOperations) {
+      // TODO: create one store and reuse it globally
+      oplog = this.adapter.createStore(`${this.appId}_oplog`, "kv");
+      queue = this.adapter.createStore(`${this.appId}_queue`, "kv");
+    }
 
     if (_initialData) {
       this.adapter.isEmpty(this.store).then((empty) => {
@@ -275,12 +281,13 @@ class ReactiveRecord {
           );
       }
 
-      WebWorker.postMessage({
-        type: "OPLOG_WRITE",
-        store: [this.appId, this.name].join("_"),
-        key,
-        value,
-      });
+      if (oplog)
+        WebWorker.postMessage({
+          type: "OPLOG_WRITE",
+          store: [this.appId, this.name].join("_"),
+          key,
+          value,
+        });
       entriesToAdd.push([key, value]);
     }
 
@@ -371,9 +378,9 @@ class ReactiveRecord {
   }
 }
 
-const defineModels = (files, appId, userId) => {
+const defineModels = (files, appId, userId, oplog = false) => {
   Object.entries(files).map(([name, module]) => {
-    const model = new ReactiveRecord(module, name, appId, userId);
+    const model = new ReactiveRecord(module, { name, appId, userId, oplog });
     models[name] = model;
   });
   return models;

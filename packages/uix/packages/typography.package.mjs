@@ -4,8 +4,8 @@ import {
   Colors,
   Sizes,
   HeadingColors,
-  LinkColors,
   FontWeight,
+  LinkColors,
 } from "../uix.theme.mjs";
 
 export default {
@@ -14,17 +14,20 @@ export default {
       props: {
         size: T.string({ enum: Sizes }),
         color: T.string({ defaultValue: "primary", enum: Colors }),
-        weight: T.string({ defaultValue: "semibold", enum: Colors }),
-        class: T.string(),
+        weight: T.string({ defaultValue: "semibold", enum: FontWeight }),
+        containerClass: T.string(),
       },
       render: (props) => {
-        const { size, color, weight } = props;
+        const { size, color, weight, containerClass } = props;
         const baseClass = [
           "prose",
           HeadingColors[color],
           FontWeight[weight],
+          containerClass,
           props.class,
-        ];
+        ]
+          .filter(Boolean)
+          .join(" ");
 
         const HeadingTemplates = {
           "2xl": html`<h1 class="text-5xl ${baseClass}">
