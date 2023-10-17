@@ -155,9 +155,18 @@ export default {
         avatar: T.string(),
         sender: T.string(),
         rounded: T.boolean(),
+        unread: T.number(),
         href: T.string(),
       },
-      render: ({ message, href, avatar, timestamp, sender, rounded }) => {
+      render: ({
+        message,
+        href,
+        avatar,
+        timestamp,
+        unread,
+        sender,
+        rounded,
+      }) => {
         return html`
           <a href=${href}>
             <uix-block spacing="sm" containerClass="hover:bg-gray-200">
@@ -183,7 +192,9 @@ export default {
                     class="text-xs opacity-50"
                     timestamp=${timestamp}
                   ></uix-time>
-                  <uix-badge>2</uix-badge>
+                  ${unread
+    ? html`<uix-badge>${unread}</uix-badge>`
+    : html`<div></div>`}
                 </uix-list>
               </uix-list>
             </uix-block>

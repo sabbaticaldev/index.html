@@ -11,6 +11,7 @@ import {
   TextColor,
   BorderColor,
   RingColor,
+  TextSizes,
 } from "../uix.theme.mjs";
 
 export default {
@@ -144,13 +145,18 @@ export default {
     "uix-icon": {
       props: {
         name: T.string(),
+        size: T.string({ defaultValue: "base", enum: Sizes }),
         classes: T.object(),
       },
-      render: ({ name, classes }) => {
-        const { container: containerClass = "text-2xl" } = classes || {};
+      render: ({ name, classes, size }) => {
+        const { container: containerClass = "" } = classes || {};
+        const baseClass = [containerClass, size && TextSizes[size]]
+          .filter(Boolean)
+          .join(" ");
+        console.log({ baseClass, size });
         return html`<ion-icon
           name=${name}
-          class=${containerClass}
+          class=${baseClass}
           role="img"
         ></ion-icon>`;
       },

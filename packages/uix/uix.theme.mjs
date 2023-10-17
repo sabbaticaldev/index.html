@@ -439,6 +439,7 @@ export const BlockColors = {
   warning: "bg-warning text-warning-content",
   error: "bg-error text-error-content",
 };
+
 export const SpacingSizes = {
   "": "",
   xs: "p-1",
@@ -449,4 +450,19 @@ export const SpacingSizes = {
   "2xl": "p-12",
   "3xl": "p-16",
   "4xl": "p-24",
+};
+
+export const TextSizes = {
+  "": "",
+  xs: "text-xs",
+  sm: "text-sm",
+  base: "text-base",
+  md: "text-md",
+  lg: "text-lg",
+  xl: "text-xl",
+  "2xl": "text-2xl",
+  "3xl": "text-3xl",
+  "4xl": "text-4xl",
+  "5xl": "text-5xl",
+  "6xl": "text-6xl",
 };

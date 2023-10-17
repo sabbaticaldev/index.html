@@ -29,6 +29,7 @@ export function defineView(tag, component, config = {}) {
     render,
     init: componentInit,
     formAssociated,
+    style: styleProp,
     props,
     domReady,
     domDisconnect,
@@ -140,7 +141,7 @@ export function defineView(tag, component, config = {}) {
       ReactionView.prototype[method] = litPropsAndEvents[method];
     });
 
-  ReactionView.styles = style ? [style] : undefined;
+  ReactionView.styles = [style, styleProp].filter(Boolean);
 
   // Register the custom element
   customElement(tag)(ReactionView);

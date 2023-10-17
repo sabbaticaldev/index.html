@@ -402,6 +402,7 @@ export default {
         type: T.string(),
         variant: T.string(),
         active: T.boolean(),
+        size: T.string({ defaultValue: "base", enum: Sizes }),
         classes: T.object(),
         color: T.string({ defaultValue: "", enum: Colors }),
         dropdown: T.array(),
@@ -415,6 +416,7 @@ export default {
         dropdown,
         icon,
         iconOnly,
+        size,
         href,
         label,
         type,
@@ -443,6 +445,7 @@ export default {
                   href=${href}
                   icon=${icon}
                   variant=${variant}
+                  size=${size}
                   class=${menuItemClasses}
                   color=${color}
                   label=${iconOnly ? undefined : label}
@@ -459,7 +462,7 @@ export default {
         title: T.string({ defaultValue: null }),
         color: T.string({ defaultValue: "", enum: Colors }),
         vertical: T.boolean(),
-        size: T.string({ defaultValue: "md", enum: Sizes }),
+        size: T.string({ defaultValue: "base", enum: Sizes }),
         gap: T.string({ defaultValue: "md", enum: Sizes }),
         click: T.function({ default: () => {} }),
         isActive: T.boolean(),
@@ -547,6 +550,7 @@ export default {
                   label=${item.label}
                   ?iconOnly=${iconOnly}
                   type=${item.type}
+                  size=${size}
                   href=${item.href}
                   active=${isActive}
                 ></uix-menu-item>`;
@@ -650,6 +654,7 @@ export default {
         width: T.string(),
         items: T.array(),
         vertical: T.boolean(),
+        size: T.string({ defaultValue: "base", enum: Sizes }),
         gap: T.string({ defaultValue: "md" }),
         label: T.string(),
         iconOnly: T.boolean(),
@@ -660,6 +665,7 @@ export default {
         classes,
         color,
         label,
+        size,
         icon,
         iconOnly,
         shadow,
@@ -712,6 +718,7 @@ export default {
             <uix-menu
               .items=${items}
               containerClass="p-0"
+              size=${size}
               .classes=${{
     items: itemsClass,
   }}

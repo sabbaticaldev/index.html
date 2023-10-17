@@ -850,6 +850,7 @@ ${value}</textarea
         endIcon: T.string(),
         border: T.boolean(),
         noAnimation: T.boolean(),
+        classes: T.object(),
       },
       render: (host) => {
         const {
@@ -883,9 +884,11 @@ ${value}</textarea
           .filter(Boolean)
           .join(" ");
         const innerContent = [
-          icon ? html`<uix-icon name=${icon}></uix-icon>` : "",
+          icon ? html`<uix-icon size=${size} name=${icon}></uix-icon>` : "",
           label ? label : html`<slot></slot>`,
-          endIcon ? html`<uix-icon name=${endIcon}></uix-icon>` : "",
+          endIcon
+            ? html`<uix-icon size=${size} name=${endIcon}></uix-icon>`
+            : "",
           isLoading && html`<span class="loading loading-spinner"></span>`,
         ];
 
