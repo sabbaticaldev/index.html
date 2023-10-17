@@ -1,10 +1,5 @@
 import indexeddbAdapter from "./indexeddb.mjs";
-import {
-  generateId,
-  updateIndexPosition,
-  removeIndexItem,
-  getTimestamp,
-} from "./string.mjs";
+import { generateId, getTimestamp } from "./string.mjs";
 import WebWorker from "./web-worker.mjs";
 
 let oplog;
@@ -24,14 +19,11 @@ const UpdateRelationship = {
 
       if (isMany) {
         const prevTarget = await relatedModel.get(prevId, [targetForeignKey]);
-        if (prevTarget && prevTarget[targetForeignKey]) {
-          prevTarget[targetForeignKey] = removeIndexItem(
-            prevTarget[targetForeignKey],
-            id,
-          );
+        const oldIndex = prevTarget[targetForeignKey] || [];
+        if (prevTarget) {
           await relatedModel._setProperty(
             keyToUpdate,
-            prevTarget[targetForeignKey],
+            oldIndex.filter((entry) => entry !== id),
           );
         }
       } else {
@@ -41,25 +33,18 @@ const UpdateRelationship = {
 
     if (newId) {
       const target = await relatedModel.get(newId, [targetForeignKey]);
-      let index = target[targetForeignKey];
-
       if (isMany) {
+        let newIndex = target[targetForeignKey] || [];
         if (Array.isArray(value) && value.length === 2) {
-          target[targetForeignKey] = updateIndexPosition(
-            index,
-            id,
-            value[0], // Assuming the position is at index 0 of the array
-          );
+          newIndex = newIndex.splice(value[0], 0, id);
         } else {
-          if (!index) {
-            await relatedModel._setProperty(`${targetForeignKey}_${newId}`, id);
-          } else if (!new RegExp(`\\b${id}\\b`).test(index)) {
-            target[targetForeignKey] = index + "|" + id;
+          if (!newIndex.includes(id)) {
+            newIndex.push(id);
           }
         }
         await relatedModel._setProperty(
           `${targetForeignKey}_${newId}`,
-          target[targetForeignKey] || id,
+          newIndex,
         );
       } else {
         await relatedModel._setProperty(`${targetForeignKey}_${newId}`, id);
@@ -84,9 +69,9 @@ const UpdateRelationship = {
         await relatedModel._setProperty(`${targetForeignKey}_${relatedId}`, id);
       } else {
         // Handle the "many" case
-        let index = target[targetForeignKey] || "";
-        if (!new RegExp(`\\b${id}\\b`).test(index)) {
-          target[targetForeignKey] = index ? `${index}|${id}` : id;
+        let index = target[targetForeignKey] || [];
+        if (!index.includes(id)) {
+          target[targetForeignKey] = [...index, id];
           await relatedModel._setProperty(
             `${targetForeignKey}_${relatedId}`,
             target[targetForeignKey],
@@ -106,10 +91,9 @@ const UpdateRelationship = {
         );
       } else {
         // Handle the "many" case
-        if (target && target[targetForeignKey]) {
-          target[targetForeignKey] = removeIndexItem(
-            target[targetForeignKey],
-            id,
+        if (target && Array.isArray(target[targetForeignKey])) {
+          target[targetForeignKey] = target[targetForeignKey].filter(
+            (entry) => entry !== id,
           );
           await relatedModel._setProperty(
             `${targetForeignKey}_${relatedId}`,
@@ -264,12 +248,8 @@ class ReactiveRecord {
         const relatedModel = this.models[prop.relationship];
         const { targetForeignKey, type } = prop;
         const prevValue = await this.get(id, [propKey]);
-        const prevRelationship =
-          type === "one"
-            ? prevValue[propKey]
-            : String(prevValue[propKey]).split("|").filter(Boolean);
-        const newRelationship =
-          type === "one" ? value : String(value).split("|");
+        const prevRelationship = prevValue[propKey];
+        const newRelationship = value;
         const relatedProp = relatedModel.properties[targetForeignKey];
         if (relatedProp?.targetForeignKey)
           await UpdateRelationship[type](
@@ -295,6 +275,7 @@ class ReactiveRecord {
   }
 
   async get(id, opts = {}) {
+    if (!id) return;
     const { props, nested = false } = opts;
     const propNames = props || Object.keys(this.properties);
     if (Array.isArray(props) && props.length === 1) {
@@ -324,10 +305,8 @@ class ReactiveRecord {
         }
 
         if (prop.type === "many") {
-          const ids = values[idx]
-            ? String(values[idx]).split("|").filter(Boolean)
-            : [];
-          if (ids.length > 0) {
+          const ids = values[idx] || [];
+          if (Array.isArray(ids) && ids.length > 0) {
             value = await Promise.all(
               ids.map(async (id) => await relatedModel.get(id)),
             );
