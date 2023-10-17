@@ -470,6 +470,7 @@ export default {
         fullHeight: T.boolean(),
         fullWidth: T.boolean(),
         rounded: T.boolean(),
+        containerClass: T.string(),
         classes: T.object({ defaultValue: {} }),
       },
       render: (props) => {
@@ -488,9 +489,10 @@ export default {
           rounded,
           size,
           isActive,
+          containerClass,
         } = props;
-        const { container: containerClass } = classes || {};
-        const { items: itemsClass } = classes;
+        const { items: itemsClass } = classes || {};
+
         const baseClass = [
           "menu",
           BgColor[color],
@@ -709,8 +711,8 @@ export default {
     : ""}
             <uix-menu
               .items=${items}
+              containerClass="p-0"
               .classes=${{
-    container: "p-0",
     items: itemsClass,
   }}
               color=${color}
