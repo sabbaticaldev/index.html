@@ -5,7 +5,12 @@ export const formatDate = (timestamp) => {
 
 export const formatTime = (timestamp) => {
   const date = new Date(timestamp);
-  return date.toLocaleTimeString(navigator.language);
+  const options = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  };
+  return date.toLocaleTimeString(navigator.language, options);
 };
 
 export const formatDateTime = (timestamp) => {

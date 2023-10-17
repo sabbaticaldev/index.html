@@ -342,6 +342,7 @@ class ReactiveRecord {
     });
 
     await Promise.all(promises);
+    console.log(this.name, { nested, id, obj });
     return obj;
   }
 

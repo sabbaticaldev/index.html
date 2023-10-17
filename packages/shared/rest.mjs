@@ -25,16 +25,11 @@ export async function getMany(endpoint, params) {
     const queryString = new URLSearchParams(params).toString();
     url += `?${queryString}`;
   }
-
   const response = await fetch(formatEndpoint(url));
   return handleResponse(response);
 }
 
-export async function get(endpoint) {
-  if (!endpoint) return;
-  const response = await fetch(formatEndpoint(endpoint));
-  return handleResponse(response);
-}
+export const get = getMany;
 
 export async function post(endpoint, params) {
   if (!endpoint) return;
@@ -50,7 +45,6 @@ export async function post(endpoint, params) {
 
 export async function patch(endpoint, updates) {
   if (!endpoint) return;
-  console.log({ updates });
   const response = await fetch(formatEndpoint(endpoint), {
     method: "PATCH",
     headers: {

@@ -98,8 +98,8 @@ function getDefaultCRUDEndpoints(modelName, endpoints = {}) {
     [`GET /api/${modelName}`]: function (opts) {
       return this.getMany(null, opts);
     },
-    [`GET /api/${modelName}/:id`]: function ({ id }) {
-      return this.get(id);
+    [`GET /api/${modelName}/:id`]: function ({ id, ...opts }) {
+      return this.get(id, opts);
     },
     [`POST /api/${modelName}`]: function (item) {
       return this.add(item);

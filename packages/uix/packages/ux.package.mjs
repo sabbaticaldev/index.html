@@ -155,26 +155,32 @@ export default {
         avatar: T.string(),
         sender: T.string(),
         rounded: T.boolean(),
+        href: T.string(),
       },
-      render: ({ message, avatar, timestamp, sender, rounded }) => {
+      render: ({ message, href, avatar, timestamp, sender, rounded }) => {
         return html`
-          <uix-block spacing="sm">
-            <uix-list>
-              ${avatar
+          <a href=${href}>
+            <uix-block spacing="sm">
+              <uix-list>
+                ${avatar
     ? html`
-                    <uix-avatar src=${avatar} rounded=${rounded}></uix-avatar>
-                  `
+                      <uix-avatar src=${avatar} rounded=${rounded}></uix-avatar>
+                    `
     : ""}
-              <uix-list vertical class="justify-center">
-                <div>${sender}</div>
-                <div>${message}</div>
+                <uix-list vertical class="justify-center flex-grow">
+                  <div>${sender}</div>
+                  <div>${message}</div>
+                </uix-list>
+                <uix-list vertical containerClass="justify-evenly divide-y">
+                  <uix-time
+                    class="text-xs opacity-50"
+                    timestamp=${timestamp}
+                  ></uix-time>
+                  <uix-badge>2</uix-badge>
+                </uix-list>
               </uix-list>
-              <uix-list vertical class="justify-between h-20 divide-y">
-                <time class="text-xs opacity-50">${timestamp}</time>
-                <uix-badge>2</uix-badge>
-              </uix-list>
-            </uix-list>
-          </uix-block>
+            </uix-block>
+          </a>
         `;
       },
     },
@@ -187,8 +193,7 @@ export default {
           <div class="chat-bubble-container">
             ${messages.map(
     (message) =>
-      !console.log({ message }) &&
-                html`
+      html`
                   <uix-chat-message
                     message=${message.message}
                     timestamp=${message.timestamp}
