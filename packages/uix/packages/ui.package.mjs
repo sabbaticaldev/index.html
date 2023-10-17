@@ -46,11 +46,12 @@ export default {
         ringColor,
       }) => {
         const WidthSizes = {
-          xs: "w-12",
-          sm: "w-20",
-          lg: "w-28",
-          xl: "w-36",
-          "2xl": "w-52",
+          xs: "w-8",
+          sm: "w-16",
+          md: "w-24",
+          lg: "w-32",
+          xl: "w-48",
+          "2xl": "w-64",
         };
         const sizeClass = WidthSizes[size];
         const ringClass = hasRing

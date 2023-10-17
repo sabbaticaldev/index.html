@@ -265,8 +265,7 @@ class ReactiveRecord {
         const newRelationship =
           type === "one" ? value : String(value).split("|");
         const relatedProp = relatedModel.properties[targetForeignKey];
-
-        if (relatedProp.targetForeignKey)
+        if (relatedProp?.targetForeignKey)
           await UpdateRelationship[type](
             prevRelationship,
             newRelationship,
@@ -342,7 +341,6 @@ class ReactiveRecord {
     });
 
     await Promise.all(promises);
-    console.log(this.name, { nested, id, obj });
     return obj;
   }
 

@@ -14,7 +14,9 @@ export default {
     "uix-time": {
       props: { timestamp: T.number() },
       render: ({ timestamp }) => {
-        return html`<time>${formatTime(timestamp)}</time>`;
+        return html`<time class="whitespace-nowrap"
+          >${formatTime(timestamp)}</time
+        >`;
       },
     },
     "uix-calendar-day": {

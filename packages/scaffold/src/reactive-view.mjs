@@ -27,7 +27,6 @@ const TYPE_MAP = {
 export function defineView(tag, component, config = {}) {
   const {
     render,
-    firstUpdated,
     init: componentInit,
     formAssociated,
     props,
@@ -128,10 +127,6 @@ export function defineView(tag, component, config = {}) {
           this.boundServiceWorkerMessageHandler
         );
       }
-    }
-
-    firstUpdated() {
-      firstUpdated?.(this);
     }
 
     render() {

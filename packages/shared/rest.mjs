@@ -18,7 +18,7 @@ export async function handleResponse(response) {
   return JSON.parse(text);
 }
 
-export async function getMany(endpoint, params) {
+export async function get(endpoint, params) {
   if (!endpoint) return;
   let url = endpoint;
   if (params) {
@@ -29,7 +29,7 @@ export async function getMany(endpoint, params) {
   return handleResponse(response);
 }
 
-export const get = getMany;
+export const getMany = get;
 
 export async function post(endpoint, params) {
   if (!endpoint) return;

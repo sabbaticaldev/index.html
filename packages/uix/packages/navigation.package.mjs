@@ -339,8 +339,9 @@ export default {
         }),
         icon: T.string(),
       },
-      firstUpdated: (host) => {
-        host.$modal = host.shadowRoot.querySelector("#modal");
+      firstUpdated: function () {
+        this.$modal = this.shadowRoot.querySelector("#modal");
+        console.log(this.$modal);
       },
       render: (host) => {
         const { parent, actions, title, position, openButton, icon } = host;

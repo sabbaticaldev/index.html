@@ -126,7 +126,7 @@ export default {
         return html`
           <uix-list class="${alignmentClass}">
             <div class="chat-image avatar">
-              <div class="w-10 ${(rounded && "rounded-full") || ""}">
+              <div class="${(rounded && "rounded-full") || ""}">
                 <uix-avatar rounded src=${sender.avatar}></uix-avatar>
               </div>
             </div>
@@ -160,18 +160,25 @@ export default {
       render: ({ message, href, avatar, timestamp, sender, rounded }) => {
         return html`
           <a href=${href}>
-            <uix-block spacing="sm">
-              <uix-list>
+            <uix-block spacing="sm" containerClass="hover:bg-gray-200">
+              <uix-list containerClass="items-center">
                 ${avatar
     ? html`
-                      <uix-avatar src=${avatar} rounded=${rounded}></uix-avatar>
+                      <uix-avatar
+                        src=${avatar}
+                        size="xs"
+                        rounded=${rounded}
+                      ></uix-avatar>
                     `
     : ""}
                 <uix-list vertical class="justify-center flex-grow">
                   <div>${sender}</div>
                   <div>${message}</div>
                 </uix-list>
-                <uix-list vertical containerClass="justify-evenly divide-y">
+                <uix-list
+                  vertical
+                  containerClass="justify-evenly divide-y text-right"
+                >
                   <uix-time
                     class="text-xs opacity-50"
                     timestamp=${timestamp}

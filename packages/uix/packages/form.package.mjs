@@ -63,15 +63,15 @@ const FormControls = (element) => ({
     }, 0);
   },
   formAssociated: true,
-  firstUpdated(host) {
-    host._defaultValue = host.value;
-    host._internals = host.attachInternals();
-    if (!host.$input) {
-      host.$input = host.shadowRoot.querySelector(element || "input");
-      host._internals.setValidity(
-        host.$input.validity,
-        host.$input.validationMessage,
-        host.$input,
+  firstUpdated: function () {
+    this._defaultValue = this.value;
+    this._internals = this.attachInternals();
+    if (!this.$input) {
+      this.$input = this.shadowRoot.querySelector(element || "input");
+      this._internals.setValidity(
+        this.$input.validity,
+        this.$input.validationMessage,
+        this.$input,
       );
     }
   },
@@ -111,6 +111,7 @@ const TextareaField = (props) => html`
     .input=${props.input}
     ?disabled=${props.disabled}
     ?required=${props.required}
+    ?autofocus=${props.autofocus}
     value=${ifDefined(props.value)}
     placeholder=${ifDefined(props.placeholder)}
     rows=${ifDefined(props.rows)}
@@ -382,6 +383,7 @@ export default {
           variant,
           color,
           size,
+          keydown,
         } = host;
 
         const input = (e) => {
@@ -411,6 +413,7 @@ export default {
             ?required=${required}
             name=${ifDefined(name)}
             regex=${ifDefined(regex)}
+            @keydown=${keydown}
             @input=${input}
             type=${type}
           />
@@ -447,15 +450,18 @@ export default {
         name: T.string(),
         disabled: T.boolean(),
         required: T.boolean(),
+        autofocus: T.boolean(),
         rows: T.number({ defaultValue: 4 }),
         variant: T.string({ defaultValue: "bordered", enum: Variants }),
         color: T.string({ defaultValue: "default", enum: Colors }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
         input: T.function(),
+        keydown: T.function(),
       },
       ...FormControls("textarea"),
       render: (host) => {
         const {
+          autofocus,
           value,
           name,
           placeholder,
@@ -465,6 +471,7 @@ export default {
           color,
           size,
           required,
+          keydown,
         } = host;
 
         const input = (e) => {
@@ -486,8 +493,10 @@ export default {
             ?disabled=${disabled}
             name=${name}
             rows=${rows}
+            ?autofocus=${autofocus}
             ?required=${required}
             @input=${input}
+            @keydown=${keydown}
           >
 ${value}</textarea
           >
