@@ -124,13 +124,12 @@ export default {
         };
         const alignmentClass = AlignmentClasses[alignment];
         return html`
-          <uix-list class="${alignmentClass}">
-            <div class="chat-image avatar">
-              <div class="${(rounded && "rounded-full") || ""}">
-                <uix-avatar rounded src=${sender.avatar}></uix-avatar>
-              </div>
-            </div>
-
+          <uix-list class=${alignmentClass}>
+            <uix-avatar
+              ?rounded=${rounded}
+              size="xs"
+              src=${sender.avatar}
+            ></uix-avatar>
             <div class="chat-header">${sender.name}</div>
             <uix-list
               vertical
@@ -169,25 +168,24 @@ export default {
       }) => {
         return html`
           <a href=${href}>
-            <uix-block spacing="sm" containerClass="hover:bg-gray-200">
+            <uix-block spacing="sm">
               <uix-list containerClass="items-center">
                 ${avatar
     ? html`
-                      <uix-avatar
-                        src=${avatar}
-                        size="xs"
-                        rounded=${rounded}
-                      ></uix-avatar>
+                      <uix-avatar src=${avatar} rounded=${rounded}></uix-avatar>
                     `
     : ""}
                 <uix-list vertical class="justify-center flex-grow">
-                  <div>${sender}</div>
-                  <div>${message}</div>
+                  <uix-text size="xs">${sender}</uix-text>
+                  <uix-text
+                    weight="medium"
+                    size="sm"
+                    containerClass="text-gray-400 text-ellipsis text-xs overflow-hidden whitespace-nowrap w-36"
+                  >
+                    ${message}
+                  </uix-text>
                 </uix-list>
-                <uix-list
-                  vertical
-                  containerClass="justify-evenly divide-y text-right"
-                >
+                <uix-list vertical containerClass="justify-evenly text-right">
                   <uix-time
                     class="text-xs opacity-50"
                     timestamp=${timestamp}
@@ -199,6 +197,27 @@ export default {
               </uix-list>
             </uix-block>
           </a>
+        `;
+      },
+    },
+    "uix-space-bubble": {
+      props: {
+        avatar: T.string(),
+      },
+      render: ({ messages }) => {
+        return html`
+          <div class="chat-bubble-container">
+            ${messages.map(
+    (message) =>
+      html`
+                  <uix-chat-message
+                    message=${message.message}
+                    timestamp=${message.timestamp}
+                    .sender=${message.sender}
+                  ></uix-chat-message>
+                `,
+  )}
+          </div>
         `;
       },
     },

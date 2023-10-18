@@ -30,19 +30,25 @@ export default {
           .join(" ");
 
         const HeadingTemplates = {
-          "2xl": html`<h1 class="text-5xl ${baseClass}">
+          "4xl": html`<h1 class="text-4xl ${baseClass}">
             <slot></slot>
           </h1>`,
-          xl: html`<h2 class="text-3xl ${baseClass}">
+          "3xl": html`<h2 class="text-3xl ${baseClass}">
             <slot></slot>
           </h2>`,
-          lg: html`<h3 class="text-2xl ${baseClass}">
+          "2xl": html`<h2 class="text-2xl ${baseClass}">
+            <slot></slot>
+          </h2>`,
+          xl: html`<h2 class="text-xl ${baseClass}">
+            <slot></slot>
+          </h2>`,
+          lg: html`<h3 class="text-lg ${baseClass}">
             <slot></slot>
           </h3>`,
-          md: html`<h4 class="text-xl ${baseClass}">
+          md: html`<h4 class="text-md ${baseClass}">
             <slot></slot>
           </h4>`,
-          sm: html`<h5 class="text-lg ${baseClass}">
+          sm: html`<h5 class="text-sm ${baseClass}">
             <slot></slot>
           </h5>`,
           xs: html`<h6 class="text-xs ${baseClass}">
