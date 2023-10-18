@@ -153,7 +153,6 @@ export default {
         const baseClass = [containerClass, size && TextSizes[size]]
           .filter(Boolean)
           .join(" ");
-        console.log({ baseClass, size });
         return html`<ion-icon
           name=${name}
           class=${baseClass}
