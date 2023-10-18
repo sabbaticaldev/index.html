@@ -96,14 +96,17 @@ self.addEventListener("fetch", async (event) => {
             )
           : {};
         const allParams = { ...pathParams, ...bodyParams, ...queryParams };
-
-        const response = await callback.call(model, allParams, {
+        const { _optimistic, ...params } = allParams;
+        const response = await callback.call(model, params, {
           P2P,
           requestUpdate,
           models,
         });
-
-        if (["POST", "PATCH", "DELETE"].includes(event.request.method)) {
+        console.log({ _optimistic });
+        if (
+          !_optimistic &&
+          ["POST", "PATCH", "DELETE"].includes(event.request.method)
+        ) {
           requestUpdate();
         }
 

@@ -167,7 +167,7 @@ class ReactiveRecord {
   async add(value) {
     const entries = this._generateEntries(value);
     await this._set(entries);
-    return { ...value, id: this.lastId };
+    return await this.get(this.lastId, Object.keys(value));
   }
 
   async addMany(values) {
@@ -186,6 +186,7 @@ class ReactiveRecord {
   async edit({ id, ...value }) {
     const entries = Object.keys(value).map((prop) => [prop, id, value[prop]]);
     await this._set(entries);
+    return await this.get(id, Object.keys(value));
   }
 
   async editMany(records) {
