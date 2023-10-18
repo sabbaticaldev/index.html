@@ -341,7 +341,6 @@ export default {
       },
       firstUpdated: function () {
         this.$modal = this.shadowRoot.querySelector("#modal");
-        console.log(this.$modal);
       },
       render: (host) => {
         const { parent, actions, title, position, openButton, icon } = host;
