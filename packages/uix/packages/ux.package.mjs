@@ -169,7 +169,7 @@ export default {
         return html`
           <a href=${href}>
             <uix-block spacing="sm">
-              <uix-list containerClass="items-center">
+              <uix-list>
                 ${avatar
     ? html`
                       <uix-avatar src=${avatar} rounded=${rounded}></uix-avatar>

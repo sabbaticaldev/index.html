@@ -447,9 +447,11 @@ export default {
       props: {
         value: T.string(),
         placeholder: T.string(),
+        containerClass: T.string(),
         name: T.string(),
         disabled: T.boolean(),
         required: T.boolean(),
+        rounded: T.boolean(),
         autofocus: T.boolean(),
         rows: T.number({ defaultValue: 4 }),
         variant: T.string({ defaultValue: "bordered", enum: Variants }),
@@ -461,6 +463,7 @@ export default {
       ...FormControls("textarea"),
       render: (host) => {
         const {
+          rounded,
           autofocus,
           value,
           name,
@@ -472,6 +475,7 @@ export default {
           size,
           required,
           keydown,
+          containerClass,
         } = host;
 
         const input = (e) => {
@@ -481,8 +485,10 @@ export default {
         const textareaClass = [
           "w-full textarea",
           variant === "bordered" ? "textarea-bordered" : "",
+          rounded ? "" : "rounded-none",
           color ? TextareaColors[color] : "",
           size ? TextareaSizes[size] : "",
+          containerClass,
         ]
           .filter(Boolean)
           .join(" ");

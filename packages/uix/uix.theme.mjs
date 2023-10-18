@@ -263,10 +263,10 @@ export const TextareaColors = {
 };
 
 export const TextareaSizes = {
-  lg: "textarea-lg",
-  md: "textarea-md",
-  sm: "textarea-sm",
-  xs: "textarea-xs",
+  lg: "textarea-lg h-40",
+  md: "textarea-md h-30",
+  sm: "textarea-sm h-20",
+  xs: "textarea-xs h-10",
 };
 
 export const SelectSizes = {
