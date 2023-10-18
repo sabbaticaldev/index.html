@@ -104,6 +104,7 @@ export default {
         vertical: T.boolean(),
         responsive: T.boolean(),
         droparea: T.boolean(),
+        spacing: T.string({ defaultValue: "" }),
         gap: T.string({ defaultValue: "sm", enum: Sizes }),
         rounded: T.boolean(),
         containerClass: T.string(),
@@ -111,7 +112,8 @@ export default {
       },
       ...droparea,
       render: (props) => {
-        const { containerClass, vertical, gap, responsive, rounded } = props;
+        const { containerClass, vertical, gap, responsive, rounded, spacing } =
+          props;
         const directionClass = vertical ? "flex-col" : "flex-row";
         const responsiveClass =
           (responsive &&
@@ -133,6 +135,7 @@ export default {
     responsiveClass,
     borderRadiusClass,
     containerClass,
+    SpacingSizes[spacing],
   ]
     .filter(Boolean)
     .join(" ")}

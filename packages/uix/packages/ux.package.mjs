@@ -113,29 +113,35 @@ export default {
         timestamp: T.object(),
         sender: T.object({ defaultValue: { name: "", avatar: "" } }),
         alignment: T.string({ defaultValue: "start", enum: ["start", "end"] }),
-        color: T.string({ defaultValue: "", enum: Colors }),
+        color: T.string({ defaultValue: "base", enum: Colors }),
         rounded: T.boolean(),
       },
       render: ({ message, timestamp, sender, alignment, rounded, color }) => {
-        const bgColorClass = BgColor[color];
+        const currentUser = sender?.name === "user";
+        const bgColorClass = !currentUser
+          ? BgColor[color]
+          : "bg-gray-800 text-white";
         const AlignmentClasses = {
           start: "chat-start",
           end: "chat-end",
         };
         const alignmentClass = AlignmentClasses[alignment];
+        const baseClass = [
+          "prose text-sm",
+          bgColorClass,
+          (rounded && "") || "rounded-none",
+          alignmentClass,
+        ]
+          .filter(Boolean)
+          .join(" ");
         return html`
-          <uix-list class=${alignmentClass}>
+          <uix-list>
             <uix-avatar
               ?rounded=${rounded}
               size="xs"
               src=${sender.avatar}
             ></uix-avatar>
-            <div class="chat-header">${sender.name}</div>
-            <uix-list
-              vertical
-              class="chat-bubble ${bgColorClass} ${(rounded && "") ||
-              "rounded-none"}"
-            >
+            <uix-list vertical containerClass=${baseClass} spacing="md">
               ${message}
               <uix-time
                 class="text-xs opacity-50 text-right"
@@ -205,20 +211,16 @@ export default {
         avatar: T.string(),
       },
       render: ({ messages }) => {
-        return html`
-          <div class="chat-bubble-container">
-            ${messages.map(
-    (message) =>
-      html`
-                  <uix-chat-message
-                    message=${message.message}
-                    timestamp=${message.timestamp}
-                    .sender=${message.sender}
-                  ></uix-chat-message>
-                `,
-  )}
-          </div>
-        `;
+        return messages.map(
+          (message) =>
+            html`
+              <uix-chat-message
+                message=${message.message}
+                timestamp=${message.timestamp}
+                .sender=${message.sender}
+              ></uix-chat-message>
+            `,
+        );
       },
     },
     "uix-chat-bubble": {
