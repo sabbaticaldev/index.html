@@ -365,7 +365,7 @@ export default {
           defaultValue: "md",
           enum: Sizes,
         }),
-        class: T.string(),
+        containerClass: T.string(),
         change: T.function(),
         keydown: T.function(),
       },
@@ -384,6 +384,7 @@ export default {
           color,
           size,
           keydown,
+          containerClass,
         } = host;
 
         const input = (e) => {
@@ -398,7 +399,7 @@ export default {
           InputVariantClass[color],
           InputSizeClass[size],
           buttonTypes.includes(type) && `btn ${ButtonColors[color]}`,
-          host.class,
+          containerClass,
         ]
           .filter(Boolean)
           .join(" ");
