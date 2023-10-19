@@ -142,7 +142,9 @@ export default {
               src=${sender.avatar}
             ></uix-avatar>
             <uix-list vertical containerClass=${baseClass} spacing="md">
-              ${message}
+              <uix-text font="mono" weight="light" size="xs"
+                >${message}</uix-text
+              >
               <uix-time
                 class="text-xs opacity-50 text-right"
                 timestamp=${timestamp}
@@ -186,6 +188,7 @@ export default {
                   <uix-text
                     weight="medium"
                     size="sm"
+                    font="mono"
                     containerClass="text-gray-400 text-ellipsis text-xs overflow-hidden whitespace-nowrap w-36"
                   >
                     ${message}

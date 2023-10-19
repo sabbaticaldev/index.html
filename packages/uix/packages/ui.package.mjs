@@ -146,10 +146,9 @@ export default {
       props: {
         name: T.string(),
         size: T.string({ defaultValue: "base", enum: Sizes }),
-        classes: T.object(),
+        containerClass: T.string(),
       },
-      render: ({ name, classes, size }) => {
-        const { container: containerClass = "" } = classes || {};
+      render: ({ name, containerClass, size }) => {
         const baseClass = [containerClass, size && TextSizes[size]]
           .filter(Boolean)
           .join(" ");

@@ -5,26 +5,28 @@ import {
   Sizes,
   HeadingColors,
   FontWeight,
+  FontType,
   LinkColors,
 } from "../uix.theme.mjs";
-
 export default {
   views: {
     "uix-text": {
       props: {
         size: T.string({ enum: Sizes }),
         color: T.string({ defaultValue: "primary", enum: Colors }),
-        weight: T.string({ defaultValue: "semibold", enum: FontWeight }),
+        weight: T.string({ defaultValue: "", enum: FontWeight }),
+        font: T.string({ defaultValue: "sans", enum: FontType }),
         containerClass: T.string(),
       },
+
       render: (props) => {
-        const { size, color, weight, containerClass } = props;
+        const { size, font, color, weight, containerClass } = props;
         const baseClass = [
-          "prose font-roboto",
+          "prose",
           HeadingColors[color],
           FontWeight[weight],
           containerClass,
-          props.class,
+          FontType[font],
         ]
           .filter(Boolean)
           .join(" ");

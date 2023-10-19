@@ -26,6 +26,12 @@ export const FontWeight = {
   black: "font-black", // 900
 };
 
+export const FontType = {
+  mono: "font-mono",
+  sans: "font-sans",
+  serif: "font-serif",
+};
+
 export const BgOverlayOpacity = {
   10: "bg-opacity-10",
   20: "bg-opacity-20",

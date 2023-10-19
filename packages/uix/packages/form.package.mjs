@@ -483,7 +483,7 @@ export default {
           host.input?.(e);
         };
         const textareaClass = [
-          "w-full textarea",
+          "w-full textarea overflow-hidden resize-none",
           variant === "bordered" ? "textarea-bordered" : "",
           rounded ? "" : "rounded-none",
           color ? TextareaColors[color] : "",
