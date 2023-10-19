@@ -103,7 +103,8 @@ const InputField = (props) =>
       color=${ifDefined(props.color)}
       size=${ifDefined(props.size)}
       containerClass="w-full"
-    ></uix-input>
+    >
+    </uix-input>
   `;
 
 const TextareaField = (props) => html`
@@ -144,24 +145,8 @@ const fieldRenderers = {
   select: SelectField,
 };
 
-const renderFields = (row) => {
-  if (Array.isArray(row)) {
-    return html`
-      <uix-list>
-        ${row.map(
-    (field) =>
-      html`<uix-block spacing="0" class="w-full">
-              ${renderField(field)}
-            </uix-block>`,
-  )}
-      </uix-list>
-    `;
-  } else {
-    return renderField(row);
-  }
-};
-const renderField = (field) => {
-  const { type, formType, ...props } = field;
+const renderField = (field, host) => {
+  const { type, formType, llm, ...props } = field;
   const FieldRenderer =
     fieldRenderers[formType || type] || fieldRenderers.input;
   const keydown = (e) => {
@@ -183,6 +168,10 @@ const renderField = (field) => {
         .label=${field.label || ""}
         .labelAlt=${field.labelAlt || []}
       >
+        ${llm &&
+        html`<uix-button @click=${() => host.wizardForm(field.name)}
+          >wizard</uix-button
+        >`}
         ${fieldComponent}
       </uix-form-control>
     `;
@@ -190,6 +179,7 @@ const renderField = (field) => {
 
   return fieldComponent;
 };
+
 export default {
   i18n: {},
   views: {
@@ -199,6 +189,7 @@ export default {
         actions: T.array(),
         method: T.string({ defaultValue: "post" }),
         endpoint: T.string(),
+        llm: T.object(),
       },
       getForm: function () {
         if (!this.$form) this.$form = this.renderRoot.querySelector("form");
@@ -239,12 +230,33 @@ export default {
         });
         return data;
       },
+      wizardForm: function (name) {
+        console.log({ name }, this.fields);
+      },
+
+      renderField: function (row) {
+        if (Array.isArray(row)) {
+          return html`
+            <uix-list>
+              ${row.map((field) => {
+    return html`<uix-block spacing="0" class="w-full">
+                  ${renderField(field, this)}
+                </uix-block>`;
+  })}
+            </uix-list>
+          `;
+        } else {
+          return renderField(row, this);
+        }
+      },
       render: (host) => {
         const { fields, actions, method, endpoint } = host;
         const actionList = actions?.({ form: host });
         return html`
           <form class="m-0" method=${method} action=${endpoint}>
-            <uix-list gap="lg" vertical> ${fields.map(renderFields)} </uix-list>
+            <uix-list gap="lg" vertical>
+              ${fields.map((field) => host.renderField(field))}
+            </uix-list>
             <uix-list>
               ${actionList
     ? html`<uix-list responsive gap="md" class="mx-auto mt-10">
@@ -269,6 +281,7 @@ export default {
         fields: T.array(),
         actions: T.array(),
         title: T.string(),
+        llm: T.object(),
         method: T.string({ defaultValue: "post" }),
         endpoint: T.string(),
         color: T.string({ defaultValue: "default", enum: Colors }),
@@ -299,6 +312,7 @@ export default {
               .fields=${host.fields}
               method=${host.method}
               endpoint=${host.endpoint}
+              .llm=${host.llm}
               .actions=${({ form }) => host.actions?.({ modal: host, form })}
             ></uix-form>
           </uix-modal>
