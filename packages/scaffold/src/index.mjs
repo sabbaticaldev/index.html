@@ -3,7 +3,6 @@ import uiKit from "uix/packages/ui.package.mjs";
 import uxKit from "uix/packages/ux.package.mjs";
 import appKit from "uix/packages/app.package.mjs";
 import formKit from "uix/packages/form.package.mjs";
-import typographyKit from "uix/packages/typography.package.mjs";
 import docsKit from "uix/packages/docs.package.mjs";
 import navigationKit from "uix/packages/navigation.package.mjs";
 import layoutKit from "uix/packages/layout.package.mjs";
@@ -36,7 +35,6 @@ const bootstrapp = async (
     navigationKit,
     docsKit,
     uxKit,
-    typographyKit,
     uiKit,
     formKit,
     layoutKit,

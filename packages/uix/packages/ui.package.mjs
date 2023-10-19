@@ -12,6 +12,9 @@ import {
   BorderColor,
   RingColor,
   TextSizes,
+  HeadingColors,
+  FontWeight,
+  FontType,
 } from "../uix.theme.mjs";
 
 export default {
@@ -294,6 +297,58 @@ export default {
       },
     },
 
+    "uix-text": {
+      props: {
+        size: T.string({ enum: Sizes }),
+        color: T.string({ defaultValue: "primary", enum: Colors }),
+        weight: T.string({ defaultValue: "", enum: FontWeight }),
+        font: T.string({ defaultValue: "sans", enum: FontType }),
+        containerClass: T.string(),
+      },
+
+      render: (props) => {
+        const { size, font, color, weight, containerClass } = props;
+        const baseClass = [
+          "prose",
+          HeadingColors[color],
+          FontWeight[weight],
+          containerClass,
+          FontType[font],
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        const HeadingTemplates = {
+          "4xl": html`<h1 class="text-4xl tracking-wider ${baseClass}">
+            <slot></slot>
+          </h1>`,
+          "3xl": html`<h2 class="text-3xl tracking-wider ${baseClass}">
+            <slot></slot>
+          </h2>`,
+          "2xl": html`<h2 class="text-2xl tracking-wider ${baseClass}">
+            <slot></slot>
+          </h2>`,
+          xl: html`<h2 class="text-xl tracking-wide ${baseClass}">
+            <slot></slot>
+          </h2>`,
+          lg: html`<h3 class="text-lg tracking-wide ${baseClass}">
+            <slot></slot>
+          </h3>`,
+          md: html`<h4 class="text-md ${baseClass}">
+            <slot></slot>
+          </h4>`,
+          sm: html`<h5 class="text-sm ${baseClass}">
+            <slot></slot>
+          </h5>`,
+          xs: html`<h6 class="text-xs ${baseClass}">
+            <slot></slot>
+          </h6>`,
+          "": html`<p class="text-base ${baseClass}"><slot></slot></p>`,
+        };
+
+        return HeadingTemplates[size || ""];
+      },
+    },
     "uix-radial-progress": {
       // TODO: expand daisyui tags
       props: {

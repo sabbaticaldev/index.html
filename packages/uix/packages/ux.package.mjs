@@ -184,10 +184,15 @@ export default {
                     `
     : ""}
                 <uix-list vertical class="justify-center flex-grow">
-                  <uix-text size="xs">${sender}</uix-text>
+                  <uix-text
+                    size="sm"
+                    weight="bold"
+                    class="tracking-wide text-gray-700"
+                    >${sender}</uix-text
+                  >
                   <uix-text
                     weight="medium"
-                    size="sm"
+                    size="xs"
                     font="mono"
                     containerClass="text-gray-400 text-ellipsis text-xs overflow-hidden whitespace-nowrap w-36"
                   >
