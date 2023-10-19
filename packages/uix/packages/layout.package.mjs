@@ -106,14 +106,22 @@ export default {
         droparea: T.boolean(),
         spacing: T.string({ defaultValue: "" }),
         gap: T.string({ defaultValue: "sm", enum: Sizes }),
+        full: T.boolean(),
         rounded: T.boolean(),
         containerClass: T.string(),
         id: T.string(),
       },
       ...droparea,
       render: (props) => {
-        const { containerClass, vertical, gap, responsive, rounded, spacing } =
-          props;
+        const {
+          containerClass,
+          full,
+          vertical,
+          gap,
+          responsive,
+          rounded,
+          spacing,
+        } = props;
         const directionClass = vertical ? "flex-col" : "flex-row";
         const responsiveClass =
           (responsive &&
@@ -129,7 +137,8 @@ export default {
           <div
             id="uix-list"
             class=${[
-    "flex w-full h-full",
+    "flex w-full",
+    full ? "h-full" : "",
     gapClass,
     directionClass,
     responsiveClass,

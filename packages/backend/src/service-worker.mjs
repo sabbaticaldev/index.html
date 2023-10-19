@@ -102,7 +102,6 @@ self.addEventListener("fetch", async (event) => {
           requestUpdate,
           models,
         });
-        console.log({ _optimistic });
         if (
           !_optimistic &&
           ["POST", "PATCH", "DELETE"].includes(event.request.method)

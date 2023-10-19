@@ -5,21 +5,31 @@ import WebWorker from "./web-worker.mjs";
 let oplog;
 let queue;
 const UpdateRelationship = {
-  one: async function (prevValue, value, relatedModel, id, targetForeignKey) {
+  one: async function ({
+    prevValue,
+    value,
+    relatedModel,
+    id,
+    targetForeignKey,
+  }) {
     const targetType = relatedModel.properties[targetForeignKey]?.type;
     const isMany = targetType === "many";
 
     // Extract the ID from the value and prevValue
-    const extractId = (val) => (Array.isArray(val) ? val[1] : val);
-    const prevId = extractId(prevValue);
-    const newId = extractId(value);
+    const extractId = (val) => (Array.isArray(val) ? val : [null, val]);
+    const [prevPosition, prevId] = extractId(prevValue);
+    const [position, newId] = extractId(value);
 
-    if (prevId && prevId !== newId) {
+    if (prevId) {
       let keyToUpdate = `${targetForeignKey}_${prevId}`;
 
       if (isMany) {
         const prevTarget = await relatedModel.get(prevId, [targetForeignKey]);
         const oldIndex = prevTarget[targetForeignKey] || [];
+        console.log(
+          { prevId, prevTarget, targetForeignKey },
+          oldIndex.filter((entry) => entry !== id),
+        );
         if (prevTarget) {
           await relatedModel._setProperty(
             keyToUpdate,
@@ -35,8 +45,8 @@ const UpdateRelationship = {
       const target = await relatedModel.get(newId, [targetForeignKey]);
       if (isMany) {
         let newIndex = target[targetForeignKey] || [];
-        if (Array.isArray(value) && value.length === 2) {
-          newIndex = newIndex.splice(value[0], 0, id);
+        if (Array.isArray(value) && !isNaN(position)) {
+          newIndex.splice(position, 0, id);
         } else {
           if (!newIndex.includes(id)) {
             newIndex.push(id);
@@ -52,9 +62,9 @@ const UpdateRelationship = {
     }
   },
 
-  many: async function (prevValue, value, relatedModel, id, targetForeignKey) {
+  many: async function ({ prevId, value, relatedModel, id, targetForeignKey }) {
     // If the value is not an array, convert it into one for easier processing.
-    const prevIds = Array.isArray(prevValue) ? prevValue : [prevValue];
+    const prevIds = Array.isArray(prevId) ? prevId : [prevId];
     const newIds = Array.isArray(value) ? value : [value];
 
     // Find the ids which are added and the ones which are removed.
@@ -249,17 +259,15 @@ class ReactiveRecord {
         const relatedModel = this.models[prop.relationship];
         const { targetForeignKey, type } = prop;
         const prevValue = await this.get(id, [propKey]);
-        const prevRelationship = prevValue[propKey];
-        const newRelationship = value;
         const relatedProp = relatedModel.properties[targetForeignKey];
         if (relatedProp?.targetForeignKey)
-          await UpdateRelationship[type](
-            prevRelationship,
-            newRelationship,
-            relatedModel,
+          await UpdateRelationship[type]({
+            prevValue: prevValue[propKey],
             id,
+            value,
+            relatedModel,
             targetForeignKey,
-          );
+          });
       }
 
       if (oplog)

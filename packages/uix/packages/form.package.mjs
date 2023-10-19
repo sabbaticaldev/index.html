@@ -102,7 +102,7 @@ const InputField = (props) =>
       variant=${ifDefined(props.variant)}
       color=${ifDefined(props.color)}
       size=${ifDefined(props.size)}
-      class="w-full"
+      containerClass="w-full"
     ></uix-input>
   `;
 
@@ -121,7 +121,7 @@ const TextareaField = (props) => html`
     label=${ifDefined(props.label)}
     labelAlt=${ifDefined(props.labelAlt)}
     name=${props.name}
-    class="w-full"
+    containerClass="w-full"
   ></uix-textarea>
 `;
 
@@ -134,7 +134,7 @@ const SelectField = (props) => html`
     altLabel=${ifDefined(props.altLabel)}
     name=${props.name}
     size=${ifDefined(props.size)}
-    class="w-full"
+    containerClass="w-full"
   ></uix-select>
 `;
 
@@ -427,17 +427,24 @@ export default {
         options: T.array(),
         color: T.string({ defaultValue: "base", enum: Colors }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
+        containerClass: T.string(),
         name: T.string(),
       },
-      render: ({ options, color, size, name }) => {
+      render: ({ containerClass, options, color, size, name }) => {
         const colorClass = SelectColors[color];
         const sizeClass = SelectSizes[size];
-
+        const baseClass = [
+          "select",
+          colorClass,
+          sizeClass,
+          "w-full",
+          "max-w-xs",
+          containerClass,
+        ]
+          .filter(Boolean)
+          .join(" ");
         return html`
-          <select
-            name=${name}
-            class="select ${colorClass} ${sizeClass} w-full max-w-xs"
-          >
+          <select name=${name} class=${baseClass}>
             ${options.map((option) => html` <option>${option}</option> `)}
           </select>
         `;
