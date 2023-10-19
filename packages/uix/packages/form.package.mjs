@@ -166,12 +166,17 @@ const renderField = (field, host) => {
     return html`
       <uix-form-control
         .label=${field.label || ""}
-        .labelAlt=${field.labelAlt || []}
+        .labelAlt=${llm
+    ? [
+      html`<uix-icon
+                class="cursor-pointer"
+                name="brush-outline"
+                @click=${() => host.wizardForm(field.name)}
+              >
+              </uix-icon>`,
+    ]
+    : field.labelAlt || []}
       >
-        ${llm &&
-        html`<uix-button @click=${() => host.wizardForm(field.name)}
-          >wizard</uix-button
-        >`}
         ${fieldComponent}
       </uix-form-control>
     `;
@@ -230,8 +235,48 @@ export default {
         });
         return data;
       },
-      wizardForm: function (name) {
-        console.log({ name }, this.fields);
+      wizardForm: async function (name) {
+        const data = this.formData();
+        const magicField = data[name];
+        if (magicField) {
+          const prompt = `
+          Help me create the JSON with an object with the fields:
+          Events -
+          ${JSON.stringify(this.fields)}
+                    
+          reply in the format:
+          '''
+          { prop1: value, prop2: value }
+          '''
+
+          only the JSON response, nothing else. 
+           
+          we have a system that the user can supply a basic summary 
+          and we will analyze it, improve and complete the fields based on the description or make assumptions
+          for example:
+          Dentist tomorrow 4pm would become
+          
+          would become:
+          {
+            "summary": "Dentist Appointment",
+            "description": "Going to the dentist for a check-up.",
+            "cron": "0 20 16 10 ? 2023",
+            "duration": 3600000
+          }
+
+          Pay attention to the cron format. For summary, reuse and expand and fix the supplied summary.
+
+          Today is ${new Date()}.
+          user prompt (summary):
+          ${magicField}
+          `;
+          const response = await this.llm.send(prompt);
+          const form = this.getForm();
+          const obj = JSON.parse(response);
+          Object.keys(obj).forEach((key) =>
+            form.elements[key].setValue(obj[key]),
+          );
+        }
       },
 
       renderField: function (row) {
