@@ -1,4 +1,4 @@
-import adapter from "./indexeddb.mjs";
+import idbAdapter from "./indexeddb.mjs";
 
 export const events = {};
 
@@ -34,8 +34,8 @@ const syncRequest = async ({ appId, models }) => {
 
   // Fetch data from IndexedDB for each model
   for (let model of models) {
-    const db = adapter.createStore(`${appId}_${model}`);
-    const entries = await adapter.entries(db);
+    const db = idbAdapter.createStore(`${appId}_${model}`);
+    const entries = await idbAdapter.entries(db);
     data[model] = entries;
   }
   // Send the fetched data over the data channel

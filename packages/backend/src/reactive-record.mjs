@@ -1,4 +1,4 @@
-import indexeddbAdapter from "./indexeddb.mjs";
+import idbAdapter from "./indexeddb.mjs";
 import { generateId, getTimestamp } from "./string.mjs";
 import WebWorker from "./web-worker.mjs";
 
@@ -123,7 +123,7 @@ class ReactiveRecord {
   ) {
     this.name = name;
     this.models = models;
-    this.adapter = indexeddbAdapter;
+    this.adapter = idbAdapter;
     this.properties = properties;
     this.referenceKey = Object.keys(properties)[0];
     this.appId = appId;

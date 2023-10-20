@@ -1,10 +1,10 @@
-import indexeddb from "./indexeddb.mjs";
+import idbAdapter from "./indexeddb.mjs";
 import { defineModels } from "./reactive-record.mjs";
 import { generateId, fromBase62, toBase62 } from "./string.mjs";
 
 const APP_STATE_DB = "app-state-db";
 
-const store = indexeddb.createStore(APP_STATE_DB);
+const store = idbAdapter.createStore(APP_STATE_DB);
 
 const convertFunctionsToString = (obj) => {
   let newObj = {};
@@ -26,13 +26,13 @@ const convertFunctionsToString = (obj) => {
 };
 const indexedDBWrapper = {
   get: async (appId, prop = null) => {
-    const appData = (await indexeddb.getItem(appId, store)) || {};
+    const appData = (await idbAdapter.getItem(appId, store)) || {};
     return prop ? appData[prop] : appData;
   },
   set: async (appId, data) => {
-    const currentData = (await indexeddb.getItem(appId, store)) || {};
+    const currentData = (await idbAdapter.getItem(appId, store)) || {};
     const updatedData = { ...currentData, ...data };
-    return await indexeddb.setItem(appId, updatedData, store);
+    return await idbAdapter.setItem(appId, updatedData, store);
   },
 };
 
