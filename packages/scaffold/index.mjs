@@ -8,7 +8,6 @@ import layoutKit from "./src/uix/layout.package.mjs";
 import contentKit from "./src/uix/content.package.mjs";
 import datetimeKit from "./src/uix/datetime.package.mjs";
 import navigationKit from "./src/uix/navigation.package.mjs";
-import { initializeApp } from "backend";
 
 const definePackages = (packages, options) => {
   return packages.reduce(
@@ -48,4 +47,4 @@ const bootstrapp = async (
 
 export default bootstrapp;
 
-export { bootstrapp, initializeApp };
+export { bootstrapp };
