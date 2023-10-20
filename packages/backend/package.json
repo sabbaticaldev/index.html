@@ -10,7 +10,5 @@
   },
   "author": "",
   "license": "ISC",
-  "peerDependencies": {
-    "bootstrapp-shared": "^workspace"
-  }
+  "peerDependencies": {}
 }

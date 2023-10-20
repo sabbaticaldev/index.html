@@ -1,6 +1,5 @@
 import T from "bootstrapp-shared/types.mjs";
-import { html } from "lit";
-import { ifDefined } from "lit/directives/if-defined.js";
+import { html, ifDefined } from "lit";
 
 import {
   ButtonColors,
