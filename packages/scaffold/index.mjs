@@ -1,15 +1,14 @@
-import { definePackage } from "./reactive-view.mjs";
-import uiKit from "uix/packages/ui.package.mjs";
-import uxKit from "uix/packages/ux.package.mjs";
-import appKit from "uix/packages/app.package.mjs";
-import formKit from "uix/packages/form.package.mjs";
-import docsKit from "uix/packages/docs.package.mjs";
-import navigationKit from "uix/packages/navigation.package.mjs";
-import layoutKit from "uix/packages/layout.package.mjs";
-import contentKit from "uix/packages/content.package.mjs";
-import datetimeKit from "uix/packages/datetime.package.mjs";
-import { initializeApp } from "backend/src/web-worker.mjs";
-import "backend/src/service-worker.mjs"; // hack for vite to import service worker, should remove
+import { definePackage } from "./src/reactive-view.mjs";
+import uiKit from "./src/uix/ui.package.mjs";
+import uxKit from "./src/uix/ux.package.mjs";
+import appKit from "./src/uix/app.package.mjs";
+import formKit from "./src/uix/form.package.mjs";
+import docsKit from "./src/uix/docs.package.mjs";
+import layoutKit from "./src/uix/layout.package.mjs";
+import contentKit from "./src/uix/content.package.mjs";
+import datetimeKit from "./src/uix/datetime.package.mjs";
+import navigationKit from "./src/uix/navigation.package.mjs";
+import { initializeApp } from "backend";
 
 const definePackages = (packages, options) => {
   return packages.reduce(

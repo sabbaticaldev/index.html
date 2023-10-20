@@ -8,9 +8,6 @@ importers:
 
   .:
     devDependencies:
-      backend:
-        specifier: workspace:^
-        version: link:packages/backend
       eslint:
         specifier: ^8.19.0
         version: 8.48.0
@@ -29,25 +26,12 @@ importers:
       prettier:
         specifier: ^2.8.8
         version: 2.8.8
-      scaffold:
-        specifier: workspace:^
-        version: link:packages/scaffold
 
   apps/bootstrapp:
-    dependencies:
-      bootstrapp-shared:
-        specifier: workspace:^
-        version: link:../../packages/shared
-      vite-plugin-externalize-dependencies:
-        specifier: ^0.10.0
-        version: 0.10.0
     devDependencies:
       autoprefixer:
         specifier: ^10.4.15
         version: 10.4.15(postcss@8.4.29)
-      lit:
-        specifier: ^3.0.0
-        version: 3.0.0
       modern-normalize:
         specifier: ^2.0.0
         version: 2.0.0
@@ -60,6 +44,9 @@ importers:
       vite:
         specifier: ^4.4.5
         version: 4.4.9
+      vite-plugin-externalize-dependencies:
+        specifier: ^0.10.0
+        version: 0.10.0
 
   apps/designsystem:
     devDependencies:
@@ -123,32 +110,9 @@ importers:
 
   packages/backend: {}
 
-  packages/scaffold:
-    dependencies:
-      backend:
-        specifier: workspace:^
-        version: link:../backend
-      bootstrapp-shared:
-        specifier: workspace:^
-        version: link:../shared
-      uix:
-        specifier: workspace:^
-        version: link:../uix
-    devDependencies:
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+  packages/scaffold: {}
 
   packages/shared: {}
-
-  packages/uix:
-    dependencies:
-      bootstrapp-shared:
-        specifier: workspace:^
-        version: link:../shared
-      lit:
-        specifier: ^3.0.0
-        version: 3.0.0
 
 packages:
 
@@ -449,11 +413,13 @@ packages:
 
   /@lit-labs/ssr-dom-shim@1.1.2:
     resolution: {integrity: sha512-jnOD+/+dSrfTWYfSXBXlo5l5f0q1UuJo3tkbMDCYA2lKUYq79jaxqtGEvnRoh049nt1vdo1+45RinipU6FGY2g==}
+    dev: true
 
   /@lit/reactive-element@2.0.0:
     resolution: {integrity: sha512-wn+2+uDcs62ROBmVAwssO4x5xue/uKD3MGGZOXL2sMxReTRIT0JXKyMXeu7gh0aJ4IJNEIG/3aOnUaQvM7BMzQ==}
     dependencies:
       '@lit-labs/ssr-dom-shim': 1.1.2
+    dev: true
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -478,6 +444,7 @@ packages:
 
   /@types/trusted-types@2.0.4:
     resolution: {integrity: sha512-IDaobHimLQhjwsQ/NMwRVfa/yL7L/wriQPMhw1ZJall0KX6E1oxk29XMDeilW5qTIg5aoiqf5Udy8U/51aNoQQ==}
+    dev: true
 
   /acorn-jsx@5.3.2(acorn@8.10.0):
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1281,11 +1248,13 @@ packages:
       '@lit-labs/ssr-dom-shim': 1.1.2
       '@lit/reactive-element': 2.0.0
       lit-html: 3.0.0
+    dev: true
 
   /lit-html@3.0.0:
     resolution: {integrity: sha512-DNJIE8dNY0dQF2Gs0sdMNUppMQT2/CvV4OVnSdg7BXAsGqkVwsE5bqQ04POfkYH5dBIuGnJYdFz5fYYyNnOxiA==}
     dependencies:
       '@types/trusted-types': 2.0.4
+    dev: true
 
   /lit@3.0.0:
     resolution: {integrity: sha512-nQ0teRzU1Kdj++VdmttS2WvIen8M79wChJ6guRKIIym2M3Ansg3Adj9O6yuQh2IpjxiUXlNuS81WKlQ4iL3BmA==}
@@ -1293,6 +1262,7 @@ packages:
       '@lit/reactive-element': 2.0.0
       lit-element: 4.0.0
       lit-html: 3.0.0
+    dev: true
 
   /locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
@@ -1864,7 +1834,7 @@ packages:
 
   /vite-plugin-externalize-dependencies@0.10.0:
     resolution: {integrity: sha512-naNq/+baajDRzpM9c3lkXnzkyxQbQiHi8EqBSAj+aTHH3bNxyCQuOp3es2AzYghdVdvQwLvdIP6oGH0MqRsQSA==}
-    dev: false
+    dev: true
 
   /vite@4.4.9:
     resolution: {integrity: sha512-2mbUn2LlUmNASWwSCNSJ/EG2HuSRTnVNaydp6vMCm5VIqJsjMfbIWtbH2kDuwUVW5mMUKKZvGPX/rqeqVvv1XA==}
