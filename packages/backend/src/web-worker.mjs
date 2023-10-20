@@ -26,7 +26,7 @@ export const initializeApp = async ({
   if (!worker && appId) {
     const modelList = await setModels(appId, models);
     await setControllers(appId, controllers);
-    worker = new Worker("./controller.mjs", { type: "module" });
+    worker = new Worker("/controller.mjs", { type: "module" });
     worker.onmessage = (event) => {
       console.log("DEBUG: event on RTC Worker: ", { event });
     };
