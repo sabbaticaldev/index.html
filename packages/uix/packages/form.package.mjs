@@ -1,4 +1,4 @@
-import T from "bootstrapp-shared/types.mjs";
+import T from "bootstrapp-shared";
 import { html, ifDefined } from "lit";
 
 import {
