@@ -284,8 +284,6 @@ export const SelectSizes = {
 
 export const Triggers = ["click", "hover"];
 export const Directions = ["horizontal", "vertical", "responsive"];
-export const Formats = ["DHMS", "HMS", "MS", "S"];
-
 export const Colors = [
   "default",
   "primary",

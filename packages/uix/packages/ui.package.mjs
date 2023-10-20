@@ -4,12 +4,9 @@ import { html } from "lit";
 import {
   AnimationTypes,
   Sizes,
-  Formats,
   Colors,
-  BgColor,
   BadgeColor,
   TextColor,
-  BorderColor,
   RingColor,
   TextSizes,
   HeadingColors,
@@ -162,83 +159,6 @@ export default {
         ></ion-icon>`;
       },
     },
-    "uix-kbd": {
-      props: {
-        keyContent: T.string({ defaultValue: "Key" }),
-        size: T.string({ defaultValue: "md", enum: Sizes }),
-      },
-      render: ({ keyContent, size }) => {
-        const sizeClassMap = {
-          lg: "text-lg px-3 py-2",
-          md: "text-md px-2 py-1", // default
-          sm: "text-sm px-1 py-0.5",
-          xs: "text-xs px-0.5 py-0.25",
-        };
-        const sizeClasses = sizeClassMap[size];
-        const kbdClass = `bg-primary-200 rounded ${sizeClasses}`;
-        return html`<kbd class=${kbdClass}>${keyContent}</kbd>`;
-      },
-    },
-    "uix-countdown": {
-      props: {
-        endDate: T.string({ defaultValue: "YYYY-MM-DD HH:MM:SS" }),
-        format: T.string({ defaultValue: "DHMS", enum: Formats }),
-      },
-      render: ({ endDate, format }) => {
-        const calculateCountdown = (end) => {
-          const now = new Date();
-          const endDateTime = new Date(end);
-          const diff = endDateTime - now;
-
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor(
-            (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-          );
-          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-          return { days, hours, minutes, seconds };
-        };
-
-        const countdown = calculateCountdown(endDate);
-
-        const formattedCountdown = format.split("").map((f) => {
-          switch (f) {
-          case "D":
-            return html`<span class="font-mono text-4xl countdown"
-                ><span style="--value:${countdown.days};"></span>days</span
-              >`;
-          case "H":
-            return html`<span class="font-mono text-4xl countdown"
-                ><span style="--value:${countdown.hours};"></span>hours</span
-              >`;
-          case "M":
-            return html`<span class="font-mono text-4xl countdown"
-                ><span style="--value:${countdown.minutes};"></span
-                >minutes</span
-              >`;
-          case "S":
-            return html`<span class="font-mono text-4xl countdown"
-                ><span style="--value:${countdown.seconds};"></span
-                >seconds</span
-              >`;
-          default:
-            return "";
-          }
-        });
-
-        return html` <div class="countdown">${formattedCountdown}</div> `;
-      },
-    },
-    "uix-mask": {
-      props: {
-        variant: T.string({ defaultValue: "squircle" }),
-        src: T.string(),
-      },
-      render: ({ variant, src }) => {
-        return html`<img class="mask ${variant}" src=${src} />`;
-      },
-    },
     "uix-loading": {
       props: {
         isVisible: T.boolean(),
@@ -347,46 +267,6 @@ export default {
         };
 
         return HeadingTemplates[size || ""];
-      },
-    },
-    "uix-radial-progress": {
-      // TODO: expand daisyui tags
-      props: {
-        value: T.number({ defaultValue: 0 }),
-        size: T.string({ defaultValue: "4rem" }),
-        thickness: T.string({ defaultValue: "0.4rem" }),
-        color: T.string({ defaultValue: "primary", enum: Colors }),
-        backgroundColor: T.string({ defaultValue: "default" }),
-        borderColor: T.string({ defaultValue: "default" }),
-        borderWidth: T.string({ defaultValue: "0px" }),
-        textColor: T.string({ defaultValue: "default-content" }),
-      },
-      render: ({
-        value,
-        size,
-        thickness,
-        color,
-        backgroundColor,
-        borderColor,
-        borderWidth,
-        textColor,
-      }) => {
-        const textStyle = `text-${textColor}`;
-        const bgColor =
-          backgroundColor !== "default" ? BgColor[backgroundColor] : "";
-        const borderColorStyle =
-          borderColor !== "default"
-            ? `border-${borderWidth} ${BorderColor[borderColor]}`
-            : "";
-        const textSizeStyle = `text-${color}`;
-        return html`
-          <div
-            class="radial-progress ${textSizeStyle} ${bgColor} ${borderColorStyle} ${textStyle}"
-            style="--value:${value}; --size:${size}; --thickness:${thickness};"
-          >
-            ${value}%
-          </div>
-        `;
       },
     },
   },
