@@ -1,6 +1,6 @@
 import T from "bootstrapp-shared/types.mjs";
-
 import { html } from "lit";
+
 export default {
   i18n: {},
   views: {

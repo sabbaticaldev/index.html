@@ -1,5 +1,4 @@
 import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
 import url from "bootstrapp-shared/url.mjs";
 import i18n from "./i18n/i18n.mjs";
 
@@ -144,7 +143,7 @@ export function defineView(tag, component, config = {}) {
   ReactionView.styles = [style, styleProp].filter(Boolean);
 
   // Register the custom element
-  customElement(tag)(ReactionView);
+  customElements.define(tag, ReactionView);
 
   return ReactionView;
 }

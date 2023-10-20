@@ -23,8 +23,5 @@
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
-  },
-  "peerDependencies": {
-    "lit": "^3.0.0"
   }
 }
