@@ -63,7 +63,10 @@ export const getModel = async (model) => {
 };
 
 export const getModels = async (appId) => {
-  return (await indexedDBWrapper.get(appId + "-models", "models")) || {};
+  const models =
+    (await indexedDBWrapper.get(appId + "-models", "models")) || {};
+  console.log({ models, key: appId + "-models" });
+  return models;
 };
 
 export const setModels = async (appId, models) => {
@@ -134,7 +137,7 @@ export async function getApiModel() {
   const appId = await getAppId();
   const modelList = await getModels(appId);
   const controllerList = await getControllers(appId);
-
+  if (!models) models = defineModels(modelList, appId, userId);
   // Using modelList to generate the api
   api = Object.entries(modelList).reduce((acc, [name, model]) => {
     const endpoints = getDefaultCRUDEndpoints(name, model.endpoints);
@@ -167,6 +170,7 @@ export async function getApiModel() {
 
 const messageHandlers = {
   INIT_BACKEND: async (data, { source }) => {
+    console.log("DEBUG: INIT_BACKEND");
     let appId = data.appId;
     if (appId) {
       await setAppId(appId);
@@ -174,7 +178,7 @@ const messageHandlers = {
       appId = await getAppId();
     }
 
-    const modelList = await getModels(appId);
+    const modelList = data.models;
     userId = await indexedDBWrapper.get(appId, "userId");
     if (!userId) {
       userId = generateId(appId);
@@ -185,7 +189,6 @@ const messageHandlers = {
     if (usersModel) {
       await usersModel.add({ id: userId, name: "user" });
     }
-
     source.postMessage({
       type: "BACKEND_INITIALIZED",
       appId,

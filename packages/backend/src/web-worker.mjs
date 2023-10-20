@@ -1,4 +1,5 @@
 import { connect } from "./controller.mjs";
+import { setModels, setControllers, getAppId } from "./appstate.mjs";
 
 export let worker;
 export let dataChannel;
@@ -16,8 +17,15 @@ export const postMessage = (payload) => {
   }
 };
 
-export const WebWorker = ({ appId }) => {
-  if (!worker) {
+export const initializeApp = async ({
+  appId: userAppId,
+  models,
+  controllers,
+}) => {
+  const appId = userAppId || (await getAppId());
+  if (!worker && appId) {
+    const modelList = await setModels(appId, models);
+    await setControllers(appId, controllers);
     worker = new Worker("./controller.mjs", { type: "module" });
     worker.onmessage = (event) => {
       console.log("DEBUG: event on RTC Worker: ", { event });
@@ -34,6 +42,7 @@ export const WebWorker = ({ appId }) => {
     navigator.serviceWorker.controller.postMessage({
       type: "INIT_BACKEND",
       appId,
+      models: modelList,
       bridge: true,
     });
 
@@ -58,4 +67,4 @@ export const WebWorker = ({ appId }) => {
   return worker;
 };
 
-export default { postMessage, WebWorker, worker };
+export default { postMessage, initializeApp, worker };
