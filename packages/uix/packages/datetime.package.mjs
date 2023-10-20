@@ -1,4 +1,4 @@
-import { formatTime } from "bootstrapp-shared/datetime.mjs";
+import { datetime } from "bootstrapp-shared";
 import T from "bootstrapp-shared/types.mjs";
 import { html } from "lit";
 
@@ -15,7 +15,7 @@ export default {
       props: { timestamp: T.number() },
       render: ({ timestamp }) => {
         return html`<time class="whitespace-nowrap"
-          >${formatTime(timestamp)}</time
+          >${datetime.formatTime(timestamp)}</time
         >`;
       },
     },

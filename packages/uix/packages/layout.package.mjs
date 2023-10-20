@@ -1,5 +1,5 @@
 import T from "bootstrapp-shared/types.mjs";
-import { droparea } from "bootstrapp-shared/droparea.mjs";
+import { droparea } from "bootstrapp-shared";
 import { html } from "lit";
 
 import {
