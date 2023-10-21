@@ -146,7 +146,7 @@ export default {
     "uix-icon": {
       props: {
         name: T.string(),
-        size: T.string({ defaultValue: "base", enum: Sizes }),
+        size: T.string({ defaultValue: "", enum: Sizes }),
         containerClass: T.string()
       },
       render: ({ name, containerClass, size }) => {
