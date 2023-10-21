@@ -4,7 +4,7 @@ export const AlignX = {
   end: "justify-end",
   between: "justify-between",
   around: "justify-around",
-  evenly: "justify-evenly",
+  evenly: "justify-evenly"
 };
 
 export const AlignY = {
@@ -12,7 +12,7 @@ export const AlignY = {
   middle: "items-center",
   bottom: "items-end",
   stretch: "items-stretch",
-  baseline: "items-baseline",
+  baseline: "items-baseline"
 };
 export const FontWeight = {
   thin: "font-thin", // 200
@@ -23,13 +23,13 @@ export const FontWeight = {
   semibold: "font-semibold", // 600
   bold: "font-bold", // 700
   extrabold: "font-extrabold", // 800
-  black: "font-black", // 900
+  black: "font-black" // 900
 };
 
 export const FontType = {
   mono: "font-mono",
   sans: "font-sans",
-  serif: "font-serif",
+  serif: "font-serif"
 };
 
 export const BgOverlayOpacity = {
@@ -42,7 +42,7 @@ export const BgOverlayOpacity = {
   70: "bg-opacity-70",
   80: "bg-opacity-80",
   90: "bg-opacity-90",
-  100: "bg-opacity-100",
+  100: "bg-opacity-100"
 };
 
 export const Gaps = {
@@ -52,7 +52,7 @@ export const Gaps = {
   xl: "gap-16",
   "2xl": "gap-32",
   "3xl": "gap-64",
-  "4xl": "gap-96",
+  "4xl": "gap-96"
 };
 
 export const Positions = [
@@ -71,7 +71,7 @@ export const Positions = [
   "top-right",
   "top-left",
   "bottom-right",
-  "bottom-left",
+  "bottom-left"
 ];
 export const Resolutions = ["sm", "md", "lg", "xl"];
 export const NavbarPart = ["start", "center", "end"];
@@ -83,12 +83,12 @@ export const AnimationTypes = [
   "ring",
   "ball",
   "bars",
-  "infinity",
+  "infinity"
 ];
 export const ModalPositions = {
   top: "modal-top",
   middle: "modal-middle",
-  bottom: "modal-bottom",
+  bottom: "modal-bottom"
 };
 export const Methods = ["details", "focus"];
 export const Sizes = ["lg", "md", "sm", "xs", "xl", "2xl", "3xl", "4xl"];
@@ -96,7 +96,7 @@ export const TabsSize = {
   lg: "tab-lg",
   md: "tab-md",
   sm: "tab-sm",
-  xs: "tab-xs",
+  xs: "tab-xs"
 };
 export const Shapes = ["default", "circle", "square", "metro"];
 
@@ -104,14 +104,14 @@ export const ButtonSizes = {
   lg: "btn-lg",
   md: "",
   sm: "btn-sm",
-  xs: "btn-xs",
+  xs: "btn-xs"
 };
 
 export const ButtonShapes = {
   default: "rounded-none",
   rounded: "",
   circle: "btn-circle",
-  square: "btn-square",
+  square: "btn-square"
 };
 
 export const ButtonVariants = {
@@ -121,14 +121,14 @@ export const ButtonVariants = {
   glass: "btn-glass",
   active: "btn-active",
   disabled: "btn-disabled",
-  bordered: "btn-bordered",
+  bordered: "btn-bordered"
 };
 
 export const MenuSize = {
   lg: "menu-lg",
   md: "menu-md",
   sm: "menu-sm",
-  xs: "menu-xs",
+  xs: "menu-xs"
 };
 // form classes
 
@@ -139,7 +139,7 @@ export const Variants = [
   "glass",
   "active",
   "disabled",
-  "bordered",
+  "bordered"
 ];
 export const RadioVariantClass = {
   primary: "radio-primary",
@@ -150,14 +150,14 @@ export const RadioVariantClass = {
   info: "radio-info",
   success: "radio-success",
   warning: "radio-warning",
-  error: "radio-error",
+  error: "radio-error"
 };
 
 export const RadioSizeClass = {
   md: "radio-md",
   sm: "radio-sm",
   lg: "radio-lg",
-  xs: "radio-xs",
+  xs: "radio-xs"
 };
 export const InputVariantClass = {
   primary: "input-primary",
@@ -168,7 +168,7 @@ export const InputVariantClass = {
   info: "input-info",
   success: "input-success",
   warning: "input-warning",
-  error: "input-error",
+  error: "input-error"
 };
 
 export const InputStyleClass = {
@@ -178,14 +178,14 @@ export const InputStyleClass = {
   glass: "input-glass",
   active: "input-active",
   disabled: "input-disabled",
-  bordered: "input-bordered",
+  bordered: "input-bordered"
 };
 
 export const InputSizeClass = {
   lg: "input-lg",
   md: "input-md",
   sm: "input-sm",
-  xs: "input-xs",
+  xs: "input-xs"
 };
 
 export const FileInputColor = {
@@ -197,13 +197,13 @@ export const FileInputColor = {
   info: "file-input-info",
   success: "file-input-success",
   warning: "file-input-warning",
-  error: "file-input-error",
+  error: "file-input-error"
 };
 export const FileInputSize = {
   lg: "file-input-lg",
   md: "file-input-md",
   sm: "file-input-sm",
-  xs: "file-input-xs",
+  xs: "file-input-xs"
 };
 
 export const RangeColor = {
@@ -215,14 +215,14 @@ export const RangeColor = {
   info: "range-info",
   success: "range-success",
   warning: "range-warning",
-  error: "range-error",
+  error: "range-error"
 };
 
 export const RangeSize = {
   lg: "range-lg",
   md: "range-md",
   sm: "range-sm",
-  xs: "range-xs",
+  xs: "range-xs"
 };
 
 export const ToggleVariantClass = {
@@ -234,14 +234,14 @@ export const ToggleVariantClass = {
   info: "toggle-info",
   success: "toggle-success",
   warning: "toggle-warning",
-  error: "toggle-error",
+  error: "toggle-error"
 };
 
 export const ToggleSizeClass = {
   md: "toggle-md",
   sm: "toggle-sm",
   lg: "toggle-lg",
-  xs: "toggle-xs",
+  xs: "toggle-xs"
 };
 
 export const SelectColors = {
@@ -253,7 +253,7 @@ export const SelectColors = {
   info: "select-info",
   success: "select-success",
   warning: "select-warning",
-  error: "select-error",
+  error: "select-error"
 };
 
 export const TextareaColors = {
@@ -265,21 +265,21 @@ export const TextareaColors = {
   info: "textarea-info",
   success: "textarea-success",
   warning: "textarea-warning",
-  error: "textarea-error",
+  error: "textarea-error"
 };
 
 export const TextareaSizes = {
   lg: "textarea-lg h-40",
   md: "textarea-md h-30",
   sm: "textarea-sm h-20",
-  xs: "textarea-xs h-10",
+  xs: "textarea-xs h-10"
 };
 
 export const SelectSizes = {
   lg: "select-lg",
   md: "select-md",
   sm: "select-sm",
-  xs: "select-xs",
+  xs: "select-xs"
 };
 
 export const Triggers = ["click", "hover"];
@@ -294,7 +294,7 @@ export const Colors = [
   "info",
   "success",
   "warning",
-  "error",
+  "error"
 ];
 
 export const BgColor = {
@@ -306,7 +306,7 @@ export const BgColor = {
   info: "bg-info-200",
   success: "bg-success-200",
   warning: "bg-warning-200",
-  error: "bg-error-200",
+  error: "bg-error-200"
 };
 
 export const BadgeColor = {
@@ -319,7 +319,7 @@ export const BadgeColor = {
   success: "badge-success",
   warning: "badge-warning",
   error: "badge-error",
-  outline: "badge-outline",
+  outline: "badge-outline"
 };
 
 export const TextColor = {
@@ -331,7 +331,7 @@ export const TextColor = {
   info: "text-info-focus",
   success: "text-success-focus",
   warning: "text-warning-focus",
-  error: "text-error-focus",
+  error: "text-error-focus"
 };
 
 export const ButtonColors = {
@@ -344,7 +344,7 @@ export const ButtonColors = {
   info: "btn-info",
   success: "btn-success",
   warning: "btn-warning",
-  error: "btn-error",
+  error: "btn-error"
 };
 
 export const BorderColor = {
@@ -356,7 +356,7 @@ export const BorderColor = {
   info: "border-info-content",
   success: "border-success-content",
   warning: "border-warning-content",
-  error: "border-error-content",
+  error: "border-error-content"
 };
 export const CheckboxVariant = {
   default: "checkbox-default",
@@ -368,14 +368,14 @@ export const CheckboxVariant = {
   info: "checkbox-info",
   success: "checkbox-success",
   warning: "checkbox-warning",
-  error: "checkbox-error",
+  error: "checkbox-error"
 };
 
 export const CheckboxSize = {
   lg: "checkbox-lg",
   md: "checkbox-md",
   sm: "checkbox-sm",
-  xs: "checkbox-xs",
+  xs: "checkbox-xs"
 };
 
 export const CollapseBgColor = {
@@ -387,13 +387,13 @@ export const CollapseBgColor = {
   info: "bg-info-200",
   success: "bg-success-200",
   warning: "bg-warning-200",
-  error: "bg-error-200",
+  error: "bg-error-200"
 };
 
 export const CollapseIcon = {
   "": "",
   arrow: "collapse-arrow",
-  plus: "collapse-plus",
+  plus: "collapse-plus"
 };
 
 export const RingColor = {
@@ -405,7 +405,7 @@ export const RingColor = {
   info: "ring-info",
   success: "ring-success",
   warning: "ring-warning",
-  error: "ring-error",
+  error: "ring-error"
 };
 
 export const HeadingColors = {
@@ -417,7 +417,7 @@ export const HeadingColors = {
   info: "text-info",
   success: "text-success",
   warning: "text-warning",
-  error: "text-error",
+  error: "text-error"
 };
 
 export const LinkColors = {
@@ -429,7 +429,7 @@ export const LinkColors = {
   info: "link-info hover:text-info-dark",
   success: "link-success hover:text-success-dark",
   warning: "link-warning hover:text-warning-dark",
-  error: "link-error hover:text-error-dark",
+  error: "link-error hover:text-error-dark"
 };
 
 export const BlockColors = {
@@ -441,7 +441,7 @@ export const BlockColors = {
   info: "bg-info text-info-content",
   success: "bg-success text-success-content",
   warning: "bg-warning text-warning-content",
-  error: "bg-error text-error-content",
+  error: "bg-error text-error-content"
 };
 
 export const SpacingSizes = {
@@ -453,7 +453,7 @@ export const SpacingSizes = {
   xl: "p-8",
   "2xl": "p-12",
   "3xl": "p-16",
-  "4xl": "p-24",
+  "4xl": "p-24"
 };
 
 export const TextSizes = {
@@ -468,5 +468,17 @@ export const TextSizes = {
   "3xl": "text-3xl",
   "4xl": "text-4xl",
   "5xl": "text-5xl",
-  "6xl": "text-6xl",
+  "6xl": "text-6xl"
+};
+
+export const LeadingSizes = {
+  "": "",
+  xs: "leading-3",
+  sm: "leading-4",
+  base: "leading-5",
+  md: "leading-6",
+  lg: "leading-7",
+  xl: "leading-8",
+  "2xl": "leading-9",
+  "3xl": "leading-10"
 };

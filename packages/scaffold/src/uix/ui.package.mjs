@@ -9,9 +9,10 @@ import {
   TextColor,
   RingColor,
   TextSizes,
+  LeadingSizes,
   HeadingColors,
   FontWeight,
-  FontType,
+  FontType
 } from "../uix.theme.mjs";
 
 export default {
@@ -28,13 +29,13 @@ export default {
             "rounded-full",
             "mask-squircle",
             "mask-hexagon",
-            "mask-triangle",
-          ],
+            "mask-triangle"
+          ]
         }),
         status: T.string({ enum: ["online", "offline", ""] }),
         placeholder: T.string({ defaultValue: "" }),
         hasRing: T.boolean(),
-        ringColor: T.string({ defaultValue: "primary", enum: Colors }),
+        ringColor: T.string({ defaultValue: "primary", enum: Colors })
       },
       render: ({
         src,
@@ -44,7 +45,7 @@ export default {
         status,
         placeholder,
         hasRing,
-        ringColor,
+        ringColor
       }) => {
         const WidthSizes = {
           xs: "w-8",
@@ -52,7 +53,7 @@ export default {
           md: "w-16",
           lg: "w-24",
           xl: "w-32",
-          "2xl": "w-64",
+          "2xl": "w-64"
         };
         const sizeClass = WidthSizes[size];
         const ringClass = hasRing
@@ -73,12 +74,12 @@ export default {
             <div class="${sizeClass} ${shape}">${content}</div>
           </div>
         `;
-      },
+      }
     },
     "uix-avatar-group": {
       props: {
         avatars: T.array(),
-        count: T.number({ defaultValue: 0 }),
+        count: T.number({ defaultValue: 0 })
       },
       render: ({ avatars, count }) => {
         return html`
@@ -95,7 +96,7 @@ export default {
                   hasRing=${avatar.hasRing}
                   ringColor=${avatar.ringColor}
                 ></uix-avatar>
-              `,
+              `
   )}
             ${count > 0
     ? html`
@@ -108,7 +109,7 @@ export default {
     : ""}
           </div>
         `;
-      },
+      }
     },
     "uix-badge": {
       props: {
@@ -116,21 +117,21 @@ export default {
         outline: T.boolean(),
         rounded: T.boolean(),
         size: T.string({ defaultValue: "md", enum: ["lg", "md", "sm", "xs"] }),
-        icon: T.string({ defaultValue: null }),
+        icon: T.string({ defaultValue: null })
       },
       render: ({ color, outline, size, rounded }) => {
         const sizeClassMapping = {
           lg: "badge-lg",
           md: "",
           sm: "badge-sm",
-          xs: "badge-xs",
+          xs: "badge-xs"
         };
 
         const baseClass = [
           "badge",
           rounded ? "" : "rounded-none",
           BadgeColor[color] + (outline ? "-outline" : ""),
-          sizeClassMapping[size] || "",
+          sizeClassMapping[size] || ""
         ]
           .filter(Boolean)
           .join(" ");
@@ -140,13 +141,13 @@ export default {
             <slot></slot>
           </span>
         `;
-      },
+      }
     },
     "uix-icon": {
       props: {
         name: T.string(),
         size: T.string({ defaultValue: "base", enum: Sizes }),
-        containerClass: T.string(),
+        containerClass: T.string()
       },
       render: ({ name, containerClass, size }) => {
         const baseClass = [containerClass, size && TextSizes[size]]
@@ -157,7 +158,7 @@ export default {
           class=${baseClass}
           role="img"
         ></ion-icon>`;
-      },
+      }
     },
     "uix-loading": {
       props: {
@@ -165,7 +166,7 @@ export default {
         message: T.string({ defaultValue: null }),
         type: T.string({ defaultValue: "spinner", enum: AnimationTypes }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
-        color: T.string({ defaultValue: "primary", enum: Colors }),
+        color: T.string({ defaultValue: "primary", enum: Colors })
       },
       render: ({ isVisible, message, type, size, color }) => {
         if (!isVisible) return html``;
@@ -175,13 +176,13 @@ export default {
           ring: "loading loading-ring",
           ball: "loading loading-ball",
           bars: "loading loading-bars",
-          infinity: "loading loading-infinity",
+          infinity: "loading loading-infinity"
         };
         const LoadingSize = {
           lg: "loading-lg",
           md: "loading-md",
           sm: "loading-sm",
-          xs: "loading-xs",
+          xs: "loading-xs"
         };
 
         const loadingClass = `${Loading[type]} ${LoadingSize[size]} ${TextColor[color]}`;
@@ -194,7 +195,7 @@ export default {
     : ""}
           </span>
         `;
-      },
+      }
     },
     "uix-progress": {
       // TODO: expand daisyui tags
@@ -202,7 +203,7 @@ export default {
         value: T.number({ defaultValue: 0 }),
         max: T.number({ defaultValue: 100 }),
         width: T.string({ defaultValue: "w-56" }),
-        color: T.string({ defaultValue: "base", enum: Colors }),
+        color: T.string({ defaultValue: "base", enum: Colors })
       },
       render: ({ value, max, width, color }) => {
         const progressClass = `progress ${width}`;
@@ -214,7 +215,7 @@ export default {
             max="${max}"
           ></progress>
         `;
-      },
+      }
     },
 
     "uix-text": {
@@ -223,17 +224,18 @@ export default {
         color: T.string({ defaultValue: "primary", enum: Colors }),
         weight: T.string({ defaultValue: "", enum: FontWeight }),
         font: T.string({ defaultValue: "sans", enum: FontType }),
-        containerClass: T.string(),
+        leading: T.string({ enum: Sizes }),
+        containerClass: T.string()
       },
-
       render: (props) => {
-        const { size, font, color, weight, containerClass } = props;
+        const { size, font, color, weight, containerClass, leading } = props;
         const baseClass = [
           "prose",
           HeadingColors[color],
           FontWeight[weight],
           containerClass,
           FontType[font],
+          LeadingSizes[leading]
         ]
           .filter(Boolean)
           .join(" ");
@@ -263,11 +265,11 @@ export default {
           xs: html`<h6 class="text-xs ${baseClass}">
             <slot></slot>
           </h6>`,
-          "": html`<p class="text-base ${baseClass}"><slot></slot></p>`,
+          "": html`<p class=${baseClass}><slot></slot></p>`
         };
 
         return HeadingTemplates[size || ""];
-      },
-    },
-  },
+      }
+    }
+  }
 };
