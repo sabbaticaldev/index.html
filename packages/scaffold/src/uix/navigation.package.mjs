@@ -11,7 +11,7 @@ import {
   BgColor,
   TextColor,
   CollapseBgColor,
-  CollapseIcon,
+  CollapseIcon
 } from "../uix.theme.mjs";
 
 export default {
@@ -22,12 +22,12 @@ export default {
         color: T.string({ defaultValue: "base", enum: Colors }),
         method: T.string({
           defaultValue: "focus",
-          enum: ["focus", "checkbox", "details"],
+          enum: ["focus", "checkbox", "details"]
         }),
         icon: T.string({
           defaultValue: "",
-          enum: ["", "arrow", "plus"],
-        }),
+          enum: ["", "arrow", "plus"]
+        })
       },
       render: ({ items, color, method, icon }) => {
         return html`
@@ -40,10 +40,10 @@ export default {
                 method=${method}
                 icon=${icon}
               ></uix-collapse>
-            `,
+            `
   )}
         `;
-      },
+      }
     },
     "uix-breadcrumbs": {
       props: {
@@ -53,18 +53,18 @@ export default {
             {
               label: T.string(),
               href: T.string(),
-              icon: T.string(),
-            },
-          ],
+              icon: T.string()
+            }
+          ]
         }),
-        separator: T.string({ defaultValue: "/" }),
+        separator: T.string({ defaultValue: "/" })
       },
       render: ({ content, color, outline, size, icon }) => {
         const BadgeSizes = {
           lg: "badge-lg",
           md: "",
           sm: "badge-sm",
-          xs: "badge-xs",
+          xs: "badge-xs"
         };
         const baseClass = "badge";
         const colorClass = BgColor[color] + (outline ? "-outline" : "");
@@ -78,20 +78,20 @@ export default {
             ${iconRender} ${content}
           </span>
         `;
-      },
+      }
     },
     "uix-bottom-navigation": {
       props: {
         items: T.array(),
         activeIndex: T.number({ defaultValue: 0 }),
-        size: T.string({ defaultValue: "md", enum: Sizes }),
+        size: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: ({ items, activeIndex, size }) => {
         const BtmClasses = {
           md: "btm-nav-md",
           sm: "btm-nav-sm",
           lg: "btm-nav-lg",
-          xl: "btm-nav-xl",
+          xl: "btm-nav-xl"
         };
         const sizeClass = BtmClasses[size];
 
@@ -117,30 +117,30 @@ export default {
   })}
           </div>
         `;
-      },
+      }
     },
     "uix-carousel": {
       props: {
         items: T.array(),
         alignment: T.string({
           defaultValue: "start",
-          enum: ["start", "center", "end"],
+          enum: ["start", "center", "end"]
         }),
         vertical: T.boolean(),
         indicatorButtons: T.boolean(),
-        navigationButtons: T.boolean(),
+        navigationButtons: T.boolean()
       },
       render: ({
         items,
         alignment,
         vertical,
         indicatorButtons,
-        navigationButtons,
+        navigationButtons
       }) => {
         const AlignmentClasses = {
           start: "carousel-start",
           center: "carousel-center",
-          end: "carousel-end",
+          end: "carousel-end"
         };
 
         const alignmentClass = AlignmentClasses[alignment];
@@ -174,28 +174,28 @@ export default {
     (_, index) =>
       html`<a href="#item${index}" class="btn btn-xs"
                         >${index + 1}</a
-                      >`,
+                      >`
   )}
                 </div>
               `
     : ""}
         `;
-      },
+      }
     },
     "uix-collapse": {
       props: {
         method: T.string({
           defaultValue: "focus",
-          enum: ["focus", "checkbox", "details"],
+          enum: ["focus", "checkbox", "details"]
         }),
         color: T.string({ defaultValue: "base", enum: Colors }),
         title: T.string({ defaultValue: "Click to open/close" }),
         content: T.string({ defaultValue: "Collapse Content" }),
         icon: T.string({
           defaultValue: "",
-          enum: ["", "arrow", "plus"],
+          enum: ["", "arrow", "plus"]
         }),
-        open: T.boolean(),
+        open: T.boolean()
       },
       render: ({ method, color, title, content, icon, open }) => {
         const baseClass = `collapse ${CollapseBgColor[color]}`;
@@ -229,13 +229,13 @@ export default {
             </details>
           `;
         }
-      },
+      }
     },
     "uix-drawer": {
       props: {
         open: T.boolean(),
         position: T.string({ defaultValue: "left", enum: Positions }),
-        setOpen: T.function({ defaultValue: null }),
+        setOpen: T.function({ defaultValue: null })
       },
       render: ({ open, position, setOpen }) => {
         const positionClass = position === "right" ? "drawer-end" : "";
@@ -276,7 +276,7 @@ export default {
             </div>
           </div>
         `;
-      },
+      }
     },
     "uix-dropdown": {
       props: {
@@ -284,7 +284,7 @@ export default {
         items: T.array(),
         color: T.string({ defaultValue: "", enum: Colors }),
         isOpen: T.boolean(),
-        rounded: T.boolean({ defaultValue: true }),
+        rounded: T.boolean({ defaultValue: true })
       },
       close: function () {
         const $dropdown = this.shadowRoot.querySelector("details");
@@ -299,7 +299,7 @@ export default {
           "dropdown",
           position === "end" ? "dropdown-end" : "",
           bgColorClass,
-          textColorClass,
+          textColorClass
         ]
           .filter(Boolean)
           .join(" ");
@@ -323,7 +323,7 @@ export default {
             </ul>
           </details>
         `;
-      },
+      }
     },
     "uix-modal": {
       props: {
@@ -335,9 +335,9 @@ export default {
         name: T.string({ defaultValue: "uix-modal" }),
         position: T.string({
           defaultValue: "middle",
-          enum: ["top", "middle", "bottom"],
+          enum: ["top", "middle", "bottom"]
         }),
-        icon: T.string(),
+        icon: T.string()
       },
       firstUpdated: function () {
         this.$modal = this.shadowRoot.querySelector("#modal");
@@ -389,175 +389,7 @@ export default {
             </div>
           </dialog>
         `;
-      },
-    },
-    "uix-menu-item": {
-      props: {
-        icon: T.string(),
-        iconOnly: T.boolean(),
-        label: T.string(),
-        click: T.function(),
-        href: T.string(),
-        type: T.string(),
-        variant: T.string(),
-        active: T.boolean(),
-        size: T.string({ defaultValue: "base", enum: Sizes }),
-        classes: T.object(),
-        color: T.string({ defaultValue: "", enum: Colors }),
-        dropdown: T.array(),
-      },
-
-      render: ({
-        active,
-        classes = {},
-        click,
-        color,
-        dropdown,
-        icon,
-        iconOnly,
-        size,
-        href,
-        label,
-        type,
-        variant,
-      }) => {
-        const { item: itemClass = "" } = classes;
-        const activeClass = active ? "active" : "";
-        const menuItemClasses = `${itemClass} ${activeClass} items-center`;
-
-        return html`
-          <li>
-            ${dropdown
-    ? html`<uix-dropdown
-                  .click=${click}
-                  href=${href}
-                  icon=${icon}
-                  variant=${variant}
-                  class=${menuItemClasses}
-                  color=${color}
-                  label=${iconOnly ? undefined : label}
-                  type=${type}
-                  .items=${dropdown}
-                ></uix-dropdown>`
-    : html`<uix-button
-                  .click=${click}
-                  href=${href}
-                  icon=${icon}
-                  variant=${variant}
-                  size=${size}
-                  class=${menuItemClasses}
-                  color=${color}
-                  label=${iconOnly ? undefined : label}
-                  type=${type}
-                >
-                </uix-button>`}
-          </li>
-        `;
-      },
-    },
-    "uix-menu": {
-      props: {
-        items: T.array(),
-        title: T.string({ defaultValue: null }),
-        color: T.string({ defaultValue: "", enum: Colors }),
-        vertical: T.boolean(),
-        size: T.string({ defaultValue: "base", enum: Sizes }),
-        gap: T.string({ defaultValue: "md", enum: Sizes }),
-        click: T.function({ default: () => {} }),
-        isActive: T.boolean(),
-        isCollapsible: T.boolean(),
-        iconOnly: T.boolean(),
-        width: T.string(),
-        height: T.string(),
-        fullHeight: T.boolean(),
-        fullWidth: T.boolean(),
-        rounded: T.boolean(),
-        containerClass: T.string(),
-        classes: T.object({ defaultValue: {} }),
-      },
-      render: (props) => {
-        const {
-          classes = {},
-          items,
-          title,
-          color,
-          fullHeight,
-          gap,
-          fullWidth,
-          height,
-          width,
-          iconOnly,
-          vertical,
-          rounded,
-          size,
-          isActive,
-          containerClass,
-        } = props;
-        const { items: itemsClass } = classes || {};
-
-        const baseClass = [
-          "menu",
-          BgColor[color],
-          height || "",
-          width || "",
-          MenuSize[size],
-          Gaps[gap],
-          fullHeight && "h-full",
-          fullWidth && "w-full",
-          vertical ? "menu-vertical" : "menu-horizontal",
-          rounded && "rounded-box",
-          containerClass,
-        ]
-          .filter(Boolean)
-          .join(" ");
-
-        const itemClass = [
-          "flex flex-row items-center",
-          itemsClass,
-          (isActive && "active") || "",
-        ]
-          .filter(Boolean)
-          .join(" ");
-
-        return html`
-          <ul class=${baseClass}>
-            ${title ? html`<li class="menu-title">${title}</li>` : ""}
-            ${items.map((item) => {
-    const { submenu } = item;
-    if (submenu) {
-      return html`
-                  <details ?open=${!!item.open}>
-                    <summary class="cursor-pointer gap-2 ${itemClass}">
-                      ${item.icon
-    ? html`<uix-icon name=${item.icon}></uix-icon>`
-    : ""}
-                      ${iconOnly ? "" : item.label}
-                    </summary>
-                    <uix-menu
-                      .items=${submenu}
-                      ?vertical=${vertical}
-                    ></uix-menu>
-                  </details>
-                `;
-    } else {
-      return html`<uix-menu-item
-                  .classes=${{ item: itemClass }}
-                  .click=${item.click}
-                  icon=${item.icon}
-                  variant=${item.variant}
-                  .dropdown=${item.dropdown}
-                  label=${item.label}
-                  ?iconOnly=${iconOnly}
-                  type=${item.type}
-                  size=${size}
-                  href=${item.href}
-                  active=${isActive}
-                ></uix-menu-item>`;
-    }
-  })}
-          </ul>
-        `;
-      },
+      }
     },
     "uix-tabs": {
       props: {
@@ -565,10 +397,10 @@ export default {
         selectedValue: T.string(),
         type: T.string({
           defaultValue: "default",
-          enum: ["default", "boxed", "bordered", "lifted"],
+          enum: ["default", "boxed", "bordered", "lifted"]
         }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
-        gap: T.string({ defaultValue: "md", enum: Sizes }),
+        gap: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: ({ items, selectedValue, setSelectedValue, type, size, gap }) => {
         let selected = selectedValue;
@@ -580,7 +412,7 @@ export default {
             item.disabled && "tab-disabled",
             type === "bordered" && "tab-bordered",
             type === "lifted" && "tab-lifted",
-            Sizes.includes(size) && TabsSize[size],
+            Sizes.includes(size) && TabsSize[size]
           ]
             .filter(Boolean)
             .join(" ");
@@ -603,11 +435,11 @@ export default {
     : ""}
                   ${item.label}
                 </button>
-              `,
+              `
   )}
           </div>
         `;
-      },
+      }
     },
     "uix-steps": {
       // TODO: expand daisyui tags
@@ -615,7 +447,7 @@ export default {
         steps: T.array({ defaultValue: [], enum: Colors }),
         vertical: T.boolean(),
         responsive: T.boolean(),
-        scrollable: T.boolean(),
+        scrollable: T.boolean()
       },
       render: ({ steps, responsive, vertical, scrollable }) => {
         const directionClass = vertical ? "steps-vertical" : "steps-horizontal";
@@ -642,7 +474,7 @@ export default {
             </ul>
           </div>
         `;
-      },
+      }
     },
     "uix-navbar": {
       props: {
@@ -658,7 +490,7 @@ export default {
         label: T.string(),
         iconOnly: T.boolean(),
         icon: T.string(),
-        classes: T.object(),
+        classes: T.object()
       },
       render: ({
         classes,
@@ -673,12 +505,12 @@ export default {
         gap,
         rounded,
         items,
-        vertical,
+        vertical
       }) => {
         const {
           items: itemsClass = "text-gray-800 hover:text-blue-600",
           logo: logoClass = "font-bold text-2xl",
-          container: containerClass,
+          container: containerClass
         } = classes || {};
 
         const baseClasses = [
@@ -686,7 +518,7 @@ export default {
           BgColor[color],
           shadow ? "shadow-xl" : "",
           rounded ? "rounded-box" : "",
-          vertical ? "flex-col h-full" : "flex-row w-full",
+          vertical ? "flex-col h-full" : "flex-row w-full"
         ]
           .filter(Boolean)
           .join(" ");
@@ -705,7 +537,7 @@ export default {
     vertical
       ? "w-full h-16 border-b"
       : "h-full w-72 border-r",
-    logoClass,
+    logoClass
   ].join(" ")}
                     href="/"
                   >
@@ -719,7 +551,7 @@ export default {
               containerClass="p-0"
               size=${size}
               .classes=${{
-    items: itemsClass,
+    items: itemsClass
   }}
               color=${color}
               ?vertical=${vertical}
@@ -728,7 +560,7 @@ export default {
             ></uix-menu>
           </div>
         `;
-      },
-    },
-  },
+      }
+    }
+  }
 };

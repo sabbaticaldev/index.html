@@ -904,6 +904,24 @@ ${value}</textarea
         `;
       }
     },
+    "uix-icon-button": {
+      props: {
+        icon: T.string(),
+        variant: T.string(),
+        size: T.string(),
+        alt: T.string(),
+        containerClass: T.string()
+      },
+      render: ({ icon, variant, alt, containerClass, size }) => {
+        return html` <uix-button
+          alt=${alt}
+          variant=${variant}
+          containerClass=${containerClass}
+        >
+          <uix-icon size=${size} name=${icon}></uix-icon>
+        </uix-button>`;
+      }
+    },
     "uix-button": {
       props: {
         color: T.string({ defaultValue: "base", enum: Colors }),
@@ -915,7 +933,7 @@ ${value}</textarea
         shape: T.string({ defaultValue: "default", enum: Shapes }),
         variant: T.string({ defaultValue: "", enum: Variants }),
         click: T.function(),
-        dropdown: T.boolean(),
+        dropdown: T.string(),
         border: T.boolean(),
         noAnimation: T.boolean()
       },
@@ -951,7 +969,7 @@ ${value}</textarea
           .join(" ");
 
         if (dropdown) {
-          return html` <details class="text-left">
+          return html` <details class="text-left" ?open=${dropdown === "open"}>
             <summary class=${btnClass}><slot></slot></summary>
             <slot name="dropdown"></slot>
           </details>`;
