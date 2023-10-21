@@ -28,7 +28,7 @@ import {
   SelectColors,
   SelectSizes,
   ToggleSizeClass,
-  ToggleVariantClass,
+  ToggleVariantClass
 } from "../uix.theme.mjs";
 
 const FormControls = (element) => ({
@@ -56,7 +56,7 @@ const FormControls = (element) => ({
       this._internals.setValidity(
         this.$input.validity,
         this.$input.validationMessage,
-        this.$input,
+        this.$input
       );
       //this.reportValidity();
     }, 0);
@@ -70,7 +70,7 @@ const FormControls = (element) => ({
       this._internals.setValidity(
         this.$input.validity,
         this.$input.validationMessage,
-        this.$input,
+        this.$input
       );
     }
   },
@@ -83,7 +83,7 @@ const FormControls = (element) => ({
   },
   formStateRestoreCallback(state) {
     this.$input.value = state;
-  },
+  }
 });
 const InputField = (props) =>
   html`
@@ -141,7 +141,7 @@ const SelectField = (props) => html`
 const fieldRenderers = {
   input: InputField,
   textarea: TextareaField,
-  select: SelectField,
+  select: SelectField
 };
 
 const renderField = (field, host) => {
@@ -158,7 +158,7 @@ const renderField = (field, host) => {
   const fieldComponent = FieldRenderer({
     ...props,
     type: formType || type,
-    keydown,
+    keydown
   });
 
   if (field.label || (field.labelAlt && field.labelAlt.length)) {
@@ -172,7 +172,7 @@ const renderField = (field, host) => {
                 name="brush-outline"
                 @click=${() => host.wizardForm(field.name)}
               >
-              </uix-icon>`,
+              </uix-icon>`
     ]
     : field.labelAlt || []}
       >
@@ -193,7 +193,7 @@ export default {
         actions: T.array(),
         method: T.string({ defaultValue: "post" }),
         endpoint: T.string(),
-        llm: T.object(),
+        llm: T.object()
       },
       getForm: function () {
         if (!this.$form) this.$form = this.renderRoot.querySelector("form");
@@ -201,7 +201,7 @@ export default {
       },
       validate: function () {
         const formControls = this.getForm().querySelectorAll(
-          "uix-input, uix-select, uix-textarea, uix-file-input",
+          "uix-input, uix-select, uix-textarea, uix-file-input"
         );
         let isFormValid = true;
         formControls.forEach((control) => {
@@ -219,7 +219,7 @@ export default {
       },
       clear: function () {
         const formControls = this.getForm().querySelectorAll(
-          "uix-input, uix-select, uix-textarea, uix-file-input",
+          "uix-input, uix-select, uix-textarea, uix-file-input"
         );
         formControls.forEach((control) => {
           control.formResetCallback?.();
@@ -273,7 +273,7 @@ export default {
           const form = this.getForm();
           const obj = JSON.parse(response);
           Object.keys(obj).forEach((key) =>
-            form.elements[key].setValue(obj[key]),
+            form.elements[key].setValue(obj[key])
           );
         }
       },
@@ -311,14 +311,14 @@ export default {
                         class=${action.class}
                         value=${action.value}
                       >
-                      </uix-input>`,
+                      </uix-input>`
   )}
                   </uix-list>`
     : ""}
             </uix-list>
           </form>
         `;
-      },
+      }
     },
     "uix-form-modal": {
       props: {
@@ -333,11 +333,11 @@ export default {
         name: T.string({ defaultValue: "uix-form-modal" }),
         position: T.string({
           defaultValue: "middle",
-          enum: ["top", "middle", "bottom"],
+          enum: ["top", "middle", "bottom"]
         }),
         icon: T.string({ defaultValue: "" }),
         openButton: T.function({}),
-        closable: T.boolean({ defaultValue: true }),
+        closable: T.boolean({ defaultValue: true })
       },
       render: (host) => {
         return html`
@@ -361,12 +361,12 @@ export default {
             ></uix-form>
           </uix-modal>
         `;
-      },
+      }
     },
     "uix-form-control": {
       props: {
         label: T.string({ type: String, defaultValue: null }),
-        labelAlt: T.array({ defaultValue: [] }),
+        labelAlt: T.array({ defaultValue: [] })
       },
       render: ({ label, labelAlt }) => {
         return html`
@@ -380,13 +380,13 @@ export default {
             ${labelAlt && labelAlt.length
     ? html` <label class="label">
                   ${labelAlt.map(
-    (alt) => html`<span class="label-text-alt">${alt}</span>`,
+    (alt) => html`<span class="label-text-alt">${alt}</span>`
   )}
                 </label>`
     : ""}
           </div>
         `;
-      },
+      }
     },
     "uix-input": {
       props: {
@@ -407,25 +407,25 @@ export default {
             "decimal",
             "search",
             "tel",
-            "url",
-          ],
+            "url"
+          ]
         }),
         maxLength: T.number(),
         variant: T.string({
           defaultValue: "bordered",
-          enum: Variants,
+          enum: Variants
         }),
         color: T.string({
           defaultValue: "default",
-          enum: Colors,
+          enum: Colors
         }),
         size: T.string({
           defaultValue: "md",
-          enum: Sizes,
+          enum: Sizes
         }),
         containerClass: T.string(),
         change: T.function(),
-        keydown: T.function(),
+        keydown: T.function()
       },
       ...FormControls("input"),
       render: (host) => {
@@ -442,7 +442,7 @@ export default {
           color,
           size,
           keydown,
-          containerClass,
+          containerClass
         } = host;
 
         const input = (e) => {
@@ -457,7 +457,7 @@ export default {
           InputVariantClass[color],
           InputSizeClass[size],
           buttonTypes.includes(type) && `btn ${ButtonColors[color]}`,
-          containerClass,
+          containerClass
         ]
           .filter(Boolean)
           .join(" ");
@@ -477,7 +477,7 @@ export default {
             type=${type}
           />
         `;
-      },
+      }
     },
 
     "uix-select": {
@@ -486,7 +486,7 @@ export default {
         color: T.string({ defaultValue: "base", enum: Colors }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
         containerClass: T.string(),
-        name: T.string(),
+        name: T.string()
       },
       render: ({ containerClass, options, color, size, name }) => {
         const colorClass = SelectColors[color];
@@ -497,7 +497,7 @@ export default {
           sizeClass,
           "w-full",
           "max-w-xs",
-          containerClass,
+          containerClass
         ]
           .filter(Boolean)
           .join(" ");
@@ -506,7 +506,7 @@ export default {
             ${options.map((option) => html` <option>${option}</option> `)}
           </select>
         `;
-      },
+      }
     },
 
     "uix-textarea": {
@@ -524,7 +524,7 @@ export default {
         color: T.string({ defaultValue: "default", enum: Colors }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
         input: T.function(),
-        keydown: T.function(),
+        keydown: T.function()
       },
       ...FormControls("textarea"),
       render: (host) => {
@@ -541,7 +541,7 @@ export default {
           size,
           required,
           keydown,
-          containerClass,
+          containerClass
         } = host;
 
         const input = (e) => {
@@ -554,7 +554,7 @@ export default {
           rounded ? "" : "rounded-none",
           color ? TextareaColors[color] : "",
           size ? TextareaSizes[size] : "",
-          containerClass,
+          containerClass
         ]
           .filter(Boolean)
           .join(" ");
@@ -573,7 +573,7 @@ export default {
 ${value}</textarea
           >
         `;
-      },
+      }
     },
     "uix-file-input": {
       props: {
@@ -585,7 +585,7 @@ ${value}</textarea
         bordered: T.boolean(),
         ghost: T.boolean(),
         size: T.string({ defaultValue: "md", enum: Sizes }),
-        disabled: T.boolean(),
+        disabled: T.boolean()
       },
       render: ({
         acceptedTypes,
@@ -596,7 +596,7 @@ ${value}</textarea
         bordered,
         ghost,
         size,
-        disabled,
+        disabled
       }) => {
         // Base classes
         let inputClasses = "file-input w-full max-w-xs";
@@ -648,7 +648,7 @@ ${value}</textarea
     : ""}
           </div>
         `;
-      },
+      }
     },
     "uix-range-slider": {
       props: {
@@ -657,7 +657,7 @@ ${value}</textarea
         step: T.number({ defaultValue: 1 }),
         value: T.number({ defaultValue: 50 }),
         color: T.string({ defaultValue: "neutral", enum: Colors }),
-        size: T.string({ defaultValue: "md", enum: Sizes }),
+        size: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: ({ min, max, step, value, color, size }) => {
         const colorClass = RangeColor[color];
@@ -673,7 +673,7 @@ ${value}</textarea
             class="range ${colorClass} ${sizeClass} max-w-xs"
           />
         `;
-      },
+      }
     },
     "uix-toggle": {
       props: {
@@ -683,7 +683,7 @@ ${value}</textarea
         size: T.string({ defaultValue: "md", enum: Sizes }),
         label: T.string({ defaultValue: "Toggle" }),
         disabled: T.boolean(),
-        change: T.function(),
+        change: T.function()
       },
       render: ({ on, change, label, disabled, color, size }) => {
         const colorClass = ToggleVariantClass[color] || "";
@@ -703,7 +703,7 @@ ${value}</textarea
             </label>
           </div>
         `;
-      },
+      }
     },
 
     "uix-radio": {
@@ -713,13 +713,13 @@ ${value}</textarea
         color: T.string({ defaultValue: "", enum: Colors }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
         disabled: T.boolean(),
-        label: T.string(),
+        label: T.string()
       },
       render: ({ selected, value, disabled, color, size, label }) => {
         const radioClass = [
           "radio",
           RadioVariantClass[color],
-          RadioSizeClass[size],
+          RadioSizeClass[size]
         ]
           .filter(Boolean)
           .join(" ");
@@ -738,7 +738,7 @@ ${value}</textarea
             </label>
           </div>
         `;
-      },
+      }
     },
     "uix-radio-group": {
       props: {
@@ -747,7 +747,7 @@ ${value}</textarea
         color: T.string({ defaultValue: "default", enum: Colors }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
         disabled: T.boolean(),
-        withCustomColors: T.boolean(),
+        withCustomColors: T.boolean()
       },
       render: ({
         selectedValue,
@@ -755,7 +755,7 @@ ${value}</textarea
         disabled,
         color,
         size,
-        withCustomColors,
+        withCustomColors
       }) => {
         return html`
           <div class="flex flex-col">
@@ -770,11 +770,11 @@ ${value}</textarea
                   ?disabled=${disabled}
                   ?withCustomColors=${withCustomColors}
                 ></uix-radio>
-              `,
+              `
   )}
           </div>
         `;
-      },
+      }
     },
 
     "uix-rating": {
@@ -785,18 +785,18 @@ ${value}</textarea
         mask: T.string({ defaultValue: "star", enum: ["star", "heart"] }),
         color: T.string({
           defaultValue: "neutral",
-          enum: ["orange", "red", "yellow", "lime", "green"],
+          enum: ["orange", "red", "yellow", "lime", "green"]
         }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
         allowReset: T.boolean(),
-        half: T.boolean(),
+        half: T.boolean()
       },
       render: ({ maxValue, value, mask, color, size, allowReset, half }) => {
         const RatingSizeClasses = {
           lg: "rating-lg",
           md: "rating-md",
           sm: "rating-sm",
-          xs: "rating-xs",
+          xs: "rating-xs"
         };
         const maskClass =
           mask === "star"
@@ -827,11 +827,11 @@ ${value}</textarea
   : ""} ${half && index % 2 != 0 ? "mask-half-2" : ""}"
                     ${index < value * (half ? 2 : 1) ? "checked" : ""}
                   />
-                `,
+                `
   )}
           </div>
         `;
-      },
+      }
     },
 
     "uix-swap": {
@@ -839,7 +839,7 @@ ${value}</textarea
         isActive: T.boolean(),
         isRotated: T.boolean(),
         isFlipped: T.boolean(),
-        color: T.string({ defaultValue: "base", enum: Colors }),
+        color: T.string({ defaultValue: "base", enum: Colors })
       },
       render: ({ isActive, isRotated, isFlipped, color }) => {
         const baseClass = "swap";
@@ -857,7 +857,7 @@ ${value}</textarea
             <div class="swap-off ${bgColorClass}">OFF</div>
           </label>
         `;
-      },
+      }
     },
 
     "uix-checkbox": {
@@ -868,7 +868,7 @@ ${value}</textarea
         size: T.string({ defaultValue: "md", enum: Sizes }),
         label: T.string(),
         disabled: T.boolean(),
-        change: T.function(),
+        change: T.function()
       },
       render: ({
         checked,
@@ -877,7 +877,7 @@ ${value}</textarea
         label,
         disabled,
         color,
-        size,
+        size
       }) => {
         const colorClass = CheckboxVariant[color];
         const sizeClass = CheckboxSize[size];
@@ -902,44 +902,37 @@ ${value}</textarea
             </label>
           </div>
         `;
-      },
+      }
     },
-
     "uix-button": {
       props: {
         color: T.string({ defaultValue: "base", enum: Colors }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
         href: T.string(),
-        class: T.string(),
-        label: T.string(),
+        containerClass: T.string(),
         type: T.string({ defaultValue: "button" }),
         fullWidth: T.boolean(),
         shape: T.string({ defaultValue: "default", enum: Shapes }),
         variant: T.string({ defaultValue: "", enum: Variants }),
         click: T.function(),
-        isLoading: T.boolean(),
-        icon: T.string(),
-        endIcon: T.string(),
+        dropdown: T.boolean(),
         border: T.boolean(),
-        noAnimation: T.boolean(),
-        classes: T.object(),
+        noAnimation: T.boolean()
       },
       render: (host) => {
         const {
           variant,
           type,
           size,
-          label,
           click,
           fullWidth,
           border,
           href,
           shape,
           color,
-          isLoading,
-          icon,
-          endIcon,
           noAnimation,
+          dropdown,
+          containerClass
         } = host;
         const btnClass = [
           "flex flex-row items-center gap-2",
@@ -951,19 +944,18 @@ ${value}</textarea
           ButtonShapes[shape] || "",
           ButtonVariants[variant] || "",
           noAnimation ? "no-animation" : "",
-          host.class,
+          dropdown ? "dropdown" : "",
+          containerClass
         ]
           .filter(Boolean)
           .join(" ");
-        const innerContent = [
-          icon ? html`<uix-icon size=${size} name=${icon}></uix-icon>` : "",
-          label ? label : html`<slot></slot>`,
-          endIcon
-            ? html`<uix-icon size=${size} name=${endIcon}></uix-icon>`
-            : "",
-          isLoading && html`<span class="loading loading-spinner"></span>`,
-        ];
 
+        if (dropdown) {
+          return html` <details class="text-left">
+            <summary class=${btnClass}><slot></slot></summary>
+            <slot name="dropdown"></slot>
+          </details>`;
+        }
         return href
           ? html`
               <a
@@ -971,7 +963,7 @@ ${value}</textarea
                 href=${href}
                 @click=${(event) => click?.({ event, host })}
               >
-                ${innerContent}
+                <slot></slot>
               </a>
             `
           : html`
@@ -980,10 +972,10 @@ ${value}</textarea
                 class=${btnClass}
                 @click=${(event) => click?.({ event, host })}
               >
-                ${innerContent}
+                <slot></slot>
               </button>
             `;
-      },
-    },
-  },
+      }
+    }
+  }
 };

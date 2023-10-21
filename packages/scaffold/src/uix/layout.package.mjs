@@ -11,7 +11,7 @@ import {
   Sizes,
   Colors,
   SpacingSizes,
-  BlockColors,
+  BlockColors
 } from "../uix.theme.mjs";
 
 export default {
@@ -24,7 +24,7 @@ export default {
         spacing: T.string({ defaultValue: "md" }),
         rounded: T.boolean(),
         shadow: T.boolean(),
-        containerClass: T.string(),
+        containerClass: T.string()
       },
       render: (props) => {
         const {
@@ -34,7 +34,7 @@ export default {
           textColor,
           spacing,
           rounded,
-          shadow,
+          shadow
         } = props;
         const baseClass = [
           bgColor ? `bg-${bgColor}` : "",
@@ -43,7 +43,7 @@ export default {
           BlockColors[color],
           rounded ? "rounded" : "",
           shadow ? "shadow-md" : "",
-          containerClass,
+          containerClass
         ]
           .filter(Boolean)
           .join(" ");
@@ -52,12 +52,12 @@ export default {
             <slot></slot>
           </div>
         `;
-      },
+      }
     },
     "uix-stack": {
       props: {
         vertical: T.boolean(),
-        gap: T.string({ defaultValue: "md", enum: Spacings }),
+        gap: T.string({ defaultValue: "md", enum: Spacings })
       },
       render: ({ vertical, gap }) => {
         const gapClass = Gaps[gap] || "";
@@ -67,7 +67,7 @@ export default {
             <slot></slot>
           </div>
         `;
-      },
+      }
     },
     "uix-divider": {
       props: {
@@ -76,7 +76,7 @@ export default {
         text: T.string(),
         vertical: T.boolean(),
         responsive: T.boolean(),
-        class: T.string(),
+        class: T.string()
       },
 
       render: (props) => {
@@ -87,7 +87,7 @@ export default {
           responsive &&
             (vertical ? "lg:divider-horizontal" : "lg:divider-vertical"),
           BgColor[color],
-          props.class,
+          props.class
         ]
           .filter(Boolean)
           .join(" ");
@@ -97,19 +97,20 @@ export default {
             <slot></slot>
           </div>
         `;
-      },
+      }
     },
     "uix-list": {
       props: {
         vertical: T.boolean(),
         responsive: T.boolean(),
+        reverse: T.boolean(),
         droparea: T.boolean(),
         spacing: T.string({ defaultValue: "" }),
         gap: T.string({ defaultValue: "sm", enum: Sizes }),
         full: T.boolean(),
         rounded: T.boolean(),
         containerClass: T.string(),
-        id: T.string(),
+        id: T.string()
       },
       ...droparea,
       render: (props) => {
@@ -119,10 +120,18 @@ export default {
           vertical,
           gap,
           responsive,
+          reverse,
           rounded,
-          spacing,
+          spacing
         } = props;
-        const directionClass = vertical ? "flex-col" : "flex-row";
+        const directionClass = vertical
+          ? reverse
+            ? "flex-col-reverse"
+            : "flex-col"
+          : reverse
+            ? "flex-row-reverse"
+            : "flex-row";
+
         const responsiveClass =
           (responsive &&
             (vertical
@@ -144,7 +153,7 @@ export default {
     responsiveClass,
     borderRadiusClass,
     containerClass,
-    SpacingSizes[spacing],
+    SpacingSizes[spacing]
   ]
     .filter(Boolean)
     .join(" ")}
@@ -152,7 +161,7 @@ export default {
             <slot></slot>
           </div>
         `;
-      },
+      }
     },
     "uix-grid": {
       props: {
@@ -161,7 +170,7 @@ export default {
         gap: T.string({ defaultValue: "sm", enum: Sizes }),
         rounded: T.boolean(),
         alignX: T.string({ enum: Object.keys(AlignX) }),
-        alignY: T.string({ enum: Object.keys(AlignY) }),
+        alignY: T.string({ enum: Object.keys(AlignY) })
       },
       render: ({
         templateColumns,
@@ -169,7 +178,7 @@ export default {
         gap,
         rounded,
         alignX,
-        alignY,
+        alignY
       }) => {
         const borderRadiusClass = rounded
           ? "rounded-l-full rounded-r-full"
@@ -189,7 +198,7 @@ export default {
     rowsClass,
     borderRadiusClass,
     alignXClass,
-    alignYClass,
+    alignYClass
   ]
     .filter(Boolean)
     .join(" ")}
@@ -197,7 +206,7 @@ export default {
             <slot></slot>
           </div>
         `;
-      },
-    },
-  },
+      }
+    }
+  }
 };
