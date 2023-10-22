@@ -1,5 +1,5 @@
-import { datetime } from "bootstrapp-shared";
-import T from "bootstrapp-shared";
+import { datetime } from "brazuka-helpers";
+import T from "brazuka-helpers";
 import { html } from "lit";
 
 const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
@@ -17,7 +17,7 @@ export default {
         return html`<time class="whitespace-nowrap"
           >${datetime.formatTime(timestamp)}</time
         >`;
-      },
+      }
     },
     "uix-calendar-day": {
       props: {
@@ -25,7 +25,7 @@ export default {
         next: T.boolean(),
         currentDay: T.boolean(),
         selected: T.boolean(),
-        day: T.number(),
+        day: T.number()
       },
       render: ({
         currentMonth,
@@ -33,7 +33,7 @@ export default {
         next,
         previous,
         selected,
-        day,
+        day
       }) => html` <button
         type="button"
         class="focus:z-10 w-full p-1.5 ${(!next && !previous) ||
@@ -53,13 +53,13 @@ export default {
     : ""}"
           >${day}</time
         >
-      </button>`,
+      </button>`
     },
     "uix-calendar-month": {
       props: {
         month: T.number(),
         year: T.number(),
-        selectedDay: T.number(),
+        selectedDay: T.number()
       },
       render: ({ month, year, selectedDay }) => {
         const today = new Date();
@@ -82,7 +82,7 @@ export default {
               previous="true"
               month="${month - 1}"
             ></uix-calendar-day>
-          `,
+          `
         );
 
         // Generate days for the current month
@@ -94,7 +94,7 @@ export default {
               ?currentDay=${isToday(i + 1, month, year)}
               ?selected=${i + 1 === selectedDay}
             ></uix-calendar-day>
-          `,
+          `
         );
 
         // Calculate days to append from the next month
@@ -106,7 +106,7 @@ export default {
               next="true"
               month="${month + 1}"
             ></uix-calendar-day>
-          `,
+          `
         );
 
         return html`
@@ -129,7 +129,7 @@ export default {
             </div>
           </uix-list>
         `;
-      },
-    },
-  },
+      }
+    }
+  }
 };

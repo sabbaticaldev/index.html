@@ -1,4 +1,4 @@
-import T from "bootstrapp-shared";
+import T from "brazuka-helpers";
 import { html } from "lit";
 import {
   Colors,
@@ -6,8 +6,8 @@ import {
   HeadingColors,
   FontWeight,
   FontType,
-  LinkColors,
+  LinkColors
 } from "../uix.theme.mjs";
 export default {
-  views: {},
+  views: {}
 };

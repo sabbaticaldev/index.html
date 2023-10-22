@@ -1,5 +1,5 @@
-import T from "bootstrapp-shared";
-import { droparea } from "bootstrapp-shared";
+import T from "brazuka-helpers";
+import { droparea } from "brazuka-helpers";
 import { html } from "lit";
 
 import {

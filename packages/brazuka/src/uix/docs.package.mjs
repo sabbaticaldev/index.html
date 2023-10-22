@@ -1,4 +1,4 @@
-import T from "bootstrapp-shared";
+import T from "brazuka-helpers";
 import { html } from "lit";
 
 export default {
@@ -9,7 +9,7 @@ export default {
         title: T.string(),
         description: T.string(),
         tableData: T.array(),
-        examples: T.array(),
+        examples: T.array()
       },
       render: ({ title, description, tableData, examples }) => {
         const formattedTitle = (title) =>
@@ -28,7 +28,7 @@ export default {
     "Type",
     "Property",
     "Description",
-    "Lit Property?",
+    "Lit Property?"
   ]}
                   .rows=${tableData}
                 ></uix-table>
@@ -46,7 +46,7 @@ export default {
                       <uix-mockup-code code=${example.code}></uix-mockup-code>
                     </uix-block>
                   </section>
-                `,
+                `
   )}
             </uix-block>
 
@@ -63,14 +63,14 @@ export default {
                         >${example.title}</a
                       >
                     </li>
-                  `,
+                  `
   )}
                 <li><a href="#source-code">Source Code</a></li>
               </ul>
             </uix-block>
           </uix-list>
         `;
-      },
-    },
-  },
+      }
+    }
+  }
 };

@@ -1,4 +1,4 @@
-import T from "bootstrapp-shared";
+import T from "brazuka-helpers";
 import { html } from "lit";
 
 import {

@@ -1,4 +1,4 @@
-import T from "bootstrapp-shared";
+import T from "brazuka-helpers";
 import { html } from "lit";
 
 import {
@@ -9,7 +9,7 @@ import {
   Colors,
   BgColor,
   TextColor,
-  BorderColor,
+  BorderColor
 } from "../uix.theme.mjs";
 
 export default {
@@ -22,7 +22,7 @@ export default {
         closable: T.boolean(),
         rounded: T.boolean(),
         border: T.boolean(),
-        actions: T.array(),
+        actions: T.array()
       },
       render: ({
         title,
@@ -31,12 +31,12 @@ export default {
         color,
         closable,
         actions,
-        border,
+        border
       }) => {
         const colorClass = [
           BgColor[color],
           border ? BorderColor[color] : "",
-          TextColor[color],
+          TextColor[color]
         ]
           .filter(Boolean)
           .join(" ");
@@ -63,14 +63,14 @@ export default {
     (action) =>
       html`<uix-button .action=${action.action}
                           >${action.label}</uix-button
-                        >`,
+                        >`
   )}
                   </div>
                 `
     : ""}
           </div>
         `;
-      },
+      }
     },
     "uix-alerts-container": {
       // TODO: create a container for alerts that knows how to close alert
@@ -78,7 +78,7 @@ export default {
       render: () => {
         console.log("NEED TO IMPLEMENT");
         return html`NEED TO IMPLEMENT`;
-      },
+      }
     },
     "uix-card": {
       props: {
@@ -95,7 +95,7 @@ export default {
         centeredContent: T.boolean(),
         rounded: T.boolean(),
         shadow: T.boolean({ defaultValue: true }),
-        imageOverlay: T.boolean(),
+        imageOverlay: T.boolean()
       },
       render: (host) => {
         const {
@@ -111,7 +111,7 @@ export default {
           shadow,
           sideImage,
           centeredContent,
-          imageOverlay,
+          imageOverlay
         } = host;
         const baseClass = [
           "card",
@@ -122,7 +122,7 @@ export default {
           compact ? "card-compact" : "",
           bordered ? "card-bordered" : "",
           sideImage ? "card-side" : "",
-          imageOverlay ? "image-full" : "",
+          imageOverlay ? "image-full" : ""
         ]
           .filter(Boolean)
           .join(" ");
@@ -152,14 +152,14 @@ export default {
             </div>
           </div>
         `;
-      },
+      }
     },
     "uix-mockup-code": {
       props: {
         prefix: T.string(),
         code: T.string(),
         highlight: T.boolean(),
-        color: T.string({ enum: Colors }),
+        color: T.string({ enum: Colors })
       },
       render: ({ prefix, code, highlight, color }) => {
         const colorSchema = color
@@ -175,7 +175,7 @@ export default {
             ><code>${code}</code></pre>
           </div>
         `;
-      },
+      }
     },
     "uix-tooltip": {
       props: {
@@ -183,7 +183,7 @@ export default {
         position: T.string({ defaultValue: "top", enum: Positions }),
         trigger: T.string({ defaultValue: "hover", enum: Triggers }),
         isOpen: T.boolean(),
-        color: T.string({ defaultValue: "primary", enum: Colors }),
+        color: T.string({ defaultValue: "primary", enum: Colors })
       },
       render: ({ content, position, trigger, isOpen, setIsOpen, color }) => {
         const tooltipPositionClass = `tooltip-${position}`;
@@ -193,7 +193,7 @@ export default {
           "tooltip",
           tooltipPositionClass,
           isOpen ? "tooltip-open" : "",
-          tooltipColorClass,
+          tooltipColorClass
         ].join(" ");
 
         return html`
@@ -206,14 +206,14 @@ export default {
             </uix-button>
           </div>
         `;
-      },
+      }
     },
     "uix-toast": {
       props: {
         content: T.array(),
         duration: T.number({ defaultValue: 3000 }),
         horizontalPosition: T.string({ defaultValue: "end", enum: Positions }),
-        verticalPosition: T.string({ defaultValue: "bottom", enum: Positions }),
+        verticalPosition: T.string({ defaultValue: "bottom", enum: Positions })
       },
       render: ({ content, duration, horizontalPosition, verticalPosition }) => {
         const ToastPositionHorizontalClass = {
@@ -225,7 +225,7 @@ export default {
           "top-right": "toast-top-right",
           "top-left": "toast-top-left",
           "bottom-right": "toast-bottom-right",
-          "bottom-left": "toast-bottom-left",
+          "bottom-left": "toast-bottom-left"
         };
 
         const ToastPositionVerticalClass = {
@@ -233,13 +233,13 @@ export default {
           middle: "toast-middle",
           bottom: "toast-bottom",
           "top-end": "toast-top-end",
-          "bottom-middle": "toast-bottom-middle",
+          "bottom-middle": "toast-bottom-middle"
         };
         const AlertTypes = {
           info: "alert-info",
           success: "alert-success",
           warning: "alert-warning",
-          error: "alert-error",
+          error: "alert-error"
         };
 
         const horizontalClass =
@@ -260,18 +260,18 @@ export default {
     : ""}
                   <span>${alert.message}</span>
                 </div>
-              `,
+              `
   )}
           </div>
         `;
-      },
+      }
     },
     "uix-artboard": {
       props: {
         content: T.string({ defaultValue: "Artboard Content" }),
         demo: T.boolean(),
         size: T.number({ defaultValue: 1, enum: [1, 2, 3, 4, 5, 6] }),
-        horizontal: T.boolean(),
+        horizontal: T.boolean()
       },
       render: ({ content, size, horizontal, demo }) => {
         const PhoneSize = {
@@ -280,7 +280,7 @@ export default {
           3: "phone-3",
           4: "phone-4",
           5: "phone-5",
-          6: "phone-6",
+          6: "phone-6"
         };
         const sizeClass = PhoneSize[size];
         const directionClass = horizontal ? "artboard-horizontal" : "";
@@ -290,7 +290,7 @@ export default {
             ${content}
           </div>
         `;
-      },
+      }
     },
     "uix-stat": {
       // TODO: expand daisyui tags for tailwind JIT
@@ -300,7 +300,7 @@ export default {
         desc: T.string(),
         figure: T.string(),
         valueColor: T.string({ defaultValue: "default", enum: Colors }),
-        descColor: T.string({ defaultValue: "default", enum: Colors }),
+        descColor: T.string({ defaultValue: "default", enum: Colors })
       },
       render: ({ title, value, desc, figure, valueColor, descColor }) => {
         const valueColorClass = `text-${valueColor}-focus`;
@@ -317,7 +317,7 @@ export default {
             <div class="stat-desc ${descColorClass}">${desc}</div>
           </div>
         `;
-      },
+      }
     },
     "uix-table": {
       props: {
@@ -326,7 +326,7 @@ export default {
         zebra: T.boolean(),
         pinRows: T.boolean(),
         pinCols: T.boolean(),
-        size: T.string({ defaultValue: "md", enum: Sizes }),
+        size: T.string({ defaultValue: "md", enum: Sizes })
       },
       render: ({ rows, headers, zebra, pinRows, pinCols, size }) => {
         const tableClass = `table 
@@ -346,13 +346,13 @@ export default {
                     <tr>
                       ${row.map((cell) => html`<td>${cell}</td>`)}
                     </tr>
-                  `,
+                  `
   )}
               </tbody>
             </table>
           </div>
         `;
-      },
+      }
     },
     "uix-indicator": {
       // TODO: expand daisyui tags
@@ -361,14 +361,14 @@ export default {
         badge: T.string(),
         horizontalPosition: T.string({
           defaultValue: "end",
-          enum: Positions,
+          enum: Positions
         }),
         verticalPosition: T.string({
           defaultValue: "top",
-          enum: Positions,
+          enum: Positions
         }),
         responsivePositions: T.object(),
-        badgeColor: T.string({ defaultValue: "secondary", enum: Colors }),
+        badgeColor: T.string({ defaultValue: "secondary", enum: Colors })
       },
       render: ({
         content,
@@ -376,7 +376,7 @@ export default {
         horizontalPosition,
         verticalPosition,
         responsivePositions,
-        badgeColor,
+        badgeColor
       }) => {
         const colorClass = `badge-${badgeColor}`;
         let positionClasses = `indicator-item indicator-${horizontalPosition} indicator-${verticalPosition}`;
@@ -394,7 +394,7 @@ export default {
             <div>${content}</div>
           </div>
         `;
-      },
-    },
-  },
+      }
+    }
+  }
 };

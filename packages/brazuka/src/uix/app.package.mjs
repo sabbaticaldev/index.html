@@ -1,4 +1,4 @@
-import T from "bootstrapp-shared";
+import T from "brazuka-helpers";
 import { html } from "lit";
 
 export default {
@@ -19,19 +19,19 @@ export default {
             <slot name="bottom-navbar"></slot>
           </div>
         `;
-      },
+      }
     },
     "uix-router": {
       props: {
         routes: T.array(),
-        currentRoute: T.string(),
+        currentRoute: T.string()
       },
       render: ({ routes, currentRoute }) => {
         const routeItem = routes.find((route) => route.path === currentRoute);
         return routeItem
           ? html`${routeItem.component}`
           : html`<uix-block>404: Page not found</uix-block>`;
-      },
-    },
-  },
+      }
+    }
+  }
 };
