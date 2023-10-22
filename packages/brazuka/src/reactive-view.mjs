@@ -1,6 +1,6 @@
 import { LitElement } from "lit";
 import { url } from "brazuka-helpers";
-import i18n from "./i18n/i18n.mjs";
+import i18n from "./helpers/i18n.mjs";
 
 const isServer = typeof localStorage === "undefined";
 
