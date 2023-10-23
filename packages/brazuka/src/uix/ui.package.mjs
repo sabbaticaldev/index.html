@@ -250,7 +250,8 @@ export default {
           FontWeight[weight],
           containerClass,
           FontType[font],
-          LeadingSizes[leading]
+          LeadingSizes[leading],
+          TextSizes[size]
         ]
           .filter(Boolean)
           .join(" ");

@@ -1,6 +1,10 @@
 import T from "brazuka-helpers";
 import { droparea } from "brazuka-helpers";
 import { html } from "https://esm.sh/lit";
+import {
+  html as staticHtml,
+  unsafeStatic
+} from "https://esm.sh/lit/static-html.js";
 
 import {
   BgColor,
@@ -103,6 +107,7 @@ export default {
       props: {
         vertical: T.boolean(),
         responsive: T.boolean(),
+        tag: T.string({ defaultValue: "div" }),
         reverse: T.boolean(),
         droparea: T.boolean(),
         spacing: T.string({ defaultValue: "" }),
@@ -122,6 +127,7 @@ export default {
           responsive,
           reverse,
           rounded,
+          tag,
           spacing
         } = props;
         const directionClass = vertical
@@ -142,24 +148,26 @@ export default {
           ? "rounded-l-full rounded-r-full"
           : "";
         const gapClass = Gaps[gap] || "";
-        return html`
-          <div
+
+        return staticHtml`
+          <${unsafeStatic(tag)}
             id="uix-list"
-            class=${[
-    "flex w-full",
-    full ? "h-full" : "",
-    gapClass,
-    directionClass,
-    responsiveClass,
-    borderRadiusClass,
-    containerClass,
-    SpacingSizes[spacing]
-  ]
-    .filter(Boolean)
-    .join(" ")}
-          >
+            class="${unsafeStatic(
+    [
+      "flex w-full",
+      full ? "h-full" : "",
+      gapClass,
+      directionClass,
+      responsiveClass,
+      borderRadiusClass,
+      containerClass,
+      SpacingSizes[spacing]
+    ]
+      .filter(Boolean)
+      .join(" ")
+  )}">
             <slot></slot>
-          </div>
+          </${unsafeStatic(tag)}>
         `;
       }
     },
