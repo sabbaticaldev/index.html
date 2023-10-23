@@ -149,6 +149,7 @@ export function defineView(tag, component, config = {}) {
 }
 
 export const definePackage = (pkg, { style }) => {
+  console.log({ pkg });
   const views = Object.fromEntries(
     Object.entries(pkg.views).map(([tag, component]) => {
       return [

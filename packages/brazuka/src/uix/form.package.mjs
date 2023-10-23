@@ -970,7 +970,14 @@ ${value}</textarea
 
         if (dropdown) {
           return html` <details class="text-left" ?open=${dropdown === "open"}>
-            <summary class=${btnClass}><slot></slot></summary>
+            ${(href &&
+              html`<summary class=${btnClass}>
+                <a href=${href}><slot></slot></a>
+              </summary>`) ||
+            ""}
+            ${(!href &&
+              html`<summary class=${btnClass}><slot></slot></summary>`) ||
+            ""}
             <slot name="dropdown"></slot>
           </details>`;
         }

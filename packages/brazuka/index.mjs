@@ -39,6 +39,7 @@ const bootstrapp = async (
     contentKit,
     datetimeKit
   ];
+  console.log({ kits });
   const { models, views, controllers } = definePackages(kits, { style });
   await init?.({ models, controllers });
 
