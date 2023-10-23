@@ -12,7 +12,6 @@ import {
   BorderColor,
   Colors,
   Sizes,
-  BgColor,
   CheckboxVariant,
   CheckboxSize,
   InputVariantClass,
@@ -22,14 +21,8 @@ import {
   InputSizeClass,
   RadioVariantClass,
   RadioSizeClass,
-  FileInputColor,
-  FileInputSize,
-  RangeColor,
-  RangeSize,
   SelectColors,
-  SelectSizes,
-  ToggleSizeClass,
-  ToggleVariantClass
+  SelectSizes
 } from "../uix.theme.mjs";
 
 const FormControls = (element) => ({
@@ -576,137 +569,6 @@ ${value}</textarea
         `;
       }
     },
-    "uix-file-input": {
-      props: {
-        acceptedTypes: T.string({ defaultValue: "*/*" }),
-        multiple: T.boolean(),
-        label: T.string({ defaultValue: null }),
-        altLabel: T.string({ defaultValue: null }),
-        color: T.string({ defaultValue: "neutral", enum: Colors }),
-        bordered: T.boolean(),
-        ghost: T.boolean(),
-        size: T.string({ defaultValue: "md", enum: Sizes }),
-        disabled: T.boolean()
-      },
-      render: ({
-        acceptedTypes,
-        multiple,
-        label,
-        altLabel,
-        color,
-        bordered,
-        ghost,
-        size,
-        disabled
-      }) => {
-        // Base classes
-        let inputClasses = "file-input w-full max-w-xs";
-
-        // Add color color
-        if (color && Colors.includes(color)) {
-          inputClasses += FileInputColor[color];
-        }
-
-        // Add bordered style
-        if (bordered) {
-          inputClasses += " file-input-bordered";
-        }
-
-        // Add ghost style
-        if (ghost) {
-          inputClasses += " file-input-ghost";
-        }
-
-        // Add size
-        if (size && Sizes.includes(size)) {
-          inputClasses += FileInputSize(size);
-        }
-
-        // Render
-        return html`
-          <div class="form-control w-full max-w-xs">
-            ${label
-    ? html`<label class="label">
-                  <span class="label-text">${label}</span>
-                  ${altLabel
-    ? html`<span class="label-text-alt">${altLabel}</span>`
-    : ""}
-                </label>`
-    : ""}
-
-            <input
-              type="file"
-              accept=${acceptedTypes}
-              ?multiple=${multiple}
-              class=${inputClasses}
-              ?disabled=${disabled}
-            />
-
-            ${altLabel
-    ? html`<label class="label">
-                  <span class="label-text-alt">${altLabel}</span>
-                </label>`
-    : ""}
-          </div>
-        `;
-      }
-    },
-    "uix-range-slider": {
-      props: {
-        min: T.number({ defaultValue: 0 }),
-        max: T.number({ defaultValue: 100 }),
-        step: T.number({ defaultValue: 1 }),
-        value: T.number({ defaultValue: 50 }),
-        color: T.string({ defaultValue: "neutral", enum: Colors }),
-        size: T.string({ defaultValue: "md", enum: Sizes })
-      },
-      render: ({ min, max, step, value, color, size }) => {
-        const colorClass = RangeColor[color];
-        const sizeClass = RangeSize[size];
-
-        return html`
-          <input
-            type="range"
-            min=${min}
-            max=${max}
-            step=${step}
-            value=${value}
-            class="range ${colorClass} ${sizeClass} max-w-xs"
-          />
-        `;
-      }
-    },
-    "uix-toggle": {
-      props: {
-        on: T.boolean(),
-        indeterminate: T.boolean(),
-        color: T.string({ defaultValue: "default", enum: Colors }),
-        size: T.string({ defaultValue: "md", enum: Sizes }),
-        label: T.string({ defaultValue: "Toggle" }),
-        disabled: T.boolean(),
-        change: T.function()
-      },
-      render: ({ on, change, label, disabled, color, size }) => {
-        const colorClass = ToggleVariantClass[color] || "";
-        const sizeClass = ToggleSizeClass[size];
-
-        return html`
-          <div class="form-control w-52">
-            <label class="cursor-pointer label">
-              <span class="label-text">${label}</span>
-              <input
-                type="checkbox"
-                @change=${change}
-                ?checked=${on}
-                ?disabled=${disabled}
-                class="toggle ${colorClass} ${sizeClass}"
-              />
-            </label>
-          </div>
-        `;
-      }
-    },
-
     "uix-radio": {
       props: {
         selected: T.boolean(),
@@ -738,125 +600,6 @@ ${value}</textarea
               />
             </label>
           </div>
-        `;
-      }
-    },
-    "uix-radio-group": {
-      props: {
-        selectedValue: T.string(),
-        options: T.array(),
-        color: T.string({ defaultValue: "default", enum: Colors }),
-        size: T.string({ defaultValue: "md", enum: Sizes }),
-        disabled: T.boolean(),
-        withCustomColors: T.boolean()
-      },
-      render: ({
-        selectedValue,
-        options,
-        disabled,
-        color,
-        size,
-        withCustomColors
-      }) => {
-        return html`
-          <div class="flex flex-col">
-            ${options.map(
-    (option) => html`
-                <uix-radio
-                  label=${option.label}
-                  value=${option.value}
-                  color=${color}
-                  size=${size}
-                  .selected=${selectedValue === option.value}
-                  ?disabled=${disabled}
-                  ?withCustomColors=${withCustomColors}
-                ></uix-radio>
-              `
-  )}
-          </div>
-        `;
-      }
-    },
-
-    "uix-rating": {
-      // TODO: expand daisyUI tags as the JIT can't get dynamic ones
-      props: {
-        maxValue: T.number({ defaultValue: 5 }),
-        value: T.number({ defaultValue: 0 }),
-        mask: T.string({ defaultValue: "star", enum: ["star", "heart"] }),
-        color: T.string({
-          defaultValue: "neutral",
-          enum: ["orange", "red", "yellow", "lime", "green"]
-        }),
-        size: T.string({ defaultValue: "md", enum: Sizes }),
-        allowReset: T.boolean(),
-        half: T.boolean()
-      },
-      render: ({ maxValue, value, mask, color, size, allowReset, half }) => {
-        const RatingSizeClasses = {
-          lg: "rating-lg",
-          md: "rating-md",
-          sm: "rating-sm",
-          xs: "rating-xs"
-        };
-        const maskClass =
-          mask === "star"
-            ? half
-              ? "mask-star-2"
-              : "mask-star"
-            : half
-              ? "mask-heart-2"
-              : "mask-heart";
-        const colorClass = BgColor[color];
-        const sizeClass = RatingSizeClasses[size];
-
-        return html`
-          <div class="rating ${sizeClass}">
-            ${allowReset
-    ? html`<input type="radio" name="rating" class="rating-hidden" />`
-    : ""}
-            ${Array.from({ length: maxValue * (half ? 2 : 1) }).map(
-    (_, index) =>
-      html`
-                  <input
-                    type="radio"
-                    name="rating"
-                    class="mask ${maskClass} ${index < value * (half ? 2 : 1)
-  ? colorClass
-  : ""} ${half && index % 2 == 0
-  ? "mask-half-1"
-  : ""} ${half && index % 2 != 0 ? "mask-half-2" : ""}"
-                    ${index < value * (half ? 2 : 1) ? "checked" : ""}
-                  />
-                `
-  )}
-          </div>
-        `;
-      }
-    },
-
-    "uix-swap": {
-      props: {
-        isActive: T.boolean(),
-        isRotated: T.boolean(),
-        isFlipped: T.boolean(),
-        color: T.string({ defaultValue: "base", enum: Colors })
-      },
-      render: ({ isActive, isRotated, isFlipped, color }) => {
-        const baseClass = "swap";
-        const activeClass = isActive ? "swap-active" : "";
-        const rotateClass = isRotated ? "swap-rotate" : "";
-        const flipClass = isFlipped ? "swap-flip" : "";
-        const bgColorClass = BgColor[color];
-
-        return html`
-          <label
-            class="${baseClass} ${activeClass} ${rotateClass} ${flipClass}"
-          >
-            <input type="checkbox" />
-            <div class="swap-on ${bgColorClass}">ON</div>
-            <div class="swap-off ${bgColorClass}">OFF</div>
-          </label>
         `;
       }
     },

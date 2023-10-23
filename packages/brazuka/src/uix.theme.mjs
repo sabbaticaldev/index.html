@@ -1,20 +1,4 @@
-export const AlignX = {
-  start: "justify-start",
-  center: "justify-center",
-  end: "justify-end",
-  between: "justify-between",
-  around: "justify-around",
-  evenly: "justify-evenly"
-};
-
-export const AlignY = {
-  top: "items-start",
-  middle: "items-center",
-  bottom: "items-end",
-  stretch: "items-stretch",
-  baseline: "items-baseline"
-};
-export const FontWeight = {
+const FontWeight = {
   thin: "font-thin", // 200
   extralight: "font-extralight", // 100
   light: "font-light", // 300
@@ -26,26 +10,13 @@ export const FontWeight = {
   black: "font-black" // 900
 };
 
-export const FontType = {
+const FontType = {
   mono: "font-mono",
   sans: "font-sans",
   serif: "font-serif"
 };
 
-export const BgOverlayOpacity = {
-  10: "bg-opacity-10",
-  20: "bg-opacity-20",
-  30: "bg-opacity-30",
-  40: "bg-opacity-40",
-  50: "bg-opacity-50",
-  60: "bg-opacity-60",
-  70: "bg-opacity-70",
-  80: "bg-opacity-80",
-  90: "bg-opacity-90",
-  100: "bg-opacity-100"
-};
-
-export const Gaps = {
+const Gaps = {
   sm: "gap-2",
   md: "gap-4",
   lg: "gap-8",
@@ -55,66 +26,37 @@ export const Gaps = {
   "4xl": "gap-96"
 };
 
-export const Positions = [
-  "start",
-  "center",
-  "end",
-  "top",
-  "middle",
-  "bottom",
-  "top",
-  "end",
-  "bottom",
-  "middle",
-  "left",
-  "right",
-  "top-right",
-  "top-left",
-  "bottom-right",
-  "bottom-left"
-];
-export const Resolutions = ["sm", "md", "lg", "xl"];
-export const NavbarPart = ["start", "center", "end"];
-export const Layouts = ["default", "responsive"];
-export const Spacings = ["none", "xs", "sm", "md", "lg", "xl", "2xl"];
-export const AnimationTypes = [
-  "spinner",
-  "dots",
-  "ring",
-  "ball",
-  "bars",
-  "infinity"
-];
-export const ModalPositions = {
+const AnimationTypes = ["spinner", "dots", "ring", "ball", "bars", "infinity"];
+const ModalPositions = {
   top: "modal-top",
   middle: "modal-middle",
   bottom: "modal-bottom"
 };
-export const Methods = ["details", "focus"];
-export const Sizes = ["lg", "md", "sm", "xs", "xl", "2xl", "3xl", "4xl"];
-export const TabsSize = {
+
+const Sizes = ["lg", "md", "sm", "xs", "xl", "2xl", "3xl", "4xl"];
+const TabsSize = {
   lg: "tab-lg",
   md: "tab-md",
   sm: "tab-sm",
   xs: "tab-xs"
 };
-export const Shapes = ["default", "circle", "square", "metro"];
+const Shapes = ["default", "circle", "square", "metro"];
 
-export const ButtonSizes = {
+const ButtonSizes = {
   lg: "btn-lg",
   md: "",
   sm: "btn-sm",
   xs: "btn-xs"
 };
 
-export const ButtonShapes = {
+const ButtonShapes = {
   default: "rounded-none",
   rounded: "",
   circle: "btn-circle",
   square: "btn-square"
 };
 
-export const ButtonVariants = {
+const ButtonVariants = {
   ghost: "btn-ghost",
   link: "btn-link",
   outline: "btn-outline",
@@ -124,15 +66,7 @@ export const ButtonVariants = {
   bordered: "btn-bordered"
 };
 
-export const MenuSize = {
-  lg: "menu-lg",
-  md: "menu-md",
-  sm: "menu-sm",
-  xs: "menu-xs"
-};
-// form classes
-
-export const Variants = [
+const Variants = [
   "ghost",
   "link",
   "outline",
@@ -141,7 +75,7 @@ export const Variants = [
   "disabled",
   "bordered"
 ];
-export const RadioVariantClass = {
+const RadioVariantClass = {
   primary: "radio-primary",
   secondary: "radio-secondary",
   accent: "radio-accent",
@@ -153,13 +87,13 @@ export const RadioVariantClass = {
   error: "radio-error"
 };
 
-export const RadioSizeClass = {
+const RadioSizeClass = {
   md: "radio-md",
   sm: "radio-sm",
   lg: "radio-lg",
   xs: "radio-xs"
 };
-export const InputVariantClass = {
+const InputVariantClass = {
   primary: "input-primary",
   secondary: "input-secondary",
   accent: "input-accent",
@@ -171,7 +105,7 @@ export const InputVariantClass = {
   error: "input-error"
 };
 
-export const InputStyleClass = {
+const InputStyleClass = {
   ghost: "input-ghost",
   link: "input-link",
   outline: "input-outline",
@@ -181,70 +115,14 @@ export const InputStyleClass = {
   bordered: "input-bordered"
 };
 
-export const InputSizeClass = {
+const InputSizeClass = {
   lg: "input-lg",
   md: "input-md",
   sm: "input-sm",
   xs: "input-xs"
 };
 
-export const FileInputColor = {
-  primary: "file-input-primary",
-  secondary: "file-input-secondary",
-  accent: "file-input-accent",
-  neutral: "file-input-neutral",
-  base: "file-input-base",
-  info: "file-input-info",
-  success: "file-input-success",
-  warning: "file-input-warning",
-  error: "file-input-error"
-};
-export const FileInputSize = {
-  lg: "file-input-lg",
-  md: "file-input-md",
-  sm: "file-input-sm",
-  xs: "file-input-xs"
-};
-
-export const RangeColor = {
-  primary: "range-primary",
-  secondary: "range-secondary",
-  accent: "range-accent",
-  neutral: "range-neutral",
-  base: "range-base",
-  info: "range-info",
-  success: "range-success",
-  warning: "range-warning",
-  error: "range-error"
-};
-
-export const RangeSize = {
-  lg: "range-lg",
-  md: "range-md",
-  sm: "range-sm",
-  xs: "range-xs"
-};
-
-export const ToggleVariantClass = {
-  primary: "toggle-primary",
-  secondary: "toggle-secondary",
-  accent: "toggle-accent",
-  neutral: "toggle-neutral",
-  base: "toggle-base",
-  info: "toggle-info",
-  success: "toggle-success",
-  warning: "toggle-warning",
-  error: "toggle-error"
-};
-
-export const ToggleSizeClass = {
-  md: "toggle-md",
-  sm: "toggle-sm",
-  lg: "toggle-lg",
-  xs: "toggle-xs"
-};
-
-export const SelectColors = {
+const SelectColors = {
   primary: "select-primary",
   secondary: "select-secondary",
   accent: "select-accent",
@@ -256,7 +134,7 @@ export const SelectColors = {
   error: "select-error"
 };
 
-export const TextareaColors = {
+const TextareaColors = {
   primary: "textarea-primary",
   secondary: "textarea-secondary",
   accent: "textarea-accent",
@@ -268,23 +146,21 @@ export const TextareaColors = {
   error: "textarea-error"
 };
 
-export const TextareaSizes = {
+const TextareaSizes = {
   lg: "textarea-lg h-40",
   md: "textarea-md h-30",
   sm: "textarea-sm h-20",
   xs: "textarea-xs h-10"
 };
 
-export const SelectSizes = {
+const SelectSizes = {
   lg: "select-lg",
   md: "select-md",
   sm: "select-sm",
   xs: "select-xs"
 };
 
-export const Triggers = ["click", "hover"];
-export const Directions = ["horizontal", "vertical", "responsive"];
-export const Colors = [
+const Colors = [
   "default",
   "primary",
   "secondary",
@@ -297,7 +173,7 @@ export const Colors = [
   "error"
 ];
 
-export const BgColor = {
+const BgColor = {
   primary: "bg-primary-200",
   secondary: "bg-secondary-200",
   accent: "bg-accent-200",
@@ -309,7 +185,7 @@ export const BgColor = {
   error: "bg-error-200"
 };
 
-export const BadgeColor = {
+const BadgeColor = {
   neutral: "badge-neutral",
   primary: "badge-primary",
   secondary: "badge-secondary",
@@ -322,7 +198,7 @@ export const BadgeColor = {
   outline: "badge-outline"
 };
 
-export const TextColor = {
+const TextColor = {
   primary: "text-primary-focus",
   secondary: "text-secondary-focus",
   accent: "text-accent-focus",
@@ -334,7 +210,7 @@ export const TextColor = {
   error: "text-error-focus"
 };
 
-export const ButtonColors = {
+const ButtonColors = {
   default: "btn-default",
   primary: "btn-primary",
   secondary: "btn-secondary",
@@ -347,7 +223,7 @@ export const ButtonColors = {
   error: "btn-error"
 };
 
-export const BorderColor = {
+const BorderColor = {
   primary: "border-primary-content",
   secondary: "border-secondary-content",
   accent: "border-accent-content",
@@ -358,7 +234,7 @@ export const BorderColor = {
   warning: "border-warning-content",
   error: "border-error-content"
 };
-export const CheckboxVariant = {
+const CheckboxVariant = {
   default: "checkbox-default",
   primary: "checkbox-primary",
   secondary: "checkbox-secondary",
@@ -371,44 +247,13 @@ export const CheckboxVariant = {
   error: "checkbox-error"
 };
 
-export const CheckboxSize = {
+const CheckboxSize = {
   lg: "checkbox-lg",
   md: "checkbox-md",
   sm: "checkbox-sm",
   xs: "checkbox-xs"
 };
-
-export const CollapseBgColor = {
-  primary: "bg-primary-200",
-  secondary: "bg-secondary-200",
-  accent: "bg-accent-200",
-  neutral: "bg-neutral-200",
-  base: "bg-base-200",
-  info: "bg-info-200",
-  success: "bg-success-200",
-  warning: "bg-warning-200",
-  error: "bg-error-200"
-};
-
-export const CollapseIcon = {
-  "": "",
-  arrow: "collapse-arrow",
-  plus: "collapse-plus"
-};
-
-export const RingColor = {
-  primary: "ring-primary",
-  secondary: "ring-secondary",
-  accent: "ring-accent",
-  neutral: "ring-neutral",
-  base: "ring-base",
-  info: "ring-info",
-  success: "ring-success",
-  warning: "ring-warning",
-  error: "ring-error"
-};
-
-export const HeadingColors = {
+const HeadingColors = {
   primary: "text-primary",
   secondary: "text-secondary",
   accent: "text-accent",
@@ -420,19 +265,7 @@ export const HeadingColors = {
   error: "text-error"
 };
 
-export const LinkColors = {
-  primary: "link-primary hover:text-primary-dark",
-  secondary: "link-secondary hover:text-secondary-dark",
-  accent: "link-accent hover:text-accent-dark",
-  neutral: "link-neutral hover:text-neutral-dark",
-  base: "link-base hover:text-base-dark",
-  info: "link-info hover:text-info-dark",
-  success: "link-success hover:text-success-dark",
-  warning: "link-warning hover:text-warning-dark",
-  error: "link-error hover:text-error-dark"
-};
-
-export const BlockColors = {
+const BlockColors = {
   primary: "bg-primary text-primary-content",
   secondary: "bg-secondary text-secondary-content",
   accent: "bg-accent text-accent-content",
@@ -444,7 +277,7 @@ export const BlockColors = {
   error: "bg-error text-error-content"
 };
 
-export const SpacingSizes = {
+const SpacingSizes = {
   "": "",
   xs: "p-1",
   sm: "p-2",
@@ -456,7 +289,7 @@ export const SpacingSizes = {
   "4xl": "p-24"
 };
 
-export const TextSizes = {
+const TextSizes = {
   "": "",
   xs: "text-xs",
   sm: "text-sm",
@@ -471,7 +304,7 @@ export const TextSizes = {
   "6xl": "text-6xl"
 };
 
-export const LeadingSizes = {
+const LeadingSizes = {
   "": "",
   xs: "leading-3",
   sm: "leading-4",
@@ -481,4 +314,53 @@ export const LeadingSizes = {
   xl: "leading-8",
   "2xl": "leading-9",
   "3xl": "leading-10"
+};
+
+export const RingColor = {
+  primary: "ring-primary",
+  secondary: "ring-secondary",
+  accent: "ring-accent",
+  neutral: "ring-neutral",
+  base: "ring-base",
+  info: "ring-info",
+  success: "ring-success",
+  warning: "ring-warning",
+  error: "ring-error"
+};
+
+export {
+  BgColor,
+  Colors,
+  AnimationTypes,
+  BadgeColor,
+  TextColor,
+  TextSizes,
+  LeadingSizes,
+  HeadingColors,
+  FontWeight,
+  FontType,
+  TabsSize,
+  Gaps,
+  ModalPositions,
+  Sizes,
+  ButtonColors,
+  ButtonSizes,
+  ButtonShapes,
+  ButtonVariants,
+  Shapes,
+  Variants,
+  BorderColor,
+  CheckboxVariant,
+  CheckboxSize,
+  InputVariantClass,
+  TextareaColors,
+  TextareaSizes,
+  InputStyleClass,
+  InputSizeClass,
+  RadioVariantClass,
+  RadioSizeClass,
+  SelectColors,
+  SelectSizes,
+  SpacingSizes,
+  BlockColors
 };

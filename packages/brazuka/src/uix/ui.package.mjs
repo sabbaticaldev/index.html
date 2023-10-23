@@ -91,41 +91,6 @@ export default {
         `;
       }
     },
-    "uix-avatar-group": {
-      props: {
-        avatars: T.array(),
-        count: T.number({ defaultValue: 0 })
-      },
-      render: ({ avatars, count }) => {
-        return html`
-          <div class="avatar-group -space-x-6">
-            ${avatars.map(
-    (avatar) => html`
-                <uix-avatar
-                  src=${avatar.src}
-                  alt=${avatar.alt}
-                  size=${avatar.size}
-                  shape=${avatar.shape}
-                  status=${avatar.status}
-                  placeholder=${avatar.placeholder}
-                  hasRing=${avatar.hasRing}
-                  ringColor=${avatar.ringColor}
-                ></uix-avatar>
-              `
-  )}
-            ${count > 0
-    ? html`
-                  <div class="avatar placeholder">
-                    <div class="w-12 bg-neutral-focus text-neutral-content">
-                      <span>+${count}</span>
-                    </div>
-                  </div>
-                `
-    : ""}
-          </div>
-        `;
-      }
-    },
     "uix-badge": {
       props: {
         color: T.string({ defaultValue: "primary", enum: Colors }),
@@ -212,27 +177,6 @@ export default {
         `;
       }
     },
-    "uix-progress": {
-      // TODO: expand daisyui tags
-      props: {
-        value: T.number({ defaultValue: 0 }),
-        max: T.number({ defaultValue: 100 }),
-        width: T.string({ defaultValue: "w-56" }),
-        color: T.string({ defaultValue: "base", enum: Colors })
-      },
-      render: ({ value, max, width, color }) => {
-        const progressClass = `progress ${width}`;
-        const colorClass = color !== "base" ? `progress-${color}` : "";
-        return html`
-          <progress
-            class="${progressClass} ${colorClass}"
-            value="${value}"
-            max="${max}"
-          ></progress>
-        `;
-      }
-    },
-
     "uix-text": {
       props: {
         size: T.string({ enum: Sizes }),

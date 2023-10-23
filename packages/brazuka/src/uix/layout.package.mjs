@@ -7,11 +7,7 @@ import {
 } from "https://esm.sh/lit/static-html.js";
 
 import {
-  BgColor,
-  AlignX,
-  AlignY,
   Gaps,
-  Spacings,
   Sizes,
   Colors,
   SpacingSizes,
@@ -58,49 +54,16 @@ export default {
         `;
       }
     },
-    "uix-stack": {
-      props: {
-        vertical: T.boolean(),
-        gap: T.string({ defaultValue: "md", enum: Spacings })
-      },
-      render: ({ vertical, gap }) => {
-        const gapClass = Gaps[gap] || "";
-        const directionClass = vertical ? "flex-col" : "flex-row";
-        return html`
-          <div class="stack flex ${directionClass} ${gapClass}">
-            <slot></slot>
-          </div>
-        `;
-      }
-    },
-    "uix-divider": {
-      props: {
-        thickness: T.string({ defaultValue: "1px" }),
-        color: T.string({ defaultValue: "primary", enum: Colors }),
-        text: T.string(),
-        vertical: T.boolean(),
-        responsive: T.boolean(),
-        class: T.string()
-      },
-
+    "uix-card": {
+      props: {},
       render: (props) => {
-        const { thickness, color, vertical, responsive } = props;
-        const baseClass = [
-          "divider",
-          vertical ? "divider-vertical" : "divider-horizontal",
-          responsive &&
-            (vertical ? "lg:divider-horizontal" : "lg:divider-vertical"),
-          BgColor[color],
-          props.class
-        ]
-          .filter(Boolean)
-          .join(" ");
-
-        return html`
-          <div class=${baseClass} style="height: ${thickness};">
+        return html`<div
+          class="card card-bordered bg-white rounded-none shadow"
+        >
+          <div class="card-body items-center text-center">
             <slot></slot>
           </div>
-        `;
+        </div>`;
       }
     },
     "uix-list": {
@@ -168,51 +131,6 @@ export default {
   )}">
             <slot></slot>
           </${unsafeStatic(tag)}>
-        `;
-      }
-    },
-    "uix-grid": {
-      props: {
-        templateColumns: T.string({ defaultValue: "1fr" }),
-        templateRows: T.string(),
-        gap: T.string({ defaultValue: "sm", enum: Sizes }),
-        rounded: T.boolean(),
-        alignX: T.string({ enum: Object.keys(AlignX) }),
-        alignY: T.string({ enum: Object.keys(AlignY) })
-      },
-      render: ({
-        templateColumns,
-        templateRows,
-        gap,
-        rounded,
-        alignX,
-        alignY
-      }) => {
-        const borderRadiusClass = rounded
-          ? "rounded-l-full rounded-r-full"
-          : "";
-        const gapClass = Gaps[gap] || "";
-        const columnsClass = `grid-cols-${templateColumns}`;
-        const rowsClass = templateRows ? `grid-rows-${templateRows}` : "";
-        const alignXClass = alignX ? AlignX[alignX] : "";
-        const alignYClass = alignY ? AlignY[alignY] : "";
-
-        return html`
-          <div
-            class=${[
-    "grid",
-    gapClass,
-    columnsClass,
-    rowsClass,
-    borderRadiusClass,
-    alignXClass,
-    alignYClass
-  ]
-    .filter(Boolean)
-    .join(" ")}
-          >
-            <slot></slot>
-          </div>
         `;
       }
     }
