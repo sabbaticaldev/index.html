@@ -5,9 +5,13 @@ export default {
   i18n: {},
   views: {
     "uix-app-shell": {
-      render: () => {
+      props: { containerClass: T.string() },
+      render: ({ containerClass }) => {
         return html`
-          <div class="app-shell w-full h-full flex flex-col">
+          <div
+            class=${"app-shell w-full h-full flex flex-col " + containerClass ||
+            ""}
+          >
             <slot name="top-navbar"></slot>
             <div class="flex h-full">
               <slot name="left-navbar"></slot>
