@@ -176,6 +176,7 @@ const Colors = [
 const BgColor = {
   white: "bg-white",
   black: "bg-black",
+  gray: "bg-gray-200",
   primary: "bg-primary-200",
   secondary: "bg-secondary-200",
   accent: "bg-accent-200",
@@ -372,18 +373,29 @@ const DefaultTheme = {
     reverse: ({ vertical }) => ({
       true: vertical ? "flex-col-reverse" : "flex-row-reverse"
     })
+  },
+  "uix-button": {
+    _base: "flex flex-row items-center gap-2 p-4",
+    color: ButtonColors,
+    bg: BgColor,
+    border: { true: "border" },
+    full: { true: "w-full" },
+    size: Sizes
   }
 };
 
 const generateTheme = (element, props) => {
   const defaultElement = DefaultTheme[element];
   const classes =
-    defaultElement &&
-    Object.keys(defaultElement).map((attr) => {
-      const elementTheme =
-        defaultElement[attr] && defaultElement[attr][props[attr]];
-      return typeof elementTheme === "function" ? elementTheme() : elementTheme;
-    });
+    (defaultElement &&
+      Object.keys(defaultElement).map((attr) => {
+        const elementTheme =
+          defaultElement[attr] && defaultElement[attr][props[attr]];
+        return typeof elementTheme === "function"
+          ? elementTheme()
+          : elementTheme;
+      })) ||
+    [];
   classes.push(defaultElement["_base"], props["containerClass"]);
   return classes.filter(Boolean).join(" ") || "";
 };

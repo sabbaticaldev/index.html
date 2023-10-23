@@ -3,13 +3,10 @@ import { html } from "https://esm.sh/lit";
 import { ifDefined } from "https://esm.sh/lit/directives/if-defined.js";
 
 import {
+  generateTheme,
   ButtonColors,
-  ButtonSizes,
-  ButtonShapes,
-  ButtonVariants,
   Shapes,
   Variants,
-  BorderColor,
   Colors,
   Sizes,
   CheckboxVariant,
@@ -668,50 +665,22 @@ ${value}</textarea
     },
     "uix-button": {
       props: {
+        type: T.string({ defaultValue: "button" }),
         color: T.string({ defaultValue: "base", enum: Colors }),
+        bg: T.string({ defaultValue: "gray", enum: Colors }),
         size: T.string({ defaultValue: "md", enum: Sizes }),
         href: T.string(),
         containerClass: T.string(),
-        type: T.string({ defaultValue: "button" }),
-        fullWidth: T.boolean(),
+        full: T.boolean(),
         shape: T.string({ defaultValue: "default", enum: Shapes }),
         variant: T.string({ defaultValue: "", enum: Variants }),
         click: T.function(),
         dropdown: T.string(),
-        border: T.boolean(),
-        noAnimation: T.boolean()
+        border: T.boolean()
       },
-      render: (host) => {
-        const {
-          variant,
-          type,
-          size,
-          click,
-          fullWidth,
-          border,
-          href,
-          shape,
-          color,
-          noAnimation,
-          dropdown,
-          containerClass
-        } = host;
-        const btnClass = [
-          "flex flex-row items-center gap-2",
-          href && !variant ? "" : "btn",
-          ButtonColors[color] || "",
-          (border && BorderColor[color]) || "",
-          ButtonSizes[size] || "",
-          fullWidth ? "btn-block" : "",
-          ButtonShapes[shape] || "",
-          ButtonVariants[variant] || "",
-          noAnimation ? "no-animation" : "",
-          dropdown ? "dropdown" : "",
-          containerClass
-        ]
-          .filter(Boolean)
-          .join(" ");
-
+      render: (props) => {
+        const { type, click, href, dropdown } = props;
+        const btnClass = generateTheme("uix-button", props);
         if (dropdown) {
           return html` <details class="text-left" ?open=${dropdown === "open"}>
             ${(href &&
@@ -730,7 +699,7 @@ ${value}</textarea
               <a
                 class=${btnClass}
                 href=${href}
-                @click=${(event) => click?.({ event, host })}
+                @click=${(event) => click?.({ event, props })}
               >
                 <slot></slot>
               </a>
@@ -739,7 +708,7 @@ ${value}</textarea
               <button
                 type=${type || "button"}
                 class=${btnClass}
-                @click=${(event) => click?.({ event, host })}
+                @click=${(event) => click?.({ event, props })}
               >
                 <slot></slot>
               </button>
