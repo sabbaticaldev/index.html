@@ -1,5 +1,5 @@
 import T from "brazuka-helpers";
-import { html } from "lit";
+import { html } from "https://esm.sh/lit";
 
 import {
   Positions,

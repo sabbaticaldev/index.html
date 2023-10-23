@@ -1,6 +1,5 @@
 import T from "brazuka-helpers";
-import { html } from "lit";
-
+import { html } from "https://esm.sh/lit";
 import { BgColor, TextColor, Colors, BgOverlayOpacity } from "../uix.theme.mjs";
 
 export default {

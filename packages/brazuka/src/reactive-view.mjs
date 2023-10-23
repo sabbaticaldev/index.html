@@ -1,4 +1,4 @@
-import { LitElement } from "lit";
+import { LitElement } from "https://esm.sh/lit";
 import { url } from "brazuka-helpers";
 import i18n from "./helpers/i18n.mjs";
 

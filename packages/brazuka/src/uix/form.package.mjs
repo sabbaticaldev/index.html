@@ -1,5 +1,6 @@
 import T from "brazuka-helpers";
-import { html, ifDefined } from "lit";
+import { html } from "https://esm.sh/lit";
+import { ifDefined } from "https://esm.sh/lit/directives/if-defined.js";
 
 import {
   ButtonColors,

@@ -1,5 +1,9 @@
 import T from "brazuka-helpers";
-import { html } from "lit";
+import { html } from "https://esm.sh/lit";
+import {
+  html as staticHtml,
+  unsafeStatic
+} from "https://esm.sh/lit/static-html.js";
 
 import {
   AnimationTypes,
@@ -14,6 +18,17 @@ import {
   FontWeight,
   FontType
 } from "../uix.theme.mjs";
+
+const TAG_MAP = {
+  "4xl": "h1",
+  "3xl": "h2",
+  "2xl": "h2",
+  xl: "h2",
+  lg: "h3",
+  md: "h4",
+  sm: "h5",
+  xs: "h6"
+};
 
 export default {
   views: {
@@ -240,35 +255,20 @@ export default {
           .filter(Boolean)
           .join(" ");
 
-        const HeadingTemplates = {
-          "4xl": html`<h1 class="text-4xl tracking-wider ${baseClass}">
-            <slot></slot>
-          </h1>`,
-          "3xl": html`<h2 class="text-3xl tracking-wider ${baseClass}">
-            <slot></slot>
-          </h2>`,
-          "2xl": html`<h2 class="text-2xl tracking-wider ${baseClass}">
-            <slot></slot>
-          </h2>`,
-          xl: html`<h2 class="text-xl tracking-wide ${baseClass}">
-            <slot></slot>
-          </h2>`,
-          lg: html`<h3 class="text-lg tracking-wide ${baseClass}">
-            <slot></slot>
-          </h3>`,
-          md: html`<h4 class="text-md ${baseClass}">
-            <slot></slot>
-          </h4>`,
-          sm: html`<h5 class="text-sm ${baseClass}">
-            <slot></slot>
-          </h5>`,
-          xs: html`<h6 class="text-xs ${baseClass}">
-            <slot></slot>
-          </h6>`,
-          "": html`<p class=${baseClass}><slot></slot></p>`
-        };
-
-        return HeadingTemplates[size || ""];
+        const tag = TAG_MAP[size] || "p";
+        const trackingClass =
+          size === "4xl" || size === "3xl" || size === "2xl"
+            ? "tracking-wider"
+            : size === "xl" || size === "lg"
+              ? "tracking-wide"
+              : "";
+        return staticHtml`
+              <${unsafeStatic(tag)} class="${unsafeStatic(
+  `${trackingClass} ${baseClass}`
+)}">
+                <slot></slot>
+              </${unsafeStatic(tag)}>
+            `;
       }
     }
   }

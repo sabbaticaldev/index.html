@@ -1,10 +1,9 @@
 import T from "brazuka-helpers";
-import { html } from "lit";
+import { html } from "https://esm.sh/lit";
 import {
   Positions,
   TabsSize,
   Gaps,
-  MenuSize,
   ModalPositions,
   Sizes,
   Colors,
@@ -472,92 +471,6 @@ export default {
       : html`<li class="${stepClass}">${step.label}</li>`;
   })}
             </ul>
-          </div>
-        `;
-      }
-    },
-    "uix-navbar": {
-      props: {
-        color: T.string({ enum: Colors }),
-        shadow: T.boolean(),
-        rounded: T.boolean(),
-        height: T.string(),
-        width: T.string(),
-        items: T.array(),
-        vertical: T.boolean(),
-        size: T.string({ defaultValue: "base", enum: Sizes }),
-        gap: T.string({ defaultValue: "md" }),
-        label: T.string(),
-        iconOnly: T.boolean(),
-        icon: T.string(),
-        classes: T.object()
-      },
-      render: ({
-        classes,
-        color,
-        label,
-        size,
-        icon,
-        iconOnly,
-        shadow,
-        height,
-        width,
-        gap,
-        rounded,
-        items,
-        vertical
-      }) => {
-        const {
-          items: itemsClass = "text-gray-800 hover:text-blue-600",
-          logo: logoClass = "font-bold text-2xl",
-          container: containerClass
-        } = classes || {};
-
-        const baseClasses = [
-          "navbar flex overflow-y-auto overflow-x-hidden p-0",
-          BgColor[color],
-          shadow ? "shadow-xl" : "",
-          rounded ? "rounded-box" : "",
-          vertical ? "flex-col h-full" : "flex-row w-full"
-        ]
-          .filter(Boolean)
-          .join(" ");
-
-        return html`
-          <div
-            class="${baseClasses} ${height || ""} ${width ||
-            ""} ${containerClass}"
-          >
-            ${icon && label
-    ? html`
-                  <a
-                    class=${[
-    `cursor-pointer flex items-center text-center 
-                justify-center gap-2`,
-    vertical
-      ? "w-full h-16 border-b"
-      : "h-full w-72 border-r",
-    logoClass
-  ].join(" ")}
-                    href="/"
-                  >
-                    <ion-icon name=${icon} role="img"></ion-icon>
-                    ${iconOnly ? "" : html`<h2>${label}</h2>`}
-                  </a>
-                `
-    : ""}
-            <uix-menu
-              .items=${items}
-              containerClass="p-0"
-              size=${size}
-              .classes=${{
-    items: itemsClass
-  }}
-              color=${color}
-              ?vertical=${vertical}
-              ?iconOnly=${iconOnly}
-              gap=${gap || "lg"}
-            ></uix-menu>
           </div>
         `;
       }

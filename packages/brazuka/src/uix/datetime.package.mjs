@@ -1,6 +1,6 @@
 import { datetime } from "brazuka-helpers";
 import T from "brazuka-helpers";
-import { html } from "lit";
+import { html } from "https://esm.sh/lit";
 
 const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
 const getFirstDayOfMonth = (month, year) =>
