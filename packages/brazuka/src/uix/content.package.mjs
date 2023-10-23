@@ -13,14 +13,6 @@ export default {
         // todo
       }
     },
-    "uix-card": {
-      props: {
-        // todo
-      },
-      render: () => {
-        // TODO
-      }
-    },
     "uix-mockup-code": {
       props: {
         prefix: T.string(),

@@ -1,6 +1,6 @@
 import { definePackage } from "./src/reactive-view.mjs";
 import uiKit from "./src/uix/ui.package.mjs";
-import uxKit from "./src/uix/ux.package.mjs";
+import chatKit from "./src/uix/chat.package.mjs";
 import appKit from "./src/uix/app.package.mjs";
 import formKit from "./src/uix/form.package.mjs";
 import docsKit from "./src/uix/docs.package.mjs";
@@ -32,14 +32,14 @@ const bootstrapp = async (
     appKit,
     navigationKit,
     docsKit,
-    uxKit,
+    chatKit,
     uiKit,
     formKit,
     layoutKit,
     contentKit,
     datetimeKit
   ];
-  console.log({ kits });
+
   const { models, views, controllers } = definePackages(kits, { style });
   await init?.({ models, controllers });
 

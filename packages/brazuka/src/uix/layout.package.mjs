@@ -56,7 +56,7 @@ export default {
     },
     "uix-card": {
       props: {},
-      render: (props) => {
+      render: () => {
         return html`<div
           class="card card-bordered bg-white rounded-none shadow"
         >

@@ -107,44 +107,6 @@ export default {
           </a>
         `;
       }
-    },
-    "uix-space-bubble": {
-      props: {
-        avatar: T.string()
-      },
-      render: ({ messages }) => {
-        return messages.map(
-          (message) =>
-            html`
-              <uix-chat-message
-                message=${message.message}
-                timestamp=${message.timestamp}
-                .sender=${message.sender}
-              ></uix-chat-message>
-            `
-        );
-      }
-    },
-    "uix-chat-bubble": {
-      props: {
-        messages: T.array()
-      },
-      render: ({ messages }) => {
-        return html`
-          <div class="chat-bubble-container">
-            ${messages.map(
-    (message) =>
-      html`
-                  <uix-chat-message
-                    message=${message.message}
-                    timestamp=${message.timestamp}
-                    .sender=${message.sender}
-                  ></uix-chat-message>
-                `
-  )}
-          </div>
-        `;
-      }
     }
   }
 };
