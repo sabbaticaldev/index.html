@@ -330,6 +330,17 @@ export const RingColor = {
   error: "ring-error"
 };
 
+export const JustifyContent = {
+  normal: "justify-normal",
+  start: "justify-start",
+  end: "justify-end",
+  center: "justify-center",
+  between: "justify-between",
+  around: "justify-around",
+  evenly: "justify-evenly",
+  strecth: "justify-stretch"
+};
+
 const DefaultTheme = {
   "uix-card": {
     border: { true: "border" },
@@ -349,9 +360,10 @@ const DefaultTheme = {
   },
 
   "uix-list": {
-    _base: "flex w-full",
+    _base: "flex w-full h-full",
     spacing: SpacingSizes,
     gap: Gaps,
+    justify: JustifyContent,
     rounded: { true: "rounded-l-full rounded-r-full" },
     vertical: { true: "flex-col" },
     responsive: ({ vertical }) => ({
@@ -359,29 +371,21 @@ const DefaultTheme = {
     }),
     reverse: ({ vertical }) => ({
       true: vertical ? "flex-col-reverse" : "flex-row-reverse"
-    }),
-    full: { true: "h-full" }
+    })
   }
 };
 
 const generateTheme = (element, props) => {
   const defaultElement = DefaultTheme[element];
-  return (
-    (defaultElement["_base"] || "") +
-    " " +
-    ((defaultElement &&
-      Object.keys(defaultElement)
-        .map((attr) => {
-          const elementTheme =
-            defaultElement[attr] && defaultElement[attr][props[attr]];
-          return typeof elementTheme === "function"
-            ? elementTheme()
-            : elementTheme;
-        })
-        .filter(Boolean)
-        .join(" ")) ||
-      "")
-  );
+  const classes =
+    defaultElement &&
+    Object.keys(defaultElement).map((attr) => {
+      const elementTheme =
+        defaultElement[attr] && defaultElement[attr][props[attr]];
+      return typeof elementTheme === "function" ? elementTheme() : elementTheme;
+    });
+  classes.push(defaultElement["_base"], props["containerClass"]);
+  return classes.filter(Boolean).join(" ") || "";
 };
 
 export {

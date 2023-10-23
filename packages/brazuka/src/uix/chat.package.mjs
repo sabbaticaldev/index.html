@@ -77,7 +77,7 @@ export default {
                       <uix-avatar src=${avatar} rounded=${rounded}></uix-avatar>
                     `
     : ""}
-                <uix-list vertical class="justify-center flex-grow">
+                <uix-list vertical justify="center" class="flex-grow">
                   <uix-text
                     size="sm"
                     weight="bold"
@@ -93,7 +93,7 @@ export default {
                     ${message}
                   </uix-text>
                 </uix-list>
-                <uix-list vertical containerClass="justify-evenly text-right">
+                <uix-list vertical justify="evenly" containerClass="text-right">
                   <uix-time
                     class="text-xs opacity-50"
                     timestamp=${timestamp}

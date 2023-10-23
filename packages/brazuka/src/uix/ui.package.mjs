@@ -188,6 +188,13 @@ export default {
       },
       render: (props) => {
         const { size, font, color, weight, containerClass, leading } = props;
+
+        const trackingClass =
+          size === "4xl" || size === "3xl" || size === "2xl"
+            ? "tracking-wider"
+            : size === "xl" || size === "lg"
+              ? "tracking-wide"
+              : "";
         const baseClass = [
           "prose",
           HeadingColors[color],
@@ -195,22 +202,15 @@ export default {
           containerClass,
           FontType[font],
           LeadingSizes[leading],
-          TextSizes[size]
+          TextSizes[size],
+          trackingClass
         ]
           .filter(Boolean)
           .join(" ");
 
         const tag = TAG_MAP[size] || "p";
-        const trackingClass =
-          size === "4xl" || size === "3xl" || size === "2xl"
-            ? "tracking-wider"
-            : size === "xl" || size === "lg"
-              ? "tracking-wide"
-              : "";
         return staticHtml`
-              <${unsafeStatic(tag)} class="${unsafeStatic(
-  `${trackingClass} ${baseClass}`
-)}">
+              <${unsafeStatic(tag)} class="${unsafeStatic(`${baseClass}`)}">
                 <slot></slot>
               </${unsafeStatic(tag)}>
             `;

@@ -29,25 +29,47 @@ export default {
         </uix-block>`;
       }
     },
-    "uix-mockup-code": {
+    "uix-mockup-phone": {
       props: {
         prefix: T.string(),
         code: T.string(),
         highlight: T.boolean(),
         color: T.string({ enum: Colors })
       },
-      render: ({ prefix, code, highlight, color }) => {
-        const colorSchema = color
-          ? [BgColor[color], TextColor[color]].join(" ")
-          : "";
-        const highlightClass = highlight ? colorSchema : "";
-
+      render: () => {
         return html`
-          <div class="mockup-code ${colorSchema}">
-            <pre
-              class="${highlightClass}"
-              data-prefix="${prefix}"
-            ><code>${code}</code></pre>
+          <div
+            class="relative mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[14px] rounded-xl h-[600px] w-[300px] shadow-xl"
+          >
+            <div
+              class="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute"
+            ></div>
+            <div
+              class="h-[32px] w-[3px] bg-gray-800 absolute -left-[17px] top-[72px] rounded-l-lg"
+            ></div>
+            <div
+              class="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[124px] rounded-l-lg"
+            ></div>
+            <div
+              class="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[178px] rounded-l-lg"
+            ></div>
+            <div
+              class="h-[64px] w-[3px] bg-gray-800 absolute -right-[17px] top-[142px] rounded-r-lg"
+            ></div>
+            <div
+              class="rounded-xl overflow-hidden w-[272px] h-[572px] bg-white dark:bg-gray-800"
+            >
+              <img
+                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/mockup-1-light.png"
+                class="dark:hidden w-[272px] h-[572px]"
+                alt=""
+              />
+              <img
+                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/mockup-1-dark.png"
+                class="hidden dark:block w-[272px] h-[572px]"
+                alt=""
+              />
+            </div>
           </div>
         `;
       }

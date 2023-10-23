@@ -36,6 +36,7 @@ export default {
         tag: T.string({ defaultValue: "div" }),
         reverse: T.boolean(),
         droparea: T.boolean(),
+        justify: T.string(),
         spacing: T.string({ defaultValue: "" }),
         gap: T.string({ defaultValue: "sm" }),
         full: T.boolean(),
@@ -46,7 +47,6 @@ export default {
       render: (props) => {
         const { tag } = props;
         const baseClass = generateTheme("uix-list", props);
-        console.log({ baseClass });
         return staticHtml`
           <${unsafeStatic(tag)}            
             class="${unsafeStatic(baseClass)}">
