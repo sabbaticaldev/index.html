@@ -1,7 +1,6 @@
 import T from "brazuka-helpers";
 import { html } from "https://esm.sh/lit";
-
-import { Colors, BgColor, TextColor } from "../uix.theme.mjs";
+import { generateTheme, Colors, BgColor, TextColor } from "../uix.theme.mjs";
 
 export default {
   views: {
@@ -11,6 +10,23 @@ export default {
       },
       render: () => {
         // todo
+      }
+    },
+
+    "uix-card": {
+      props: {
+        border: T.boolean({ defaultValue: true }),
+        shadow: T.boolean({ defaultValue: true }),
+        bg: T.string({ defaultValue: "white" }),
+        text: T.string(),
+        rounded: T.boolean({ defaultValue: "none" }),
+        spacing: T.string({ defaultValue: "lg" })
+      },
+      render: (host) => {
+        const baseClass = generateTheme("uix-card", host);
+        return html`<uix-block containerClass=${baseClass}>
+          <slot></slot>
+        </uix-block>`;
       }
     },
     "uix-mockup-code": {

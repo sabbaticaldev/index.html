@@ -6,19 +6,13 @@ import {
   unsafeStatic
 } from "https://esm.sh/lit/static-html.js";
 
-import {
-  Gaps,
-  Sizes,
-  Colors,
-  SpacingSizes,
-  BlockColors
-} from "../uix.theme.mjs";
+import { generateTheme } from "../uix.theme.mjs";
 
 export default {
   views: {
     "uix-block": {
       props: {
-        color: T.string({ enum: Colors }),
+        color: T.string(),
         bgColor: T.string(),
         textColor: T.string(),
         spacing: T.string({ defaultValue: "md" }),
@@ -27,43 +21,12 @@ export default {
         containerClass: T.string()
       },
       render: (props) => {
-        const {
-          containerClass,
-          color,
-          bgColor,
-          textColor,
-          spacing,
-          rounded,
-          shadow
-        } = props;
-        const baseClass = [
-          bgColor ? `bg-${bgColor}` : "",
-          textColor ? `text-${textColor}` : "",
-          SpacingSizes[spacing],
-          BlockColors[color],
-          rounded ? "rounded" : "",
-          shadow ? "shadow-md" : "",
-          containerClass
-        ]
-          .filter(Boolean)
-          .join(" ");
+        const baseClass = generateTheme("uix-block", props);
         return html`
           <div class=${baseClass}>
             <slot></slot>
           </div>
         `;
-      }
-    },
-    "uix-card": {
-      props: {},
-      render: () => {
-        return html`<div
-          class="card card-bordered bg-white rounded-none shadow"
-        >
-          <div class="card-body items-center text-center">
-            <slot></slot>
-          </div>
-        </div>`;
       }
     },
     "uix-list": {
@@ -74,61 +37,19 @@ export default {
         reverse: T.boolean(),
         droparea: T.boolean(),
         spacing: T.string({ defaultValue: "" }),
-        gap: T.string({ defaultValue: "sm", enum: Sizes }),
+        gap: T.string({ defaultValue: "sm" }),
         full: T.boolean(),
         rounded: T.boolean(),
-        containerClass: T.string(),
-        id: T.string()
+        containerClass: T.string()
       },
       ...droparea,
       render: (props) => {
-        const {
-          containerClass,
-          full,
-          vertical,
-          gap,
-          responsive,
-          reverse,
-          rounded,
-          tag,
-          spacing
-        } = props;
-        const directionClass = vertical
-          ? reverse
-            ? "flex-col-reverse"
-            : "flex-col"
-          : reverse
-            ? "flex-row-reverse"
-            : "flex-row";
-
-        const responsiveClass =
-          (responsive &&
-            (vertical
-              ? "lg:flex-col sm:flex-row"
-              : "sm:flex-col lg:flex-row")) ||
-          "";
-        const borderRadiusClass = rounded
-          ? "rounded-l-full rounded-r-full"
-          : "";
-        const gapClass = Gaps[gap] || "";
-
+        const { tag } = props;
+        const baseClass = generateTheme("uix-list", props);
+        console.log({ baseClass });
         return staticHtml`
-          <${unsafeStatic(tag)}
-            id="uix-list"
-            class="${unsafeStatic(
-    [
-      "flex w-full",
-      full ? "h-full" : "",
-      gapClass,
-      directionClass,
-      responsiveClass,
-      borderRadiusClass,
-      containerClass,
-      SpacingSizes[spacing]
-    ]
-      .filter(Boolean)
-      .join(" ")
-  )}">
+          <${unsafeStatic(tag)}            
+            class="${unsafeStatic(baseClass)}">
             <slot></slot>
           </${unsafeStatic(tag)}>
         `;

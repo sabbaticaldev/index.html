@@ -174,6 +174,8 @@ const Colors = [
 ];
 
 const BgColor = {
+  white: "bg-white",
+  black: "bg-black",
   primary: "bg-primary-200",
   secondary: "bg-secondary-200",
   accent: "bg-accent-200",
@@ -328,7 +330,62 @@ export const RingColor = {
   error: "ring-error"
 };
 
+const DefaultTheme = {
+  "uix-card": {
+    border: { true: "border" },
+    bg: BgColor,
+    text: TextColor,
+    shadow: { true: "shadow" },
+    rounded: { false: "rounded-none" },
+    spacing: SpacingSizes
+  },
+  "uix-block": {
+    bgColor: BgColor,
+    text: TextColor,
+    spacing: SpacingSizes,
+    rounded: { false: "rounded-none", true: "rounded" },
+    shadow: { false: "", true: "shadow-md" },
+    color: BlockColors
+  },
+
+  "uix-list": {
+    _base: "flex w-full",
+    spacing: SpacingSizes,
+    gap: Gaps,
+    rounded: { true: "rounded-l-full rounded-r-full" },
+    vertical: { true: "flex-col" },
+    responsive: ({ vertical }) => ({
+      true: vertical ? "lg:flex-col sm:flex-row" : "sm:flex-col lg:flex-row"
+    }),
+    reverse: ({ vertical }) => ({
+      true: vertical ? "flex-col-reverse" : "flex-row-reverse"
+    }),
+    full: { true: "h-full" }
+  }
+};
+
+const generateTheme = (element, props) => {
+  const defaultElement = DefaultTheme[element];
+  return (
+    (defaultElement["_base"] || "") +
+    " " +
+    ((defaultElement &&
+      Object.keys(defaultElement)
+        .map((attr) => {
+          const elementTheme =
+            defaultElement[attr] && defaultElement[attr][props[attr]];
+          return typeof elementTheme === "function"
+            ? elementTheme()
+            : elementTheme;
+        })
+        .filter(Boolean)
+        .join(" ")) ||
+      "")
+  );
+};
+
 export {
+  generateTheme,
   BgColor,
   Colors,
   AnimationTypes,
