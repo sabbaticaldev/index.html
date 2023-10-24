@@ -3,6 +3,13 @@ import { url } from "brazuka-helpers";
 import i18n from "./helpers/i18n.mjs";
 
 const isServer = typeof localStorage === "undefined";
+const instances = [];
+
+export const updateAllStyles = (stylesheet) => {
+  for (const instance of instances) {
+    instance.updateStyles(stylesheet);
+  }
+};
 
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
 
@@ -35,10 +42,9 @@ export function defineView(tag, component, config = {}) {
     ...litPropsAndEvents
   } = component;
 
-  const { style } = config;
-
+  const { withTwind } = config;
   const properties = props || {};
-  class ReactionView extends LitElement {
+  class ReactionView extends withTwind(LitElement) {
     static properties = !props
       ? {}
       : Object.keys(props).reduce((acc, key) => {
@@ -54,6 +60,8 @@ export function defineView(tag, component, config = {}) {
     static formAssociated = formAssociated;
     constructor() {
       super();
+
+      instances.push(this);
       componentInit?.(this);
       Object.keys(litPropsAndEvents)
         .filter((method) => method[0] === "_")
@@ -132,6 +140,14 @@ export function defineView(tag, component, config = {}) {
     render() {
       return render?.(this, this.context);
     }
+
+    updateStyles(stylesheet) {
+      console.log("updating stylesheet");
+      const styleEl = document.createElement("style");
+      styleEl.textContent = stylesheet;
+      ReactionView.styles.push(stylesheet);
+      this.shadowRoot.appendChild(styleEl);
+    }
   }
 
   Object.keys(litPropsAndEvents)
@@ -140,7 +156,7 @@ export function defineView(tag, component, config = {}) {
       ReactionView.prototype[method] = litPropsAndEvents[method];
     });
 
-  ReactionView.styles = [style, styleProp].filter(Boolean);
+  ReactionView.styles = [styleProp].filter(Boolean);
 
   // Register the custom element
   customElements.define(tag, ReactionView);
@@ -148,13 +164,14 @@ export function defineView(tag, component, config = {}) {
   return ReactionView;
 }
 
-export const definePackage = (pkg, { style }) => {
+export const definePackage = (pkg, { style, withTwind }) => {
   const views = Object.fromEntries(
     Object.entries(pkg.views).map(([tag, component]) => {
       return [
         tag,
         defineView(tag, component, {
-          style
+          style,
+          withTwind
         })
       ];
     })

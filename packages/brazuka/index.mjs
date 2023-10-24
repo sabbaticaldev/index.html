@@ -1,4 +1,4 @@
-import { definePackage } from "./src/reactive-view.mjs";
+import { definePackage, updateAllStyles } from "./src/reactive-view.mjs";
 import uiKit from "./src/uix/ui.package.mjs";
 import chatKit from "./src/uix/chat.package.mjs";
 import appKit from "./src/uix/app.package.mjs";
@@ -25,7 +25,7 @@ const definePackages = (packages, options) => {
 
 const bootstrapp = async (
   app,
-  { style, init, bootstrappTag = "app-index" } = {}
+  { style, withTwind, init, bootstrappTag = "app-index" } = {}
 ) => {
   const kits = [
     app,
@@ -40,7 +40,10 @@ const bootstrapp = async (
     datetimeKit
   ];
 
-  const { models, views, controllers } = definePackages(kits, { style });
+  const { models, views, controllers } = definePackages(kits, {
+    style,
+    withTwind
+  });
   await init?.({ models, controllers });
 
   return views[bootstrappTag];
@@ -48,4 +51,4 @@ const bootstrapp = async (
 
 export default bootstrapp;
 
-export { bootstrapp };
+export { bootstrapp, updateAllStyles };
