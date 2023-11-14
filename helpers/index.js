@@ -1,9 +1,9 @@
-import { T } from "./types.js";
-import { get, post, patch, remove } from "./rest.js";
-import { droparea, draggable } from "./droparea.js";
 import datetime from "./datetime.js";
-import url from "./url.js";
+import { draggable, droparea } from "./droparea.js";
 import i18n from "./i18n.js";
+import { get, patch, post, remove } from "./rest.js";
+import { T } from "./types.js";
+import url from "./url.js";
 
 function debounce(func, wait) {
   let timeout;
@@ -23,16 +23,16 @@ function event(type, ...attrs) {
 }
 
 export {
-  event,
-  debounce,
-  T,
-  i18n,
-  get,
-  post,
-  patch,
-  remove,
-  droparea,
-  draggable,
   datetime,
+  debounce,
+  draggable,
+  droparea,
+  event,
+  get,
+  i18n,
+  patch,
+  post,
+  remove,
+  T,
   url,
 };
