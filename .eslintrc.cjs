@@ -19,10 +19,17 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
+  plugins: [
+    // Add the simple-import-sort plugin
+    "simple-import-sort",
+  ],
   rules: {
     indent: ["error", 2],
     "linebreak-style": ["error", "unix"],
     quotes: ["error", "double"],
     semi: ["error", "always"],
+    // Add simple-import-sort rules
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
   },
 };

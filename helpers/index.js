@@ -13,7 +13,17 @@ function debounce(func, wait) {
     timeout = setTimeout(() => func.apply(context, args), wait);
   };
 }
+
+function event(type, ...attrs) {
+  const message = { type };
+  attrs.forEach((attr) => {
+    Object.assign(message, attr);
+  });
+  navigator.serviceWorker.controller.postMessage(message);
+}
+
 export {
+  event,
   debounce,
   T,
   i18n,
