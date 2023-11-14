@@ -1,5 +1,6 @@
-import { T } from "../helpers/types.js";
 import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
+
+import { T } from "../helpers/types.js";
 
 export default {
   views: {
@@ -30,7 +31,7 @@ export default {
           (header) => html`<th scope="col" class="p-3">${header}</th>`,
         );
 
-        const rowElements = rows.map((row) => {
+        const rowElements = rows.filter(Boolean).map((row) => {
           const cells = Array.isArray(row) ? row : Object.values(row);
           return html`<tr>
             ${cells.map(

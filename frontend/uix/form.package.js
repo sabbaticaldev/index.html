@@ -1,9 +1,10 @@
-import { T } from "../helpers/types.js";
 import {
+  css,
   html,
   ifDefined,
-  css,
 } from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
+
+import { T } from "../helpers/types.js";
 
 const FormControls = (element) => ({
   reportValidity: function () {
@@ -193,7 +194,7 @@ export default {
           this.getForm().submit();
         }
       },
-      clear: function () {
+      reset: function () {
         const formControls = this.getForm().querySelectorAll(
           "uix-input, uix-select, uix-textarea, uix-file-input",
         );

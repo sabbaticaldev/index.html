@@ -1,8 +1,9 @@
 import { LitElement } from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
-import { stringToType } from "./helpers/types.js";
-import i18n from "./helpers/i18n.js";
-import url from "./helpers/url.js";
+
 import { getElementTheme, updateTheme } from "../brazuka/src/theme.js";
+import i18n from "./helpers/i18n.js";
+import { stringToType } from "./helpers/types.js";
+import url from "./helpers/url.js";
 
 const isServer = typeof localStorage === "undefined";
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
