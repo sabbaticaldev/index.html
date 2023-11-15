@@ -573,7 +573,6 @@ ${value}</textarea
       },
       render: function () {
         const { type, click, href, dropdown } = this;
-        console.log({ dropdown });
         const btnClass = this.generateTheme("uix-button");
         if (dropdown) {
           return html` <details class="text-left" ?open=${dropdown === "open"}>

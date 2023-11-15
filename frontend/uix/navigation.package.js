@@ -9,24 +9,30 @@ export default {
         actions: T.function(),
         size: T.string({ defaultValue: "md" }),
         parent: T.object(),
+        open: T.boolean(),
       },
       firstUpdated: function () {
         this.$modal = this.shadowRoot.querySelector("#modal");
-        this.closeModal = (msg = "") => this.$modal.close(msg);
-        if (this.parent) this.parent.closeModal = this.closeModal;
+        if (this.parent) this.parent.hide = this.hide;
+      },
+      hide: function (msg = "") {
+        this.$modal.close(msg);
+      },
+      show: function () {
+        this.$modal.showModal();
       },
       render: function () {
-        const { actions } = this;
-        const openclick = function () {
-          this.$modal.showModal();
-        };
-
+        const { actions, open } = this;
         return html`
-          <slot name="button" @click=${openclick}></slot>
-          <dialog id="modal" class=${this.generateTheme("uix-modal")}>
+          <slot name="button" @click=${this.show}></slot>
+          <dialog
+            id="modal"
+            ?open=${open}
+            class=${this.generateTheme("uix-modal")}
+          >
             <div class="modal-box">
               <uix-button
-                @click=${this.closeModal}
+                @click=${this.hide}
                 variant=""
                 shape="circle"
                 size="sm"
