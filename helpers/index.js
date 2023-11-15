@@ -1,5 +1,7 @@
+import * as CSV from "./csv.js";
 import datetime from "./datetime.js";
 import { draggable, droparea } from "./droparea.js";
+import * as File from "./file.js";
 import i18n from "./i18n.js";
 import { get, patch, post, remove } from "./rest.js";
 import { T } from "./types.js";
@@ -23,11 +25,13 @@ function event(type, ...attrs) {
 }
 
 export {
+  CSV,
   datetime,
   debounce,
   draggable,
   droparea,
   event,
+  File,
   get,
   i18n,
   patch,
