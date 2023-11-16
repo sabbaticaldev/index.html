@@ -101,6 +101,10 @@ class BaseReactiveView extends LitElement {
     }
   }
 
+  q(element) {
+    return this.shadowRoot.querySelector(element);
+  }
+
   handleServiceWorkerMessage(event) {
     if (event.data === "REQUEST_UPDATE") {
       this.requestUpdate();

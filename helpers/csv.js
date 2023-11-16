@@ -1,16 +1,24 @@
-import { exportFile, readFile } from "./file";
-// 2. Parse the CSV data
+import { exportFile } from "./file.js";
+
 export const parseCSV = (csvData) => {
-  const rows = csvData.split("\n");
+  const rows = csvData.trim().split("\n"); // Trim to remove trailing newlines
   const headers = rows[0].split(",");
 
-  return rows.slice(1).map((row) => {
-    const values = row.split(",");
-    return headers.reduce((object, header, index) => {
-      object[header] = values[index];
-      return object;
-    }, {});
-  });
+  return rows
+    .slice(1)
+    .map((row) => {
+      const values = row.split(",");
+      return headers.reduce((object, header, index) => {
+        object[header] = values[index];
+        return object;
+      }, {});
+    })
+    .filter((row) => Object.values(row).some((value) => value)); // Filter out empty rows
+};
+
+// Function to get field names from the data
+export const getFields = (data) => {
+  return data.length > 0 ? Object.keys(data[0]) : [];
 };
 
 // 3. Remove columns
