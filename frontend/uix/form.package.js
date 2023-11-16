@@ -17,6 +17,9 @@ const FormControls = (element) => ({
     }
     return validity;
   },
+  change: function (e) {
+    this._setValue(e.target.value, this);
+  },
   _getValue: function () {
     return this.$input ? this.$input.value : "";
   },
@@ -41,7 +44,7 @@ const FormControls = (element) => ({
     this._defaultValue = this.value;
     this._internals = this.attachInternals();
     if (!this.$input) {
-      this.$input = this.shadowRoot.querySelector(element || "input");
+      this.$input = this.q(element || "input");
       if (this.$input) {
         this._internals.setValidity(
           this.$input.validity,
@@ -182,6 +185,7 @@ export default {
         );
         let isFormValid = true;
         formControls.forEach((control) => {
+          console.log({ control });
           if (!control.reportValidity()) {
             isFormValid = false;
           }
@@ -351,7 +355,6 @@ export default {
         size: T.string({
           defaultValue: "md",
         }),
-        change: T.function(),
         keydown: T.function(),
       },
       ...FormControls("input"),
@@ -368,11 +371,6 @@ export default {
           keydown,
         } = this;
 
-        const input = function (e) {
-          this._setValue(e.target.value, this);
-          this.input?.(e);
-        }.bind(this);
-
         return html`
           <div class="relative">
             <input
@@ -387,7 +385,7 @@ export default {
               name=${ifDefined(name)}
               regex=${ifDefined(regex)}
               @keydown=${keydown}
-              @input=${input}
+              @input=${this.change}
               type=${type}
               placeholder=" "
             />
@@ -409,8 +407,10 @@ export default {
       },
     },
     "uix-select": {
+      ...FormControls("select"),
       props: {
         options: T.array(),
+        value: T.string(),
         variant: T.string({ defaultValue: "base" }),
         size: T.string({ defaultValue: "md" }),
         name: T.string(),
@@ -418,7 +418,11 @@ export default {
       render: function () {
         const { name, options } = this;
         return html`
-          <select name=${name} class=${this.generateTheme("uix-select")}>
+          <select
+            name=${name}
+            @change=${this.change}
+            class=${this.generateTheme("uix-select")}
+          >
             ${(options &&
               options.map((option) => html` <option>${option}</option> `)) ||
             ""}
@@ -455,11 +459,6 @@ export default {
           keydown,
         } = this;
 
-        const input = function (e) {
-          this._setValue(e.target.value, this);
-          this.input?.(e);
-        }.bind(this);
-
         return html`
           <textarea
             class=${this.generateTheme("uix-textarea")}
@@ -469,7 +468,7 @@ export default {
             rows=${rows}
             ?autofocus=${autofocus}
             ?required=${required}
-            @input=${input}
+            @input=${this.change}
             @keydown=${keydown}
           >
 ${value}</textarea
@@ -480,19 +479,18 @@ ${value}</textarea
     "uix-range": {
       props: {
         variant: T.string(),
-        change: T.function(),
         min: T.number({ defaultValue: 0 }),
         value: T.number({ defaultValue: 0 }),
         max: T.number({ defaultValue: 100 }),
       },
       ...FormControls("range"),
       render: function () {
-        const { generateTheme, change, min, max, value } = this;
+        const { generateTheme, min, max, value } = this;
         return html`<div>
           <input
             class=${generateTheme("uix-range")}
             type="range"
-            @input=${(e) => change(e.target.value)}
+            @input=${this.change}
             min=${min}
             max=${max}
             value=${value}

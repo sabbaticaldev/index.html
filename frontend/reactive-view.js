@@ -21,6 +21,7 @@ class BaseReactiveView extends LitElement {
     super();
     instances.push(this);
     this.component = component;
+    this._queryCache = {};
     const {
       style,
       connectedCallback,
@@ -102,7 +103,15 @@ class BaseReactiveView extends LitElement {
   }
 
   q(element) {
-    return this.shadowRoot.querySelector(element);
+    if (!this._queryCache[element]) {
+      this._queryCache[element] = this.shadowRoot.querySelector(element);
+    }
+    return this._queryCache[element];
+  }
+
+  // Query all matching elements
+  qa(element) {
+    return this.shadowRoot.querySelectorAll(element);
   }
 
   handleServiceWorkerMessage(event) {
