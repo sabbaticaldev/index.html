@@ -1,10 +1,9 @@
-import * as esbuild from "esbuild";
 import chokidar from "chokidar";
-import WebSocket, { WebSocketServer } from "ws";
+import * as esbuild from "esbuild";
 import fs from "fs/promises";
 import path from "path";
-
 import { fileURLToPath } from "url";
+import WebSocket, { WebSocketServer } from "ws";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 async function copyThemeFile() {
@@ -33,6 +32,11 @@ const buildTasks = [
     ...commonConfig,
     entryPoints: ["frontend/index.js"],
     outfile: "app/dist/frontend.js",
+  },
+  {
+    ...commonConfig,
+    entryPoints: ["helpers/index.js"],
+    outfile: "app/dist/helpers.js",
   },
   {
     ...commonConfig,
