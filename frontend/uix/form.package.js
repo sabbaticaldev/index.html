@@ -185,7 +185,6 @@ export default {
         );
         let isFormValid = true;
         formControls.forEach((control) => {
-          console.log({ control });
           if (!control.reportValidity()) {
             isFormValid = false;
           }

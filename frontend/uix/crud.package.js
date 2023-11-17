@@ -1,8 +1,4 @@
-import {
-  createRef,
-  html,
-  ref,
-} from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
+import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
 
 import * as CSV from "../../helpers/csv.js";
 import { post } from "../../helpers/rest.js";
@@ -10,6 +6,120 @@ import { T } from "../../helpers/types.js";
 export default {
   i18n: {},
   views: {
+    "uix-crud": {
+      props: {
+        model: T.string(),
+        rows: T.array(),
+        fields: T.array(),
+        setRows: T.function(),
+        ModelClass: T.object(),
+      },
+      render: function () {
+        return html`
+          <uix-list containerClass="justify-between" spacing="md">
+            <uix-crud-search
+              .model=${this.model}
+              .setRows=${this.setRows}
+            ></uix-crud-search>
+            <uix-crud-actions
+              .model=${this.model}
+              .rows=${this.rows}
+              .setRows=${this.setRows}
+              .fields=${this.fields}
+              .ModelClass=${this.ModelClass}
+            ></uix-crud-actions>
+          </uix-list>
+          <uix-crud-table
+            .rows=${this.rows}
+            .ModelClass=${this.ModelClass}
+          ></uix-crud-table>
+          <uix-pagination></uix-pagination>
+        `;
+      },
+    },
+    "uix-crud-search": {
+      props: {
+        setRows: T.function(),
+        model: T.string(),
+      },
+      render: function () {
+        return html`
+          <form class="flex items-center flex-grow">
+            <label for="simple-search" class="sr-only">Search</label>
+            <div class="relative w-full">
+              <div
+                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+              >
+                <uix-icon name="search"></uix-icon>
+              </div>
+              <input
+                type="text"
+                id="simple-search"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search"
+                required=""
+              />
+            </div>
+          </form>
+        `;
+      },
+    },
+    "uix-crud-actions": {
+      props: {
+        setRows: T.function(),
+        model: T.string(),
+        ModelClass: T.object(),
+        rows: T.array(),
+      },
+      render: function () {
+        return html`
+          <uix-list>
+            <uix-crud-new-modal
+              .setRows=${this.setRows}
+              .rows=${this.rows}
+              model=${this.model}
+              .fields=${Object.keys(this.ModelClass)}
+            ></uix-crud-new-modal>
+            <uix-button dropdown="hide">
+              <uix-icon name="chevron-down"></uix-icon>
+              Actions
+              <ul slot="dropdown">
+                <li>
+                  <app-import-csv-button
+                    .setRows=${this.setRows}
+                    .rows=${this.rows}
+                    model=${this.model}
+                    .fields=${Object.keys(this.ModelClass)}
+                  ></app-import-csv-button>
+                </li>
+                <li>
+                  <uix-button size="xs" variant="secondary"
+                    >Export as CSV</uix-button
+                  >
+                </li>
+              </ul>
+            </uix-button>
+            <uix-button>
+              Filter <uix-icon name="chevron-down"></uix-icon>
+            </uix-button>
+          </uix-list>
+        `;
+      },
+    },
+    "uix-crud-table": {
+      props: {
+        rows: T.array(),
+        ModelClass: T.object(),
+      },
+      render: function () {
+        return html`
+          <uix-table
+            .headers=${["ID", ...Object.keys(this.ModelClass)]}
+            .rows=${this.rows}
+          ></uix-table>
+        `;
+      },
+    },
     "uix-crud-new-modal": {
       props: {
         fields: T.array(),
@@ -19,11 +129,10 @@ export default {
       },
       render: function () {
         const { setRows, rows, fields, model } = this;
-        const formRef = createRef();
+        const form = this.q("uix-form");
         return html`<uix-modal title="Create new">
           <uix-button slot="button" variant="primary"> + new </uix-button>
           <uix-form
-            ${ref(formRef)}
             title="New"
             color="base"
             size="md"
@@ -38,12 +147,12 @@ export default {
       label: "Create " + model,
       type: "submit",
       click: () => {
-        const data = formRef.value.formData();
-        if (formRef.value.validate()) {
+        const data = form.formData();
+        if (form.validate()) {
           post(model, data).then((newPost) => {
             setRows([...rows, newPost]);
           });
-          formRef.value.reset();
+          form.reset();
           this.q("uix-modal").hide();
         }
       },
