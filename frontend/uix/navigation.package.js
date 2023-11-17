@@ -244,5 +244,64 @@ export default {
         </nav>`;
       },
     },
+
+    "uix-context-menu": {
+      props: { open: T.boolean(), contextmenu: T.function() },
+      closeContextMenuHandler: function () {
+        this.setOpen(false);
+      },
+
+      documentClickHandler: function (event) {
+        if (!this.contains(event.target) && this !== event.target) {
+          this.setOpen(false);
+        }
+      },
+
+      escapeKeyHandler: function (event) {
+        if (event.key === "Escape") {
+          this.setOpen(false);
+        }
+      },
+
+      connectedCallback: function () {
+        document.addEventListener(
+          "close-context-menu",
+          this.closeContextMenuHandler.bind(this),
+        );
+        document.addEventListener(
+          "click",
+          this.documentClickHandler.bind(this),
+        );
+        document.addEventListener("keydown", this.escapeKeyHandler.bind(this));
+      },
+
+      disconnectedCallback: function () {
+        document.removeEventListener(
+          "close-context-menu",
+          this.closeContextMenuHandler,
+        );
+        document.removeEventListener("click", this.documentClickHandler);
+        document.removeEventListener("keydown", this.escapeKeyHandler);
+      },
+      render: function () {
+        const { open, setOpen } = this;
+        return html` <div
+            class="z-10 absolute top-6 left-10 ${open
+    ? ""
+    : "hidden"} bg-white border border-gray-300 shadow-lg"
+          >
+            <slot name="menu"></slot>
+          </div>
+          <slot
+            @contextmenu=${(e) => {
+    e.preventDefault();
+    document.dispatchEvent(new CustomEvent("close-context-menu"));
+    setTimeout(() => {
+      setOpen(true);
+    }, 0);
+  }}
+          ></slot>`;
+      },
+    },
   },
 };

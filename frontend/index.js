@@ -5,6 +5,7 @@ import reset from "./reset.txt";
 import appKit from "./uix/app.package.js";
 import chatKit from "./uix/chat.package.js";
 import contentKit from "./uix/content.package.js";
+import crudKit from "./uix/crud.package.js";
 import datetimeKit from "./uix/datetime.package.js";
 import docsKit from "./uix/docs.package.js";
 import formKit from "./uix/form.package.js";
@@ -80,6 +81,7 @@ export {
   appKit,
   chatKit,
   contentKit,
+  crudKit,
   datetimeKit,
   definePackage,
   defineView,
