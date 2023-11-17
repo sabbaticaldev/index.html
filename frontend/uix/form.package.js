@@ -4,7 +4,7 @@ import {
   ifDefined,
 } from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
 
-import { T } from "../helpers/types.js";
+import { T } from "../../helpers/types.js";
 
 const FormControls = (element) => ({
   reportValidity: function () {

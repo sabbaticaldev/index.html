@@ -1,9 +1,10 @@
-import { T } from "../helpers/types.js";
 import {
   html,
   staticHtml,
   unsafeStatic,
 } from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
+
+import { T } from "../../helpers/types.js";
 
 const TAG_MAP = {
   "4xl": "h1",
