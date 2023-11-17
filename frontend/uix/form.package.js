@@ -549,7 +549,7 @@ ${value}</textarea
       },
       render: function () {
         const { icon, alt } = this;
-        return html` <button
+        return html`<button
           alt=${alt}
           class=${this.generateTheme("uix-icon-button")}
         >
