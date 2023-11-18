@@ -1,6 +1,7 @@
 import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
 
 import * as CSV from "../../helpers/csv.js";
+import * as File from "../../helpers/file.js";
 import { post } from "../../helpers/rest.js";
 import { T } from "../../helpers/types.js";
 export default {
@@ -68,6 +69,7 @@ export default {
       props: {
         setRows: T.function(),
         model: T.string(),
+        fields: T.array(),
         ModelClass: T.object(),
         rows: T.array(),
       },
@@ -77,7 +79,7 @@ export default {
             <uix-crud-new-modal
               .addRow=${(newRow) => this.setRows([...this.rows, newRow])}
               model=${this.model}
-              .fields=${Object.keys(this.ModelClass)}
+              .fields=${this.fields}
             ></uix-crud-new-modal>
             <uix-button dropdown="hide">
               <uix-icon name="chevron-down"></uix-icon>
@@ -88,7 +90,7 @@ export default {
                     .setRows=${this.setRows}
                     .rows=${this.rows}
                     model=${this.model}
-                    .fields=${Object.keys(this.ModelClass)}
+                    .fields=${this.fields}
                   ></app-import-csv-button>
                 </li>
                 <li>
