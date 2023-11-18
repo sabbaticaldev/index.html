@@ -113,7 +113,7 @@ export default {
       render: function () {
         return html`
           <uix-table
-            .headers=${["ID", ...Object.keys(this.ModelClass)]}
+            .headers=${Object.keys(this.ModelClass)}
             .rows=${this.rows}
           ></uix-table>
         `;
