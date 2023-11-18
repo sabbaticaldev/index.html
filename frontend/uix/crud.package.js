@@ -34,7 +34,6 @@ export default {
             .rows=${this.rows}
             .ModelClass=${this.ModelClass}
           ></uix-crud-table>
-          <uix-pagination></uix-pagination>
         `;
       },
     },

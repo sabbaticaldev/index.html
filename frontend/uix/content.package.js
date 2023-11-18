@@ -23,41 +23,56 @@ export default {
     "uix-table": {
       props: {
         headers: T.array(),
-        rows: T.array(),
+        rows: T.array(), // All rows, not just those for the current page
+        currentPage: T.number({ defaultValue: 1 }),
+        resultsPerPage: T.number({ defaultValue: 10 }),
+      },
+      paginatedRows() {
+        const startIndex = (this.currentPage - 1) * this.resultsPerPage;
+        return this.rows.slice(startIndex, startIndex + this.resultsPerPage);
       },
       render: function () {
-        const { headers, rows } = this;
-        const headerElements = headers.map(
+        const headerElements = this.headers.map(
           (header) => html`<th scope="col" class="p-3">${header}</th>`,
         );
-
-        const rowElements = rows.filter(Boolean).map((row) => {
-          const cells = Array.isArray(row) ? row : Object.values(row);
-          return html`<tr>
-            ${cells.map(
+        const rowElements = this.paginatedRows()
+          .filter(Boolean)
+          .map((row) => {
+            const cells = Array.isArray(row) ? row : Object.values(row);
+            return html`<tr>
+              ${cells.map(
     (cell) => html`<td class="px-3 py-2 text-xs">${cell}</td>`,
   )}
-          </tr>`;
-        });
+            </tr>`;
+          });
 
         return html`
-          <table
-            class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
-          >
-            <thead
-              class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+          <div>
+            <table
+              class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
             >
-              <tr>
-                ${headerElements}
-              </tr>
-            </thead>
-            <tbody>
-              ${rowElements}
-            </tbody>
-          </table>
+              <thead
+                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+              >
+                <tr>
+                  ${headerElements}
+                </tr>
+              </thead>
+              <tbody>
+                ${rowElements}
+              </tbody>
+            </table>
+            <uix-pagination
+              totalResults=${this.rows.length}
+              currentPage=${this.currentPage}
+              resultsPerPage=${this.resultsPerPage}
+              .onPageChange=${this.setCurrentPage}
+            ></uix-pagination>
+          </div>
         `;
       },
     },
+
     "uix-mockup-phone": {
       props: {
         prefix: T.string(),
