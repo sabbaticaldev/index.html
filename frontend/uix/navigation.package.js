@@ -153,7 +153,7 @@ export default {
         onPageChange: T.function(),
       },
       render: function () {
-        const totalPageCount = Math.ceil(
+        const totalPageCount = Math.floor(
           this.totalResults / this.resultsPerPage,
         );
         const startItem = (this.currentPage - 1) * this.resultsPerPage + 1;

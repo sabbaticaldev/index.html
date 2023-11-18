@@ -32,7 +32,7 @@ export default {
           </uix-list>
           <uix-crud-table
             .rows=${this.rows}
-            .ModelClass=${this.ModelClass}
+            .fields=${this.fields}
           ></uix-crud-table>
         `;
       },
@@ -109,14 +109,11 @@ export default {
     "uix-crud-table": {
       props: {
         rows: T.array(),
-        ModelClass: T.object(),
+        fields: T.object(),
       },
       render: function () {
         return html`
-          <uix-table
-            .headers=${Object.keys(this.ModelClass)}
-            .rows=${this.rows}
-          ></uix-table>
+          <uix-table .headers=${this.fields} .rows=${this.rows}></uix-table>
         `;
       },
     },
