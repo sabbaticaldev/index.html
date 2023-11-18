@@ -43,8 +43,8 @@ class BaseReactiveView extends LitElement {
     propKeys.forEach((key) => {
       const prop = props[key];
       this[key] = prop.defaultValue;
+      const syncKey = { key, sync: prop.sync };
       if (prop.sync) {
-        const syncKey = { key, sync: prop.sync };
         // Add this instance to the list of instances that sync this property
         if (!BaseReactiveView._instancesUsingSync.has(syncKey)) {
           BaseReactiveView._instancesUsingSync.set(syncKey, new Set());
@@ -81,12 +81,6 @@ class BaseReactiveView extends LitElement {
       if (!prop.readonly) {
         const setterName = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
         this[setterName] = (newValue) => {
-          if (prop.sync) {
-            syncAdapters[prop.sync].setItem(
-              prop.key || key,
-              JSON.stringify(newValue),
-            );
-          }
           this[key] = newValue;
         };
       }
