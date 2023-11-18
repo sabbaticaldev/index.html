@@ -75,8 +75,7 @@ export default {
         return html`
           <uix-list>
             <uix-crud-new-modal
-              .setRows=${this.setRows}
-              .rows=${this.rows}
+              .addRow=${(newRow) => this.setRows([...this.rows, newRow])}
               model=${this.model}
               .fields=${Object.keys(this.ModelClass)}
             ></uix-crud-new-modal>
@@ -123,15 +122,22 @@ export default {
     "uix-crud-new-modal": {
       props: {
         fields: T.array(),
-        rows: T.array(),
-        setRows: T.function(),
+        addRow: T.function(),
         model: T.string(),
+        icon: T.string(),
       },
       render: function () {
-        const { setRows, rows, fields, model } = this;
-        const form = this.q("uix-form");
+        const { addRow = () => {}, fields, icon, model } = this;
         return html`<uix-modal title="Create new">
-          <uix-button slot="button" variant="primary"> + new </uix-button>
+          ${icon
+    ? html`<uix-icon-button
+                slot="button"
+                icon=${icon}
+              ></uix-icon-button>`
+    : html`<uix-button slot="button" variant="primary"
+                >+ new</uix-button
+              >`}
+
           <uix-form
             title="New"
             color="base"
@@ -147,11 +153,10 @@ export default {
       label: "Create " + model,
       type: "submit",
       click: () => {
+        const form = this.q("uix-form");
         const data = form.formData();
         if (form.validate()) {
-          post(model, data).then((newPost) => {
-            setRows([...rows, newPost]);
-          });
+          post(model, data).then(addRow);
           form.reset();
           this.q("uix-modal").hide();
         }
