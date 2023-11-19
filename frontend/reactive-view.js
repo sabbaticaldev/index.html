@@ -54,7 +54,6 @@ class BaseReactiveView extends LitElement {
         Object.defineProperty(this, key, {
           get: () => {
             const value = syncAdapters[prop.sync].getItem(prop.key || key);
-            console.log({ value });
             return value ? stringToType(value, prop) : prop.defaultValue;
           },
           set: (newValue) => {
