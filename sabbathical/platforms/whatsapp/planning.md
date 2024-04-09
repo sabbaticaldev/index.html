@@ -3,6 +3,7 @@ Features
 2. Karma
 3. Event List and RSVP
 4. Creation of events/meetups/hikes with the possibility of donating money to the organizer of the meetup and to the platform
+5. Send invite links to whatsapp groups to users coming from AllForTraveler.com
 
 ### Technical Implementation Specification for WhatsApp Community Management Bot
 
