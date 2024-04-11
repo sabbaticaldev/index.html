@@ -362,6 +362,7 @@ export default {
           name,
           autofocus,
           value,
+          change,
           placeholder,
           disabled,
           required,
@@ -384,7 +385,7 @@ export default {
               name=${ifDefined(name)}
               regex=${ifDefined(regex)}
               @keydown=${keydown}
-              @input=${this.change}
+              @change=${change}
               type=${type}
               placeholder=" "
             />
