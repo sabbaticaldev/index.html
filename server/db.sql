@@ -1,5 +1,6 @@
 CREATE TABLE Groups (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id TEXT,
     name TEXT NOT NULL,
     url TEXT UNIQUE,
     image TEXT,
@@ -24,6 +25,7 @@ CREATE TABLE GroupTags (
     FOREIGN KEY (group_id) REFERENCES Groups(id),
     FOREIGN KEY (tag_id) REFERENCES Tags(id)
 );
+
 CREATE TABLE Persons (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -57,6 +59,6 @@ CREATE TABLE Reactions (
     person_id INTEGER,
     type TEXT,
     timestamp DATETIME,
-    FOREIGN KEY (message_id) REFERENCES Messages(message_id),
-    FOREIGN KEY (person_id) REFERENCES Persons(person_id)
+    FOREIGN KEY (message_id) REFERENCES Messages(id),
+    FOREIGN KEY (person_id) REFERENCES Persons(id)
 );
