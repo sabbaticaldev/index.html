@@ -1,6 +1,9 @@
 import fs from "fs/promises"; 
 import ogs from "open-graph-scraper";
 import path from "path";
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 import { connectToWhatsApp } from "./baileys.js";
 const DATA_FOLDER = "./app/apps/allfortraveler/data/";
@@ -25,28 +28,51 @@ const COUNTRIES_JSON = DATA_FOLDER + "tags/countries.json";
 const TAGS_JSON = DATA_FOLDER + "tags/tags.json";
 const GROUPS_JSON = DATA_FOLDER + "groups.json";
 
-async function importGroups(importDelay, maxGroups) {
-  const groups = JSON.parse(await fs.readFile(GROUPS_JSON, "utf8"));
-  let count = 0;
-
-  const processGroup = async (group) => {
-    if (count >= maxGroups) {
-      return; 
+async function importGroups({delay, max, datetime = null}) {
+  let groups;
+  console.log({delay, max, datetime});
+  if (datetime) {
+    // If dateTime is provided, read group files from the specific date folder
+    const dateFolder = path.join(DATA_FOLDER, datetime, "groups");
+    try {
+      const groupFiles = await fs.readdir(dateFolder);
+      // Read and parse only up to maxGroups files
+      groups = await Promise.all(groupFiles.slice(0, max).map(file => 
+        fs.readFile(path.join(dateFolder, file), "utf8").then(data => JSON.parse(data))
+      ));
+    } catch (error) {
+      console.error("Error reading group files:", error);
+      throw error;
     }
-    const response = await fetchGroup(group.url);
-    if (response?.status !== "BAD_REQUEST") {
-      await createGroup({...group, groupInfo: response.groupInfo});      
+    return groups;
+  } else {
+    // If no dateTime, read the groups directly from GROUPS_JSON
+    try {
+      const data = await fs.readFile(GROUPS_JSON, "utf8");
+      groups = JSON.parse(data);
+      groups = groups.slice(0, max); // Apply maxGroups limit
+    } catch (error) {
+      console.error("Error reading groups JSON:", error);
+      throw error;
     }
-    count++;
-    if (count < maxGroups) {
-      setTimeout(() => processGroup(groups[count]), importDelay);
-    }
-  };
-
-  if (groups.length > 0) {
-    await processGroup(groups[0]);
   }
+  const importedGroups = [];
+  
+  for (const group of groups) {
+    const response = await fetchGroup(group.url);
+    await sleep(delay);
+
+    if (response?.status !== "BAD_REQUEST") {
+      await createGroup({...group, groupInfo: response.groupInfo});
+      importedGroups.push({...group, groupInfo: response.groupInfo});
+    }
+  }
+  
+  return importedGroups;  // Return the array of all imported groups
 }
+  
+  
+  
 
 async function importTags() {
   try {

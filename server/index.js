@@ -5,8 +5,8 @@ import {fetchGroup,importGroups,importTags} from "./controllers.js";
 async function main() {
   const app = express();
   const port = 3000;
-  const importDelay = 5000;
-  const maxGroups = 10; 
+  const importDelay = 1000;
+  const maxGroups = 5; 
 
   app.use(express.json());
   app.use((req, res, next) => {
@@ -29,8 +29,11 @@ async function main() {
   });
   app.get("/import-groups", async (req, res) => {
     try {
-      await importGroups(importDelay, maxGroups);
-      res.status(200).send({ message: "Import started successfully" });
+      const datetime = decodeURIComponent(req.query.datetime);
+      const delay = req.query.delay || importDelay;
+      const max = req.query.max || maxGroups;
+      const groups = await importGroups({delay, max, datetime});
+      res.status(200).send(groups);
     } catch (error) {
       console.error("Error importing groups:", error);
       res.status(500).send({ error: "Error importing groups" });
