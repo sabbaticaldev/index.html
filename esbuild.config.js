@@ -80,7 +80,7 @@ if (isWatchMode) {
   });
 
   const watcher = chokidar.watch("./", {
-    ignored: /node_modules/,
+    ignored: [/node_modules/, /\.db$/,/\.db-journal$/, /baileys_store\.json$/]
   });
 
   watcher.on("change", (path) => {

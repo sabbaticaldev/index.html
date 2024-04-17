@@ -8,7 +8,7 @@ export default {
       props: {
         border: T.boolean({ defaultValue: true }),
         shadow: T.boolean({ defaultValue: true }),
-        bg: T.string({ defaultValue: "white" }),
+        variant: T.string({ defaultValue: "primary" }),
         text: T.string(),
         rounded: T.boolean({ defaultValue: "none" }),
         spacing: T.string({ defaultValue: "lg" }),
