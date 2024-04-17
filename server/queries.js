@@ -30,7 +30,7 @@ async function setupDb() {
   }
 }
 
-export async function createGroup(groupData) {
+async function createGroup(groupData) {
   console.log({groupData});
   await openDb(); 
   const { id, subject, status, size, url, desc: description } = groupData;
@@ -43,7 +43,7 @@ export async function createGroup(groupData) {
   return result.lastID;
 }
 
-export async function createOrUpdateParticipant(participant, groupId) {
+async function createOrUpdateParticipant(participant, groupId) {
   await openDb(); // Ensure db is initialized
   const { number, name, admin } = participant;
   const personResult = await db.run(
@@ -63,7 +63,27 @@ export async function createOrUpdateParticipant(participant, groupId) {
   return personId;
 }
 
-// Initialize DB and set up tables when module is loaded
 setupDb().catch(console.error);
 
-export { setupDb };  // Exporting if you need to call it explicitly elsewhere
+
+async function createOrUpdateTag(tagName) {
+  await openDb();
+  const result = await db.run(
+    `INSERT INTO Tags (id) VALUES (?)
+     ON CONFLICT(id) DO NOTHING
+     RETURNING id`,
+    [tagName]
+  );
+  return result.lastID || tagName;  // Return tag name if not a new insert
+}
+
+async function associateGroupTag(groupId, tagId) {
+  await openDb();
+  await db.run(
+    `INSERT INTO GroupTags (group_id, tag_id) VALUES (?, ?)
+     ON CONFLICT(group_id, tag_id) DO NOTHING`,
+    [groupId, tagId]
+  );
+}
+
+export { associateGroupTag,createGroup, createOrUpdateParticipant, createOrUpdateTag, setupDb };

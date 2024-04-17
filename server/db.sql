@@ -1,13 +1,29 @@
 CREATE TABLE Groups (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    group_id TEXT UNIQUE,
     name TEXT NOT NULL,
-    description TEXT,
     url TEXT UNIQUE,
+    image TEXT,
+    users INTEGER,
+    frequency INTEGER,
     size INTEGER,
-    status TEXT
+    description TEXT,
+    status TEXT,
+    featured BOOLEAN
 );
 
+CREATE TABLE Tags (
+    id TEXT PRIMARY KEY,
+    city BOOLEAN,
+    country BOOLEAN
+);
+
+CREATE TABLE GroupTags (
+    group_id INTEGER,
+    tag_id TEXT,
+    PRIMARY KEY (group_id, tag_id),
+    FOREIGN KEY (group_id) REFERENCES Groups(id),
+    FOREIGN KEY (tag_id) REFERENCES Tags(id)
+);
 CREATE TABLE Persons (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
