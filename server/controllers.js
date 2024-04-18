@@ -1,42 +1,54 @@
 import fs from "fs/promises"; 
 import ogs from "open-graph-scraper";
 import path from "path";
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 import { connectToWhatsApp } from "./baileys.js";
+
 const DATA_FOLDER = "./app/apps/allfortraveler/data/";
-async function createGroup(groupData) {
-  const date = new Date().toISOString().slice(0, 10);  // Get current date in YYYY-MM-DD format
-  const groupFolder = path.join(DATA_FOLDER, date, "groups"); // Create the path for the group data
-  const safeUrl = groupData.url.split("chat.whatsapp.com/")[1]; // Extract invite code as filename
-  const filePath = path.join(groupFolder, `${safeUrl}.json`); // Construct file path
-  
-  try {
-    await fs.mkdir(groupFolder, { recursive: true }); // Ensure the directory exists, create if not
-    await fs.writeFile(filePath, JSON.stringify(groupData, null, 2)); // Write group data to file with pretty print
-    console.log(`Group data saved to ${filePath}`);
-  } catch (error) {
-    console.error("Error saving group data:", error);
-    throw new Error("Failed to save group data");
-  }
-}
-const sock = await connectToWhatsApp();
 const CITIES_JSON = DATA_FOLDER + "tags/cities.json";
 const COUNTRIES_JSON = DATA_FOLDER + "tags/countries.json";
 const TAGS_JSON = DATA_FOLDER + "tags/tags.json";
 const GROUPS_JSON = DATA_FOLDER + "groups.json";
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+  
+const sock = await connectToWhatsApp();
+
+async function createGroup(groupData) {
+  const date = new Date().toISOString().slice(0, 10);  
+  groupData.date = date;
+  const currentGroupFolder = path.join(DATA_FOLDER, date, "groups"); 
+  const latestGroupFolder = path.join(DATA_FOLDER, "latest", "groups"); 
+  const filename = `${groupData.id}.json`; 
+  const currentFilePath = path.join(currentGroupFolder, filename); 
+  const latestFilePath = path.join(latestGroupFolder, filename); 
+    
+  try {
+    await Promise.all([
+      fs.mkdir(currentGroupFolder, { recursive: true }),
+      fs.mkdir(latestGroupFolder, { recursive: true })
+    ]);
+  
+    const dataString = JSON.stringify(groupData, null, 2);
+  
+    await Promise.all([
+      fs.writeFile(currentFilePath, dataString),
+      fs.writeFile(latestFilePath, dataString)
+    ]);
+  } catch (error) {
+    console.error("Error saving group data:", error);
+    throw new Error("Failed to save group data");
+  }
+}
+
 async function importGroups({delay, max, datetime = null}) {
   let groups;
-  console.log({delay, max, datetime});
   if (datetime) {
-    // If dateTime is provided, read group files from the specific date folder
     const dateFolder = path.join(DATA_FOLDER, datetime, "groups");
     try {
       const groupFiles = await fs.readdir(dateFolder);
-      // Read and parse only up to maxGroups files
       groups = await Promise.all(groupFiles.slice(0, max).map(file => 
         fs.readFile(path.join(dateFolder, file), "utf8").then(data => JSON.parse(data))
       ));
@@ -46,11 +58,10 @@ async function importGroups({delay, max, datetime = null}) {
     }
     return groups;
   } else {
-    // If no dateTime, read the groups directly from GROUPS_JSON
     try {
       const data = await fs.readFile(GROUPS_JSON, "utf8");
       groups = JSON.parse(data);
-      groups = groups.slice(0, max); // Apply maxGroups limit
+      groups = groups.slice(0, max); 
     } catch (error) {
       console.error("Error reading groups JSON:", error);
       throw error;
@@ -63,16 +74,15 @@ async function importGroups({delay, max, datetime = null}) {
     await sleep(delay);
 
     if (response?.status !== "BAD_REQUEST") {
+      console.log(`Creating group for URL: ${group.url}`); // Log before creation
       await createGroup({...group, groupInfo: response.groupInfo});
+      console.log(`Group created for URL: ${group.url}`); // Log after creation
       importedGroups.push({...group, groupInfo: response.groupInfo});
     }
   }
   
   return importedGroups;  // Return the array of all imported groups
 }
-  
-  
-  
 
 async function importTags() {
   try {

@@ -29,7 +29,7 @@ async function main() {
   });
   app.get("/import-groups", async (req, res) => {
     try {
-      const datetime = decodeURIComponent(req.query.datetime);
+      const datetime = req.query.datetime ? decodeURIComponent(req.query.datetime) : undefined;
       const delay = req.query.delay || importDelay;
       const max = req.query.max || maxGroups;
       const groups = await importGroups({delay, max, datetime});
