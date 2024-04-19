@@ -17,7 +17,7 @@ const bedrockStrategy = config => async prompt => {
         content: [{ type: "text", text: prompt }],
       },
     ],
-    system: "answer in a valid JSON format and in English",
+    system: "answer in a valid JSON format and in English, use a normal traveler tone not a marketing guy selling stuff",
     max_tokens: 2048,
     temperature: 0.5,
     top_k: 250,
