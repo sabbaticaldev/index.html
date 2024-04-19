@@ -15,7 +15,7 @@ function normalizeTag(tag) {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Read the file and process the contents
-fs.readFile(path.join(__dirname, "input.txt"), "utf8", (err, data) => {
+fs.readFile(path.join(__dirname, "../data/input.txt"), "utf8", (err, data) => {
   if (err) {
     console.error("Error reading the file:", err);
     return;

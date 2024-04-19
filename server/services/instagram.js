@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-import { settings } from "../settings.js";
+import settings from "../settings.js";
 
 export async function fetchInstagramData(url) {
   const data = {

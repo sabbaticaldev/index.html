@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import ogs from "open-graph-scraper";
 import path from "path";
 
-import { connectToWhatsApp } from "./baileys.js";
+import { connectToWhatsApp } from "./services/baileys.js";
 
 const DATA_FOLDER = "./app/apps/allfortraveler/data/";
 const CITIES_JSON = DATA_FOLDER + "tags/cities.json";
