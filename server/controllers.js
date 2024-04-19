@@ -17,11 +17,13 @@ function sleep(ms) {
 const sock = await connectToWhatsApp();
 
 async function createGroup(groupData) {
+  const id = groupData.groupInfo.id;
+  console.log({groupData});
   const date = new Date().toISOString().slice(0, 10);  
   groupData.date = date;
   const currentGroupFolder = path.join(DATA_FOLDER, date, "groups"); 
   const latestGroupFolder = path.join(DATA_FOLDER, "latest", "groups"); 
-  const filename = `${groupData.id}.json`; 
+  const filename = `${id}.json`; 
   const currentFilePath = path.join(currentGroupFolder, filename); 
   const latestFilePath = path.join(latestGroupFolder, filename); 
     
@@ -49,7 +51,7 @@ async function importGroups({delay, max, datetime = null}) {
     const dateFolder = path.join(DATA_FOLDER, datetime, "groups");
     try {
       const groupFiles = await fs.readdir(dateFolder);
-      groups = await Promise.all(groupFiles.slice(0, max).map(file => 
+      groups = await Promise.all(groupFiles.slice(0, max).map(file => !console.log({file}) && 
         fs.readFile(path.join(dateFolder, file), "utf8").then(data => JSON.parse(data))
       ));
     } catch (error) {
@@ -75,9 +77,14 @@ async function importGroups({delay, max, datetime = null}) {
 
     if (response?.status !== "BAD_REQUEST") {
       console.log(`Creating group for URL: ${group.url}`); // Log before creation
-      await createGroup({...group, groupInfo: response.groupInfo});
-      console.log(`Group created for URL: ${group.url}`); // Log after creation
-      importedGroups.push({...group, groupInfo: response.groupInfo});
+      if(response?.groupInfo.id) {
+        await createGroup({...group, groupInfo: response.groupInfo});
+        console.log(`Group created for URL: ${group.url}`); // Log after creation
+        importedGroups.push({...group, groupInfo: response.groupInfo});
+      }
+      else {
+        console.error({response});
+      }
     }
   }
   
@@ -145,9 +152,9 @@ async function fetchGroup(url) {
         groupData.status = "JOINED";
     }
 
-    if(!["BAD_REQUEST", "NOT_AUTHORIZED"].includes(groupData.status)) {
+    if(groupData?.id && !["BAD_REQUEST", "NOT_AUTHORIZED"].includes(groupData.status)) {
       groupData.url = url;
-      await createGroup(groupData);
+      await createGroup({groupData, groupInfo: groupData});
     }
     return groupData;
   };

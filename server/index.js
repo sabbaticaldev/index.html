@@ -32,6 +32,7 @@ async function main() {
       const datetime = req.query.datetime ? decodeURIComponent(req.query.datetime) : undefined;
       const delay = req.query.delay || importDelay;
       const max = req.query.max || maxGroups;
+      console.log({delay, max, datetime});
       const groups = await importGroups({delay, max, datetime});
       res.status(200).send(groups);
     } catch (error) {
