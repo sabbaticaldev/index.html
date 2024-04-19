@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "A Node.js project to download Instagram videos, extract audio, transcribe it, and generate social media posts.",
   "main": "index.js",
+  "module": "index",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
@@ -16,12 +18,12 @@
   "author": "Your Name",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.556.0",
     "aws-sdk": "^2.1602.0",
-    "dotenv": "^16.0.0",
-    "ffmpeg-static": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "^2.1.2",
-    "node-fetch": "^2.6.7",
-    "openai": "^2.0.0",
+    "node-fetch": "^3.3.2",
     "yargs": "^17.7.2"
   }
 }

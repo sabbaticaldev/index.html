@@ -1,0 +1,16 @@
+.DS_Store
+node_modules
+dist
+dev-dist
+build
+types
+.idea
+.github
+
+apps/**/build
+.vite
+app/docs
+auth_info_baileys/*
+baileys_store.json
+yarn-error.log
+downloads/*
