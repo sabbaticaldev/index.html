@@ -3,9 +3,12 @@ import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
+import { downloadMedia } from "./services/drive.js";
+import { generateCaptionImage } from "./services/image.js";
+import { embedCaptionToImage } from "./services/image.js";
 import { fetchInstagramData, generateSocialMediaPost } from "./services/instagram.js";
 import LLM from "./services/llm/index.js";
-import { downloadVideo, embedSubtitles } from "./services/video.js";
+import { embedCaptionToVideo } from "./services/video.js";
 
 const argv = yargs(hideBin(process.argv))
   .option("caption-duration", {
@@ -17,31 +20,42 @@ const argv = yargs(hideBin(process.argv))
 
 async function main(inputUrl) {
   try {
-    let videoPath, description, reelId;
-
-    if (inputUrl.includes("instagram.com")) {
-      const url = new URL(inputUrl);
-      reelId = url.pathname.split("/")[2];
-
-      const data = await fetchInstagramData(inputUrl);
-      videoPath = await downloadVideo(data.videoUrl, reelId);
-      description = data.description;
-    } else {
-      videoPath = await downloadVideo(inputUrl, "custom");
-      description = "Custom video file provided by user.";
+    
+    if (!inputUrl.includes("instagram.com")) {
+      throw "invalid URL";
     }
+    const url = new URL(inputUrl);
+    const reelId = url.pathname.split("/")[2];
+
+    const data = await fetchInstagramData(inputUrl);
+    const videoPath = await downloadMedia(data.video, reelId);
+    const description = data.description;
+    const imagePath = await downloadMedia(data.image, reelId);
     const llm = LLM("bedrock");
-    const { postContent, caption } = await generateSocialMediaPost(llm, description);
-    const finalVideoPath = await embedSubtitles(videoPath, caption, argv.captionDuration, reelId);
+    const post = await generateSocialMediaPost(llm, description);
+    const captionConfig = {
+      width: 800,
+      pointsize: 45,
+      backgroundColor: "white",
+      textColor: "#444444",
+      gravity: "center",
+      font: "Rubik Mono One",
+      top: 150,
+      padding: 20,
+      outputPath: path.join("downloads", reelId, "caption.png")
+    };
+    const captionPath = await generateCaptionImage(post.caption, captionConfig);
+    const finalVideoPath = await embedCaptionToVideo({videoPath, captionPath, outputPath:path.join("downloads", reelId, "final.mp4"), duration: argv.captionDuration});
+    const finalImagePath = await embedCaptionToImage({...captionConfig, imagePath, captionPath, outputPath: path.join("downloads", reelId, "cover.png")});
   
     const outputFolderPath = path.join("downloads", reelId);
     fs.mkdirSync(outputFolderPath, { recursive: true });
-    fs.writeFileSync(path.join(outputFolderPath, "post_content.txt"), postContent);
-    fs.writeFileSync(path.join(outputFolderPath, "caption.txt"), caption);
+    fs.writeFileSync(path.join(outputFolderPath, "post.txt"), post.description);
   
-    console.log(`New Post Content: ${postContent}`);
-    console.log(`Caption: ${caption}`);
-    console.log(`Final Video with Subtitles: ${finalVideoPath}`);
+    console.log(`New Post Content: ${post.description}`);
+    console.log(`Caption: ${post.caption}`);
+    console.log(`Final Video with Caption: ${finalVideoPath}`);
+    console.log(`Final Image with Caption: ${finalImagePath}`);
     console.log(`Output saved in: ${outputFolderPath}`);
   } catch (error) {
     console.error(`Final Error: ${error.message}`, { error });

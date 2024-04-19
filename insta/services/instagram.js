@@ -32,7 +32,8 @@ export async function fetchInstagramData(url) {
     if (!response.ok) throw new Error(`Failed to fetch data from Instagram: ${response.statusText}`);
   }
   return {
-    videoUrl: data.video,
+    video: data.video,
+    image: data.image,
     description: data.caption
   };
 }
@@ -43,15 +44,31 @@ export const generateSocialMediaPost = async (LLM, description) => {
   also adding a call to action at the end and then include a good amount of relevant hashtags, be picky and select some top traveling hashtags and a few mid-level. Max 10 hashtags. 
   We want to motivate people to go explore the world.  But be careful and don't make wrong assumptions, we aren't a tour guide officially, we just share motivational videos. 
   If there is a mention (@username) in the description, keep the mention to give credit to the rightful creator.
-  Also, generate a short, catchy caption related to the content that can be displayed on the reel itself, max 6 words.
-  Don't use linebreaks, emoticons or control characters, the result will be parsed using JSON.parse.
-  Give the response in the JSON format: { caption, description, tags, credits }`;
+  Also, generate a short, catchy caption related to the content that can be displayed on the reel itself, max 6 words as the first line/title.
+  
+  I want to receive an object with the following format:
+  {
+    description,
+    caption,
+    hashtags,
+    credits
+  }
+  
+  Description Format (use \r\n for breakline):
+  caption (use emojis in the caption)
 
+  description with interesting and useful content about the video/related to the description (like best time to visit, where to stay, famous parties or events in the area). Use some emojis too. 
+  credits @user
+
+  #list #of #hashtags
+  
+  `;
+  
   try {
     const content = await LLM(prompt);
+    console.log({prompt, content});
     console.log("Generated content:", content);
-    const {caption, credits} = content;
-    return { postContent: content.description, caption, credits };
+    return content;
   } catch (error) {
     console.error("Error generating social media post:", error);
     throw error;

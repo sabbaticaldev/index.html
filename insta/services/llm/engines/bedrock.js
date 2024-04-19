@@ -17,7 +17,7 @@ const bedrockStrategy = config => async prompt => {
         content: [{ type: "text", text: prompt }],
       },
     ],
-    system: "answer in English",
+    system: "answer in a valid JSON format and in English",
     max_tokens: 2048,
     temperature: 0.5,
     top_k: 250,
@@ -40,7 +40,14 @@ const bedrockStrategy = config => async prompt => {
     if (!response?.content[0].text) {
       throw new Error("Invalid response from LLM");
     }
-    return JSON.parse(response.content[0].text);
+    try {
+      return JSON.parse(response.content[0].text);
+    }
+    catch(error) {
+      console.log(response.content[0].text);
+      console.log({error});
+      return response.content[0].text;
+    }
   } catch (error) {
     console.error("Error in bedrockStrategy:", error);
     throw error;
