@@ -67,20 +67,6 @@ export default async function handleReel(url) {
     const outputFolderPath = `downloads/${reelId}`;
     fs.mkdirSync(outputFolderPath, { recursive: true });
 
-    const instagramJSONPath = path.join(outputFolderPath, "instagram.json");
-    const data = await checkAndExecute("Instagram data download", instagramJSONPath, () => fetchInstagramData(url));
-    fs.writeFileSync(instagramJSONPath, JSON.stringify(data));
-
-    const videoPath = await checkAndExecute("Video download", path.join(outputFolderPath, "video.mp4"), () => downloadMedia(data.video, reelId, "video"));
-    const imagePath = await checkAndExecute("image download", path.join(outputFolderPath, "image.jpg"), () => downloadMedia(data.image, reelId, "image"));    
-    const postPath = path.join(outputFolderPath, "post.json");
-    const post = await checkAndExecute("LLM post generation", postPath, () => { 
-      const llm = LLM("bedrock");
-      console.log("RODANDO ESSA BOSTA", {postPath});
-      return generateSocialMediaPost(llm, data.description);
-    });
-    fs.writeFileSync(postPath, JSON.stringify(post));
-
     const captionConfig = {
       width: 800,
       pointsize: 45,
@@ -92,19 +78,35 @@ export default async function handleReel(url) {
       padding: 20,
       outputPath: path.join(outputFolderPath, "caption.png")
     };
+    const instagramJSONPath = path.join(outputFolderPath, "instagram.json");
+    const postPath = path.join(outputFolderPath, "post.json");
+
+    const data = await checkAndExecute("Instagram data download", instagramJSONPath, () => fetchInstagramData(url));
+    const videoPath = await checkAndExecute("Video download", path.join(outputFolderPath, "video.mp4"), () => downloadMedia(data.video, reelId, "video"));
+    const imagePath = await checkAndExecute("image download", path.join(outputFolderPath, "image.jpg"), () => downloadMedia(data.image, reelId, "image"));    
+    const post = await checkAndExecute("LLM post generation", postPath, () => { 
+      const llm = LLM("bedrock");
+      return generateSocialMediaPost(llm, data.description);
+    });      
     const captionPath = await checkAndExecute("Caption image generation", captionConfig.outputPath, () => generateCaptionImage(post.caption, captionConfig));
-
-    const finalVideoPath = await embedCaptionToVideo({
-      videoPath,
-      captionPath,
-      outputPath: path.join(outputFolderPath, "final.mp4")
+    const finalVideoPath = await checkAndExecute("Video caption embedding", path.join(outputFolderPath, "final.mp4"), () => {
+      return embedCaptionToVideo({
+        videoPath,
+        captionPath,
+        outputPath: path.join(outputFolderPath, "final.mp4")
+      });
     });
-
-    const finalImagePath = await embedCaptionToImage({
-      imagePath, captionPath, outputPath: path.join(outputFolderPath, "cover.png"), top: 150
+    const finalImagePath = await checkAndExecute("Image caption embedding", path.join(outputFolderPath, "cover.png"), () => {
+      return embedCaptionToImage({
+        imagePath,
+        captionPath,
+        outputPath: path.join(outputFolderPath, "cover.png"),
+        top: 150
+      });
     });
-
     const sock = await connectToWhatsApp();
+    fs.writeFileSync(postPath, JSON.stringify(post));
+    fs.writeFileSync(instagramJSONPath, JSON.stringify(data));
     sendWhatsAppMessage(sock, { videoPath, imagePath }, data.description, settings.ADMIN_PHONE_NUMBER);
     console.log(`Processed reel: ${data.description}`);
     console.log(`Caption: ${post.caption}`);

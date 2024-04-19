@@ -14,11 +14,10 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
   
-const sock = await connectToWhatsApp();
+const sock = await connectToWhatsApp({ keepAlive: true });
 
 async function createGroup(groupData) {
   const id = groupData.groupInfo.id;
-  console.log({groupData});
   const date = new Date().toISOString().slice(0, 10);  
   groupData.date = date;
   const currentGroupFolder = path.join(DATA_FOLDER, date, "groups"); 

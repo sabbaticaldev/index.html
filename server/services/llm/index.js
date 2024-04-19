@@ -1,4 +1,4 @@
-import { settings } from "../../settings.js"; // Assuming settings are properly exported
+import settings from "../../settings.js";
 import bedrock from "./engines/bedrock.js";
 
 export default (provider) => {
