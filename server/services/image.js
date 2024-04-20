@@ -3,9 +3,9 @@ import util from "util";
 
 export async function generateCaptionImage(caption, config) {
   const {
-    width = 1500,
+    width = 800,
     height, 
-    pointsize = 100, 
+    pointsize = 50, 
     backgroundColor = "none", 
     textColor = "black",
     padding = 20, 

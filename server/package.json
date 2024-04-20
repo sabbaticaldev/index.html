@@ -27,6 +27,7 @@
     "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "jimp": "^0.16.1",
+    "link-preview-js": "^3.0.5",
     "node-fetch": "^3.3.2",
     "open-graph-scraper": "^6.5.1",
     "qrcode-terminal": "^0.12.0",

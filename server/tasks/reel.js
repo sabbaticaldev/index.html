@@ -84,10 +84,10 @@ export default async function handleReel(url) {
     fs.mkdirSync(outputFolderPath, { recursive: true });
 
     const captionConfig = {
-      width: 800,
-      pointsize: 45,
+      width: 700,
+      pointsize: 36,
       backgroundColor: "white",
-      textColor: "#444444",
+      textColor: "#333333",
       gravity: "center",
       font: "Rubik Mono One",
       top: 150,
