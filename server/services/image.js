@@ -20,7 +20,7 @@ export async function generateCaptionImage(caption, config) {
                   "-gravity center " +
                   `-font '${font}' ` + 
                   `-pointsize ${pointsize} ` +
-                  `pango:'${caption}' ` +
+                  `pango:'${caption.replace(/'/g, "'\\''")}' ` +
                   `-bordercolor '${backgroundColor}' -border ${padding} ` +
                   `${outputPath}`;
   

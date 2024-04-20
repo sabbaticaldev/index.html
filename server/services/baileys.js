@@ -1,4 +1,4 @@
-import { DisconnectReason, makeInMemoryStore, makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
+import { Browsers, DisconnectReason, makeInMemoryStore, makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
 
 import { sleep } from "../utils.js";
 const store = makeInMemoryStore({});
@@ -8,13 +8,16 @@ setInterval(() => {
 }, 10000);
 
 export async function connectToWhatsApp(config = {}) {
-  console.log({config});
+  console.log({Browsers});
   const { keepAlive = false } = config;
   const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
 
   const sock = makeWASocket({
+    printQRInTerminal: true,
     auth: state,
-    printQRInTerminal: true
+    browser: Browsers.macOS("Desktop"),
+    syncFullHistory: false,
+    defaultQueryTimeoutMs: undefined,
   });
   store.bind(sock.ev);
   sock.status = "CLOSED";

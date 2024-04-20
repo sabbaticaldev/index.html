@@ -37,18 +37,23 @@ async function sendWhatsAppMessage(sock, mediaPaths, description, phoneNumber) {
         console.log("CONNECTION OPEN");
       }
 
-      const { imagePath, videoPath } = mediaPaths;
-      const { messageID: imageMsgId } = await sock.sendMessage(phoneNumber, 
-        { image: fs.readFileSync(imagePath), caption: description });
-      const { messageID: videoMsgId } = await sock.sendMessage(phoneNumber, 
-        { video: fs.readFileSync(videoPath), caption: description });
-      console.log(`Messages sent with IDs: Image - ${imageMsgId}, Video - ${videoMsgId}`);
+      const { url, imagePath, videoPath, finalVideoPath, finalImagePath } = mediaPaths;      
+      await sock.sendMessage(phoneNumber, { image: fs.readFileSync(imagePath) });
+      await sock.sendMessage(phoneNumber, { image: fs.readFileSync(finalImagePath) });
+      await sock.sendMessage(phoneNumber, { video: fs.readFileSync(videoPath) });
+      await sock.sendMessage(phoneNumber, { video: fs.readFileSync(finalVideoPath) });
+      await sock.sendMessage(phoneNumber, { text: description });
+      await sock.sendMessage(phoneNumber, { text: url });
+      console.log("Messages sent.");
     } catch (error) {
-      console.error("Failed to send WhatsApp message:", {error});
       if (error.message === "Socket is not open") {
         console.log("Socket is not open, waiting to retry...");
-        await sleep(1000); // wait for 3 seconds before retrying
-        await sendMessage(); // Retry sending the message
+        await sleep(1000); 
+        await sendMessage(); 
+      }
+      else {
+        console.log("CLOSE CONNECTION");
+        sock.end();
       }
     }
   }
@@ -62,7 +67,7 @@ async function checkAndExecute(description, filePath, operation) {
     const redo = await promptUser(`File ${filePath} exists. Redo ${description}? (yes/no): `);
     if (!redo) {
       if (filePath.endsWith(".json")) {
-        const fileContent = fs.readFileSync(filePath, "utf8");
+        const fileContent = fs.readFileSync(filePath, "utf8");        
         return JSON.parse(fileContent);
       }
       return filePath;
@@ -99,7 +104,11 @@ export default async function handleReel(url) {
         description: "Instagram data download",
         filePath: path.join(outputFolderPath, "instagram.json"),
         key: "instagram",
-        operation: async () => await fetchInstagramData(url)          
+        operation: async () => {
+          const instagram = await fetchInstagramData(url);
+          fs.writeFileSync(instagramJSONPath, JSON.stringify(instagram));
+          return instagram;
+        }
       },
       {
         description: "Video download",
@@ -120,7 +129,10 @@ export default async function handleReel(url) {
         dependencies: ["instagram"],
         operation: async () => {
           const llm = LLM("bedrock");
-          return await generateSocialMediaPost(llm, jobs.instagram.description);          
+          const post = await generateSocialMediaPost(llm, jobs.instagram.description);
+          
+          fs.writeFileSync(postPath, JSON.stringify(post));
+          return post;
         }
       },
       {
@@ -155,12 +167,10 @@ export default async function handleReel(url) {
     await executeTasks(tasks);
     console.log("START WHATSAPP");
     const sock = await connectToWhatsApp({ keepAlive: true });
-    fs.writeFileSync(postPath, JSON.stringify(jobs.llm));
-    fs.writeFileSync(instagramJSONPath, JSON.stringify(jobs.instagram));
-    await sendWhatsAppMessage(sock, { videoPath, imagePath }, jobs.instagram.description, settings.ADMIN_PHONE_NUMBER);
+    await sendWhatsAppMessage(sock, { url, videoPath, imagePath, finalVideoPath: `${outputFolderPath}/final.mp4`, finalImagePath: `${outputFolderPath}/cover.png` }, jobs.llm.description, settings.ADMIN_PHONE_NUMBER);
     console.log(`Processed reel: ${jobs.instagram.description}`);
     console.log(`Caption: ${jobs.llm.caption}`);
-    console.log(`Binal Video with Caption: ${outputFolderPath}/final.mp4`);
+    console.log(`Final Video with Caption: ${outputFolderPath}/final.mp4`);
     console.log(`Final Image with Caption: ${outputFolderPath}/cover.png`);
     console.log(`Output saved in: ${outputFolderPath}`);
   } catch (error) {
@@ -177,7 +187,9 @@ async function executeTasks(taskList) {
       await Promise.all(task.dependencies.map(dep => jobs[dep]));
     }    
     const result = await checkAndExecute(task.description, task.filePath, task.operation);
-    if(task.key)
+    if(task.key) {
+      console.log({result});
       jobs[task.key] = result;
+    }
   }
 }
