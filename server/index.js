@@ -1,13 +1,15 @@
 import express from "express";
 
-import {fetchGroup,importGroups,importTags} from "./controllers.js";
-
+import { fetchGroup, importGroups, importTags } from "./controllers.js";
+import {connectToWhatsApp} from "./services/baileys.js";
 async function main() {
   const app = express();
   const port = 3000;
   const importDelay = 1000;
   const maxGroups = 5; 
-
+  console.log({connectToWhatsApp});
+  await connectToWhatsApp({ keepAlive: true });
+  
   app.use(express.json());
   app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");

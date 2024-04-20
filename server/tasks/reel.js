@@ -1,4 +1,3 @@
-// tasks/reel.js
 import fs from "fs";
 import path from "path";
 import readline from "readline";
@@ -27,14 +26,10 @@ function promptUser(question) {
 async function sendWhatsAppMessage(sock, mediaPaths, description, phoneNumber) {
   try {
     const { imagePath, videoPath } = mediaPaths;
-
-    // Send Image
-    const imageStream = fs.createReadStream(imagePath);
-    const { messageID: imageMsgId } = await sock.sendMessage(phoneNumber, { image: imageStream, caption: description });
-
-    // Send Video
-    const videoStream = fs.createReadStream(videoPath);
-    const { messageID: videoMsgId } = await sock.sendMessage(phoneNumber, { video: videoStream, caption: description });
+    const { messageID: imageMsgId } = await sock.sendMessage(phoneNumber, 
+      { image: fs.readFileSync(imagePath), caption: description });
+    const { messageID: videoMsgId } = await sock.sendMessage(phoneNumber, 
+      { video: fs.readFileSync(videoPath), caption: description });
 
     console.log(`Messages sent with IDs: Image - ${imageMsgId}, Video - ${videoMsgId}`);
   } catch (error) {
@@ -47,20 +42,17 @@ async function checkAndExecute(description, filePath, operation) {
   if (fs.existsSync(filePath)) {
     const redo = await promptUser(`File ${filePath} exists. Redo ${description}? (yes/no): `);
     if (!redo) {
-      console.log({redo});
       if (filePath.endsWith(".json")) {
         const fileContent = fs.readFileSync(filePath, "utf8");
-        console.log("retorno");
         return JSON.parse(fileContent);
       }
-      console.log("retorno 2");
       return filePath;
     }
   }
   console.log("rodando operation", {description});
   return operation();
 }
-
+const jobs = {};
 export default async function handleReel(url) {
   try {
     const reelId = new URL(url).pathname.split("/")[2];
@@ -80,42 +72,93 @@ export default async function handleReel(url) {
     };
     const instagramJSONPath = path.join(outputFolderPath, "instagram.json");
     const postPath = path.join(outputFolderPath, "post.json");
+    const videoPath = path.join(outputFolderPath, "video.mp4");
+    const imagePath = path.join(outputFolderPath, "image.jpg");
+    const captionPath = path.join(outputFolderPath, "caption.png");
+    const tasks = [
+      {
+        description: "Instagram data download",
+        filePath: path.join(outputFolderPath, "instagram.json"),
+        key: "data",
+        operation: async () => await fetchInstagramData(url)          
+      },
+      {
+        description: "Video download",
+        filePath: videoPath,
+        dependencies: ["data"],
+        operation: async () => await downloadMedia(jobs.data.video, reelId, "video")
+      },
+      {
+        description: "Image download",
+        filePath: imagePath,
+        dependencies: ["data"],
+        operation: async () => await downloadMedia(jobs.data.image, reelId, "image")
+      },
+      {
+        description: "LLM post generation",
+        filePath: path.join(outputFolderPath, "post.json"),
+        key: "post",
+        dependencies: ["data"],
+        operation: async () => {
+          const llm = LLM("bedrock");
+          return await generateSocialMediaPost(llm, jobs.data.description);          
+        }
+      },
+      {
+        description: "Caption image generation",
+        filePath: path.join(outputFolderPath, "caption.png"),
+        dependencies: ["post"],
+        operation: async () => {
+          return await generateCaptionImage(jobs.post.caption, captionConfig);
+        }
+      },
+      {
+        description: "Video caption embedding",
+        filePath: path.join(outputFolderPath, "final.mp4"),
+        operation: async () => await embedCaptionToVideo({
+          videoPath,
+          captionPath,
+          outputPath: path.join(outputFolderPath, "final.mp4")
+        })
+      },
+      {
+        description: "Image caption embedding",
+        filePath: path.join(outputFolderPath, "cover.png"),
+        operation: () => embedCaptionToImage({
+          imagePath,
+          captionPath,
+          outputPath: path.join(outputFolderPath, "cover.png"),
+          top: 150
+        })
+      }
+    ];
 
-    const data = await checkAndExecute("Instagram data download", instagramJSONPath, () => fetchInstagramData(url));
-    const videoPath = await checkAndExecute("Video download", path.join(outputFolderPath, "video.mp4"), () => downloadMedia(data.video, reelId, "video"));
-    const imagePath = await checkAndExecute("image download", path.join(outputFolderPath, "image.jpg"), () => downloadMedia(data.image, reelId, "image"));    
-    const post = await checkAndExecute("LLM post generation", postPath, () => { 
-      const llm = LLM("bedrock");
-      return generateSocialMediaPost(llm, data.description);
-    });      
-    const captionPath = await checkAndExecute("Caption image generation", captionConfig.outputPath, () => generateCaptionImage(post.caption, captionConfig));
-    const finalVideoPath = await checkAndExecute("Video caption embedding", path.join(outputFolderPath, "final.mp4"), () => {
-      return embedCaptionToVideo({
-        videoPath,
-        captionPath,
-        outputPath: path.join(outputFolderPath, "final.mp4")
-      });
-    });
-    const finalImagePath = await checkAndExecute("Image caption embedding", path.join(outputFolderPath, "cover.png"), () => {
-      return embedCaptionToImage({
-        imagePath,
-        captionPath,
-        outputPath: path.join(outputFolderPath, "cover.png"),
-        top: 150
-      });
-    });
+    await executeTasks(tasks);
     const sock = await connectToWhatsApp();
-    fs.writeFileSync(postPath, JSON.stringify(post));
-    fs.writeFileSync(instagramJSONPath, JSON.stringify(data));
-    sendWhatsAppMessage(sock, { videoPath, imagePath }, data.description, settings.ADMIN_PHONE_NUMBER);
-    console.log(`Processed reel: ${data.description}`);
-    console.log(`Caption: ${post.caption}`);
-    console.log(`Final Video with Caption: ${finalVideoPath}`);
-    console.log(`Final Image with Caption: ${finalImagePath}`);
+    fs.writeFileSync(postPath, JSON.stringify(jobs.post));
+    fs.writeFileSync(instagramJSONPath, JSON.stringify(jobs.data));
+    await sendWhatsAppMessage(sock, { videoPath, imagePath }, jobs.data.description, settings.ADMIN_PHONE_NUMBER);
+    console.log(`Processed reel: ${jobs.data.description}`);
+    console.log(`Caption: ${jobs.post.caption}`);
+    console.log(`Final Video with Caption: ${outputFolderPath}/final.mp4`);
+    console.log(`Final Image with Caption: ${outputFolderPath}/cover.png`);
     console.log(`Output saved in: ${outputFolderPath}`);
   } catch (error) {
     console.error(`Error processing reel: ${error.message}`, { error });
   } finally {
     rl.close();
+  }
+}
+
+// Execute tasks considering dependencies
+async function executeTasks(taskList) {
+  for (const task of taskList) {
+    if (task.dependencies) {
+      await Promise.all(task.dependencies.map(dep => jobs[dep]));
+    }
+    console.log({jobs});
+    const result = await checkAndExecute(task.description, task.filePath, task.operation);
+    if(task.key)
+      jobs[task.key] = result;
   }
 }

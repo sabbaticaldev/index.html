@@ -1,6 +1,7 @@
 import { exec } from "child_process";
+import util from "util";
 
-export function generateCaptionImage(caption, config) {
+export async function generateCaptionImage(caption, config) {
   const {
     width = 1500,
     height, 
@@ -12,43 +13,39 @@ export function generateCaptionImage(caption, config) {
     outputPath
   } = config;
 
-  // Command to generate the image
-  const command = `convert -size ${width}${height && `x${height}` || ""} ` +
-                    `-background '${backgroundColor}' ` +
-                    `-fill '${textColor}' ` +
-                    "-gravity center " +
-                    `-font '${font}' ` + 
-                    `-pointsize ${pointsize} ` +
-                    `pango:'${caption}' ` +
-                    `-bordercolor '${backgroundColor}' -border ${padding} ` +
-                    `${outputPath}`;
+  // Construct the command to generate the image
+  const command = `convert -size ${width}${height ? `x${height}` : ""} ` +
+                  `-background '${backgroundColor}' ` +
+                  `-fill '${textColor}' ` +
+                  "-gravity center " +
+                  `-font '${font}' ` + 
+                  `-pointsize ${pointsize} ` +
+                  `pango:'${caption}' ` +
+                  `-bordercolor '${backgroundColor}' -border ${padding} ` +
+                  `${outputPath}`;
   
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error("Error generating caption image:", stderr);
-        reject(error);
-      } else {
-        console.log(stdout);
-        resolve(outputPath);
-      }
-    });
-  });
+  try {
+    const { stdout } = await execAsync(command);
+    console.log("Caption image created successfully:", outputPath);
+    return outputPath;
+  } catch (error) {
+    console.error("Error generating caption image:", error);
+    throw error; // Throw to ensure the error can be caught by calling functions
+  }
 }
 
-export function embedCaptionToImage({imagePath, captionPath, outputPath, top}) {
+const execAsync = util.promisify(exec);
+
+export async function embedCaptionToImage({ imagePath, captionPath, outputPath, top }) {
   const command = `convert ${imagePath} ${captionPath} -gravity ${top ? `north -geometry +0+${top}` : "center"} -composite ${outputPath}`;
-  
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error("Error creating final image with caption:", stderr);
-        reject(error);
-      } else {
-        console.log("Final image created successfully:", outputPath);
-        resolve(outputPath);
-      }
-    });
-  });
+
+  try {
+    const { stdout } = await execAsync(command);
+    console.log({stdout});
+    console.log("Final image created successfully:", outputPath);
+    return outputPath;
+  } catch (error) {
+    console.error("Error creating final image with caption:", error);
+    throw new Error(`Failed to create image with caption: ${error.message}`);
+  }
 }
-  
