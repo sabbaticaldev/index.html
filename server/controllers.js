@@ -3,6 +3,7 @@ import ogs from "open-graph-scraper";
 import path from "path";
 
 import { connectToWhatsApp } from "./services/baileys.js";
+import { sleep } from "./utils.js";
 
 const DATA_FOLDER = "./app/apps/allfortraveler/data/";
 const CITIES_JSON = DATA_FOLDER + "tags/cities.json";
@@ -10,9 +11,6 @@ const COUNTRIES_JSON = DATA_FOLDER + "tags/countries.json";
 const TAGS_JSON = DATA_FOLDER + "tags/tags.json";
 const GROUPS_JSON = DATA_FOLDER + "groups.json";
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
   
 const sock = await connectToWhatsApp({ keepAlive: true });
 
