@@ -60,38 +60,55 @@ async function sendWhatsAppMessage(sock, mediaPaths, description, phoneNumber) {
   // Call the sendMessage function to initiate sending messages
   await sendMessage();
 }
-
-
 async function checkAndExecute(description, filePath, operation) {
-  if (fs.existsSync(filePath)) {
-    const redo = await promptUser(`File ${filePath} exists. Redo ${description}? (yes/no): `);
-    if (!redo) {
-      if (filePath.endsWith(".json")) {
-        const fileContent = fs.readFileSync(filePath, "utf8");        
-        return JSON.parse(fileContent);
+  let attempt = 0;
+  while (true) {
+    if (!filePath) {
+      const confirm = await promptUser(`Proceed with ${description}? (yes/no): `);
+      if (!confirm) {
+        console.log(`Operation ${description} was skipped by the user.`);
+        return;
       }
-      return filePath;
+    } else if (fs.existsSync(filePath)) {
+      const redo = await promptUser(`File ${filePath} exists. Redo ${description}? (yes/no): `);
+      if (!redo) {
+        if (filePath.endsWith(".json")) {
+          const fileContent = fs.readFileSync(filePath, "utf8");
+          return JSON.parse(fileContent);
+        }
+        return filePath;
+      }
+    }
+
+    try {
+      console.log("Running operation:", description);
+      const result = await operation();
+      return result;
+    } catch (error) {
+      console.error(`Error during ${description}:`, error);
+      attempt++;
+      const retry = await promptUser(`Attempt ${attempt} failed. Retry ${description}? (yes/no): `);
+      if (!retry) {
+        throw new Error(`User decided not to retry ${description} after failure.`);
+      }
     }
   }
-  console.log("rodando operation", {description});
-  return operation();
 }
+
 const jobs = {};
-export default async function handleReel(url) {
+export default async function handleReel(url, options) {
+  const { captionDuration, contentStyle, captionStyle, caption } = options;
   try {
     const reelId = new URL(url).pathname.split("/")[2];
     const outputFolderPath = `downloads/${reelId}`;
     fs.mkdirSync(outputFolderPath, { recursive: true });
 
     const captionConfig = {
-      width: 700,
-      pointsize: 36,
-      backgroundColor: "white",
-      textColor: "#333333",
+      width: 800,
+      pointsize: 32,
       gravity: "center",
       font: "Rubik Mono One",
-      top: 150,
-      padding: 20,
+      top: 200,
       outputPath: path.join(outputFolderPath, "caption.png")
     };
     const instagramJSONPath = path.join(outputFolderPath, "instagram.json");
@@ -129,7 +146,7 @@ export default async function handleReel(url) {
         dependencies: ["instagram"],
         operation: async () => {
           const llm = LLM("bedrock");
-          const post = await generateSocialMediaPost(llm, jobs.instagram.description);
+          const post = await generateSocialMediaPost(llm, { contentStyle, captionStyle, postDescription: jobs.instagram.description });
           
           fs.writeFileSync(postPath, JSON.stringify(post));
           return post;
@@ -140,7 +157,7 @@ export default async function handleReel(url) {
         filePath: path.join(outputFolderPath, "caption.png"),
         dependencies: ["llm"],
         operation: async () => {
-          return await generateCaptionImage(jobs.llm.caption, captionConfig);
+          return await generateCaptionImage(caption || jobs.llm.caption, captionConfig);
         }
       },
       {
@@ -149,7 +166,8 @@ export default async function handleReel(url) {
         operation: async () => await embedCaptionToVideo({
           videoPath,
           captionPath,
-          outputPath: path.join(outputFolderPath, "final.mp4")
+          outputPath: path.join(outputFolderPath, "final.mp4"),
+          captionDuration
         })
       },
       {
@@ -161,18 +179,17 @@ export default async function handleReel(url) {
           outputPath: path.join(outputFolderPath, "cover.png"),
           top: 150
         })
+      },
+
+      {
+        description: "Send whatsapp messages",
+        operation: async () => {
+          const sock = await connectToWhatsApp({ keepAlive: true });
+          await sendWhatsAppMessage(sock, { url, videoPath, imagePath, finalVideoPath: `${outputFolderPath}/final.mp4`, finalImagePath: `${outputFolderPath}/cover.png` }, jobs.llm.description, settings.ADMIN_PHONE_NUMBER);    
+        }
       }
     ];
-
     await executeTasks(tasks);
-    console.log("START WHATSAPP");
-    const sock = await connectToWhatsApp({ keepAlive: true });
-    await sendWhatsAppMessage(sock, { url, videoPath, imagePath, finalVideoPath: `${outputFolderPath}/final.mp4`, finalImagePath: `${outputFolderPath}/cover.png` }, jobs.llm.description, settings.ADMIN_PHONE_NUMBER);
-    console.log(`Processed reel: ${jobs.instagram.description}`);
-    console.log(`Caption: ${jobs.llm.caption}`);
-    console.log(`Final Video with Caption: ${outputFolderPath}/final.mp4`);
-    console.log(`Final Image with Caption: ${outputFolderPath}/cover.png`);
-    console.log(`Output saved in: ${outputFolderPath}`);
   } catch (error) {
     console.error(`Error processing reel: ${error.message}`, { error });
   } finally {

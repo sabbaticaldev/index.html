@@ -22,8 +22,8 @@ export async function fetchInstagramData(url) {
   };
 }
 
-export const generateSocialMediaPost = async (LLM, description) => {
-  const prompt = `Create a social media post using the following description: "${description}". 
+export const generateSocialMediaPost = async (LLM, { postDescription, contentStyle, captionStyle }) => {
+  const prompt = `Create a social media post using the following description: "${postDescription}". 
   ------
   if any content supplied is not in english, translateit  and give back results only in english.
   Change the tone and expand the content from the point of view of a guide (called AllForTraveler, a social media influencer that shares traveling tips), 
@@ -37,29 +37,30 @@ export const generateSocialMediaPost = async (LLM, description) => {
     description,
     caption,
     hashtags,
-    credits
+    credits,
+    city, //if applicable
+    country // if applicable
   }
   
-  description Format: - !!Dont forget to escape the \n inside of description!!
+  description Format: - 
   Title\\n\\ndescription with interesting and useful content about the video/related to the description (like best time to visit, where to stay, famous parties or events in the area). Use some emojis too.\\n\\ncredits @user\\n\\n#list #of #hashtags
   
   Example:
   {
-    "description": "A place that you must visit if you explore eastern Indonesia\n\n📍Bajawa, Nusa Tenggara Timur 🇮🇩",
+    "description": "Discover the Breathtaking Harder Grat Trail 🏔️\\n\\nAre you ready for an unforgettable adventure in the heart of the Swiss Alps? 🇨🇭 The Harder Grat Trail is a challenging 35 km hike that rewards brave explorers with stunning views of the Jungfrau peaks, Brienz lake, and the majestic Swiss Alps. ⛰️\\n\\nA place that you must visit if you explore eastern Indonesia\\n\\n📍Bajawa, Nusa Tenggara Timur 🇮🇩\\n\\n🎥 @lazyset_up\\n\\n#Beautifuldestinations #Djiglobal",
     "caption": "📍Bajawa, Nusa Tenggara Timur, Indonesia 🇮🇩",
     "hashtags": "#Flores #NusaTenggaraTimur #PesonaIndonesia #WonderfulIndonesia #Dji #Beautifuldestinations #Djiglobal",
     "credits": "@Djiglobal"
   }
   
-  
+  ${contentStyle ? `for the content style, use this as reference: ${contentStyle}`:""}
+  ${captionStyle ? `for the caption style, use this as reference: ${captionStyle}`:""}
 
   
   `;
   
   try {
     const content = await LLM(prompt);
-    console.log({prompt, content});
-    console.log("Generated content:", content);
     return content;
   } catch (error) {
     console.error("Error generating social media post:", error);

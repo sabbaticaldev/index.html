@@ -10,13 +10,35 @@ yargs(hideBin(process.argv))
     type: "number",
     description: "Duration for which the caption is displayed in seconds"
   })
+  .option("content-style", {
+    alias: "c",
+    type: "string",
+    describe: "Descriptive style for LLM to generate content",
+    default: "default"
+  })
+  .option("caption-style", {
+    alias: "cs",
+    type: "string",
+    describe: "Descriptive style for LLM to generate the caption",
+    default: "default"
+  })
+  .option("caption", {
+    alias: "cap",
+    type: "string",
+    describe: "Provide a full caption, skipping generation"
+  })
   .command("reel <url>", "Process an Instagram reel", (yargs) => {
     yargs.positional("url", {
       describe: "Instagram URL",
       type: "string"
     });
-  }, (argv) => {
-    handleReel(argv.url, argv.captionDuration);
+  }, (argv) => {    
+    handleReel(argv.url, {
+      captionDuration: argv["caption-duration"],
+      contentStyle: argv["content-style"],
+      captionStyle: argv["caption-style"],
+      directCaption: argv.caption
+    });
   })
   .command("story <url>", "Process an Instagram story", (yargs) => {
     yargs.positional("url", {
