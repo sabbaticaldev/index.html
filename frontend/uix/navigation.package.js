@@ -75,6 +75,7 @@ export default {
         gap: T.string({ defaultValue: "md" }),
         spacing: T.string({ defaultValue: "md" }),
         full: T.boolean(),
+        selectTab: T.string()
       },
       unselectTab() {
         const slot = this.shadowRoot.querySelector("slot");

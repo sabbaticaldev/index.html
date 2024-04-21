@@ -7,7 +7,7 @@
   "module": "index",
   "private": true,
   "scripts": {
-    "server": "nodemon --watch server/**/*.js server/index.js",
+    "server": "nodemon --watch server --ignore server/node_modules --ignore server/data server/index.js",
     "build": "node esbuild.config.js",
     "frontend": "node esbuild.config.js --watch",
     "dev": "npm run frontend & npm run server"

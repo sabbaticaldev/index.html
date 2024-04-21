@@ -10,6 +10,8 @@ types
 apps/**/build
 .vite
 app/docs
-auth_info_baileys/*
+.baileys/*
 baileys_store.json
 yarn-error.log
+app/apps/allfortraveler/data/
+server/.baileys

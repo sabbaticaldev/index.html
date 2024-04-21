@@ -376,6 +376,7 @@ export default {
             <input
               type="text"
               id="filled"
+              style="line-height: 1.05rem;/*quick hack, should find a better fix*/"
               aria-describedby="filled_success_help"
               class=${this.generateTheme("uix-input")}
               .value=${value || ""}

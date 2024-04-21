@@ -12,10 +12,8 @@ const TAGS_JSON = DATA_FOLDER + "tags/tags.json";
 const GROUPS_JSON = DATA_FOLDER + "groups.json";
 
   
-const sock = await connectToWhatsApp({ keepAlive: true });
-
 async function createGroup(groupData) {
-  const id = groupData.groupInfo.id;
+  const id = groupData.id;
   const date = new Date().toISOString().slice(0, 10);  
   groupData.date = date;
   const currentGroupFolder = path.join(DATA_FOLDER, date, "groups"); 
@@ -75,9 +73,9 @@ async function importGroups({delay, max, datetime = null}) {
     if (response?.status !== "BAD_REQUEST") {
       console.log(`Creating group for URL: ${group.url}`); // Log before creation
       if(response?.groupInfo.id) {
-        await createGroup({...group, groupInfo: response.groupInfo});
+        await createGroup({...group, ...response.groupInfo});
         console.log(`Group created for URL: ${group.url}`); // Log after creation
-        importedGroups.push({...group, groupInfo: response.groupInfo});
+        importedGroups.push({...group, ...response.groupInfo});
       }
       else {
         console.error({response});
@@ -117,56 +115,64 @@ async function importTags() {
   }
 }
   
-async function fetchGroup(url) {
-  const fetchOGData = async (url) => {
-    const { result } = await ogs({ url });
-    return result;
-  };
-  
-  const getInviteCode = (url) => url.split("chat.whatsapp.com/")[1];
-  
-  const processGroupInvite = async (inviteCode) => {
+const getInviteCode = (url) => url.split("chat.whatsapp.com/")[1];
+const processGroupInvite = async (url) => {
+  const inviteCode = getInviteCode(url);
+  try {
+    const sock = await connectToWhatsApp({ keepAlive: true });
     let groupData = { status: "BAD_REQUEST" };
+
     try {
       const groupId = await sock.groupAcceptInvite(inviteCode);
       groupData = await sock.groupMetadata(groupId);
     } catch (error) {
-      if(error.message !== "bad-request") {
-        groupData = await sock.groupGetInviteInfo(inviteCode);
-        if(error.message === "conflict") {
-          groupData = await sock.groupMetadata(groupData.id);
-        } else if (error.message === "not-authorized") {
-          groupData.status = "NOT_AUTHORIZED";
-        } else {
-          console.log({ error });
+      if (error.message !== "bad-request") {
+        try {
+          groupData = await sock.groupGetInviteInfo(inviteCode);
+          if (error.message === "conflict") {
+            groupData = await sock.groupMetadata(groupData.id);
+          } else if (error.message === "not-authorized") {
+            groupData.status = "NOT_AUTHORIZED";
+          }
+        } catch (innerError) {
+          console.log({ innerError });
         }
       }
-    }
-    finally {
-      if(groupData.size === 1)
+    } finally {
+      if (groupData.size === 1) {
         groupData.status = "REQUEST";
-      else if(groupData.size > 1)
+      } else if (groupData.size > 1) {
         groupData.status = "JOINED";
-    }
+      }
 
-    if(groupData?.id && !["BAD_REQUEST", "NOT_AUTHORIZED"].includes(groupData.status)) {
-      groupData.url = url;
-      await createGroup({groupData, groupInfo: groupData});
+      if (groupData?.id && !["BAD_REQUEST", "NOT_AUTHORIZED"].includes(groupData.status)) {
+        groupData.url = url;
+        await createGroup({ groupData });
+      }
     }
     return groupData;
-  };
-  
+  } catch (error) {
+    console.error("Failed to connect to WhatsApp:", error);
+    throw error;  
+  }
+};
+
+
+async function fetchGroup(url) {
+  const fetchOGData = async (url) => {
+    const { result } = await ogs({ url });
+    return result;
+  };    
   try {
     const ogResult = await fetchOGData(url);
-    const inviteCode = getInviteCode(url);
-    const groupData = await processGroupInvite(inviteCode);
-    return {
-      status: groupData.status,
+    const groupData = await processGroupInvite(url);
+    return groupData ? {
+      ...groupData,
       name: ogResult.ogTitle,
       image: ogResult?.ogImage?.[0]?.url,
       url,
-      groupInfo: groupData
-    };
+       
+    } : {};
   } catch (error) {
     console.error("Error fetching group data:", error);
     throw new Error("Error processing request");

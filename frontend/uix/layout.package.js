@@ -32,7 +32,7 @@ export default {
         reverse: T.boolean(),
         droparea: T.boolean(),
         justify: T.string(),
-        spacing: T.string({ defaultValue: "" }),
+        spacing: T.string({ defaultValue: "sm" }),
         gap: T.string({ defaultValue: "sm" }),
         full: T.boolean(),
         rounded: T.boolean(),

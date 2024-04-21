@@ -11,15 +11,14 @@ function normalizeTag(tag) {
     .replace(/\s+/g, "-"); // Replace spaces with hyphens
 }
 
-// Get the directory of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Read the file and process the contents
-fs.readFile(path.join(__dirname, "../data/input.txt"), "utf8", (err, data) => {
+fs.readFile(path.join(__dirname, "./data/input.txt"), "utf8", (err, data) => {
   if (err) {
     console.error("Error reading the file:", err);
     return;
-  }
+  } 
 
   const lines = data.split(/\r?\n/); // Split by new line, compatible with Windows (\r\n) and Unix (\n)
   const groups = [];
