@@ -97,18 +97,18 @@ async function checkAndExecute(description, filePath, operation) {
 
 const jobs = {};
 export default async function handleReel(url, options) {
-  const { captionDuration, contentStyle, captionStyle, caption } = options;
+  const { captionDuration, contentStyle, captionStyle, caption, captionPositon, captionWidth } = options;
   try {
     const reelId = new URL(url).pathname.split("/")[2];
     const outputFolderPath = `downloads/${reelId}`;
     fs.mkdirSync(outputFolderPath, { recursive: true });
 
     const captionConfig = {
-      width: 800,
-      pointsize: 32,
+      top: captionPositon || 400,
+      width: captionWidth || 700,
+      pointsize: 26,
       gravity: "center",
-      font: "Rubik Mono One",
-      top: 200,
+      font: "Rubik Mono One",      
       outputPath: path.join(outputFolderPath, "caption.png")
     };
     const instagramJSONPath = path.join(outputFolderPath, "instagram.json");
@@ -161,16 +161,6 @@ export default async function handleReel(url, options) {
         }
       },
       {
-        description: "Video caption embedding",
-        filePath: path.join(outputFolderPath, "final.mp4"),
-        operation: async () => await embedCaptionToVideo({
-          videoPath,
-          captionPath,
-          outputPath: path.join(outputFolderPath, "final.mp4"),
-          captionDuration
-        })
-      },
-      {
         description: "Image caption embedding",
         filePath: path.join(outputFolderPath, "cover.png"),
         operation: () => embedCaptionToImage({
@@ -180,7 +170,16 @@ export default async function handleReel(url, options) {
           top: 150
         })
       },
-
+      {
+        description: "Video caption embedding",
+        filePath: path.join(outputFolderPath, "final.mp4"),
+        operation: async () => await embedCaptionToVideo({
+          videoPath,
+          captionPath,
+          outputPath: path.join(outputFolderPath, "final.mp4"),
+          captionDuration
+        })
+      },
       {
         description: "Send whatsapp messages",
         operation: async () => {

@@ -1,4 +1,5 @@
-import {
+import {  
+  css,
   html,
   staticHtml,
   unsafeStatic,
@@ -25,6 +26,13 @@ export default {
       },
     },
     "uix-list": {
+      style: [
+        css`
+          :host {
+            display: inherit;
+          }
+        `,
+      ],
       props: {
         vertical: T.boolean(),
         responsive: T.boolean(),

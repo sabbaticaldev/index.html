@@ -10,7 +10,7 @@ export async function generateCaptionImage(caption, config) {
     backgroundColor = "none", // Use 'none' for transparent background
     textColor = "white", // White text
     strokeColor = "black", // Black border
-    strokeWidth = 0, // Default to no stroke, apply only if > 0
+    strokeWidth = 2, // Default to no stroke, apply only if > 0
     padding = 0,
     font = "Arial",
     outputPath,
@@ -27,7 +27,7 @@ export async function generateCaptionImage(caption, config) {
 
   // Step 2: Create stroke image
   const strokeTextCommand = `convert ${outputPath}-base.png ` +
-  " -bordercolor 'none' -border 1 " +
+  " -bordercolor 'none' -border 3 " +
   ` -alpha set -channel RGBA -morphology EdgeOut 'Diamond:${strokeWidth}' ` +
   ` PNG32:${outputPath}-stroke.png`;
 

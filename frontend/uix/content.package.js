@@ -11,11 +11,11 @@ export default {
         variant: T.string({ defaultValue: "primary" }),
         text: T.string(),
         rounded: T.boolean({ defaultValue: "none" }),
-        spacing: T.string({ defaultValue: "lg" }),
+        spacing: T.string({ defaultValue: "md" }),
       },
       render: function () {
         const baseClass = this.generateTheme("uix-card");
-        return html`<uix-block containerClass=${baseClass}>
+        return html`<uix-block containerClass=${baseClass} spacing=${this.spacing}>
           <slot></slot>
         </uix-block>`;
       },
