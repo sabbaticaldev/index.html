@@ -2,7 +2,7 @@ import {
   html,
   staticHtml,
   unsafeStatic,
-} from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
+} from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
 
 import { T } from "../../helpers/types.js";
 

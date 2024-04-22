@@ -1,4 +1,4 @@
-import { LitElement } from "https://cdn.jsdelivr.net/gh/lit/dist@3.0.0/all/lit-all.min.js";
+import { LitElement } from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
 
 import { getElementTheme, updateTheme } from "../brazuka/src/theme.js";
 import i18n from "../helpers/i18n.js";
