@@ -1,17 +1,17 @@
 import { exec } from "child_process";
 import util from "util";
 
-export async function generateCaptionImage(caption, config) {
+export async function generateCaptionImage(caption, config) {  
   const {
-    width = 800,
+    width = 900,
     height,
-    pointsize = 50,
+    pointsize = 38,
     borderColor = "",
-    backgroundColor = "none", // Use 'none' for transparent background
-    textColor = "white", // White text
-    strokeColor = "black", // Black border
+    backgroundColor = "white", // Use 'none' for transparent background
+    textColor = "#333333", // White text
+    strokeColor = "white", // Black border
     strokeWidth = 2, // Default to no stroke, apply only if > 0
-    padding = 0,
+    padding = 20,
     font = "Arial",
     outputPath,
   } = config;
@@ -21,6 +21,7 @@ export async function generateCaptionImage(caption, config) {
 `${padding ? ` -bordercolor '${borderColor || backgroundColor}' -border ${padding} ` : " "}`+
 ` -fill '${textColor}' ` +
 ` -font '${font}' ` +
+" -gravity center "+
 ` -pointsize ${pointsize} ` +
 ` pango:'${caption.replace(/'/g, "'\\''")}' ` +
 ` PNG32:${outputPath}-base.png`;
@@ -63,6 +64,7 @@ export async function generateCaptionImage(caption, config) {
 const execAsync = util.promisify(exec);
 
 export async function embedCaptionToImage({ imagePath, captionPath, outputPath, top }) {
+  console.log({top});
   const command = `convert ${imagePath} ${captionPath} -gravity ${top ? `north -geometry +0+${top}` : "center"} -composite ${outputPath}`;
 
   try {

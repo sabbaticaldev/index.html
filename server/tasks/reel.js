@@ -96,21 +96,22 @@ async function checkAndExecute(description, filePath, operation) {
 }
 
 const jobs = {};
-export default async function handleReel(url, options) {
-  const { captionDuration, contentStyle, captionStyle, caption, captionPositon, captionWidth } = options;
+export default async function handleReel(options) {
+  const { url, captionDuration, contentStyle, captionStyle, caption, captionPositon, captionWidth, secondaryCaption } = options;
   try {
     const reelId = new URL(url).pathname.split("/")[2];
     const outputFolderPath = `downloads/${reelId}`;
     fs.mkdirSync(outputFolderPath, { recursive: true });
 
     const captionConfig = {
-      top: captionPositon || 400,
-      width: captionWidth || 700,
-      pointsize: 26,
+      captionPosition: captionPositon || 300,
+      width: captionWidth || 900,
+      pointsize: 38,
       gravity: "center",
       font: "Rubik Mono One",      
       outputPath: path.join(outputFolderPath, "caption.png")
     };
+
     const instagramJSONPath = path.join(outputFolderPath, "instagram.json");
     const postPath = path.join(outputFolderPath, "llm.json");
     const videoPath = path.join(outputFolderPath, "video.mp4");
@@ -163,11 +164,12 @@ export default async function handleReel(url, options) {
       {
         description: "Image caption embedding",
         filePath: path.join(outputFolderPath, "cover.png"),
-        operation: () => embedCaptionToImage({
+        operation: () => !console.log(captionConfig) && embedCaptionToImage({
           imagePath,
           captionPath,
           outputPath: path.join(outputFolderPath, "cover.png"),
-          top: 150
+          secondaryCaption,
+          top: captionConfig.captionPosition
         })
       },
       {
@@ -177,7 +179,8 @@ export default async function handleReel(url, options) {
           videoPath,
           captionPath,
           outputPath: path.join(outputFolderPath, "final.mp4"),
-          captionDuration
+          captionDuration,
+          top: captionConfig.captionPosition
         })
       },
       {

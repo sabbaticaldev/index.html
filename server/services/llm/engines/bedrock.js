@@ -32,20 +32,21 @@ const bedrockStrategy = config => async prompt => {
   };
 
   try {
+    console.log({params});
     const data = await client.send(new InvokeModelCommand(params));
     if (!data) {
       throw new Error("AWS Bedrock Runtime Error");
     }
-    const response = JSON.parse(new TextDecoder("utf-8").decode(data.body));
+    const response = JSON.parse(new TextDecoder("utf-8").decode(data.body));    
     if (!response?.content[0].text) {
       throw new Error("Invalid response from LLM");
     }
     try {
-
       console.log({response: response.content[0].text});
       return JSON.parse(response.content[0].text);
     }
     catch(error) {
+      console.log({response });
       console.log({error});
     }
   } catch (error) {

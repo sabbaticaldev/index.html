@@ -1,9 +1,9 @@
 import ffmpeg from "fluent-ffmpeg";
 
-export async function embedCaptionToVideo({videoPath, captionPath, outputPath, duration}) {  
-  const overlayOptions = duration
-    ? `overlay=x=(main_w-overlay_w)/2:y=150:enable='between(t,0,${duration})'`
-    : "overlay=x=(main_w-overlay_w)/2:y=150";  
+export async function embedCaptionToVideo({videoPath, captionPath, outputPath, captionDuration, top}) {  
+  const overlayOptions = captionDuration
+    ? `overlay=x=(main_w-overlay_w)/2:y=${top}:enable='between(t,0,${captionDuration})'`
+    : `overlay=x=(main_w-overlay_w)/2:y=${top}`;  
   return new Promise((resolve, reject) => {
     ffmpeg(videoPath)
       .noAudio()
