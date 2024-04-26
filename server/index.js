@@ -1,6 +1,8 @@
 import express from "express";
 
-import { fetchGroup, importGroups, importTags } from "./services/whatsapp.js";
+import { fetchGroup, importGroups } from "./models/group.js";
+import { importTags } from "./models/tag.js";
+
 
 async function main() {
   const app = express();

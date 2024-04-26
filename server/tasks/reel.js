@@ -14,14 +14,14 @@ import { executeTasks }from "../utils.js";
 
 const deps = {};
 export default async function handleReel(options) {
-  const { url, hashtags, captionDuration, contentStyle, captionStyle, caption, captionPositon, captionWidth, secondaryCaption } = options;
+  const { url, hashtags = true, captionDuration, contentStyle, captionStyle, caption, captionPositon, captionWidth, secondaryCaption } = options;
   try {
     const reelId = new URL(url).pathname.split("/")[2];
     const outputFolderPath = `downloads/${reelId}`;
     fs.mkdirSync(outputFolderPath, { recursive: true });
 
     const captionConfig = {
-      captionPosition: captionPositon || 500,
+      captionPosition: captionPositon || 300,
       width: captionWidth || 600,
       pointsize: 26,
       backgroundColor: "none", 
