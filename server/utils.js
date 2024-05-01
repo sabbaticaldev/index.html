@@ -66,7 +66,7 @@ export async function executeTasks({ tasks: taskList, prompt, deps }) {
       if (task.dependencies) {
         await Promise.all(task.dependencies.map(dep => deps[dep]));
       }    
-      const result = await checkAndExecute({ prompt, description: task.description, filePath: task.filePath, operation: task.operation});
+      const result = await checkAndExecute({ ...task, prompt });
       if(task.key) {
         deps[task.key] = result;
       }

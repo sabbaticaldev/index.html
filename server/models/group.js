@@ -7,7 +7,7 @@ import path from "path";
 
 import LLM from "../services/llm/index.js";
 import { processGroupInfo } from "../services/llm/tasks/whatsapp.js";
-import { connectToWhatsApp } from "../services/whatsapp.js";
+import { connectToWhatsApp } from "../services/whatsapp/index.js";
 import { executeTasks, sleep } from "../utils.js";
 const DATA_FOLDER = "./app/apps/allfortraveler/data/";
 
@@ -42,8 +42,8 @@ const processGroupInvite = async (url) => {
         dependencies: ["instagram"],
         operation: async () => {
           const llm = LLM("bedrock");
-          const groupInfo = await processGroupInfo(llm, { });
-          
+          const groupInfo = await processGroupInfo(llm, deps);
+          console.log({groupInfo});
           fs.writeFileSync(llmPath, JSON.stringify(groupInfo));
           return groupInfo;
         }

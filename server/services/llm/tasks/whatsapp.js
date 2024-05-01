@@ -37,7 +37,7 @@ function generateExample(params) {
 }
     
     
-export const processGroupInfo = (config) => {
+export const processGroupInfo = (config, { ogData, groupData } = {}) => {  
   const { postDescription, contentStyle, captionStyle, persona = "AllForTraveler" } = config;
   const personaDetails = getPersonaDetails(persona);
   const hashtags = config.hashtags ? "#list #of #hashtags":"";

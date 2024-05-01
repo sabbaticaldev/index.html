@@ -1,6 +1,6 @@
 import { Browsers, DisconnectReason, makeInMemoryStore, makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
 
-import {  sleep } from "../utils.js";
+import {  sleep } from "../../utils.js";
 
 const store = makeInMemoryStore({});
 store.readFromFile(".baileys/store.json");

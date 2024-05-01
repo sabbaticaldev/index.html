@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 
 import settings from "../settings.js";
-import { generateSocialMediaPostPrompt } from "./tasks/instagram.js";
+import { generateSocialMediaPostPrompt } from "./llm/tasks/instagram.js";
 
 export const generateSocialMediaPost = async (LLM, params) => {
   const prompt = generateSocialMediaPostPrompt(params);  

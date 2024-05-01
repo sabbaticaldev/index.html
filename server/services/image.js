@@ -63,28 +63,39 @@ export async function generateCaptionImage(caption, config) {
 }
 
 const execAsync = util.promisify(exec);
-export async function embedCaptionToImage({ imagePath, flip = true, captionPath, outputPath, top }) {
-  console.log({top});
-  // Temporary path for the flipped image if needed
+export async function embedCaptionToImage({ imagePath, flip, captionPath, outputPath, captionPosition }) {  
+  // First, check if flipping is needed and handle it
   const tempImagePath = flip ? `${outputPath}-temp.png` : imagePath;
   const flipCommand = flip ? `convert ${imagePath} -flop ${tempImagePath}` : "";
 
-  // Only execute the flip command if needed
   if (flip) {
     await execAsync(flipCommand);
   }
 
-  const command = `convert ${tempImagePath} ${captionPath} -gravity ${top ? `north -geometry +0+${top}` : "center"} -composite ${outputPath}`;
+  // Get dimensions of the caption image
+  const captionHeightCommand = `identify -format "%h" ${captionPath}`;
+  const captionHeight = parseInt(await execAsync(captionHeightCommand).then(output => output.stdout.trim()));
 
+  // Calculate the overlay position based on the caption height and video/image height
+  const imageHeightCommand = `identify -format "%h" ${tempImagePath}`;
+  const imageHeight = parseInt(await execAsync(imageHeightCommand).then(output => output.stdout.trim()));
+  let overlayYPosition = captionPosition;
+  if (captionPosition === "top") {
+    overlayYPosition = imageHeight * 0.1;  // 10% from the top
+  } else if (captionPosition === "bottom") {
+    overlayYPosition = imageHeight - (imageHeight * 0.1 + captionHeight);  // 10% from the bottom plus caption height
+  } else if (captionPosition === "center") {
+    overlayYPosition = (imageHeight / 2) - (captionHeight / 2);  // Centered vertically
+  }
+
+  const command = `convert ${tempImagePath} ${captionPath} -gravity north -geometry +0+${overlayYPosition} -composite ${outputPath}`;
+  console.log({captionPosition, command});
   try {
     await execAsync(command);
     console.log("Final image created successfully:", outputPath);
-    
-    // Clean up the temporary image file if it was created
     if (flip) {
       fs.unlinkSync(tempImagePath);
     }
-    
     return outputPath;
   } catch (error) {
     console.error("Error creating final image with caption:", error);
