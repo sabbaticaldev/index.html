@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "reel": "node insta.js reel"
+    "tasks": "node tasks.js"
   },
   "keywords": [
     "instagram",
