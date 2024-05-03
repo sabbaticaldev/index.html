@@ -99,6 +99,7 @@ export async function embedCaptionToImage({ imagePath, flip, captionPath, output
     return outputPath;
   } catch (error) {
     console.error("Error creating final image with caption:", error);
+    fs.unlinkSync(imagePath);
     throw new Error(`Failed to create image with caption: ${error.message}`);
   }
 }
@@ -109,36 +110,33 @@ export async function AnimateImage({
   duration = 10,
   frameRate = 24,
   zoomLevel = 1.2,
-  panDirection = "left-to-right",
+  panDirection = "bottom-to-top",
   startPosition = "center",
   endPosition = "center",
   resolution = "1920x1080"
 }) {
-  // Calculate crop dimensions based on zoom level
   const { width, height } = await getImageDimensions(imagePath);
-  const cropWidth = Math.floor(width / zoomLevel);
-  const cropHeight = Math.floor(height / zoomLevel);
+  let cropWidth = Math.floor(width / zoomLevel);
+  let cropHeight = Math.floor(height / zoomLevel);
 
-  // Determine the start and end positions for cropping based on direction
+  // Ensure crop dimensions do not exceed original dimensions
+  cropWidth = Math.min(cropWidth, width);
+  cropHeight = Math.min(cropHeight, height);
+
   const { x: startX, y: startY } = calculatePosition(startPosition, width, height, cropWidth, cropHeight);
   const { x: endX, y: endY } = calculatePosition(endPosition, width, height, cropWidth, cropHeight);
 
   const panDirections = {
-    "left-to-right": `x='min(linear(t,0,${duration},${startX},${endX}),iw-${cropWidth})':y=${startY}`,
-    
-    "top-to-bottom": `x=${startX}:y='min(linear(t,0,${duration},${startY},${endY}),ih-${cropHeight})'`,
-  
-    "right-to-left": `x='max(linear(t,0,${duration},${startX},${endX}),0)':y=${startY}`,
-  
-    "bottom-to-top": `x=${startX}:y='max(linear(t,0,${duration},${startY},${endY}),0)'`,
-    "": `x=${startX}:y=${startY}`
+    "left-to-right": { x: `'min(linear(t,0,${duration},${startX},${endX}),iw-${cropWidth})'`,y:startY },
+    "top-to-bottom": { x: startX, y:`'min(linear(t,0,${duration},${startY},${endY}),ih-${cropHeight})'`},
+    "right-to-left": { x: `'max(linear(t,0,${duration},${startX},${endX}),0)'`,y:startY},
+    "bottom-to-top": { x: startX, y:`'max(linear(t,0,${duration},${startY},${endY}),0)'`}
   };
-  
-  const positionExpression = panDirections[panDirection || ""];
-  
-  const ffmpegCommand = `ffmpeg -loop 1 -i "${imagePath}" -vf "crop=${cropWidth}:${cropHeight}:x=${startX}:y=${startY},zoompan=z='if(lte(zoom,${zoomLevel}),${zoomLevel},1)':${positionExpression}:d=${duration * frameRate}" -t ${duration} -r ${frameRate} -s ${resolution} "${outputPath}"`;
 
-  // Execute the FFmpeg command
+  const position = panDirections[panDirection];
+  
+  const ffmpegCommand = `ffmpeg -loop 1 -i "${imagePath}" -vf "crop=${cropWidth}:${cropHeight},zoompan=z='min(pzoom+0.0015,${zoomLevel})':d=1:x=${position.x}:y=${position.y}" -t ${duration} -r ${frameRate} -s ${resolution} "${outputPath}"`;
+
   try {
     await execAsync(ffmpegCommand);
     console.log("Animation created successfully:", outputPath);
@@ -148,6 +146,7 @@ export async function AnimateImage({
     throw error;
   }
 }
+
 
 async function getImageDimensions(filePath) {
   const command = `identify -format "%wx%h" "${filePath}"`;

@@ -3,6 +3,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { createReelRipOff } from "./tasks/instagram.js";
+import { createMapVideo, createZoomInVideo } from "./tasks/maps.js";
 import { CreateVideoFromImage } from "./tasks/video.js";
 
 // Helper function to determine if input is a file and read JSON
@@ -49,6 +50,24 @@ yargs(hideBin(process.argv))
     const config = parseInput(argv.input);
     await CreateVideoFromImage(config);
   })
-  .demandCommand(1, "You must specify a command (reel or animate) and provide necessary input.")
+  .command("map-route <input>", "Generate a video animation of a map route", (yargs) => {
+    yargs.positional("input", {
+      describe: "Path to a JSON configuration file or JSON string with route details",
+      type: "string"
+    });
+  }, async (argv) => {
+    const config = parseInput(argv.input);
+    await createMapVideo(config);
+  })
+  .command("map-zoom <input>", "Generate a video animation of a map zoom", (yargs) => {
+    yargs.positional("input", {
+      describe: "Path to a JSON configuration file or JSON string with route details",
+      type: "string"
+    });
+  }, async (argv) => {
+    const config = parseInput(argv.input);
+    await createZoomInVideo(config);
+  })
+  .demandCommand(1, "You must specify a command (reel, animate, or map-route) and provide necessary input.")
   .help()
   .parse();
