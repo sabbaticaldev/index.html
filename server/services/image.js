@@ -102,3 +102,70 @@ export async function embedCaptionToImage({ imagePath, flip, captionPath, output
     throw new Error(`Failed to create image with caption: ${error.message}`);
   }
 }
+
+export async function AnimateImage({
+  imagePath,
+  outputPath,
+  duration = 10,
+  frameRate = 24,
+  zoomLevel = 1.2,
+  panDirection = "left-to-right",
+  startPosition = "center",
+  endPosition = "center",
+  resolution = "1920x1080"
+}) {
+  // Calculate crop dimensions based on zoom level
+  const { width, height } = await getImageDimensions(imagePath);
+  const cropWidth = Math.floor(width / zoomLevel);
+  const cropHeight = Math.floor(height / zoomLevel);
+
+  // Determine the start and end positions for cropping based on direction
+  const { x: startX, y: startY } = calculatePosition(startPosition, width, height, cropWidth, cropHeight);
+  const { x: endX, y: endY } = calculatePosition(endPosition, width, height, cropWidth, cropHeight);
+
+  const panDirections = {
+    "left-to-right": `x='min(linear(t,0,${duration},${startX},${endX}),iw-${cropWidth})':y=${startY}`,
+    
+    "top-to-bottom": `x=${startX}:y='min(linear(t,0,${duration},${startY},${endY}),ih-${cropHeight})'`,
+  
+    "right-to-left": `x='max(linear(t,0,${duration},${startX},${endX}),0)':y=${startY}`,
+  
+    "bottom-to-top": `x=${startX}:y='max(linear(t,0,${duration},${startY},${endY}),0)'`,
+    "": `x=${startX}:y=${startY}`
+  };
+  
+  const positionExpression = panDirections[panDirection || ""];
+  
+  const ffmpegCommand = `ffmpeg -loop 1 -i "${imagePath}" -vf "crop=${cropWidth}:${cropHeight}:x=${startX}:y=${startY},zoompan=z='if(lte(zoom,${zoomLevel}),${zoomLevel},1)':${positionExpression}:d=${duration * frameRate}" -t ${duration} -r ${frameRate} -s ${resolution} "${outputPath}"`;
+
+  // Execute the FFmpeg command
+  try {
+    await execAsync(ffmpegCommand);
+    console.log("Animation created successfully:", outputPath);
+    return outputPath;
+  } catch (error) {
+    console.error("Error creating animation:", error);
+    throw error;
+  }
+}
+
+async function getImageDimensions(filePath) {
+  const command = `identify -format "%wx%h" "${filePath}"`;
+  const output = await execAsync(command);
+  const [width, height] = output.stdout.trim().split("x").map(Number);
+  return { width, height };
+}
+
+function calculatePosition(position, imgWidth, imgHeight, cropWidth, cropHeight) {
+  // Calculate positions based on descriptors or numbers
+  switch(position) {
+  case "center":
+    return { x: (imgWidth - cropWidth) / 2, y: (imgHeight - cropHeight) / 2 };
+  case "top-left":
+    return { x: 0, y: 0 };
+  case "bottom-right":
+    return { x: imgWidth - cropWidth, y: imgHeight - cropHeight };
+  default:
+    return { x: (imgWidth - cropWidth) / 2, y: (imgHeight - cropHeight) / 2 }; // Default to center
+  }
+}
