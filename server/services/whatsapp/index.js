@@ -32,8 +32,12 @@ export async function handleRemoveMessageAndUser({ remoteJid, user, messageId },
     await sock.sendMessage(remoteJid, { delete: messageId });
     console.log("Message removed.");
 
-    // Remove the user
-    await sock.groupRemove(remoteJid, [user]);
+    await sock.groupParticipantsUpdate(
+      remoteJid, 
+      [user],
+      "remove"
+    );
+
     console.log("User removed from the group.");
   } catch (error) {
     console.error("Failed to remove message or user:", error);
