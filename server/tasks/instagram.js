@@ -196,3 +196,9 @@ export async function createReelRipOff(options) {
     console.error(`Error processing reel: ${error.message}`, { error });
   }
 }
+
+
+// TODO
+export async function createMapImageWithEventPins(options) {
+  
+}

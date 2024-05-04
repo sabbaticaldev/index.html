@@ -79,3 +79,11 @@ export async function executeTasks({ tasks: taskList, prompt, deps }) {
     rl.close();
   }
 }
+
+
+export async function fetchMapImage(mapUrl) {
+  const response = await fetch(mapUrl);
+  console.log({mapUrl});
+  const buffer = await response.arrayBuffer();
+  return buffer;
+}

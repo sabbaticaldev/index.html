@@ -1,0 +1,13 @@
+{
+  "location": "Rio de Janeiro, RJ",
+  "provider": "google",
+  "apiKey": "AIzaSyDTl5Wb0gAONivfSbZg1HmTb0C72C_3Jqk",
+  "frameRate": 7,
+  "duration": 10,
+  "resolution": "1920x1080",
+  "startZoom": 0,
+  "endZoom": 21,
+  "mapType": "satellite",
+  "startHold": 1,
+  "endHold": 1
+}

@@ -1,111 +1,100 @@
-import polyline from "@mapbox/polyline";
+
 import { exec } from "child_process";
 import fs from "fs";
-import fetch from "node-fetch"; // Import this if you're using node-fetch
 import path from "path";
 import util from "util";
-const { decode: polylineDecode, encode: polylineEncode }  = polyline;
+
+import mapServices from "../services/maps/index.js";
 import { executeTasks }from "../utils.js";
 
 const execAsync = util.promisify(exec);
-const deps = {};
+  
 
-async function fetchRouteCoordinates(start, end, apiKey) {
-  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start}&destination=${end}&key=${apiKey}`;
-  const response = await fetch(url);
-  const data = await response.json();
-  const points = data.routes[0].overview_polyline.points;
-  return polylineDecode(points);
-}
-
-async function createAnimation(imageFolder, outputFile, frameRate = 24, duration = 10, resolution = "1920x1080") {
-  const inputPattern = path.join(imageFolder, "frame_%d.png");
-  const ffmpegCommand = `ffmpeg -framerate ${frameRate} -i "${inputPattern}" -t ${duration} -s ${resolution} -c:v libx264 -r 30 -pix_fmt yuv420p "${outputFile}"`;
-  await execAsync(ffmpegCommand);
-}
-
-async function downloadMapImages(coordinates, apiKey, outputFolderPath, mapConfig) {
-  const { zoom, size, pathColor, pathWeight } = mapConfig;
-  for (const [index, coord] of coordinates.entries()) {
-    const [lat, lng] = coord;
-    const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${size}&path=color:${pathColor}|weight:${pathWeight}|enc:${polylineEncode(coordinates)}&key=${apiKey}`;
+// Download and save map images using a specific map service
+async function downloadMapImages(coords, outputFolderPath, config, provider) {
+  const mapConfig = mapServices[provider];
+  for (const [index, { lat, lng }] of coords.entries()) {
+    const buffer = await mapConfig.fetchMapImage({ ...config, lat, lng });
     const imagePath = path.join(outputFolderPath, `frame_${index}.png`);
-    const response = await fetch(mapUrl);
-    const buffer = await response.arrayBuffer();
     fs.writeFileSync(imagePath, Buffer.from(buffer));
     console.log(`Image saved at ${imagePath}`);
   }
 }
-  
-export async function createMapVideo(options) {
-  const { start, end, apiKey, frameRate = 24, duration = 10, 
-    resolution = "1920x1080", zoom = 18, size = "600x400", pathColor = "0xff0000ff", pathWeight = 5 } = options;
-    
-  const routeId = new Date().getTime();
-  const outputFolderPath = `downloads/route_${routeId}`;
-  fs.mkdirSync(outputFolderPath, { recursive: true });
-  
-  const tasks = [
-    {
-      description: "Fetching route coordinates",
-      operation: async () => await fetchRouteCoordinates(start, end, apiKey),
-      key: "coordinates"
-    },
-    {
-      description: "Downloading map images",
-      dependencies: ["coordinates"],
-      operation: async () => await downloadMapImages(deps.coordinates, apiKey, outputFolderPath, { zoom, size, pathColor, pathWeight })
-    },
-    {
-      description: "Creating animated video",
-      operation: async () => createAnimation(outputFolderPath, path.join(outputFolderPath, "route_animation.mp4"), frameRate, duration, resolution)
-    }
-  ];
-  
-  await executeTasks({ tasks, deps });
-}
 
-async function fetchSingleCoordinate(location, apiKey) {
-  const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${apiKey}`;
-  const response = await fetch(geocodeUrl);
-  const data = await response.json();
-  const { lat, lng } = data.results[0].geometry.location;
-  return { lat, lng };
-}
-  
-async function downloadZoomedImages(coord, apiKey, outputFolderPath, startZoom, endZoom, mapType) {
-  for (let zoom = startZoom; zoom <= endZoom; zoom++) {
-    const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${coord.lat},${coord.lng}&zoom=${zoom}&size=600x400&maptype=${mapType}&key=${apiKey}`;
-    const imagePath = path.join(outputFolderPath, `frame_${zoom}.png`);
-    const response = await fetch(mapUrl);
-    const buffer = await response.arrayBuffer();
+async function downloadZoomedImages(coord, outputFolderPath, { startZoom, endZoom, size, apiKey, mapType, provider, zoomStep = 1 }) {
+  const mapConfig = mapServices[provider];
+  let x = 1;
+  for (let zoom = startZoom; zoom <= endZoom; zoom += zoomStep) {    
+    const buffer = await mapConfig.fetchMapImage({ lat: coord.lat, lng: coord.lng, zoom, size, apiKey, mapType });
+    const imagePath = path.join(outputFolderPath, `frame_${x++}.png`);
     fs.writeFileSync(imagePath, Buffer.from(buffer));
     console.log(`Zoom level ${zoom} image saved at ${imagePath}`);
   }
-}
-  
-export async function createZoomInVideo(options) {
-  const { location, apiKey, frameRate = 24, duration = 10, resolution = "1920x1080", startZoom = 1, endZoom = 21, mapType = "satellite" } = options;
+} 
+
+async function createAnimation(imageFolder, outputFile, { frameRate = 24, duration = 10, resolution = "1920x1080", startHold = 1, endHold = 1 }) {
+  const inputPattern = path.join(imageFolder, "frame_%d.png");
+  const totalDuration = duration + startHold + endHold;  // Adjust total duration to account for hold frames
     
-  const pointId = new Date().getTime(); 
-  const outputFolderPath = `downloads/zoom_${pointId}`;
+  // Construct the ffmpeg command with tpad for holding the first and last frames
+  const ffmpegCommand = `ffmpeg -framerate ${frameRate} -i "${inputPattern}" ` +
+        `-vf "tpad=start_duration=${startHold}:start_mode=clone:stop_duration=${endHold}:stop_mode=clone" ` +  // Add tpad filter with clone
+        `-t ${totalDuration} -s ${resolution} -c:v libx264 -r ${frameRate} -pix_fmt yuv420p "${outputFile}"`;
+    
+  await execAsync(ffmpegCommand);
+  console.log("Animation created successfully");
+}
+    
+export async function createMapVideo(options) {
+  const { start, end, apiKey, frameRate, duration, resolution, zoom, size, pathColor, pathWeight, mapType, provider = "google" } = options;
+  const outputFolderPath = `downloads/route_${new Date().getTime()}`;
   fs.mkdirSync(outputFolderPath, { recursive: true });
-  
-  const coord = await fetchSingleCoordinate(location, apiKey);
-  
+    
+  const mapConfig = mapServices[provider];
+  const coordinates = await mapConfig.fetchRouteCoordinates(start, end, apiKey);
+  const tasks = [
+    {
+      description: "Fetching route coordinates and downloading map images",
+      operation: async () => downloadMapImages(coordinates, outputFolderPath, {
+        zoom, size, pathColor, pathWeight, apiKey, mapType, provider
+      })
+    },
+    {
+      description: "Creating animated video",
+      operation: async () => createAnimation(outputFolderPath, path.join(outputFolderPath, "route_animation.mp4"), {
+        frameRate, duration, resolution
+      })
+    }
+  ];
+      
+  await executeTasks({ tasks });
+}
+export async function createZoomInVideo(options) {
+  const { location, apiKey, frameRate, duration, resolution, startZoom, endZoom, mapType, zoomStep, provider = "google", startHold, endHold } = options;
+  const outputFolderPath = `downloads/zoom_${new Date().getTime()}`;
+  fs.mkdirSync(outputFolderPath, { recursive: true });
+    
+  const mapConfig = mapServices[provider];
+  const coord = await mapConfig.fetchSingleCoordinate(location, apiKey);
   const tasks = [
     {
       description: "Downloading zoomed map images",
-      operation: async () => await downloadZoomedImages(coord, apiKey, outputFolderPath, startZoom, endZoom, mapType)
+      operation: async () => downloadZoomedImages(coord, outputFolderPath, {
+        startZoom, endZoom, size: "600x400", apiKey, mapType, provider, zoomStep
+      })
     },
     {
       description: "Creating zoom-in video",
-      operation: async () => createAnimation(outputFolderPath, path.join(outputFolderPath, "zoom_animation.mp4"), frameRate, duration, resolution)
+      operation: async () => createAnimation(outputFolderPath, path.join(outputFolderPath, "zoom_animation.mp4"), {
+        frameRate, duration, resolution, startHold, endHold
+      })
     }
   ];
   
-  await executeTasks({ tasks, deps: {} });
+  await executeTasks({ tasks });
 }
+  
+
   
 
   
