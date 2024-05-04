@@ -2,24 +2,38 @@ import express from "express";
 
 import { fetchGroup, importGroups } from "./models/group.js";
 import { importTags } from "./models/tag.js";
-import { connectToWhatsApp, handleRemoveMessage, handleRemoveMessageAndUser } from "./services/whatsapp/index.js";
+import { connectToWhatsApp, handleRemoveMessage, handleRemoveMessageAndUser, isAdmin } from "./services/whatsapp/index.js";
 
 async function main() {
   const app = express();
   const port = 3000;
   const importDelay = 1000;
   const maxGroups = 5; 
-  const sock = await connectToWhatsApp({ keepAlive: true });
+  const sock = await connectToWhatsApp({ keepAlive: true, credential: "admin" });
 
-  sock.ev.on("reaction", async (event) => {
-    console.log({event});
-    if (event.reaction.emoji === "👎") {  
-      await handleRemoveMessage(event, sock);
-    } else if (event.reaction.emoji === "🚫") {  
-      await handleRemoveMessageAndUser(event, sock);
+  sock.ev.on("messages.upsert", async event => {
+    console.log(JSON.stringify(event, null, 2));
+    if(!event?.messages?.[0]?.message?.reactionMessage) return;
+  
+    const participant = event.messages[0].key.participant;
+    const remoteJid = event.messages[0].message.reactionMessage.key.remoteJid;
+    const messageId = event.messages[0].message.reactionMessage.key;
+    const user = event.messages[0].message.reactionMessage.key.participant;
+    const emoji = event.messages[0].message.reactionMessage.text;
+  
+    if (!isAdmin(participant)) {
+      console.log("Unauthorized action attempted by non-admin.");
+      return;
+    }
+  
+    if (emoji === "👎") {
+      console.log({ remoteJid, messageId });
+      await handleRemoveMessage({ remoteJid, messageId }, sock);
+    } else if (emoji === "🚫") {
+      await handleRemoveMessageAndUser({ remoteJid, user, messageId }, sock);
     }
   });
-
+  
   app.use(express.json());
   app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");

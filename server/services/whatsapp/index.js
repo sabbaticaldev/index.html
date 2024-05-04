@@ -8,41 +8,42 @@ setInterval(() => {
   store.writeToFile(".baileys/store.json");
 }, 10000);
 export let sock;
-const admins = ["admin1@s.whatsapp.net", "admin2@s.whatsapp.net"]; // Admin WhatsApp IDs
+const admins = ["553197882008@s.whatsapp.net"]; // Admin WhatsApp IDs
 
-function isAdmin(user) {
+export function isAdmin(user) {
   return admins.includes(user);
 }
-export async function handleRemoveMessage(event, sock) {
-  if (isAdmin(event.participant)) {
-    try {
-      await sock.sendMessage(event.key.remoteJid, { delete: event.key.id });
-      console.log("Message removed.");
-    } catch (error) {
-      console.error("Failed to remove message:", error);
-    }
+
+export async function handleRemoveMessage({ remoteJid, messageId }, sock) {
+
+  try {
+    await sock.sendMessage(remoteJid, { delete: messageId });
+      
+    console.log("Message removed.");
+  } catch (error) {
+    console.error("Failed to remove message:", error);
+   
   }
 }
 
-export async function handleRemoveMessageAndUser(event, sock) {
-  if (isAdmin(event.participant)) {
-    try {
-      // Remove the message
-      await sock.sendMessage(event.key.remoteJid, { delete: event.key.id });
-      console.log("Message removed.");
+export async function handleRemoveMessageAndUser({ remoteJid, user, messageId }, sock) {
+  try {
+    // Remove the message
+    await sock.sendMessage(remoteJid, { delete: messageId });
+    console.log("Message removed.");
 
-      // Remove the user
-      await sock.groupRemove(event.key.remoteJid, [event.key.participant]);
-      console.log("User removed from the group.");
-    } catch (error) {
-      console.error("Failed to remove message or user:", error);
-    }
+    // Remove the user
+    await sock.groupRemove(remoteJid, [user]);
+    console.log("User removed from the group.");
+  } catch (error) {
+    console.error("Failed to remove message or user:", error);
   }
 }
+
 
 export async function connectToWhatsApp(config = {}) {
-  const { keepAlive = false } = config;
-  const { state, saveCreds } = await useMultiFileAuthState(".baileys");
+  const { keepAlive = false, credential = "default" } = config;
+  const { state, saveCreds } = await useMultiFileAuthState(`.baileys/${credential}`);
   
   if(sock && sock.status === "OPEN")
     return sock;
