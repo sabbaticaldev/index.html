@@ -7,7 +7,38 @@ store.readFromFile(".baileys/store.json");
 setInterval(() => {
   store.writeToFile(".baileys/store.json");
 }, 10000);
-let sock;
+export let sock;
+const admins = ["admin1@s.whatsapp.net", "admin2@s.whatsapp.net"]; // Admin WhatsApp IDs
+
+function isAdmin(user) {
+  return admins.includes(user);
+}
+export async function handleRemoveMessage(event, sock) {
+  if (isAdmin(event.participant)) {
+    try {
+      await sock.sendMessage(event.key.remoteJid, { delete: event.key.id });
+      console.log("Message removed.");
+    } catch (error) {
+      console.error("Failed to remove message:", error);
+    }
+  }
+}
+
+export async function handleRemoveMessageAndUser(event, sock) {
+  if (isAdmin(event.participant)) {
+    try {
+      // Remove the message
+      await sock.sendMessage(event.key.remoteJid, { delete: event.key.id });
+      console.log("Message removed.");
+
+      // Remove the user
+      await sock.groupRemove(event.key.remoteJid, [event.key.participant]);
+      console.log("User removed from the group.");
+    } catch (error) {
+      console.error("Failed to remove message or user:", error);
+    }
+  }
+}
 
 export async function connectToWhatsApp(config = {}) {
   const { keepAlive = false } = config;
@@ -25,6 +56,7 @@ export async function connectToWhatsApp(config = {}) {
   });
   store.bind(sock.ev);
   sock.status = "CLOSED";
+  
   sock.ev.on("creds.update", saveCreds);
   return new Promise((resolve, reject) => {
     sock.ev.on("connection.update", async (update) => {
