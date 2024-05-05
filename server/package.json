@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "task": "node tasks.js"
+    "task": "node tasks/index.js"
   },
   "keywords": [
     "instagram",
@@ -27,6 +27,7 @@
     "express": "^4.19.2",
     "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "^2.1.2",
+    "instagram-private-api": "github:dilame/instagram-private-api",
     "jimp": "^0.16.1",
     "link-preview-js": "^3.0.5",
     "node-fetch": "^3.3.2",

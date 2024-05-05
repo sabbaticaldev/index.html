@@ -2,9 +2,10 @@ import fs from "fs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { createReelRipOff } from "./tasks/instagram.js";
-import { createMapVideo, createZoomInVideo } from "./tasks/maps.js";
-import { CreateVideoFromImage } from "./tasks/video.js";
+import { GetTrends } from "../services/instagram.js";
+import { createReelRipOff } from "./instagram.js";
+import { createMapVideo, createZoomInVideo } from "./maps.js";
+import { CreateVideoFromImage } from "./video.js";
 
 // Helper function to determine if input is a file and read JSON
 const readJsonFile = (filePath) => {
@@ -31,7 +32,7 @@ const parseInput = (input) => {
   }
 };
 
-yargs(hideBin(process.argv))
+const yarg = yargs(hideBin(process.argv))
   .command("reel <input>", "Create an Instagram reel", (yargs) => {
     yargs.positional("input", {
       describe: "Path to a JSON configuration file or JSON string",
@@ -67,7 +68,36 @@ yargs(hideBin(process.argv))
   }, async (argv) => {
     const config = parseInput(argv.input);
     await createZoomInVideo(config);
+  });
+  
+yarg.command("get-trends <type>", "Fetch trending data from Instagram", (yargs) => {
+  yargs.positional("type", {
+    describe: "Type of trends to fetch (hashtags, reels, creators)",
+    type: "string"
+  });
+}, async (argv) => {
+  const { type } = argv;
+  console.log(`Fetching trends for ${type}...`);
+  return await GetTrends(type);
+  // Implement fetch logic here, utilizing apiQueue
+});
+
+yarg.command("get-media <type> <url>", "Fetch specific media from Instagram", (yargs) => {
+  yargs.positional("type", {
+    describe: "Type of media to fetch (reel, story, post)",
+    type: "string"
   })
-  .demandCommand(1, "You must specify a command (reel, animate, or map-route) and provide necessary input.")
+    .positional("url", {
+      describe: "URL of the media to fetch",
+      type: "string"
+    });
+}, async (argv) => {
+  const { type, url } = argv;
+  console.log(`Fetching media type: ${type} from ${url}...`);
+  // Implement fetch logic here, utilizing apiQueue
+});
+
+
+yarg.demandCommand(1, "You must specify a command (reel, animate, or map-route) and provide necessary input.")
   .help()
   .parse();
