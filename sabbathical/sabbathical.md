@@ -97,6 +97,7 @@ Post strategy:
 
 Techniques to write:
 - Story Beats - https://screencraft.org/blog/what-is-a-story-beat/
+- But / therefore|thus in place of then https://www.youtube.com/watch?v=j9jEg9uiLOU
 
 tools:
 - Eleven Labs - https://elevenlabs.io/ to generate voice
@@ -140,3 +141,15 @@ Inspiration:
 - https://news.ycombinator.com/item?id=16699571
 - Matt Cutts
 - https://www.reddit.com/r/simpleliving/comments/pl18vh/any_experience_with_sabbaticals/
+
+
+I love creating travel content, but like many creators, the reach of AllForTraveler videos has been decreasing. 
+
+That's why I've started experimenting to turn things around. 
+
+One successful experiment was getting active here on Threads — I’ll share more about that soon. 
+
+Another move that I posted here previously is launching a website packed with resources for travelers at allfortraveler.com. 
+
+A lot of social media creators don't establish a brand beyond the apps. I’m tackling this to build a stronger, more independent platform.
+

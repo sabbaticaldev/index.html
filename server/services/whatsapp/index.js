@@ -63,6 +63,29 @@ export async function connectToWhatsApp(config = {}) {
   sock.status = "CLOSED";
   
   sock.ev.on("creds.update", saveCreds);
+
+  sock.ev.on("messages.upsert", async event => {
+    console.log(JSON.stringify(event, null, 2));
+    if(!event?.messages?.[0]?.message?.reactionMessage) return;
+
+    const participant = event.messages[0].key.participant;
+    const remoteJid = event.messages[0].message.reactionMessage.key.remoteJid;
+    const messageId = event.messages[0].message.reactionMessage.key;
+    const user = event.messages[0].message.reactionMessage.key.participant;
+    const emoji = event.messages[0].message.reactionMessage.text;
+
+    if (!isAdmin(participant)) {
+      console.log("Unauthorized action attempted by non-admin.");
+      return;
+    }
+
+    if (["👎", "😮"].includes(emoji)) {
+      console.log({ remoteJid, messageId });
+      await handleRemoveMessage({ remoteJid, messageId }, sock);
+    } else if (emoji === "🚫") {
+      await handleRemoveMessageAndUser({ remoteJid, user, messageId }, sock);
+    }
+  });
   return new Promise((resolve, reject) => {
     sock.ev.on("connection.update", async (update) => {
       const { connection, lastDisconnect } = update;
