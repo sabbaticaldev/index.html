@@ -137,10 +137,15 @@ const handleFetch = async ({ event, url }) => {
   }
 };
 
+const startBackend = async () => {
+  console.log("Backend started");
+};
+
 export {
   extractPathParams,  
   handleFetch,
   messageHandler,
   P2P,
   requestUpdate,
+  startBackend,
 };

@@ -30,7 +30,7 @@ const commonConfig = {
     alias({
       frontend: path.resolve(__dirname, "libs/frontend/index.js"),
       helpers: path.resolve(__dirname, "libs/helpers/index.js"),
-      backend: path.resolve(__dirname, "libs/backend/src"),
+      backend: path.resolve(__dirname, "libs/backend/index.js"),
     }),
   ],
 };
@@ -48,8 +48,14 @@ const buildTasks = [
   },
   {
     ...commonConfig,
-    entryPoints: ["libs/core/src/index.js"],
+    entryPoints: ["libs/brazuka/src/index.js"],
     outfile: "app/dist/brazuka.js",
+    external: ["unocss"],
+  },
+  {
+    ...commonConfig,
+    entryPoints: ["libs/core/src/index.js"],
+    outfile: "app/dist/core.js",
     external: ["unocss"],
   },
   {

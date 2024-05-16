@@ -1,5 +1,4 @@
 import idbAdapter from "../indexeddb/index.js";
-import { ReactiveRecord } from "../reactive-record/index.js";
 import { fromBase62 } from "../utils.js";
 import { events } from "./events.js";
 export { events };

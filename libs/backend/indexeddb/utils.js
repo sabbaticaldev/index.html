@@ -1,18 +1,9 @@
-export const promisifyRequest = (request) => {
-  return new Promise((resolve, reject) => {
-    request.oncomplete = request.onsuccess = () => resolve(request.result);
-    request.onabort = request.onerror = () => reject(request.error);
-  });
-};
-
-const executeRequest = (request) =>
+const promisifyRequest = (request) =>
   new Promise((resolve, reject) => {
-    request.oncomplete = request.onsuccess = () => resolve(request.result);
-    request.onabort = request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
   });
 
-export const tableOperation = (table, mode, operation) =>
-  table(mode, (store) => executeRequest(operation(store)));
 const iterateCursor = (request, process) =>
   new Promise((resolve, reject) => {
     const items = [];
@@ -28,52 +19,50 @@ const iterateCursor = (request, process) =>
     request.onerror = () => reject(request.error);
   });
 
+const tableOperation = (table, mode, operation) =>
+  table(mode, (store) => promisifyRequest(operation(store)));
+
 const processKeys = (items, cursor) => items.push(cursor.key);
 const processValues = (items, cursor) => items.push(cursor.value);
-const processEntries = (items, cursor) =>
-  items.push([cursor.key, cursor.value]);
+const processEntries = (items, cursor) => items.push([cursor.key, cursor.value]);
 
-export const entries = (table) =>
+const entries = (table) =>
   tableOperation(table, "readonly", (store) =>
     store.getAll && store.getAllKeys
       ? Promise.all([
-        executeRequest(store.getAllKeys()),
-        executeRequest(store.getAll()),
+        promisifyRequest(store.getAllKeys()),
+        promisifyRequest(store.getAll()),
       ]).then(([keys, values]) => keys.map((key, i) => [key, values[i]]))
-      : iterateCursor(store.openCursor(), processEntries),
+      : iterateCursor(store.openCursor(), processEntries)
   );
 
-export const startsWith = (
-  prefix,
-  table,
-  config = { index: true, keepKey: false },
-) =>
+const startsWith = (prefix, table, { index = true, keepKey = false } = {}) =>
   table("readonly", (store) => {
     const range = IDBKeyRange.bound(prefix, prefix + "\uffff");
     return iterateCursor(store.openCursor(range), (items, cursor) => {
-      const id = config.keepKey ? cursor.key : cursor.key.split("_")[1];
-      items.push(config.index ? id : { id, [prefix]: cursor.value });
+      const id = keepKey ? cursor.key : cursor.key.split("_")[1];
+      items.push(index ? id : { id, [prefix]: cursor.value });
     });
   });
 
-export const getCount = (table) =>
-  tableOperation(table, "readonly", (store) => store.count());
+const getCount = (table) => tableOperation(table, "readonly", (store) => store.count());
+const isEmpty = (table) => getCount(table).then((count) => count === 0);
+const clear = (table) => tableOperation(table, "readwrite", (store) => store.clear());
+const keys = (table) => tableOperation(table, "readonly", (store) =>
+  store.getAllKeys ? promisifyRequest(store.getAllKeys()) : iterateCursor(store.openCursor(), processKeys)
+);
+const values = (table) => tableOperation(table, "readonly", (store) =>
+  store.getAll ? promisifyRequest(store.getAll()) : iterateCursor(store.openCursor(), processValues)
+);
 
-export const isEmpty = (table) => getCount(table).then((count) => count === 0);
-
-export const clear = (table) =>
-  tableOperation(table, "readwrite", (store) => store.clear());
-
-export const keys = (table) =>
-  tableOperation(table, "readonly", (store) =>
-    store.getAllKeys
-      ? store.getAllKeys()
-      : iterateCursor(store.openCursor(), processKeys),
-  );
-
-export const values = (table) =>
-  tableOperation(table, "readonly", (store) =>
-    store.getAll
-      ? store.getAll()
-      : iterateCursor(store.openCursor(), processValues),
-  );
+export {
+  clear,
+  entries,
+  getCount,
+  isEmpty,
+  keys,
+  promisifyRequest,
+  startsWith,
+  tableOperation,
+  values
+};

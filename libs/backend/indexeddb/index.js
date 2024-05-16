@@ -1,31 +1,15 @@
 import { get, getItem, remove, set, setLastOp, update } from "./crud.js";
-import {
-  clear,
-  entries,
-  getCount,
-  isEmpty,
-  keys,
-  promisifyRequest,
-  startsWith,
-  values,
-} from "./utils.js";
+import { clear, entries, getCount, isEmpty, keys, promisifyRequest, startsWith, values } from "./utils.js";
 
-export const createStore = (dbName = "bootstrapp", storeName = "kv") => {
+const createStore = (dbName = "bootstrapp", storeName = "kv") => {
   const request = indexedDB.open(dbName);
   request.onupgradeneeded = () => request.result.createObjectStore(storeName);
   const dbp = promisifyRequest(request);
-  return (txMode, callback) =>
-    dbp.then((db) =>
-      callback(db.transaction(storeName, txMode).objectStore(storeName)),
-    );
+  return (txMode, callback) => dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
 };
 
-export const createDatabase = (
-  dbName = "bootstrapp",
-  storeNames = ["kv"],
-  version = 1,
-) => {
-  return new Promise((resolve, reject) => {
+const createDatabase = (dbName = "bootstrapp", storeNames = ["kv"], version = 1) =>
+  new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName, version);
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
@@ -35,37 +19,24 @@ export const createDatabase = (
         }
       });
     };
-
-    request.onerror = (event) => {
-      console.log(event.target);
-      reject(new Error(`IndexedDB error: ${event.target.error}`));
-    };
-
+    request.onerror = (event) => reject(new Error(`IndexedDB error: ${event.target.error}`));
     request.onsuccess = (event) => {
       const db = event.target.result;
-      const stores = {};
-
-      storeNames.forEach((storeName) => {
-        stores[storeName] = (txMode, callback) => {
-          return new Promise((resolve, reject) => {
-            try {
-              const transaction = db.transaction(storeName, txMode);
-              const objectStore = transaction.objectStore(storeName);
-              Promise.resolve(callback(objectStore))
-                .then(resolve)
-                .catch(reject);
-            } catch (error) {
-              console.error({ storeName, error });
-              reject(new Error("Transaction failed", error));
-            }
-          });
-        };
-      });
-
+      const stores = storeNames.reduce((acc, storeName) => {
+        acc[storeName] = (txMode, callback) => new Promise((resolve, reject) => {
+          try {
+            const transaction = db.transaction(storeName, txMode);
+            const objectStore = transaction.objectStore(storeName);
+            Promise.resolve(callback(objectStore)).then(resolve).catch(reject);
+          } catch (error) {
+            reject(new Error("Transaction failed", error));
+          }
+        });
+        return acc;
+      }, {});
       resolve(stores);
     };
   });
-};
 
 const idbAdapter = {
   clear,

@@ -1,6 +1,6 @@
+import { startBackend } from "backend";
 import {
   appKit,
-  baseTheme,
   chatKit,
   contentKit,
   crudKit,
@@ -12,43 +12,15 @@ import {
   navigationKit,
   reactiveViewInstances,
   reset,
-  uiKit} from "frontend";
+  uiKit
+} from "frontend";
 import {
-  CSV,
-  datetime,
-  debounce,
-  draggable,
-  droparea,
-  event,
-  File,
-  get,
-  i18n,
-  patch,
-  post,
-  remove,
-  T,
-  url
+  getUrlBlob,
+  injectStyle,
+  isValidApp,
 } from "helpers";
 
-export {
-  baseTheme,
-  CSV,
-  datetime,
-  debounce,
-  draggable,
-  droparea,
-  event,
-  File,
-  get,
-  i18n,
-  patch,
-  post,
-  remove,
-  T,
-  url
-};
 
-import { startBackend } from "./controller.js";
 
 const updateAllStyles = async (updateBefore = false, updateAfter = false) => {
   const result = await window.__unocss_runtime.update();
@@ -84,37 +56,34 @@ const startFrontend = ({ app, style }) => {
       return {
         models: { ...acc.models, ...result.models },
         views: { ...acc.views, ...result.views },
-        controllers: { ...acc.controllers, ...result.controllers }
       };
     },
-    { models: {}, views: {}, controllers: {} }
+    { models: {}, views: {} }
   );
+  console.log("FRONTEND STARTED");
 };
 
 async function injectApp(app, style) {
   if (!app) throw "Error: no App found";
   if (app.title) document.title = app.title;
-  if (app.frontendOnly) {
-    startFrontend({ app, style });
-    if (app.init) await app.init?.({ style, app });
-    if (window.__unocss_runtime) window.__unocss_runtime.extractAll();
-    if (window.__unocss_runtime)
-      setTimeout(() => {
-        const styleEl = document.createElement("style");
-        styleEl.textContent = reset;
-        document.head.append(styleEl);
-        updateAllStyles();
-      }, 500);
-  } else {
+  startFrontend({ app, style });
+  if (app.init) await app.init?.({ style, app });
+  if (window.__unocss_runtime) window.__unocss_runtime.extractAll();
+  if (window.__unocss_runtime)
+    setTimeout(() => {
+      const styleEl = document.createElement("style");
+      styleEl.textContent = reset;
+      document.head.append(styleEl);
+      updateAllStyles();
+    }, 500);
+   
+  if(!app.frontendOnly) {
     navigator.serviceWorker.addEventListener("message", async (event) => {
       if (event.data.type === "BACKEND_INITIALIZED") {
         {
           const { appId } = event.data || {};
           localStorage.setItem("appId", appId);
-          startFrontend({ app, style });
-          if (app.init) await app.init?.({ style, app });
-          if (window.__unocss_runtime) window.__unocss_runtime.extractAll();
-
+          if (app.init) await app.init?.({ style, app });          
           if (event.data) {
             if (navigator.storage && navigator.storage.persist) {
               const granted = await navigator.storage.persist();
@@ -124,58 +93,12 @@ async function injectApp(app, style) {
                   : "Storage may be cleared by the UA under storage pressure."
               );
             }
-            if (window.__unocss_runtime)
-              setTimeout(() => {
-                const styleEl = document.createElement("style");
-                styleEl.textContent = reset;
-                document.head.append(styleEl);
-                updateAllStyles();
-              }, 500);
           }
         }
       }
     });
   }
 }
-export const isValidApp = (app) => {
-  if (!app) {
-    throw new Error("App is not defined");
-  }
-
-  if (!app.views) {
-    throw new Error("App views object is not defined");
-  }
-  if (!app.views["app-index"] && !app.views["page-index"]) {
-    throw new Error(
-      "No valid bootstrap page found in app views (app-index or page-index required)"
-    );
-  }
-
-  return true;
-};
-
-const getUrlBlob = () => {
-  const extractedContent = decodeURIComponent(
-    window.location.hash.substring(1)
-  );
-  if (!extractedContent) return null;
-  const blob = new Blob([extractedContent], { type: "application/javascript" });
-  return blob;
-};
-const getStyle = () => {
-  return [reset, decodeURIComponent(window.location.search.substring(1))].join(
-    " "
-  );
-};
-
-export const injectStyle = (style) => {
-  const blob = new Blob([style], { type: "text/css" });
-  const blobURL = URL.createObjectURL(blob);
-  const linkElem = document.createElement("link");
-  linkElem.rel = "stylesheet";
-  linkElem.href = blobURL;
-  document.head.appendChild(linkElem);
-};
 
 const loadAppFromBlob = async ({ app, style }, frontendOnly) => {
   const blobURL = URL.createObjectURL(app);
@@ -197,10 +120,12 @@ const loadApp = ({ app, style }) => {
         setTimeout(() => {
           if (registration.active) {
             if (!app.frontendOnly) {
-              const urlParams = new URLSearchParams(window.location.search);
-              let appId =
-                urlParams.get("appId") || localStorage.getItem("appId");
+              let appId = localStorage.getItem("appId");
               if (["undefined", "null", "\"\""].includes(appId)) appId = null;
+              if(!appId) {
+                appId = Date.now();
+                localStorage.setItem("appId", appId);
+              }
               const models = app.models;
               startBackend({
                 appId,
@@ -217,6 +142,12 @@ const loadApp = ({ app, style }) => {
         console.error("Error loading service-worker", { error })
       );
   }
+};
+
+export const getStyle = () => {
+  return [reset, decodeURIComponent(window.location.search.substring(1))].join(
+    " "
+  );
 };
 
 const environmentStrategies = {
