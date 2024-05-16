@@ -7,7 +7,7 @@ import WebSocket, { WebSocketServer } from "ws";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 async function copyThemeFile() {
-  const srcPath = path.join(__dirname, "brazuka/src/theme/uno.global.js");
+  const srcPath = path.join(__dirname, "libs/frontend/uno.global.js");
   const destPath = path.join(__dirname, "app/dist/uno.global.js");
   try {
     await fs.copyFile(srcPath, destPath);
@@ -30,17 +30,17 @@ const commonConfig = {
 const buildTasks = [
   {
     ...commonConfig,
-    entryPoints: ["frontend/index.js"],
+    entryPoints: ["libs/frontend/index.js"],
     outfile: "app/dist/frontend.js",
   },
   {
     ...commonConfig,
-    entryPoints: ["helpers/index.js"],
+    entryPoints: ["libs/helpers/index.js"],
     outfile: "app/dist/helpers.js",
   },
   {
     ...commonConfig,
-    entryPoints: ["brazuka/src/index.js"],
+    entryPoints: ["libs/core/src/index.js"],
     outfile: "app/dist/brazuka.js",
     external: ["unocss"],
   },
@@ -48,7 +48,7 @@ const buildTasks = [
     ...commonConfig,
     format: "iife",
     target: ["es2017"],
-    entryPoints: ["backend/index.sw.js"],
+    entryPoints: ["libs/backend/index.sw.js"],
     outfile: "app/dist/backend.sw.js",
   },
 ];
@@ -80,7 +80,7 @@ if (isWatchMode) {
   });
 
   const watcher = chokidar.watch("./", {
-    ignored: [/.baileys/,/node_modules/, /\.db$/, /app\/apps\/allfortraveler\/data/,/\.db-journal$/, /baileys_store\.json$/]
+    ignored: [/.baileys/,/node_modules/, /.git/, /\.map$/, /\.db$/, /app\/apps\/allfortraveler\/data/,/\.db-journal$/, /baileys_store\.json$/]
   });
 
   watcher.on("change", (path) => {
