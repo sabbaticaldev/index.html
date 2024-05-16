@@ -14,3 +14,4 @@ auth_info_baileys/*
 baileys_store.json
 yarn-error.log
 downloads/*
+.env
