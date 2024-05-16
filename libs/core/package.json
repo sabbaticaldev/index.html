@@ -1,0 +1,19 @@
+{
+  "name": "core",
+  "type": "module",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "devDependencies": {
+    "esbuild": "^0.19.5"
+  },
+  "scripts": {
+    "build": "node esbuild.config.js",
+    "dev": "node esbuild.config.js --watch"
+  },
+  "dependencies": {
+    "@brazuka/backend": "github:bootstrapp-ai/backend",
+    "frontend": "github:bootstrapp-ai/frontend",
+    "helpers": "github:bootstrapp-ai/helpers"
+  }
+}
