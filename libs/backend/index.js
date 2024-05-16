@@ -1,5 +1,4 @@
 import {
-  getApiModel,
   messageHandler,
   requestUpdate,
 } from "./appstate/index.js";
@@ -36,6 +35,7 @@ export const postMessage = (payload) => {
     self.dispatchEvent(message);
   }
 };
+
 const P2P = {
   _handleClients: (action) => {
     self.clients.matchAll().then((clients) => {
@@ -75,7 +75,7 @@ const endpointsNotLoaded = new Response(
 );
 
 const handleFetch = async ({ event, url }) => {
-  const endpoints = await getApiModel();
+  const endpoints = {};
   if (!endpoints) return endpointsNotLoaded;
 
   const request = `${event.request.method} ${url.pathname}`;
@@ -138,8 +138,7 @@ const handleFetch = async ({ event, url }) => {
 };
 
 export {
-  extractPathParams,
-  getApiModel,
+  extractPathParams,  
   handleFetch,
   messageHandler,
   P2P,
