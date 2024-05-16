@@ -1,5 +1,6 @@
 import chokidar from "chokidar";
 import * as esbuild from "esbuild";
+import alias from "esbuild-plugin-alias";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -25,6 +26,13 @@ const commonConfig = {
   minify: true,
   format: "esm",
   target: ["esnext"],
+  plugins: [
+    alias({
+      frontend: path.resolve(__dirname, "libs/frontend/index.js"),
+      helpers: path.resolve(__dirname, "libs/helpers/index.js"),
+      backend: path.resolve(__dirname, "libs/backend/src"),
+    }),
+  ],
 };
 
 const buildTasks = [

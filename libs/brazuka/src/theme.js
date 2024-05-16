@@ -389,7 +389,7 @@ export const generateTheme = (userTheme) => {
     },
 
     "uix-text": {
-      _base: "",
+      _base: "bg-red",
       variant: TextColors,
       weight: FontWeight,
       font: FontType,

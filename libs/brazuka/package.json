@@ -11,7 +11,7 @@
     "build": "node esbuild.config.js",
     "dev": "node esbuild.config.js --watch"
   },
-  "packages": {
+  "dependencies": {
     "backend": "workspace:*",
     "frontend": "workspace:*",
     "helpers": "workspace:*"

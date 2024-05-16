@@ -12,6 +12,6 @@
     "esbuild": "^0.21.3"
   },
   "dependencies": {
-    "helpers": "github:bootstrapp-ai/helpers"
+    "helpers": "workspace:*"
   }
 }

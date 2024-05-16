@@ -2,6 +2,7 @@ import BaseReactiveView, {
   instances as reactiveViewInstances,
 } from "./reactive-view.js";
 import reset from "./reset.txt";
+import baseTheme from "./theme.js";
 import appKit from "./uix/app.package.js";
 import chatKit from "./uix/chat.package.js";
 import contentKit from "./uix/content.package.js";
@@ -79,6 +80,7 @@ const definePackage = ({ pkg, style }) => {
 
 export {
   appKit,
+  baseTheme,
   chatKit,
   contentKit,
   crudKit,
@@ -91,5 +93,5 @@ export {
   navigationKit,
   reactiveViewInstances,
   reset,
-  uiKit,
+  uiKit
 };

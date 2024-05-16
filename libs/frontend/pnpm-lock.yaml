@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       helpers:
-        specifier: github:bootstrapp-ai/helpers
-        version: https://codeload.github.com/bootstrapp-ai/helpers/tar.gz/ff8e0ca2b12c3114151ef3df4c7a644c32b8fef4
+        specifier: file:../helpers
+        version: file:../helpers
     devDependencies:
       esbuild:
         specifier: ^0.21.3
@@ -190,9 +190,8 @@ packages:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
 
-  helpers@https://codeload.github.com/bootstrapp-ai/helpers/tar.gz/ff8e0ca2b12c3114151ef3df4c7a644c32b8fef4:
-    resolution: {tarball: https://codeload.github.com/bootstrapp-ai/helpers/tar.gz/ff8e0ca2b12c3114151ef3df4c7a644c32b8fef4}
-    version: 0.1.0
+  helpers@file:../helpers:
+    resolution: {directory: ../helpers, type: directory}
 
   is-binary-path@2.1.0:
     resolution: {integrity: sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==}
@@ -369,7 +368,7 @@ snapshots:
     dependencies:
       is-glob: 4.0.3
 
-  helpers@https://codeload.github.com/bootstrapp-ai/helpers/tar.gz/ff8e0ca2b12c3114151ef3df4c7a644c32b8fef4:
+  helpers@file:../helpers:
     dependencies:
       chokidar: 3.6.0
       ws: 8.17.0

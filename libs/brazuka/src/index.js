@@ -1,6 +1,5 @@
 import {
   appKit,
-  baseTheme,
   chatKit,
   contentKit,
   crudKit,
@@ -12,7 +11,9 @@ import {
   navigationKit,
   reactiveViewInstances,
   reset,
-  uiKit} from "frontend";
+  uiKit
+} from "frontend";
+import { baseTheme } from "frontend/theme.js";
 import {
   CSV,
   datetime,
