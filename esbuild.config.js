@@ -48,13 +48,7 @@ const buildTasks = [
   },
   {
     ...commonConfig,
-    entryPoints: ["libs/brazuka/src/index.js"],
-    outfile: "app/dist/brazuka.js",
-    external: ["unocss"],
-  },
-  {
-    ...commonConfig,
-    entryPoints: ["libs/core/src/index.js"],
+    entryPoints: ["libs/core/index.js"],
     outfile: "app/dist/core.js",
     external: ["unocss"],
   },

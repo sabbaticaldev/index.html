@@ -36,7 +36,6 @@ const extractId = (val) => (Array.isArray(val) ? val : [null, val]);
 
 export async function unsetRelation(relatedModelName, id, prevId, targetForeignKey, isMany = false) {
   if (!prevId) return;
-  const keyToUpdate = `${targetForeignKey}_${prevId}`;
   if (isMany) {
     const prevTarget = await ReactiveRecord.get(relatedModelName, prevId, { props: [targetForeignKey] });
     if (prevTarget) {

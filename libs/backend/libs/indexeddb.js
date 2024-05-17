@@ -188,6 +188,15 @@ export const createDatabase = (dbName = "bootstrapp", storeNames = ["kv"], versi
     };
   });
 
+const checkStoreExists = async (dbName) => {
+  if (!indexedDB.databases) {
+    console.error("indexedDB.databases() is not supported in this browser.");
+    return false;
+  }
+  const databases = await indexedDB.databases();
+  return databases.some(db => db.name === dbName);
+};
+
 const idbAdapter = {
   clear,
   entries,
@@ -197,6 +206,7 @@ const idbAdapter = {
   keys,
   isEmpty,
   createStore,
+  checkStoreExists,
   createDatabase,
   get,
   getItem,

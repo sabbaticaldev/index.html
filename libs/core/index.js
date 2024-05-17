@@ -110,33 +110,32 @@ const loadAppFromBlob = async ({ app, style }, frontendOnly) => {
 
 // Function to load the app and register the service worker if available
 const loadApp = async ({ app, style }) => {
+  console.log("Load app");
   if (!app) return console.error("DEBUG: App not found.");
+  console.log("Load app 2");
   if (!isValidApp(app)) return console.error("DEBUG: App is invalid.", { app });
-
+  console.log("Load app 3");
   if ("serviceWorker" in navigator) {
+    console.log("Load app 4");
     try {
-
-      if (!app.frontendOnly) {
-        let appId = localStorage.getItem("appId");
-        if (["undefined", "null", "\"\""].includes(appId)) appId = null;
-        if (!appId) {
-          appId = Date.now().toString();
-          localStorage.setItem("appId", appId);
-        }
-        await startBackend({ appId, models: app.models, version: app.version });
-      }
-
-      const registration = await navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
-      console.info("ServiceWorker registration successful:", registration);
+      console.log("Start Backend in frontend");
+      startBackend({ models: app.models, version: app.version }).then(async data => {
+        console.log({data});
+        console.log("start service worker");
+        const registration = await navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
+        console.info("ServiceWorker registration successful:", registration);
       
-      setTimeout(async () => {
-        if (registration.active) {
-          await injectApp(app, style);
-        }
-      }, 0);
-    } catch (error) {
+        setTimeout(async () => {
+          if (registration.active) {
+            await injectApp(app, style);
+          }
+        }, 0);
+      });
+    }
+    catch (error) {
       console.error("Error loading service-worker", { error });
     }
+      
   }
 };
 
