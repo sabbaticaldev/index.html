@@ -2,11 +2,11 @@ import {
   messageHandler,
   requestUpdate,
   startBackend
-} from "./appstate/index.js";
-import { BOOL_TABLE } from "./constants.js";
-import idbAdapter from "./indexeddb/index.js";
-import ReactiveRecord from "./reactive-record/index.js";
-import { extractPathParams } from "./utils.js";
+} from "./libs/appstate.js";
+import { BOOL_TABLE } from "./libs/constants.js";
+import idbAdapter from "./libs/indexeddb.js";
+import ReactiveRecord from "./libs/reactive-record.js";
+import { extractPathParams } from "./libs/utils.js";
 
 export const fetchDataFromDB = async (appId, models) => {
   const dataPromises = models.map(async (model) => {
@@ -70,7 +70,6 @@ const endpointNotFound = new Response(
 const handleFetch = async ({ event, url }) => {
   const method = event.request.method;
   const [,, model, id] = url.pathname.split("/");
-  console.log({method, model, id});
   if (!ReactiveRecord.models[model]) {
     return endpointNotFound;
   }
@@ -113,7 +112,7 @@ const handleFetch = async ({ event, url }) => {
     }
     
     const response = await actionMap[method]();
-    
+
     if (["POST", "PATCH", "DELETE"].includes(method)) {
       requestUpdate();
     }

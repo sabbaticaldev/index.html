@@ -101,3 +101,110 @@ export {
   tableOperation,
   values
 };
+
+
+const getItem = (key, table) => table("readonly", (store) => promisifyRequest(store.get(key)));
+const get = (keys, table) => table("readonly", (store) => Promise.all(keys.map((key) => promisifyRequest(store.get(key)))));
+const set = (entries, table) => table("readwrite", (store) => {
+  entries.forEach(([key, value]) => {
+    console.log(`Putting key: ${key}, value: ${value}`);
+    store.put(value, key);
+  });
+  console.log("All entries put in store. Awaiting transaction completion.");
+  return promisifyRequest(store.transaction);
+});
+const remove = (keys, table) => table("readwrite", (store) => {
+  keys.forEach((key) => store.delete(key));
+  return promisifyRequest(store.transaction);
+});
+const update = (key, updater, db) => db("readwrite", (store) =>
+  promisifyRequest(store.get(key)).then((result) => {
+    store.put(updater(result), key);
+    return promisifyRequest(store.transaction);
+  })
+);
+const setLastOp = async (key, value, { db, propKey }) => {
+  const keys = await startsWith(propKey, db, { index: true, keepKey: true });
+  await remove(keys, db);
+  set([[key, value]], db);
+};
+
+export {
+  get,
+  getItem,
+  remove,
+  set,
+  setLastOp,
+  update
+};
+  
+const createStore = (dbName = "bootstrapp", storeName = "kv") => {
+  const request = indexedDB.open(dbName);
+  request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+  const dbp = promisifyRequest(request);
+  return (txMode, callback) => dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
+};
+
+export const getApp = async (dbName = "default", store = "app") => {
+  const db = createStore(dbName, store);
+  const appData = await entries(db);
+  
+  if (appData.length === 0) {
+    console.error("No app data found in IndexedDB");
+    return null;
+  } else {
+    return appData.toObject();
+  }
+};
+
+
+export const createDatabase = (dbName = "bootstrapp", storeNames = ["kv"], version = 1) =>
+  new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName, version);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      storeNames.forEach((storeName) => {
+        if (!db.objectStoreNames.contains(storeName)) {
+          db.createObjectStore(storeName);
+        }
+      });
+    };
+    request.onerror = (event) => reject(new Error(`IndexedDB error: ${event.target.error}`));
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const stores = storeNames.reduce((acc, storeName) => {
+        acc[storeName] = (txMode, callback) => new Promise((resolve, reject) => {
+          try {
+            const transaction = db.transaction(storeName, txMode);
+            const objectStore = transaction.objectStore(storeName);
+            Promise.resolve(callback(objectStore)).then(resolve).catch(reject);
+          } catch (error) {
+            reject(new Error("Transaction failed", error));
+          }
+        });
+        return acc;
+      }, {});
+      resolve(stores);
+    };
+  });
+
+const idbAdapter = {
+  clear,
+  entries,
+  values,
+  getCount,
+  startsWith,
+  keys,
+  isEmpty,
+  createStore,
+  createDatabase,
+  get,
+  getItem,
+  remove,
+  set,
+  setLastOp,
+  update,
+  getApp
+};
+
+export default idbAdapter;
