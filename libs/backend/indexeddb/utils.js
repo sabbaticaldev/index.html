@@ -17,8 +17,11 @@ const promisifyRequest = (request) =>
         reject(request.error);
       };
     } else {
-      console.error("Invalid request or transaction", request);
-      reject(new Error("Invalid request or transaction"));
+      if(request.error){
+        console.error("Invalid request or transaction", request);
+        reject(new Error("Invalid request or transaction"));
+      }
+      else resolve(request);
     }
   });
 

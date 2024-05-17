@@ -8,7 +8,23 @@ const createStore = (dbName = "bootstrapp", storeName = "kv") => {
   return (txMode, callback) => dbp.then((db) => callback(db.transaction(storeName, txMode).objectStore(storeName)));
 };
 
-const createDatabase = (dbName = "bootstrapp", storeNames = ["kv"], version = 1) =>
+export const getApp = async (dbName = "default", store = "app") => {
+  const db = createStore(dbName, store);
+  const appData = await idbAdapter.entries(db);
+
+  if (appData.length === 0) {
+    console.error("No app data found in IndexedDB");
+    return null;
+  } else {
+    const app = appData.reduce((acc, [key, value]) => {
+      acc[key.split("_")[0]] = value;
+      return acc;
+    }, {});
+    return app;
+  }
+};
+
+export const createDatabase = (dbName = "bootstrapp", storeNames = ["kv"], version = 1) =>
   new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName, version);
     request.onupgradeneeded = (event) => {
@@ -54,6 +70,7 @@ const idbAdapter = {
   set,
   setLastOp,
   update,
+  getApp
 };
 
 export default idbAdapter;

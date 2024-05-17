@@ -125,7 +125,7 @@ const loadApp = async ({ app, style }) => {
         }
         await startBackend({ appId, models: app.models, version: app.version });
       }
-      
+
       const registration = await navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
       console.info("ServiceWorker registration successful:", registration);
       

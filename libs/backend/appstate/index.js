@@ -1,4 +1,4 @@
-import idbAdapter from "../indexeddb/index.js";
+import { createDatabase, getApp } from "../indexeddb/index.js";
 import ReactiveRecord from "../reactive-record/index.js";
 import { events } from "./events.js";
 export { events };
@@ -17,38 +17,46 @@ export const workspaceModelDefinition = {
   },
 };
 
-export const startBackend = async (app, isSW = false) => {
-  const { version = 1 } = app;
-  console.log("INIT APP");
 
-  let dbName = "default";
-  const models = { app: workspaceModelDefinition, ...(app.models || {}) };
-  const stores = await idbAdapter.createDatabase(
-    dbName,
-    Object.keys(models),
-    version,
-  );
-
+const initializeDatabase = async (dbName, models, version) => {
+  const stores = await createDatabase(dbName, Object.keys(models), version);
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
-  if(!isSW) {
-    const existingAppEntry = await ReactiveRecord.get("app", "default");
-    if (!existingAppEntry) {
-      const timestamp = Date.now();
-      ReactiveRecord.appId = timestamp;
-      const appEntry = {
-        id: "default",
-        models,
-        version,
-        timestamp,
-      };
-      await ReactiveRecord.add("app", appEntry);
-      console.log("App entry added:", appEntry);
-      return appEntry;
+};
+
+const createAppEntry = async (models, version) => {
+  const timestamp = Date.now();
+  ReactiveRecord.appId = timestamp;
+  const appEntry = {
+    id: "default",
+    models,
+    version,
+    timestamp,
+  };
+  await ReactiveRecord.add("app", appEntry);
+  console.log("App entry added:", appEntry);
+  return appEntry;
+};
+
+export const startBackend = async (app, isSW = false) => {
+  console.log("INIT APP");
+  const dbName = "default";
+  const models = { app: workspaceModelDefinition, ...(app.models || {}) };
+  const version = app.version || 1;
+
+  if (!isSW) {
+    const existingApp = await getApp();
+    if (existingApp) {
+      console.log("Existing app entry found:", existingApp);
+      return existingApp;
     }
-  
-    console.log("Existing app entry found:", existingAppEntry);
-    return existingAppEntry;
+    
+    await initializeDatabase(dbName, models, version);
+    return await createAppEntry(models, version);
+  }
+  else {
+    console.log({app});
+    await initializeDatabase(dbName, models, version);
   }
 };
 

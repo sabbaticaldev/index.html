@@ -1,9 +1,13 @@
-import { promisifyRequest, startsWith } from "./utils";
+import { promisifyRequest, startsWith } from "./utils.js";
 
 const getItem = (key, table) => table("readonly", (store) => promisifyRequest(store.get(key)));
 const get = (keys, table) => table("readonly", (store) => Promise.all(keys.map((key) => promisifyRequest(store.get(key)))));
 const set = (entries, table) => table("readwrite", (store) => {
-  entries.forEach(([key, value]) => store.put(value, key));
+  entries.forEach(([key, value]) => {
+    console.log(`Putting key: ${key}, value: ${value}`);
+    store.put(value, key);
+  });
+  console.log("All entries put in store. Awaiting transaction completion.");
   return promisifyRequest(store.transaction);
 });
 const remove = (keys, table) => table("readwrite", (store) => {
@@ -30,3 +34,4 @@ export {
   setLastOp,
   update
 };
+  

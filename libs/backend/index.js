@@ -5,6 +5,7 @@ import {
 } from "./appstate/index.js";
 import { BOOL_TABLE } from "./constants.js";
 import idbAdapter from "./indexeddb/index.js";
+import ReactiveRecord from "./reactive-record/index.js";
 import { extractPathParams } from "./utils.js";
 
 export const fetchDataFromDB = async (appId, models) => {
@@ -65,39 +66,16 @@ const endpointNotFound = new Response(
   },
 );
 
-const endpointsNotLoaded = new Response(
-  JSON.stringify({ error: "ERROR: endpoints weren't loaded" }),
-  {
-    status: 500,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  },
-);
-
 const handleFetch = async ({ event, url }) => {
-  const endpoints = {};
-  if (!endpoints) return endpointsNotLoaded;
+  const method = event.request.method;
+  const [,, model, id] = url.pathname.split("/");
+  console.log({model, id});
+  // Validate if the model exists
+  if (!ReactiveRecord.models[model]) {
+    return endpointNotFound;
+  }
 
-  const request = `${event.request.method} ${url.pathname}`;
-  const matchedEndpointKey = Object.keys(endpoints).find((endpointKey) => {
-    const { regex } = endpoints[endpointKey];
-    return regex.test(request);
-  });
-  if (!matchedEndpointKey) return endpointNotFound;
   try {
-    const {
-      callback,
-      model,
-      models = {},
-      regex: endpointRegex,
-    } = endpoints[matchedEndpointKey];
-
-    const pathParams = extractPathParams(
-      matchedEndpointKey,
-      request,
-      endpointRegex,
-    );
     const queryParams = [...url.searchParams.entries()].reduce(
       (acc, [key, value]) => ({
         ...acc,
@@ -107,24 +85,40 @@ const handleFetch = async ({ event, url }) => {
     );
 
     const bodyMethods = ["POST", "PATCH"];
-    const bodyParams = bodyMethods.includes(event.request.method)
-      ? await event.request
-        .json()
-        .catch((err) => console.error("Failed to parse request body", err))
+    const bodyParams = bodyMethods.includes(method)
+      ? await event.request.json().catch((err) => {
+        console.error("Failed to parse request body", err);
+        return {};
+      })
       : {};
-    const params = { ...pathParams, ...bodyParams, ...queryParams };
-    const response = await callback.call(
-      model,
-      Array.isArray(bodyParams) ? bodyParams : params,
-      {
-        P2P,
-        requestUpdate,
-        models,
-      },
-    );
-    if (["POST", "PATCH", "DELETE"].includes(event.request.method)) {
+
+    const params = { ...queryParams, ...bodyParams };
+
+    const actionMap = {
+      GET: id
+        ? () => ReactiveRecord.get(model, id, params)
+        : () => ReactiveRecord.getMany(model, null, params),
+      POST: () =>
+        Array.isArray(params)
+          ? ReactiveRecord.addMany(model, params)
+          : ReactiveRecord.add(model, params),
+      PATCH: () =>
+        id
+          ? ReactiveRecord.edit(model, { id, ...params })
+          : endpointNotFound,
+      DELETE: () => (id ? ReactiveRecord.remove(model, id) : endpointNotFound),
+    };
+
+    if (!actionMap[method]) {
+      return endpointNotFound;
+    }
+
+    const response = await actionMap[method]();
+
+    if (["POST", "PATCH", "DELETE"].includes(method)) {
       requestUpdate();
     }
+
     return new Response(JSON.stringify(response), {
       headers: {
         "Content-Type": Array.isArray(response)
@@ -134,12 +128,20 @@ const handleFetch = async ({ event, url }) => {
     });
   } catch (error) {
     console.error({ error });
-    throw error;
+    return new Response(
+      JSON.stringify({ error: "Internal Server Error" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
 
 export {
-  extractPathParams,  
+  extractPathParams,
   handleFetch,
   messageHandler,
   P2P,
