@@ -1,5 +1,6 @@
 import idbAdapter from "../indexeddb/index.js";
-import { fromBase62 } from "../utils.js";
+import ReactiveRecord from "../reactive-record/index.js";
+import { fromBase62, generateIdWithUserId } from "../utils.js";
 import { events } from "./events.js";
 export { events };
 export let appId;
@@ -18,34 +19,43 @@ export const workspaceModelDefinition = {
   },
 };
 
-export const defineModels = async (props) => {
-  const { appId = "default", version = 1 } = props;
-  let dbName = appId;
-  const models = { app: workspaceModelDefinition, ...models };
+export const startBackend = async (app) => {
+  const { version = 1 } = app;
+  console.log("INIT APP");
+
+  let dbName = "default";
+  const models = { app: workspaceModelDefinition, ...(app.models || {}) };
 
   const stores = await idbAdapter.createDatabase(
     dbName,
     Object.keys(models),
     version,
   );
-  console.log({stores});
-  const initialData = [];
 
-  for (const [name, module] of Object.entries(models)) {
-    if (module._initialData) initialData.push([name, module._initialData]);
+  ReactiveRecord.appId = generateIdWithUserId(new Date().getTime().toString());
+  ReactiveRecord.stores = stores;
+  ReactiveRecord.models = models;
+
+  // Check if an entry exists in the app store
+  const existingAppEntry = await ReactiveRecord.get("app", "default");
+
+  if (!existingAppEntry) {
+    // Add an entry to the app store with version, models, and timestamp (appId)
+    const timestamp = new Date().getTime();
+    const appEntry = {
+      id: "default",
+      models: Object.keys(models),
+      version,
+      timestamp,
+    };
+    await ReactiveRecord.add("app", appEntry);
+    console.log("App entry added:", appEntry);
+    return appEntry;
   }
 
-  if (initialData.length > 0) {
-    for (const [modelName, data] of initialData) {
-      if (await models[modelName].isEmpty()) {
-        await models[modelName].addMany(data);
-      }
-    }
-  }
-
-  return models;
+  console.log("Existing app entry found:", existingAppEntry);
+  return existingAppEntry;
 };
-
 
 export const messageHandler =
   ({ requestUpdate, P2P }) =>
@@ -74,27 +84,3 @@ export const requestUpdate = () =>
     .then((clients) =>
       clients.forEach((client) => client.postMessage("REQUEST_UPDATE")),
     );
-
-export const startBackend = async (app) => {
-  const { appId = "default", models, version } = app;
-  console.log("INIT APP");
-  await defineModels({
-    models,
-    appId,
-    userId: appId,
-    version,
-  });
-  return app;
-};
-
-let timestamp;
-
-let models = {};
-export const getBaseTimestamp = async () => {
-  if (timestamp) return timestamp;
-  if (models[workspaceModelName]) {
-    const app = await models[workspaceModelName].get("default");
-    timestamp = fromBase62(app.appId);
-    return timestamp;
-  }
-};

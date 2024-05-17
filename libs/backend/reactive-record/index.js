@@ -1,12 +1,20 @@
 import idbAdapter from "../indexeddb/index.js";
-import { generateId, getTimestamp } from "../utils.js";
+import { generateIdWithUserId, getTimestamp } from "../utils.js";
 import { unsetRelation, UpdateRelationship } from "./relationship.js";
 
-const generateEntries = (appId, referenceKey, { _userId, id: _id, ...value }) => {
-  const newId = _userId ? `${_id}-${_userId}` : _id || generateId(appId, _userId);
-  const properties = { ...value, [referenceKey]: value[referenceKey] || "" };
+const getPrimaryKey = (properties) => Object.keys(properties).find((key) => properties[key]?.primary);
+
+const generateEntries = (modelName, { _userId, id: _id, ...value }) => {
+  const appId = ReactiveRecord.appId;
+  const primaryKey = getPrimaryKey(ReactiveRecord.models[modelName].properties);
+  const newId = _userId ? `${_id}-${_userId}` : _id || generateIdWithUserId(appId, _userId);
+  const properties = { ...value, [primaryKey]: value[primaryKey] || "" };
 
   return { newId, entries: Object.entries(properties).map(([prop, val]) => [prop, newId, val]) };
+};
+
+const setProperty = async (adapter, store, key, value) => {
+  return adapter.set([[key, value]], store);
 };
 
 const unsetMany = async (adapter, store, keys) => {
@@ -85,7 +93,7 @@ const getEntry = async (adapter, store, models, id, opts = {}) => {
     if (prop.metadata && prop.referenceField) {
       const [timestamp, userId] = id.split("-");
       if (prop.metadata === "user" && models.users) value = await models.users.get(userId);
-      if (prop.metadata === "timestamp") value = getTimestamp(timestamp, models.appId);
+      if (prop.metadata === "timestamp") value = getTimestamp(timestamp, ReactiveRecord.appId);
     }
     obj[propKey] = value ?? prop.defaultValue;
   }));
@@ -103,42 +111,59 @@ const getEntries = async (adapter, store, models, key, opts = {}) => {
 };
 
 const ReactiveRecord = {
-  async add(modelName, value, models) {
-    const { newId, entries } = generateEntries(models[modelName].appId, models[modelName].referenceKey, value);
-    await setEntries(idbAdapter, models[modelName].store, models, models[modelName].properties, entries);
-    return getEntry(idbAdapter, models[modelName].store, models, newId);
+  async add(modelName, value) {
+    const { newId, entries } = generateEntries(modelName, value);
+    const store = ReactiveRecord.stores[modelName];
+    const properties = ReactiveRecord.models[modelName].properties;
+    await setEntries(idbAdapter, store, ReactiveRecord.models, properties, entries);
+    return getEntry(idbAdapter, store, ReactiveRecord.models, newId);
   },
-  async addMany(modelName, values, models) {
-    const allEntries = values.flatMap((value) => generateEntries(models[modelName].appId, models[modelName].referenceKey, value).entries);
-    await setEntries(idbAdapter, models[modelName].store, models, models[modelName].properties, allEntries);
+  async addMany(modelName, values) {
+    const allEntries = values.flatMap((value) => generateEntries(modelName, value).entries);
+    const store = ReactiveRecord.stores[modelName];
+    const properties = ReactiveRecord.models[modelName].properties;
+    await setEntries(idbAdapter, store, ReactiveRecord.models, properties, allEntries);
   },
-  async edit(modelName, { id, ...value }, models) {
+  async edit(modelName, { id, ...value }) {
     const entries = Object.entries(value).map(([prop, val]) => [prop, id, val]);
-    await setEntries(idbAdapter, models[modelName].store, models, models[modelName].properties, entries);
+    const store = ReactiveRecord.stores[modelName];
+    const properties = ReactiveRecord.models[modelName].properties;
+    await setEntries(idbAdapter, store, ReactiveRecord.models, properties, entries);
     return { id, ...value };
   },
-  async editMany(modelName, records, models) {
+  async editMany(modelName, records) {
     if (!records?.length) return;
     const allEntries = records.flatMap(({ id, ...value }) =>
       Object.entries(value).map(([prop, val]) => [prop, id, val])
     );
-    await setEntries(idbAdapter, models[modelName].store, models, models[modelName].properties, allEntries);
+    const store = ReactiveRecord.stores[modelName];
+    const properties = ReactiveRecord.models[modelName].properties;
+    await setEntries(idbAdapter, store, ReactiveRecord.models, properties, allEntries);
   },
-  async get(modelName, id, opts, models) {
-    return getEntry(idbAdapter, models[modelName].store, models, id, opts);
+  async get(modelName, id, opts) {
+    const store = ReactiveRecord.stores[modelName];
+    const properties = ReactiveRecord.models[modelName].properties;
+    return getEntry(idbAdapter, store, properties, id, opts);
   },
-  async getMany(modelName, key, opts, models) {
-    return getEntries(idbAdapter, models[modelName].store, models, key, opts);
+  async getMany(modelName, key, opts) {
+    const store = ReactiveRecord.stores[modelName];
+    const properties = ReactiveRecord.models[modelName].properties;
+    return getEntries(idbAdapter, store, properties, key, opts);
   },
-  async remove(modelName, key, models) {
-    return removeEntries(idbAdapter, models[modelName].store, models, models[modelName].properties, key);
+  async remove(modelName, key) {
+    const store = ReactiveRecord.stores[modelName];
+    const properties = ReactiveRecord.models[modelName].properties;
+    return removeEntries(idbAdapter, store, ReactiveRecord.models, properties, key);
   },
-  async removeMany(modelName, ids, models) {
+  async removeMany(modelName, ids) {
     if (!ids?.length) return;
-    await Promise.all(ids.map((id) => removeEntries(idbAdapter, models[modelName].store, models, models[modelName].properties, id)));
+    const store = ReactiveRecord.stores[modelName];
+    const properties = ReactiveRecord.models[modelName].properties;
+    await Promise.all(ids.map((id) => removeEntries(idbAdapter, store, ReactiveRecord.models, properties, id)));
   },
-  async isEmpty(modelName, models) {
-    return idbAdapter.isEmpty(models[modelName].store);
+  async isEmpty(modelName) {
+    const store = ReactiveRecord.stores[modelName];
+    return idbAdapter.isEmpty(store);
   },
 };
 

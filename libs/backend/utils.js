@@ -6,7 +6,7 @@ export const getTimestamp = (id, appId) => {
   return Number.parseInt(fromBase62(appId)) + Number.parseInt(fromBase62(id));
 };
 
-const generateIdByTimestamp = (timestamp, padding) => {
+const generateId = (timestamp, padding) => {
   if (!timestamp) {
     throw new Error(
       "Reference timestamp not set. Ensure getAppId has been called first.",
@@ -24,9 +24,8 @@ const generateIdByTimestamp = (timestamp, padding) => {
   return id;
 };
 
-export const generateId = (appId, userId) => {
-  const referenceTimestamp = fromBase62(appId);
-  let id = generateIdByTimestamp(referenceTimestamp, !!userId);
+export const generateIdWithUserId = (appId, userId) => {
+  let id = generateId(appId);
   return userId ? `${id}-${userId}` : id;
 };
 
@@ -63,3 +62,4 @@ export const extractPathParams = (endpoint, requestPath, regex) => {
     {},
   );
 };
+  
