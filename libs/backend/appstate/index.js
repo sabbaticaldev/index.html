@@ -17,7 +17,7 @@ export const workspaceModelDefinition = {
   },
 };
 
-export const startBackend = async (app) => {
+export const startBackend = async (app, isSW = false) => {
   const { version = 1 } = app;
   console.log("INIT APP");
 
@@ -31,24 +31,25 @@ export const startBackend = async (app) => {
 
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
-
-  const existingAppEntry = await ReactiveRecord.get("app", "default");
-  if (!existingAppEntry) {
-    const timestamp = Date.now();
-    ReactiveRecord.appId = timestamp;
-    const appEntry = {
-      id: "default",
-      models,
-      version,
-      timestamp,
-    };
-    await ReactiveRecord.add("app", appEntry);
-    console.log("App entry added:", appEntry);
-    return appEntry;
-  }
+  if(!isSW) {
+    const existingAppEntry = await ReactiveRecord.get("app", "default");
+    if (!existingAppEntry) {
+      const timestamp = Date.now();
+      ReactiveRecord.appId = timestamp;
+      const appEntry = {
+        id: "default",
+        models,
+        version,
+        timestamp,
+      };
+      await ReactiveRecord.add("app", appEntry);
+      console.log("App entry added:", appEntry);
+      return appEntry;
+    }
   
-  console.log("Existing app entry found:", existingAppEntry);
-  return existingAppEntry;
+    console.log("Existing app entry found:", existingAppEntry);
+    return existingAppEntry;
+  }
 };
 
 export const messageHandler =

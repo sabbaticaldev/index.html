@@ -23,7 +23,7 @@ const watch = [];
 const commonConfig = {
   bundle: true,
   sourcemap: true,
-  minify: true,
+  minify: false,
   format: "esm",
   target: ["esnext"],
   plugins: [

@@ -8,6 +8,7 @@ const promisifyRequest = (request) =>
       request.onerror = () => reject(request.error);
       request.onabort = () => reject(request.error);
     } else {
+      console.log({ request });
       reject(new Error("Invalid request or transaction"));
     }
   });
