@@ -1,11 +1,9 @@
 import idbAdapter from "../indexeddb/index.js";
 import ReactiveRecord from "../reactive-record/index.js";
-import { fromBase62, generateIdWithUserId } from "../utils.js";
 import { events } from "./events.js";
 export { events };
 export let appId;
 export let api;
-const workspaceModelName = "workspaces";
 
 export const workspaceModelDefinition = {
   models: {
@@ -24,7 +22,7 @@ export const startBackend = async (app) => {
   console.log("INIT APP");
 
   let dbName = "default";
-  const models = { app: workspaceModelDefinition, ...(app.models || {}) };
+  const models = { app: {properties: workspaceModelDefinition}, ...(app.models || {}) };
 
   const stores = await idbAdapter.createDatabase(
     dbName,
@@ -32,19 +30,17 @@ export const startBackend = async (app) => {
     version,
   );
 
-  ReactiveRecord.appId = generateIdWithUserId(new Date().getTime().toString());
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
 
-  // Check if an entry exists in the app store
-  const existingAppEntry = await ReactiveRecord.get("app", "default");
-
+  const existingAppEntry = await ReactiveRecord.get("app");
+  
   if (!existingAppEntry) {
-    // Add an entry to the app store with version, models, and timestamp (appId)
-    const timestamp = new Date().getTime();
+    const timestamp = Date.now();
+    ReactiveRecord.appId = timestamp;
     const appEntry = {
-      id: "default",
-      models: Object.keys(models),
+      id: "",
+      models,
       version,
       timestamp,
     };
@@ -52,7 +48,7 @@ export const startBackend = async (app) => {
     console.log("App entry added:", appEntry);
     return appEntry;
   }
-
+  
   console.log("Existing app entry found:", existingAppEntry);
   return existingAppEntry;
 };

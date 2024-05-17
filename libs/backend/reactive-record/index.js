@@ -13,40 +13,39 @@ const generateEntries = (modelName, { _userId, id: _id, ...value }) => {
   return { newId, entries: Object.entries(properties).map(([prop, val]) => [prop, newId, val]) };
 };
 
-const setProperty = async (adapter, store, key, value) => {
-  return adapter.set([[key, value]], store);
+const unsetMany = async (store, keys) => {
+  return idbAdapter.remove(keys, store);
 };
 
-const unsetMany = async (adapter, store, keys) => {
-  return adapter.remove(keys, store);
-};
-
-const setEntries = async (adapter, store, models, properties, entries) => {
+const setEntries = async (store, properties, entries) => {
   const entriesToAdd = await Promise.all(entries.map(async ([propKey, id, value]) => {
     const key = `${propKey}_${id}`;
     const prop = properties[propKey];
     if (prop?.relationship && ["one", "many"].includes(prop.type)) {
-      const relatedModel = models[prop.relationship];
+      const relatedModel = ReactiveRecord.models[prop.relationship];
       if (!relatedModel) throw `ERROR: couldn't find model ${prop.relationship}`;
       const { targetForeignKey, type } = prop;
-      const prevValue = await getEntry(adapter, store, models, id, { createIfNotFound: true, props: [propKey] });
+      const prevValue = await getEntry(store, id, { createIfNotFound: true, props: [propKey] });
       if (relatedModel.properties[targetForeignKey]?.targetForeignKey && prevValue) {
         await UpdateRelationship[type]({ prevValue: prevValue[propKey], id, value, relatedModel, targetForeignKey });
       }
     }
     return [key, value];
   }));
-  return adapter.set(entriesToAdd, store);
+  console.log("teste");
+  await idbAdapter.set(entriesToAdd, store);
+  console.log("teste 4");
+  return "423";
 };
 
-const removeEntries = async (adapter, store, models, properties, key) => {
+const removeEntries = async (store, properties, key) => {
   if (!properties.length) return;
 
   await Promise.all(properties.map(async (propKey) => {
     const prop = properties[propKey];
     if (prop?.relationship) {
-      const prevValue = await getEntry(adapter, store, models, key, { props: [propKey] });
-      const relatedModel = models[prop.relationship];
+      const prevValue = await getEntry(store, key, { props: [propKey] });
+      const relatedModel = ReactiveRecord.models[prop.relationship];
       if (!relatedModel) {
         console.error(`ERROR: couldn't find model ${prop.relationship}`);
         return;
@@ -64,26 +63,26 @@ const removeEntries = async (adapter, store, models, properties, key) => {
   }));
 
   const keysToDelete = properties.map((prop) => `${prop}_${key}`);
-  await unsetMany(adapter, store, keysToDelete);
+  await unsetMany(store, keysToDelete);
 };
 
-const getEntry = async (adapter, store, models, id, opts = {}) => {
+const getEntry = async (store, id, opts = {}) => {
   if (!id) return null;
   const { props, nested = false, createIfNotFound = false } = opts;
-  const propNames = props || Object.keys(models.properties);
+  const propNames = props || Object.keys(ReactiveRecord.models[store].properties);
   const keys = propNames.map((prop) => `${prop}_${id}`);
-  const values = await adapter.get(keys, store);
+  const values = await idbAdapter.get(keys, store);
 
   if (!values.some((value) => value != null) && !createIfNotFound) return null;
 
   const obj = { id };
   await Promise.all(propNames.map(async (propKey, idx) => {
-    const prop = models.properties[propKey];
+    const prop = ReactiveRecord.models[store].properties[propKey];
     if (!prop) return;
 
     let value = values[idx];
     if (nested && prop.relationship) {
-      const relatedModel = models[prop.relationship];
+      const relatedModel = ReactiveRecord.models[prop.relationship];
       if (!relatedModel) return;
 
       if (prop.type === "one" && value) value = await relatedModel.get(value);
@@ -92,7 +91,7 @@ const getEntry = async (adapter, store, models, id, opts = {}) => {
 
     if (prop.metadata && prop.referenceField) {
       const [timestamp, userId] = id.split("-");
-      if (prop.metadata === "user" && models.users) value = await models.users.get(userId);
+      if (prop.metadata === "user" && ReactiveRecord.models.users) value = await ReactiveRecord.models.users.get(userId);
       if (prop.metadata === "timestamp") value = getTimestamp(timestamp, ReactiveRecord.appId);
     }
     obj[propKey] = value ?? prop.defaultValue;
@@ -100,14 +99,14 @@ const getEntry = async (adapter, store, models, id, opts = {}) => {
   return obj;
 };
 
-const getEntries = async (adapter, store, models, key, opts = {}) => {
+const getEntries = async (store, key, opts = {}) => {
   const { startsWith, props, indexOnly = true, nested = false } = opts;
-  const items = await adapter.startsWith(
-    startsWith ? `${models.referenceKey}_${startsWith}` : key || models.referenceKey,
+  const items = await idbAdapter.startsWith(
+    startsWith ? `${ReactiveRecord.models[store].referenceKey}_${startsWith}` : key || ReactiveRecord.models[store].referenceKey,
     store,
     { index: indexOnly },
   );
-  return indexOnly ? Promise.all(items.map((key) => getEntry(adapter, store, models, key, { props, nested }))) : items;
+  return indexOnly ? Promise.all(items.map((key) => getEntry(store, key, { props, nested }))) : items;
 };
 
 const ReactiveRecord = {
@@ -115,20 +114,21 @@ const ReactiveRecord = {
     const { newId, entries } = generateEntries(modelName, value);
     const store = ReactiveRecord.stores[modelName];
     const properties = ReactiveRecord.models[modelName].properties;
-    await setEntries(idbAdapter, store, ReactiveRecord.models, properties, entries);
-    return getEntry(idbAdapter, store, ReactiveRecord.models, newId);
+    await setEntries(store, properties, entries);
+    console.log("ERROR HERE ?");
+    return newId;
   },
   async addMany(modelName, values) {
     const allEntries = values.flatMap((value) => generateEntries(modelName, value).entries);
     const store = ReactiveRecord.stores[modelName];
     const properties = ReactiveRecord.models[modelName].properties;
-    await setEntries(idbAdapter, store, ReactiveRecord.models, properties, allEntries);
+    await setEntries(store, properties, allEntries);
   },
   async edit(modelName, { id, ...value }) {
     const entries = Object.entries(value).map(([prop, val]) => [prop, id, val]);
     const store = ReactiveRecord.stores[modelName];
     const properties = ReactiveRecord.models[modelName].properties;
-    await setEntries(idbAdapter, store, ReactiveRecord.models, properties, entries);
+    await setEntries(store, properties, entries);
     return { id, ...value };
   },
   async editMany(modelName, records) {
@@ -138,28 +138,26 @@ const ReactiveRecord = {
     );
     const store = ReactiveRecord.stores[modelName];
     const properties = ReactiveRecord.models[modelName].properties;
-    await setEntries(idbAdapter, store, ReactiveRecord.models, properties, allEntries);
+    await setEntries(store, properties, allEntries);
   },
   async get(modelName, id, opts) {
     const store = ReactiveRecord.stores[modelName];
-    const properties = ReactiveRecord.models[modelName].properties;
-    return getEntry(idbAdapter, store, properties, id, opts);
+    return getEntry(store, id, opts);
   },
   async getMany(modelName, key, opts) {
     const store = ReactiveRecord.stores[modelName];
-    const properties = ReactiveRecord.models[modelName].properties;
-    return getEntries(idbAdapter, store, properties, key, opts);
+    return getEntries(store, key, opts);
   },
   async remove(modelName, key) {
     const store = ReactiveRecord.stores[modelName];
     const properties = ReactiveRecord.models[modelName].properties;
-    return removeEntries(idbAdapter, store, ReactiveRecord.models, properties, key);
+    return removeEntries(store, properties, key);
   },
   async removeMany(modelName, ids) {
     if (!ids?.length) return;
     const store = ReactiveRecord.stores[modelName];
     const properties = ReactiveRecord.models[modelName].properties;
-    await Promise.all(ids.map((id) => removeEntries(idbAdapter, store, ReactiveRecord.models, properties, id)));
+    await Promise.all(ids.map((id) => removeEntries(store, properties, id)));
   },
   async isEmpty(modelName) {
     const store = ReactiveRecord.stores[modelName];

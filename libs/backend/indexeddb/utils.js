@@ -1,7 +1,12 @@
 const promisifyRequest = (request) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve, reject) => {    
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
+    if (request.transaction) {      
+      request.transaction.oncomplete = () => resolve(request.result);
+      request.transaction.onerror = () => reject(request.transaction.error);
+      request.transaction.onabort = () => reject(request.transaction.error);
+    }
   });
 
 const iterateCursor = (request, process) =>

@@ -2,7 +2,7 @@ import { promisifyRequest, startsWith } from "./utils";
 
 const getItem = (key, table) => table("readonly", (store) => promisifyRequest(store.get(key)));
 const get = (keys, table) => table("readonly", (store) => Promise.all(keys.map((key) => promisifyRequest(store.get(key)))));
-const set = (entries, table) => table("readwrite", (store) => {
+const set = (entries, table) => table("readwrite", (store) => {  
   entries.forEach(([key, value]) => store.put(value, key));
   return promisifyRequest(store.transaction);
 });
@@ -28,4 +28,5 @@ export {
   remove,
   set,
   setLastOp,
-  update};
+  update
+};
