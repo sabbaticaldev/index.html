@@ -100,8 +100,9 @@ const getEntry = async (modelName, id, opts = {}) => {
 const getEntries = async (modelName, key, opts = {}) => {
   const { startsWith, props, indexOnly = true, nested = false } = opts;
   const store = ReactiveRecord.stores[modelName];
+  const primaryKey = getPrimaryKey(ReactiveRecord.models[modelName]);
   const items = await idbAdapter.startsWith(
-    startsWith ? `${ReactiveRecord.models[modelName].referenceKey}_${startsWith}` : key || ReactiveRecord.models[store].referenceKey,
+    startsWith ? `${primaryKey}_${startsWith}` : key || primaryKey,
     store,
     { index: indexOnly },
   );

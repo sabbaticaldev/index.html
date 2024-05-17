@@ -45,13 +45,13 @@ export const startBackend = async (app, isSW = false) => {
   const version = app.version || 1;
 
   if (!isSW) {
+    await initializeDatabase(dbName, models, version);
     const existingApp = await getApp();
     if (existingApp) {
       console.log("Existing app entry found:", existingApp);
       return existingApp;
     }
     
-    await initializeDatabase(dbName, models, version);
     return await createAppEntry(models, version);
   }
   else {

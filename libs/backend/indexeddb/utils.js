@@ -47,6 +47,18 @@ const processKeys = (items, cursor) => items.push(cursor.key);
 const processValues = (items, cursor) => items.push(cursor.value);
 const processEntries = (items, cursor) => items.push([cursor.key, cursor.value]);
 
+Array.prototype.toObject = function() {
+  let id;
+  const obj = this.reduce((acc, [key, value]) => {
+    const keys = key.split("_");
+    id = keys[1];    
+    acc[keys[0]] = value;
+    return acc;
+  }, {});
+  obj.id = id;
+  return obj;
+};
+
 const entries = (table) =>
   tableOperation(table, "readonly", (store) =>
     store.getAll && store.getAllKeys
@@ -55,8 +67,10 @@ const entries = (table) =>
         promisifyRequest(store.getAll()),
       ]).then(([keys, values]) => keys.map((key, i) => [key, values[i]]))
       : iterateCursor(store.openCursor(), processEntries)
-  );
-
+  ).then(result => {
+    result.__proto__ = Array.prototype;
+    return result;
+  });
 const startsWith = (prefix, table, { index = true, keepKey = false } = {}) =>
   table("readonly", (store) => {
     const range = IDBKeyRange.bound(prefix, prefix + "\uffff");
