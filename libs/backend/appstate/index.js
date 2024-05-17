@@ -75,7 +75,7 @@ export const requestUpdate = () =>
       clients.forEach((client) => client.postMessage("REQUEST_UPDATE")),
     );
 
-export const initApp = async (app) => {
+export const startBackend = async (app) => {
   const { appId = "default", models, version } = app;
   console.log("INIT APP");
   await defineModels({

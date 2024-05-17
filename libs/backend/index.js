@@ -1,6 +1,7 @@
 import {
   messageHandler,
   requestUpdate,
+  startBackend
 } from "./appstate/index.js";
 import { BOOL_TABLE } from "./constants.js";
 import idbAdapter from "./indexeddb/index.js";
@@ -135,10 +136,6 @@ const handleFetch = async ({ event, url }) => {
     console.error({ error });
     throw error;
   }
-};
-
-const startBackend = async () => {
-  console.log("Backend started");
 };
 
 export {
