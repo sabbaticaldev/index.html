@@ -34,22 +34,22 @@ async function updateManyRelationship(params) {
 const ensureArray = (value) => (Array.isArray(value) ? value : [value]);
 const extractId = (val) => (Array.isArray(val) ? val : [null, val]);
 
-export async function unsetRelation(relatedModel, id, prevId, targetForeignKey, isMany = false) {
+export async function unsetRelation(relatedModelName, id, prevId, targetForeignKey, isMany = false) {
   if (!prevId) return;
   const keyToUpdate = `${targetForeignKey}_${prevId}`;
   if (isMany) {
-    const prevTarget = await relatedModel.get(prevId, [targetForeignKey]);
+    const prevTarget = await ReactiveRecord.get(relatedModelName, prevId, { props: [targetForeignKey] });
     if (prevTarget) {
       const oldIndex = prevTarget[targetForeignKey] || [];
-      await relatedModel._setProperty(keyToUpdate, oldIndex.filter((entry) => entry !== id));
+      await ReactiveRecord.edit(relatedModelName, { id: prevId, [targetForeignKey]: oldIndex.filter((entry) => entry !== id) });
     }
   } else {
-    await relatedModel._setProperty(keyToUpdate, null);
+    await ReactiveRecord.edit(relatedModelName, { id: prevId, [targetForeignKey]: null });
   }
 }
 
-async function setRelation(relatedModel, id, newId, targetForeignKey, isMany = false, position) {
-  const target = await relatedModel.get(newId, { createIfNotFound: true, props: [targetForeignKey] });
+async function setRelation(relatedModelName, id, newId, targetForeignKey, isMany = false, position) {
+  const target = await ReactiveRecord.get(relatedModelName, newId, { createIfNotFound: true, props: [targetForeignKey] });
   let newIndex = target[targetForeignKey] || [];
 
   if (isMany && Array.isArray(newIndex)) {
@@ -58,7 +58,7 @@ async function setRelation(relatedModel, id, newId, targetForeignKey, isMany = f
   } else {
     newIndex = id;
   }
-  await relatedModel._setProperty(`${targetForeignKey}_${newId}`, newIndex);
+  await ReactiveRecord.edit(relatedModelName, { id: newId, [targetForeignKey]: newIndex });
 }
 
 const getPrimaryKey = (properties) => Object.keys(properties).find((key) => properties[key]?.primary);
@@ -87,7 +87,7 @@ const setEntries = async (modelName, entries) => {
       const { targetForeignKey, type } = prop;
       const prevValue = await getEntry(modelName, id, { createIfNotFound: true, props: [propKey] });
       if (relatedModel[targetForeignKey]?.targetForeignKey && prevValue) {
-        await UpdateRelationship[type]({ prevValue: prevValue[propKey], id, value, relatedModel, targetForeignKey });
+        await UpdateRelationship[type]({ prevValue: prevValue[propKey], id, value, relatedModel: prop.relationship, targetForeignKey });
       }
     }
     return [key, value];
@@ -112,10 +112,10 @@ const removeEntries = async (modelName, key) => {
       const { targetForeignKey, type } = prop;
       const targetIsMany = relatedModel[targetForeignKey]?.type === "many";
       if (type === "one" && prevValue[propKey]) {
-        await unsetRelation(relatedModel, key, prevValue[propKey], targetForeignKey, targetIsMany);
+        await unsetRelation(prop.relationship, key, prevValue[propKey], targetForeignKey, targetIsMany);
       } else if (type === "many" && Array.isArray(prevValue[propKey])) {
         await Promise.all(prevValue[propKey].map((relatedId) =>
-          unsetRelation(relatedModel, relatedId, key, targetForeignKey, targetIsMany)
+          unsetRelation(prop.relationship, relatedId, key, targetForeignKey, targetIsMany)
         ));
       }
     }
@@ -145,13 +145,13 @@ const getEntry = async (modelName, id, opts = {}) => {
       const relatedModel = ReactiveRecord.models[prop.relationship];
       if (!relatedModel) return;
 
-      if (prop.type === "one" && value) value = await relatedModel.get(value);
-      if (prop.type === "many" && Array.isArray(value)) value = await Promise.all(value.map((id) => relatedModel.get(id)));
+      if (prop.type === "one" && value) value = await ReactiveRecord.get(prop.relationship, value);
+      if (prop.type === "many" && Array.isArray(value)) value = await Promise.all(value.map((id) => ReactiveRecord.get(prop.relationship, id)));
     }
 
     if (prop.metadata && prop.referenceField) {
       const [timestamp, userId] = id.split("-");
-      if (prop.metadata === "user" && ReactiveRecord.models.users) value = await ReactiveRecord.models.users.get(userId);
+      if (prop.metadata === "user" && ReactiveRecord.models.users) value = await ReactiveRecord.get("users", userId);
       if (prop.metadata === "timestamp") value = getTimestamp(timestamp, ReactiveRecord.appId);
     }
     obj[propKey] = value ?? prop.defaultValue;
