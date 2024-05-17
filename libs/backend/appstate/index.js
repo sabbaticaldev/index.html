@@ -55,9 +55,9 @@ export const startBackend = async (app, isSW = false) => {
     return await createAppEntry(models, version);
   }
   else {
-    console.log({app});
     await initializeDatabase(dbName, models, version);
   }
+  ReactiveRecord.appId = app.timestamp;
 };
 
 export const messageHandler =

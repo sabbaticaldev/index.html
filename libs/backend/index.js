@@ -66,11 +66,11 @@ const endpointNotFound = new Response(
   },
 );
 
+
 const handleFetch = async ({ event, url }) => {
   const method = event.request.method;
   const [,, model, id] = url.pathname.split("/");
-  console.log({model, id});
-  // Validate if the model exists
+  console.log({method, model, id});
   if (!ReactiveRecord.models[model]) {
     return endpointNotFound;
   }
@@ -86,14 +86,13 @@ const handleFetch = async ({ event, url }) => {
 
     const bodyMethods = ["POST", "PATCH"];
     const bodyParams = bodyMethods.includes(method)
-      ? await event.request.json().catch((err) => {
+      ? await event.request.clone().json().catch((err) => {
         console.error("Failed to parse request body", err);
         return {};
       })
       : {};
 
     const params = { ...queryParams, ...bodyParams };
-
     const actionMap = {
       GET: id
         ? () => ReactiveRecord.get(model, id, params)
@@ -112,13 +111,12 @@ const handleFetch = async ({ event, url }) => {
     if (!actionMap[method]) {
       return endpointNotFound;
     }
-
+    
     const response = await actionMap[method]();
-
+    
     if (["POST", "PATCH", "DELETE"].includes(method)) {
       requestUpdate();
     }
-
     return new Response(JSON.stringify(response), {
       headers: {
         "Content-Type": Array.isArray(response)
@@ -128,6 +126,7 @@ const handleFetch = async ({ event, url }) => {
     });
   } catch (error) {
     console.error({ error });
+    console.trace();
     return new Response(
       JSON.stringify({ error: "Internal Server Error" }),
       {
