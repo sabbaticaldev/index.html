@@ -1,11 +1,14 @@
 const promisifyRequest = (request) =>
-  new Promise((resolve, reject) => {    
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-    if (request.transaction) {      
-      request.transaction.oncomplete = () => resolve(request.result);
-      request.transaction.onerror = () => reject(request.transaction.error);
-      request.transaction.onabort = () => reject(request.transaction.error);
+  new Promise((resolve, reject) => {
+    if (request instanceof IDBRequest) {
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    } else if (request instanceof IDBTransaction) {
+      request.oncomplete = () => resolve();
+      request.onerror = () => reject(request.error);
+      request.onabort = () => reject(request.error);
+    } else {
+      reject(new Error("Invalid request or transaction"));
     }
   });
 

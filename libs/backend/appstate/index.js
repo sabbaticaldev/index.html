@@ -33,13 +33,13 @@ export const startBackend = async (app) => {
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
 
-  const existingAppEntry = await ReactiveRecord.get("app");
+  const existingAppEntry = await ReactiveRecord.get("app", "default");
   
   if (!existingAppEntry) {
     const timestamp = Date.now();
     ReactiveRecord.appId = timestamp;
     const appEntry = {
-      id: "",
+      id: "default",
       models,
       version,
       timestamp,
