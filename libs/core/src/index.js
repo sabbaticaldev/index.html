@@ -115,20 +115,22 @@ const loadApp = async ({ app, style }) => {
 
   if ("serviceWorker" in navigator) {
     try {
+
+      if (!app.frontendOnly) {
+        let appId = localStorage.getItem("appId");
+        if (["undefined", "null", "\"\""].includes(appId)) appId = null;
+        if (!appId) {
+          appId = Date.now().toString();
+          localStorage.setItem("appId", appId);
+        }
+        await startBackend({ appId, models: app.models, version: app.version });
+      }
+      
       const registration = await navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
       console.info("ServiceWorker registration successful:", registration);
       
       setTimeout(async () => {
         if (registration.active) {
-          if (!app.frontendOnly) {
-            let appId = localStorage.getItem("appId");
-            if (["undefined", "null", "\"\""].includes(appId)) appId = null;
-            if (!appId) {
-              appId = Date.now().toString();
-              localStorage.setItem("appId", appId);
-            }
-            await startBackend({ appId, models: app.models, version: app.version });
-          }
           await injectApp(app, style);
         }
       }, 0);
