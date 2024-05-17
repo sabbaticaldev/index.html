@@ -22,8 +22,7 @@ export const startBackend = async (app) => {
   console.log("INIT APP");
 
   let dbName = "default";
-  const models = { app: {properties: workspaceModelDefinition}, ...(app.models || {}) };
-
+  const models = { app: workspaceModelDefinition, ...(app.models || {}) };
   const stores = await idbAdapter.createDatabase(
     dbName,
     Object.keys(models),
@@ -34,7 +33,6 @@ export const startBackend = async (app) => {
   ReactiveRecord.models = models;
 
   const existingAppEntry = await ReactiveRecord.get("app", "default");
-  
   if (!existingAppEntry) {
     const timestamp = Date.now();
     ReactiveRecord.appId = timestamp;

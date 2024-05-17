@@ -74,8 +74,8 @@ const getEntry = async (modelName, id, opts = {}) => {
   if (!values.some((value) => value != null) && !createIfNotFound) return null;
 
   const obj = { id };
-  await Promise.all(propNames.map(async (propKey, idx) => {
-    const prop = ReactiveRecord.models[store][propKey];
+  await Promise.all(propNames.map(async (propKey, idx) => {    
+    const prop = ReactiveRecord.models[modelName][propKey];
     if (!prop) return;
 
     let value = values[idx];
@@ -101,7 +101,7 @@ const getEntries = async (modelName, key, opts = {}) => {
   const { startsWith, props, indexOnly = true, nested = false } = opts;
   const store = ReactiveRecord.stores[modelName];
   const items = await idbAdapter.startsWith(
-    startsWith ? `${ReactiveRecord.models[store].referenceKey}_${startsWith}` : key || ReactiveRecord.models[store].referenceKey,
+    startsWith ? `${ReactiveRecord.models[modelName].referenceKey}_${startsWith}` : key || ReactiveRecord.models[store].referenceKey,
     store,
     { index: indexOnly },
   );
@@ -141,8 +141,7 @@ const ReactiveRecord = {
   },
   async removeMany(modelName, ids) {
     if (!ids?.length) return;
-    const store = ReactiveRecord.stores[modelName];
-    await Promise.all(ids.map((id) => removeEntries(store, ReactiveRecord.models[modelName], id)));
+    await Promise.all(ids.map((id) => removeEntries(ReactiveRecord.stores[modelName], ReactiveRecord.models[modelName], id)));
   },
   async isEmpty(modelName) {
     const store = ReactiveRecord.stores[modelName];
