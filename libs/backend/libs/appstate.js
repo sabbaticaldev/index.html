@@ -43,13 +43,14 @@ export let appId;
 export let api;
 
 export const workspaceModelDefinition = {
+  timestamp: {
+    type: "number",
+    primary: true,
+  },
   models: {
-    type: "object",
+    type: "object",    
   },
   version: {
-    type: "number",
-  },
-  timestamp: {
     type: "number",
   },
 };
