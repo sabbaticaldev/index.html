@@ -37,11 +37,11 @@ const setEntries = async (modelName, entries) => {
   return idbAdapter.set(entriesToAdd, store);
 };
 
-const removeEntries = async (modelName, properties, key) => {
-  if (!properties.length) return;
-
-  const store = ReactiveRecord.stores[modelName];
-  await Promise.all(properties.map(async (propKey) => {
+const removeEntries = async (modelName, key) => {
+  const properties = ReactiveRecord.models[modelName];
+  const propKeys = properties && Object.keys(properties);
+  if (!propKeys.length) return;
+  await Promise.all(propKeys.map(async (propKey) => {
     const prop = properties[propKey];
     if (prop?.relationship) {
       const prevValue = await getEntry(modelName, key, { props: [propKey] });
@@ -62,7 +62,8 @@ const removeEntries = async (modelName, properties, key) => {
     }
   }));
 
-  const keysToDelete = properties.map((prop) => `${prop}_${key}`);
+  const keysToDelete = propKeys.map((prop) => `${prop}_${key}`);
+  const store = ReactiveRecord.stores[modelName];
   await unsetMany(store, keysToDelete);
 };
 
@@ -72,8 +73,7 @@ const getEntry = async (modelName, id, opts = {}) => {
   const propNames = props || Object.keys(ReactiveRecord.models[modelName]);
   const store = ReactiveRecord.stores[modelName];
   const keys = propNames.map((prop) => `${prop}_${id}`);
-  const values = await idbAdapter.get(keys, store);
-  console.log({id, keys});
+  const values = await idbAdapter.get(keys, store);  
   if (!values.some((value) => value != null) && !createIfNotFound) return null;
 
   const obj = { id };
@@ -111,7 +111,7 @@ const getEntries = async (modelName, key, opts = {}) => {
     { index: indexOnly },
   );
   
-  return nested ? Promise.all(items.map((key) => getEntry(modelName, key, { props, nested }))) : items;
+  return indexOnly ? items : Promise.all(items.map(({ id }) => getEntry(modelName, id, { props, nested })));
 };
 
 const ReactiveRecord = {
@@ -142,7 +142,7 @@ const ReactiveRecord = {
   async getMany(modelName, key, opts) {
     return getEntries(modelName, key, opts);
   },
-  async remove(modelName, key) {    
+  async remove(modelName, key) {
     return removeEntries(modelName, key);
   },
   async removeMany(modelName, ids) {
