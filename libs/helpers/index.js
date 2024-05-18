@@ -4,7 +4,7 @@ import { draggable, droparea } from "./droparea.js";
 import * as File from "./file.js";
 import i18n from "./i18n.js";
 import { get, patch, post, remove } from "./rest.js";
-import { T } from "./types.js";
+import { stringToType,T } from "./types.js";
 import url from "./url.js";
 
 function debounce(func, wait) {
@@ -72,6 +72,7 @@ export {
   patch,
   post,
   remove,
+  stringToType,
   T,
-  url,
+  url
 };

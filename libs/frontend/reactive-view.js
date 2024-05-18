@@ -1,8 +1,7 @@
-import i18n from "helpers/i18n.js";
-import { stringToType } from "helpers/types.js";
-import url from "helpers/url.js";
+import { i18n, stringToType, url } from "helpers";
 import { LitElement } from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
 
+import reset from "./reset.txt";
 import { getElementTheme, updateTheme } from "./theme.js";
 
 const isServer = typeof localStorage === "undefined";
@@ -11,7 +10,7 @@ export const instances = [];
 
 const syncKeyMap = new Map();
 
-const defineReactiveProperty = (instance, key, prop) => {
+const defineSyncProperty = (instance, key, prop) => {
   const syncKey = { key, sync: prop.sync };
   const getValue = () => {
     const value = syncAdapters[prop.sync].getItem(prop.key || key);
@@ -45,13 +44,6 @@ const defineReactiveProperty = (instance, key, prop) => {
     set: setValue,
     configurable: true,
   });
-
-  if (!prop.readonly) {
-    const setterName = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
-    instance[setterName] = (newValue) => {
-      instance[key] = newValue;
-    };
-  }
 };
 
 class BaseReactiveView extends LitElement {
@@ -73,12 +65,18 @@ class BaseReactiveView extends LitElement {
     componentInit?.(this);
 
     Object.assign(this, litPropsAndEvents);
-
+    console.log({props});
     this.generateTheme = (element) => getElementTheme(element, this);
 
     Object.entries(props || {}).forEach(([key, prop]) => {
       this[key] = prop.defaultValue;
-      if (prop.sync) defineReactiveProperty(this, key, prop);
+      if (!prop.readonly) {
+        const setterName = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
+        this[setterName] = (newValue) => {
+          this[key] = newValue;
+        };
+      }
+      if (prop.sync) defineSyncProperty(this, key, prop);
     });
 
     if (typeof window !== "undefined") {
@@ -132,4 +130,48 @@ class BaseReactiveView extends LitElement {
   }
 }
 
+
+const TYPE_MAP = {
+  boolean: Boolean,
+  number: Number,
+  string: String,
+  object: Object,
+  date: Date,
+  array: Array,
+};
+
+let _tailwindBase;
+const getProperties = (props) => 
+  Object.keys(props || {}).reduce((acc, key) => {
+    const value = props[key];
+    acc[key] = { ...value, type: TYPE_MAP[value.type] || TYPE_MAP.string };
+    return acc;
+  }, {});
+
+export function defineView({ tag, component, style }) {
+  class ReactiveView extends BaseReactiveView {
+    static formAssociated = component.formAssociated;
+    static properties = getProperties(component.props);
+    constructor() {
+      super({ component });
+    }
+  }
+
+  if (!_tailwindBase) {
+    _tailwindBase = new CSSStyleSheet();
+    _tailwindBase.replaceSync([reset, style].join(" "));
+  }
+
+  ReactiveView.styles = (Array.isArray(component.style) ? component.style : []).concat(_tailwindBase).filter(Boolean);
+
+  customElements.define(tag, ReactiveView);
+  return ReactiveView;
+}
+
+export const definePackage = ({ pkg, style }) => {
+  const views = Object.fromEntries(
+    Object.entries(pkg.views).map(([tag, component]) => [tag, defineView({ tag, component, style })])
+  );
+  return { views, models: pkg.models, controllers: pkg.controllers };
+};
 export default BaseReactiveView;

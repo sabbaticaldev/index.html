@@ -1,4 +1,4 @@
-import { T } from "helpers/types.js";
+import { T } from "helpers";
 import {
   css,
   html,

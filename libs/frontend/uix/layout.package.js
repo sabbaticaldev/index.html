@@ -1,5 +1,4 @@
-import { droparea } from "helpers/droparea.js";
-import { T } from "helpers/types.js";
+import { droparea,T } from "helpers";
 import {  
   css,
   html,

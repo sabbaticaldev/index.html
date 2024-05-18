@@ -74,24 +74,7 @@ const injectApp = async (app, style) => {
       styleEl.textContent = reset;
       document.head.append(styleEl);
       updateAllStyles();
-    }, 500);
-  }
-
-  if (!app.frontendOnly) {
-    navigator.serviceWorker.addEventListener("message", async (event) => {
-      if (event.data.type === "BACKEND_INITIALIZED") {
-        const { appId } = event.data || {};
-        localStorage.setItem("appId", appId);
-        if (app.init) await app.init({ style, app });
-        if (navigator.storage && navigator.storage.persist) {
-          const granted = await navigator.storage.persist();
-          console.log(granted
-            ? "Storage will not be cleared except by explicit user action"
-            : "Storage may be cleared by the UA under storage pressure."
-          );
-        }
-      }
-    });
+    }, 100);
   }
 
   return frontendState;
