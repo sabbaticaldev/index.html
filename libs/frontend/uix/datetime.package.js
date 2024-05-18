@@ -1,7 +1,6 @@
-import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
-
 import datetime from "helpers/datetime.js";
 import { T } from "helpers/types.js";
+import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
 
 const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
 const getFirstDayOfMonth = (month, year) =>

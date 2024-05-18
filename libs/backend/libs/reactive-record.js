@@ -75,12 +75,13 @@ const unsetMany = async (store, keys) => {
   return idbAdapter.remove(keys, store);
 };
 
-const setEntries = async (modelName, entries) => {  
+const setEntries = async (modelName, entries, opts = {}) => {  
+  const { skipRelationship } = opts;
   const properties = ReactiveRecord.models[modelName];
   const entriesToAdd = await Promise.all(entries.map(async ([propKey, id, value]) => {
     const key = `${propKey}_${id}`;
     const prop = properties[propKey];
-    if (prop?.relationship && ["one", "many"].includes(prop.type)) {
+    if (!skipRelationship && prop?.relationship && ["one", "many"].includes(prop.type)) {
       const relatedModel = ReactiveRecord.models[prop.relationship];
       if (!relatedModel) throw `ERROR: couldn't find model ${prop.relationship}`;
       const { targetForeignKey, type } = prop;
@@ -131,21 +132,25 @@ const getEntry = async (modelName, id, opts = {}) => {
   const propNames = props || Object.keys(ReactiveRecord.models[modelName]);
   const store = ReactiveRecord.stores[modelName];
   const keys = propNames.map((prop) => `${prop}_${id}`);
-  const values = await idbAdapter.get(keys, store);  
-  if (!values.some((value) => value != null) && !createIfNotFound) return null;
+  const values = await idbAdapter.get(keys, store);
+
+  // Check if the entry exists
+  const entryExists = values.some((value) => value != null);
+
+  if (!entryExists && !createIfNotFound) return null;
 
   const obj = { id };
-  await Promise.all(propNames.map(async (propKey, idx) => {    
+
+  await Promise.all(propNames.map(async (propKey, idx) => {
     const prop = ReactiveRecord.models[modelName][propKey];
     if (!prop) return;
 
     let value = values[idx];
-    if (nested && prop.relationship) {
-      const relatedModel = ReactiveRecord.models[prop.relationship];
-      if (!relatedModel) return;
 
-      if (prop.type === "one" && value) value = await ReactiveRecord.get(prop.relationship, value);
-      if (prop.type === "many" && Array.isArray(value)) value = await Promise.all(value.map((id) => ReactiveRecord.get(prop.relationship, id)));
+    if (nested && prop.relationship) {
+      const relatedModelName = prop.relationship;
+      if (prop.type === "one" && value) value = await ReactiveRecord.get(relatedModelName, value);
+      if (prop.type === "many" && Array.isArray(value)) value = await Promise.all(value.map((relatedId) => ReactiveRecord.get(relatedModelName, relatedId)));
     }
 
     if (prop.metadata && prop.referenceField) {
@@ -153,11 +158,18 @@ const getEntry = async (modelName, id, opts = {}) => {
       if (prop.metadata === "user" && ReactiveRecord.models.users) value = await ReactiveRecord.get("users", userId);
       if (prop.metadata === "timestamp") value = getTimestamp(timestamp, ReactiveRecord.appId);
     }
+
     obj[propKey] = value ?? prop.defaultValue;
   }));
   
+  if (!entryExists && createIfNotFound) {
+    // Save the newly created entry with default values
+    await ReactiveRecord.add(modelName, obj, { skipRelationship: true });
+  }
+
   return obj;
 };
+
 
 const getEntries = async (modelName, key, opts = {}) => {
   const { startsWith, props, indexOnly = false, nested = false } = opts;
@@ -174,9 +186,9 @@ const getEntries = async (modelName, key, opts = {}) => {
 };
 
 const ReactiveRecord = {
-  async add(modelName, value) {
+  async add(modelName, value, opts) {
     const { newId, entries } = generateEntries(modelName, value);
-    await setEntries(modelName, entries);    
+    await setEntries(modelName, entries, opts);    
     return newId;
   },
   async addMany(modelName, values) {

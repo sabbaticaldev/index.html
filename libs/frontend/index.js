@@ -1,6 +1,4 @@
-import BaseReactiveView, {
-  instances as reactiveViewInstances,
-} from "./reactive-view.js";
+import BaseReactiveView, { instances as reactiveViewInstances } from "./reactive-view.js";
 import reset from "./reset.txt";
 import baseTheme from "./theme.js";
 import appKit from "./uix/app.package.js";
@@ -13,13 +11,7 @@ import formKit from "./uix/form.package.js";
 import layoutKit from "./uix/layout.package.js";
 import navigationKit from "./uix/navigation.package.js";
 import uiKit from "./uix/ui.package.js";
-/**
- * Defines and registers a custom element based on the provided configuration.
- *
- * @param {Object} component - The configuration object for the custom element.
- * @param {Object} [config={}] - Additional configuration parameters.
- * @returns {typeof LitElement}
- */
+
 const TYPE_MAP = {
   boolean: Boolean,
   number: Number,
@@ -30,21 +22,18 @@ const TYPE_MAP = {
 };
 
 let _tailwindBase;
-function defineView({ tag, component, style }) {
-  const { props, formAssociated, style: componentStyle } = component;
-  class ReactiveView extends BaseReactiveView {
-    static formAssociated = formAssociated;
-    static properties = !props
-      ? {}
-      : Object.keys(props).reduce((acc, key) => {
-        const value = props[key];
-        acc[key] = {
-          ...value,
-          type: TYPE_MAP[value.type] || TYPE_MAP["string"],
-        };
-        return acc;
-      }, {});
 
+const getProperties = (props) => 
+  Object.keys(props || {}).reduce((acc, key) => {
+    const value = props[key];
+    acc[key] = { ...value, type: TYPE_MAP[value.type] || TYPE_MAP.string };
+    return acc;
+  }, {});
+
+function defineView({ tag, component, style }) {
+  class ReactiveView extends BaseReactiveView {
+    static formAssociated = component.formAssociated;
+    static properties = getProperties(component.props);
     constructor() {
       super({ component });
     }
@@ -55,8 +44,7 @@ function defineView({ tag, component, style }) {
     _tailwindBase.replaceSync([reset, style].join(" "));
   }
 
-  if (Array.isArray(componentStyle))
-    ReactiveView.styles = componentStyle.concat(_tailwindBase).filter(Boolean);
+  ReactiveView.styles = (Array.isArray(component.style) ? component.style : []).concat(_tailwindBase).filter(Boolean);
 
   customElements.define(tag, ReactiveView);
   return ReactiveView;
@@ -64,16 +52,7 @@ function defineView({ tag, component, style }) {
 
 const definePackage = ({ pkg, style }) => {
   const views = Object.fromEntries(
-    Object.entries(pkg.views).map(([tag, component]) => {
-      return [
-        tag,
-        defineView({
-          tag,
-          component,
-          style,
-        }),
-      ];
-    }),
+    Object.entries(pkg.views).map(([tag, component]) => [tag, defineView({ tag, component, style })])
   );
   return { views, models: pkg.models, controllers: pkg.controllers };
 };

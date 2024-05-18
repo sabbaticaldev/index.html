@@ -1,6 +1,5 @@
-import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
-
 import { T } from "helpers/types.js";
+import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
 
 export default {
   views: {
