@@ -74,7 +74,7 @@ const injectApp = async (app, style) => {
       styleEl.textContent = reset;
       document.head.append(styleEl);
       updateAllStyles();
-    }, 100);
+    }, 500);
   }
 
   return frontendState;
