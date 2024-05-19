@@ -12,7 +12,6 @@ async function updateOneRelationship(params) {
   const isMany = targetType === "many";
   const [, prevId] = extractId(prevValue);
   const [position, newId] = extractId(value) || [];
-
   if (prevId) await unsetRelation(relatedModel, id, prevId, targetForeignKey, isMany);
   if (newId) await setRelation(relatedModel, id, newId, targetForeignKey, isMany, position);
 }
@@ -48,16 +47,16 @@ export async function unsetRelation(relatedModelName, id, prevId, targetForeignK
 }
 
 async function setRelation(relatedModelName, id, newId, targetForeignKey, isMany = false, position) {
-  const target = await ReactiveRecord.get(relatedModelName, newId, { createIfNotFound: true, props: [targetForeignKey] });
+  const target = await ReactiveRecord.get(relatedModelName, id, { createIfNotFound: true, props: [targetForeignKey] });
   let newIndex = target[targetForeignKey] || [];
 
   if (isMany && Array.isArray(newIndex)) {
-    if (typeof position === "number") newIndex.splice(position, 0, id);
-    else if (!newIndex.includes(id)) newIndex.push(id);
+    if (typeof position === "number") newIndex.splice(position, 0, newId);
+    else if (!newIndex.includes(id)) newIndex.push(newId);
   } else {
-    newIndex = id;
+    newIndex = newId;
   }
-  await ReactiveRecord.edit(relatedModelName, { id: newId, [targetForeignKey]: newIndex });
+  await ReactiveRecord.edit(relatedModelName, { id, [targetForeignKey]: newIndex });
 }
 
 const getPrimaryKey = (properties) => Object.keys(properties).find((key) => properties[key]?.primary);
@@ -87,6 +86,7 @@ const setEntries = async (modelName, entries, opts = {}) => {
       const { targetForeignKey, type } = prop;
       const prevValue = await getEntry(modelName, id, { createIfNotFound: true, props: [propKey] });
       if (relatedModel[targetForeignKey]?.targetForeignKey && prevValue) {
+        console.log({prevValue, id, value, propKey});
         await UpdateRelationship[type]({ prevValue: prevValue[propKey], id, value, relatedModel: prop.relationship, targetForeignKey });
       }
     }
@@ -133,14 +133,11 @@ const getEntry = async (modelName, id, opts = {}) => {
   const store = ReactiveRecord.stores[modelName];
   const keys = propNames.map((prop) => `${prop}_${id}`);
   const values = await idbAdapter.get(keys, store);
-
   // Check if the entry exists
   const entryExists = values.some((value) => value != null);
 
   if (!entryExists && !createIfNotFound) return null;
-
   const obj = { id };
-
   await Promise.all(propNames.map(async (propKey, idx) => {
     const prop = ReactiveRecord.models[modelName][propKey];
     if (!prop) return;
@@ -148,7 +145,7 @@ const getEntry = async (modelName, id, opts = {}) => {
     let value = values[idx];
 
     if (nested && prop.relationship) {
-      const relatedModelName = prop.relationship;
+      const relatedModelName = prop.relationship; 
       if (prop.type === "one" && value) value = await ReactiveRecord.get(relatedModelName, value);
       if (prop.type === "many" && Array.isArray(value)) value = await Promise.all(value.map((relatedId) => ReactiveRecord.get(relatedModelName, relatedId)));
     }
@@ -166,7 +163,6 @@ const getEntry = async (modelName, id, opts = {}) => {
     // Save the newly created entry with default values
     await ReactiveRecord.add(modelName, obj, { skipRelationship: true });
   }
-
   return obj;
 };
 

@@ -1,7 +1,6 @@
 import { i18n, stringToType, url } from "helpers";
 import { LitElement } from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
 
-import reset from "./reset.txt";
 import { getElementTheme, updateTheme } from "./theme.js";
 
 const isServer = typeof localStorage === "undefined";
@@ -64,8 +63,7 @@ class BaseReactiveView extends LitElement {
     const { init: componentInit, props, ...litPropsAndEvents } = this.component;
     componentInit?.(this);
 
-    Object.assign(this, litPropsAndEvents);
-    console.log({props});
+    Object.assign(this, litPropsAndEvents);    
     this.generateTheme = (element) => getElementTheme(element, this);
 
     Object.entries(props || {}).forEach(([key, prop]) => {
@@ -159,10 +157,10 @@ export function defineView({ tag, component, style }) {
 
   if (!_tailwindBase) {
     _tailwindBase = new CSSStyleSheet();
-    _tailwindBase.replaceSync([reset, style].join(" "));
+    _tailwindBase.replaceSync(style);
   }
 
-  ReactiveView.styles = (Array.isArray(component.style) ? component.style : []).concat(_tailwindBase).filter(Boolean);
+  ReactiveView.styles = [_tailwindBase, ...Array.isArray(component.style) ? component.style : []].filter(Boolean);
 
   customElements.define(tag, ReactiveView);
   return ReactiveView;

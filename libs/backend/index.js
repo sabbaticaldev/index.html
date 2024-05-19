@@ -1,12 +1,15 @@
-import {
+export {
   messageHandler,
   requestUpdate,
   startBackend
 } from "./libs/appstate.js";
+import {
+  requestUpdate,
+} from "./libs/appstate.js";
 import { BOOL_TABLE } from "./libs/constants.js";
 import idbAdapter from "./libs/indexeddb.js";
 import ReactiveRecord from "./libs/reactive-record.js";
-import { extractPathParams } from "./libs/utils.js";
+export { extractPathParams } from "./libs/utils.js";
 
 export const fetchDataFromDB = async (appId, models) => {
   const dataPromises = models.map(async (model) => {
@@ -38,7 +41,7 @@ export const postMessage = (payload) => {
   }
 };
 
-const P2P = {
+export const P2P = {
   _handleClients: (action) => {
     self.clients.matchAll().then((clients) => {
       if (clients && clients.length) {
@@ -67,7 +70,7 @@ const endpointNotFound = new Response(
 );
 
 
-const handleFetch = async ({ event, url }) => {
+export const handleFetch = async ({ event, url }) => {
   const method = event.request.method;
   const [,, model, id] = url.pathname.split("/");
   if (!ReactiveRecord.models[model]) {
@@ -136,13 +139,4 @@ const handleFetch = async ({ event, url }) => {
       }
     );
   }
-};
-
-export {
-  extractPathParams,
-  handleFetch,
-  messageHandler,
-  P2P,
-  requestUpdate,
-  startBackend,
 };
