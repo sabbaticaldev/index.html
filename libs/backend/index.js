@@ -85,7 +85,7 @@ export const handleFetch = async ({ event, url }) => {
       }),
       {},
     );
-    console.log({model, id});
+    
     const bodyMethods = ["POST", "PATCH"];
     const bodyParams = bodyMethods.includes(method)
       ? await event.request.clone().json().catch((err) => {

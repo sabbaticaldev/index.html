@@ -30,8 +30,8 @@ async function updateManyRelationship(params) {
   ]);
 }
 
-const ensureArray = (value) => (Array.isArray(value) ? value : [value]);
-const extractId = (val) => (Array.isArray(val) ? val : [null, val]);
+const ensureArray = (v) => (Array.isArray(v) ? v : [v]).filter(v => !!v);
+const extractId = (v) => (Array.isArray(v) ? v : [null, v]);
 
 export async function unsetRelation(relatedModelName, id, prevId, targetForeignKey, isMany = false) {
   if (!prevId) return;
@@ -39,10 +39,10 @@ export async function unsetRelation(relatedModelName, id, prevId, targetForeignK
     const prevTarget = await ReactiveRecord.get(relatedModelName, prevId, { props: [targetForeignKey] });
     if (prevTarget) {
       const oldIndex = prevTarget[targetForeignKey] || [];
-      await ReactiveRecord.edit(relatedModelName, { id: prevId, [targetForeignKey]: oldIndex.filter((entry) => entry !== id) });
+      await ReactiveRecord.edit(relatedModelName, { id: prevId, [targetForeignKey]: oldIndex.filter((entry) => entry !== id) }, { skipRelationship: true });
     }
   } else {
-    await ReactiveRecord.edit(relatedModelName, { id: prevId, [targetForeignKey]: null });
+    await ReactiveRecord.edit(relatedModelName, { id: prevId, [targetForeignKey]: null }, { skipRelationship: true });
   }
 }
 
@@ -56,7 +56,7 @@ async function setRelation(relatedModelName, id, newId, targetForeignKey, isMany
   } else {
     newIndex = id;
   }
-  await ReactiveRecord.edit(relatedModelName, { id: newId, [targetForeignKey]: newIndex });
+  await ReactiveRecord.edit(relatedModelName, { id: newId, [targetForeignKey]: newIndex }, { skipRelationship: true });
 }
 
 const getPrimaryKey = (properties) => {
@@ -88,9 +88,9 @@ const setEntries = async (modelName, entries, opts = {}) => {
       const relatedModel = ReactiveRecord.models[prop.relationship];
       if (!relatedModel) throw `ERROR: couldn't find model ${prop.relationship}`;
       const { targetForeignKey, type } = prop;
-      const prevValue = await getEntry(modelName, id, { createIfNotFound: true, props: [propKey] });
-      if (relatedModel[targetForeignKey]?.targetForeignKey && prevValue) {
-        await UpdateRelationship[type]({ prevValue: prevValue[propKey], value, id, relatedModel, relatedModelName: prop.relationship, targetForeignKey });
+      const prevValue = await getEntry(modelName, id, { props: [propKey] });
+      if (relatedModel[targetForeignKey]) {
+        await UpdateRelationship[type]({ prevValue: prevValue?.[propKey], value, id, relatedModel, relatedModelName: prop.relationship, targetForeignKey });
       }
     }
     return [key, value];
@@ -134,7 +134,8 @@ const getEntry = async (modelName, id, opts = {}) => {
   const { props, nested = false, createIfNotFound = false } = opts;
   const propNames = props || Object.keys(ReactiveRecord.models[modelName]);
   const store = ReactiveRecord.stores[modelName];
-  const keys = propNames.map((prop) => `${prop}_${id}`);
+  const primaryKey = getPrimaryKey(ReactiveRecord.models[modelName]);
+  const keys = [...new Set(propNames.concat(primaryKey))].map((prop) => `${prop}_${id}`);
   const values = await idbAdapter.get(keys, store);
   const entryExists = values.some((value) => value != null);
 
@@ -182,8 +183,9 @@ const getEntries = async (modelName, key, opts = {}) => {
 };
 
 const ReactiveRecord = {
-  async add(modelName, value, opts) {
+  async add(modelName, value, opts = {}) {
     const { newId, entries } = generateEntries(modelName, value);
+    console.log({modelName, value, opts});
     await setEntries(modelName, entries, opts);
     return newId;
   },
@@ -191,17 +193,17 @@ const ReactiveRecord = {
     const allEntries = values.flatMap((value) => generateEntries(modelName, value).entries);
     await setEntries(modelName, allEntries);
   },
-  async edit(modelName, { id, ...value }) {
+  async edit(modelName, { id, ...value }, opts = {}) {
     const entries = Object.entries(value).map(([prop, val]) => [prop, id, val]);
-    await setEntries(modelName, entries);
+    await setEntries(modelName, entries, opts);
     return { id, ...value };
   },
-  async editMany(modelName, records) {
+  async editMany(modelName, records, opts = {}) {
     if (!records?.length) return;
     const allEntries = records.flatMap(({ id, ...value }) =>
       Object.entries(value).map(([prop, val]) => [prop, id, val])
     );
-    await setEntries(modelName, allEntries);
+    await setEntries(modelName, allEntries, opts);
   },
   async get(modelName, id, opts) {
     return getEntry(modelName, id, opts);
