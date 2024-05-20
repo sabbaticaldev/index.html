@@ -56,16 +56,17 @@ export const workspaceModelDefinition = {
   },
 };
 
-const initializeDatabase = async ({ dbName = "default", models = {}, data = {}, version = 1 }) => {
+const initializeDatabase = async ({ dbName = "default", models = {}, version = 1 }) => {
   const stores = await createDatabase(dbName, Object.keys(models), version);
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
+};
+
+const importData = async ({app, data = {}}) => {
   const dataArray = Object.entries(data);
-  console.log({dataArray});
   if(dataArray.length) {
   // Check if the data has already been migrated
-    const appEntry = await ReactiveRecord.get("app", "default");
-    const migrationTimestamp = appEntry?.migrationTimestamp || 0;
+    const migrationTimestamp = app?.migrationTimestamp || 0;
 
     // If no migration timestamp or it is zero, perform the data import
     if (migrationTimestamp === 0) {
@@ -105,15 +106,17 @@ export const startBackend = async (app, isSW = false) => {
   const { data = {} } = app;
 
   if (!isSW) {
-    await initializeDatabase({ dbName, models, data, version });
-    const existingApp = await getApp();
-    if (existingApp) {
-      console.log("Existing app entry found:", existingApp);
-      return existingApp;
+    await initializeDatabase({ dbName, models, version });
+    const app = await getApp();
+    if (app) {
+      console.log("Existing app entry found:", app);
+      ReactiveRecord.appId = app.timestamp;
+      importData({ data, app });
+      return app;
     }
     return await createAppEntry(models, version);
   } else {
-    await initializeDatabase({ dbName, models, data, version });
+    await initializeDatabase({ dbName, models, version });
   }
   ReactiveRecord.appId = app.timestamp;
 };
