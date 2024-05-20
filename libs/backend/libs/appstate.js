@@ -56,7 +56,7 @@ export const workspaceModelDefinition = {
 };
 
 
-const initializeDatabase = async (dbName, models, version) => {
+const initializeDatabase = async ({ dbName = "default", models = {}, data = {}, version = 1 }) => {
   const stores = await createDatabase(dbName, Object.keys(models), version);
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
@@ -81,9 +81,9 @@ export const startBackend = async (app, isSW = false) => {
   const dbName = "default";
   const models = { app: workspaceModelDefinition, ...(app.models || {}) };
   const version = app.version || 1;
-
+  const {data = {}} = app;
   if (!isSW) {
-    await initializeDatabase(dbName, models, version);
+    await initializeDatabase({ dbName, models, data, version });
     const existingApp = await getApp();
     if (existingApp) {
       console.log("Existing app entry found:", existingApp);
@@ -93,7 +93,7 @@ export const startBackend = async (app, isSW = false) => {
     return await createAppEntry(models, version);
   }
   else {
-    await initializeDatabase(dbName, models, version);
+    await initializeDatabase({ dbName, models, data, version });
   }
   ReactiveRecord.appId = app.timestamp;
 };
