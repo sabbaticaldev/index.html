@@ -60,6 +60,7 @@ const initializeDatabase = async ({ dbName = "default", models = {}, version = 1
   const stores = await createDatabase(dbName, Object.keys(models), version);
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
+  console.log("APP STATE ",{models});
 };
 
 const importData = async ({app, data = {}}) => {
