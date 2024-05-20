@@ -2,9 +2,9 @@ import { createDatabase, getApp } from "./indexeddb.js";
 import ReactiveRecord from "./reactive-record.js";
 
 let models = {};
+
 export const events = {
   INIT_BACKEND: async (data, { source }) => {
-    //Controller = source;
     source.postMessage({
       type: "BACKEND_INITIALIZED"
     });
@@ -29,10 +29,8 @@ export const events = {
       const model = models[modelName];
       if (model) model?.setMany(entries);
     }
-
     requestUpdate();
   },
-
   REQUEST_UPDATE: async (data, { requestUpdate }) => {
     const { store } = data || {};
     requestUpdate(store);
@@ -53,13 +51,35 @@ export const workspaceModelDefinition = {
   version: {
     type: "number",
   },
+  migrationTimestamp: {
+    type: "number",
+  },
 };
-
 
 const initializeDatabase = async ({ dbName = "default", models = {}, data = {}, version = 1 }) => {
   const stores = await createDatabase(dbName, Object.keys(models), version);
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
+  const dataArray = Object.entries(data);
+  console.log({dataArray});
+  if(dataArray.length) {
+  // Check if the data has already been migrated
+    const appEntry = await ReactiveRecord.get("app", "default");
+    const migrationTimestamp = appEntry?.migrationTimestamp || 0;
+
+    // If no migration timestamp or it is zero, perform the data import
+    if (migrationTimestamp === 0) {
+      for (const [modelName, entries] of dataArray) {
+        await ReactiveRecord.addMany(modelName, entries);
+      }
+
+      // Update the migration timestamp after importing data
+      await ReactiveRecord.edit("app", {
+        id: "default",
+        migrationTimestamp: Date.now(),
+      });
+    }
+  }
 };
 
 const createAppEntry = async (models, version) => {
@@ -70,6 +90,7 @@ const createAppEntry = async (models, version) => {
     models,
     version,
     timestamp,
+    migrationTimestamp: 0, // Initial migration timestamp set to 0
   };
   await ReactiveRecord.add("app", appEntry);
   console.log("App entry added:", appEntry);
@@ -81,7 +102,8 @@ export const startBackend = async (app, isSW = false) => {
   const dbName = "default";
   const models = { app: workspaceModelDefinition, ...(app.models || {}) };
   const version = app.version || 1;
-  const {data = {}} = app;
+  const { data = {} } = app;
+
   if (!isSW) {
     await initializeDatabase({ dbName, models, data, version });
     const existingApp = await getApp();
@@ -89,10 +111,8 @@ export const startBackend = async (app, isSW = false) => {
       console.log("Existing app entry found:", existingApp);
       return existingApp;
     }
-    
     return await createAppEntry(models, version);
-  }
-  else {
+  } else {
     await initializeDatabase({ dbName, models, data, version });
   }
   ReactiveRecord.appId = app.timestamp;

@@ -45,11 +45,12 @@ const startFrontend = ({ app, style }) => {
     contentKit,
     datetimeKit
   ];
-
+  
   return packages.reduce(
     (acc, pkg) => {
       const result = definePackage({ pkg, style });
       return {
+        ...app,
         models: { ...acc.models, ...result.models },
         views: { ...acc.views, ...result.views },
       };
@@ -97,14 +98,14 @@ const loadApp = async ({ app, style }) => {
   if (!isValidApp(app)) return console.error("DEBUG: App is invalid.", { app });  
   if ("serviceWorker" in navigator) {    
     try {
-      const appData = await startBackend({ models: app.models, version: app.version });
+      const appData = await startBackend({ ...app, models: app.models, version: app.version });
       console.log("Starting app ", {appData});
       console.log("start service worker");
       const registration = await navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
       console.info("ServiceWorker registration successful:", registration);
-      
-      await injectApp(app, style);
-        
+      setTimeout(async ()=> {
+        await injectApp(app, style);
+      }, 0);
       
     }
     catch (error) {

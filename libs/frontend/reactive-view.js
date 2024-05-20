@@ -170,6 +170,6 @@ export const definePackage = ({ pkg, style }) => {
   const views = Object.fromEntries(
     Object.entries(pkg.views).map(([tag, component]) => [tag, defineView({ tag, component, style })])
   );
-  return { views, models: pkg.models, controllers: pkg.controllers };
+  return {  ...pkg, views };
 };
 export default BaseReactiveView;

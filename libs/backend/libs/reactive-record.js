@@ -67,6 +67,7 @@ const getPrimaryKey = (properties) => {
 
 const generateEntries = (modelName, { _userId, id: _id, ...value }) => {
   const appId = ReactiveRecord.appId;
+  console.log({model: ReactiveRecord.models, modelName});
   const primaryKey = getPrimaryKey(ReactiveRecord.models[modelName]);
   const newId = _userId ? `${_id}-${_userId}` : _id || generateIdWithUserId(appId, _userId);
   const properties = { ...value, [primaryKey]: value[primaryKey] || "" };
@@ -78,7 +79,7 @@ const unsetMany = async (store, keys) => {
   return idbAdapter.remove(keys, store);
 };
 
-const setEntries = async (modelName, entries, opts = {}) => {  
+const setEntries = async (modelName, entries = [], opts = {}) => {  
   const { skipRelationship } = opts;
   const properties = ReactiveRecord.models[modelName];
   const entriesToAdd = await Promise.all(entries.map(async ([propKey, id, value]) => {
@@ -189,7 +190,7 @@ const ReactiveRecord = {
     await setEntries(modelName, entries, opts);
     return newId;
   },
-  async addMany(modelName, values) {
+  async addMany(modelName, values = []) {
     const allEntries = values.flatMap((value) => generateEntries(modelName, value).entries);
     await setEntries(modelName, allEntries);
   },
