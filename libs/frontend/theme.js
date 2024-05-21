@@ -94,6 +94,10 @@ export const generateTheme = (userTheme) => {
     "uix-avatar": { ...commonStyles, size: DimensionSizes },
     "uix-avatar__img": { _base: "", size: DimensionSizes },
     "uix-badge": { ...commonStyles, size: [SpacingSizes, TextSizes] },
+    "uix-form-control": { _base: "form-control w-full" },
+    "uix-form-control__label": { _base: "label" },
+    "uix-form-control__label-text": { _base: "label-text" },
+    "uix-form-control__label-alt": { _base: "label-text-alt" },
     "uix-input": {
       _base: cls(["block w-full appearance-none focus:outline-none focus:ring-0", userTheme.defaultTextColor, userTheme.borderStyles, userTheme.borderWidth, borderRadius]),
       active: {
@@ -108,9 +112,41 @@ export const generateTheme = (userTheme) => {
       _base: cls(["absolute text-sm duration-300 transform -translate-y-4 scale-75 top-0.5 z-10 origin-[0] left-2.5",
         "peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"])
     },
-    "uix-label": { ...commonStyles },
-    "uix-textarea": { ...commonStyles, active: commonStyles.active },
-    "uix-dropdown": { ...commonStyles, active: commonStyles.active },
+    "uix-select": {
+      _base: cls(["block w-full appearance-none focus:outline-none focus:ring-0", userTheme.defaultTextColor, userTheme.borderStyles, userTheme.borderWidth, borderRadius]),
+      active: {
+        true: cls([userTheme.activeTextColor, "border-blue-500"]),
+        false: cls([userTheme.defaultTextColor, userTheme.hoverBorder])
+      },
+      variant: BaseVariants,
+      size: [SpacingSizes, TextSizes]
+    },
+    "uix-textarea": {
+      _base: cls(["block w-full appearance-none focus:outline-none focus:ring-0", userTheme.defaultTextColor, userTheme.borderStyles, userTheme.borderWidth, borderRadius]),
+      active: {
+        true: cls([userTheme.activeTextColor, "border-blue-500"]),
+        false: cls([userTheme.defaultTextColor, userTheme.hoverBorder])
+      },
+      variant: BaseVariants,
+      size: [SpacingSizes, TextSizes]
+    },
+    "uix-range": {
+      _base: cls(["w-full"]),
+      variant: BaseVariants,
+      size: [SpacingSizes, TextSizes]
+    },
+    "uix-checkbox": {
+      _base: cls(["before:content[''] peer before:transition-opacity hover:before:opacity-10 checked:opacity-100 opacity-30", clipRoundedClasses[userTheme.borderRadius]]),
+      variant: ReverseVariants,
+      size: DimensionSizes
+    },
+    "uix-icon-button": { _base: cls(["transition ease-in-out duration-200 mx-auto", borderRadius]), variant: BaseVariants },
+    "uix-icon-button__icon": { _base: cls(["mx-auto"]), size: TextSizes },
+    "uix-button": {
+      _base: cls(["cursor-pointer transition ease-in-out duration-200 gap-2 w-full", userTheme.flexCenter, userTheme.fontStyles, borderRadius]),
+      variant: ReverseVariants,
+      size: [ButtonSizes, TextSizes]
+    },
     "uix-modal": { _base: cls(["rounded-lg bg-white p-8 shadow-2xl min-w-[768px] min-h-[400px]", borderRadius]), size: SpacingSizes },
     "uix-card": { _base: "shadow", spacing: SpacingSizes, variant: BaseVariants },
     "uix-block": { spacing: SpacingSizes, variant: BaseVariants },
@@ -124,13 +160,6 @@ export const generateTheme = (userTheme) => {
     "uix-divider": { _base: "flex items-center my-2", spacing: SpacingSizes },
     "uix-divider__border": { _base: "border-t border-gray-400 flex-grow" },
     "uix-divider__label": { _base: "px-3 text-gray-800 font-bold text-2xl" },
-    "uix-button": {
-      _base: cls(["cursor-pointer transition ease-in-out duration-200 gap-2 w-full", userTheme.flexCenter, userTheme.fontStyles, borderRadius]),
-      variant: ReverseVariants,
-      size: [ButtonSizes, TextSizes]
-    },
-    "uix-icon-button": { _base: cls(["transition ease-in-out duration-200 mx-auto", borderRadius]), variant: BaseVariants },
-    "uix-icon-button__icon": { _base: cls(["mx-auto"]), size: TextSizes },
     "uix-tooltip": { _base: cls(["group relative m-12", borderRadius]), spacing: SpacingSizes },
     "uix-tooltip__button": { _base: cls(["bg-gray-500 px-4 py-2 text-sm shadow-sm text-white", borderRadius]), variant: BaseVariants, spacing: SpacingSizes },
     "uix-tooltip__content": { _base: "absolute top-10 scale-0 transition-all rounded bg-gray-800 p-2 text-white text-xs group-hover:scale-100", spacing: SpacingSizes },
@@ -144,14 +173,51 @@ export const generateTheme = (userTheme) => {
       variant: BaseVariants,
       size: SpacingSizes
     },
-    "uix-tab_summary": { _base: "cursor-pointer" },
-    "uix-range": { _base: "w-full", variant: BaseVariants },
-    "uix-checkbox": {
-      _base: cls(["before:content[''] peer before:transition-opacity hover:before:opacity-10 checked:opacity-100 opacity-30", clipRoundedClasses[userTheme.borderRadius]]),
-      variant: ReverseVariants,
-      size: DimensionSizes
-    },
-    "uix-select": { _base: "w-full", border: { true: "border" }, full: { true: "w-full" }, size: SpacingSizes },
+    "uix-crud-search-form": { _base: "flex items-center flex-grow" },
+    "uix-crud-search-input__container": { _base: "relative w-full" },
+    "uix-crud-search-input__icon": { _base: "absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none" },
+    "uix-crud-search-input": { _base: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" },
+    "uix-crud-actions__button": { _base: "text-left" },
+    "uix-crud-actions__dropdown": { _base: "flex flex-col" },
+    "uix-crud-new-modal__icon": { _base: "" },
+    "uix-crud-new-modal__button": { _base: "text-left" },
+    "uix-chat__message-container": { _base: "flex items-center" },
+    "uix-chat__message": { _base: "flex flex-col bg-white p-3 rounded-lg shadow-md" },
+    "uix-chat__timestamp": { _base: "text-xs text-gray-500 text-right mt-1" },
+    "uix-chat__sender": { _base: "tracking-wide text-gray-700" },
+    "uix-chat__message-preview": { _base: "text-gray-400 text-ellipsis text-xs overflow-hidden whitespace-nowrap w-36" },
+    "uix-chat__timestamp-container": { _base: "text-right flex flex-col justify-evenly" },
+    "uix-app-shell": { _base: "w-full h-full flex flex-col" },
+    "uix-app-shell__content": { _base: "flex h-full" },
+    "uix-app-shell__main": { _base: "relative content flex-grow overflow-y-auto" },
+    "uix-time": { _base: "whitespace-nowrap" },
+    "uix-calendar-day": ({ previous, next, currentDay, selected }) => ({
+      _base: `focus:z-10 w-full p-1.5 ${!next && !previous || currentDay || selected ? "bg-white" : ""} ${currentDay ? "text-indigo-600 font-semibold" : ""}`
+    }),
+    "uix-calendar-day__time": ({ selected }) => ({
+      _base: `mx-auto flex h-7 w-7 items-center justify-center rounded-full ${selected ? "bg-gray-900 font-semibold text-white" : ""}`
+    }),
+    "uix-calendar-month__header": { _base: "mt-6 grid grid-cols-7 text-center text-xs leading-6 text-gray-500" },
+    "uix-calendar-month__grid": { _base: "isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200" },
+    "uix-table": { _base: "w-full text-sm text-left text-gray-500 dark:text-gray-400" },
+    "uix-table__header": { _base: "p-3 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400" },
+    "uix-table__cell": { _base: "px-3 py-2 text-xs" },
+    "uix-mockup-phone": { _base: "relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-xl h-[700px] w-[400px] shadow-xl" },
+    "uix-mockup-phone__top": { _base: "w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute" },
+    "uix-mockup-phone__side": ({ position, index }) => ({
+      _base: `h-[${index === 0 ? 32 : index === 1 ? 46 : 64}px] w-[3px] bg-gray-800 absolute -${position}-[17px] top-[${index === 0 ? 72 : index === 1 ? 124 : 142}px] rounded-${position === "left" ? "l" : "r"}-lg`
+    }),
+    "uix-mockup-phone__content": { _base: "rounded-xl overflow-hidden w-[372px] h-[672px] bg-white" },
+    "uix-tab__summary": { _base: "cursor-pointer" },
+    "uix-tab__close-button": { _base: "absolute top-1 right-2 text-sm font-bold leading-none group-hover:inline hidden" },
+    "uix-pagination__nav": { _base: "flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" },
+    "uix-pagination__info": { _base: "text-sm font-normal text-gray-500 dark:text-gray-400" },
+    "uix-pagination__info-highlight": { _base: "font-semibold text-gray-900 dark:text-white" },
+    "uix-pagination__list": { _base: "inline-flex items-stretch -space-x-px" },
+    "uix-pagination__item": { _base: "p-2" },
+    "uix-pagination__link": { _base: "flex items-center justify-center p-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" },
+    "uix-pagination__link-active": { _base: "flex items-center justify-center p-2 text-sm leading-tight text-blue-600 bg-blue-50 border border-blue-300" },
+    "uix-context-menu": { _base: "z-10 absolute top-6 left-10 bg-white border border-gray-300 shadow-lg" },
     "uix-text": { _base: "", variant: TextColors, weight: FontWeight, font: FontType, leading: LeadingSizes, size: [LeadingSizes, trackingSizes, TextSizes] }
   };
 };

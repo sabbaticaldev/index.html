@@ -3,13 +3,13 @@ import { html, T } from "helpers";
 const AppShell = {
   props: { containerClass: T.string() },
   render() {
-    const { containerClass } = this;
+    const { containerClass = "" } = this;
     return html`
-      <div class="app-shell w-full h-full flex flex-col ${containerClass || ""}">
+      <div class=${this.generateTheme("uix-app-shell") + containerClass && ` ${containerClass}` || ""}>
         <slot name="top-navbar"></slot>
-        <div class="flex h-full">
+        <div class=${this.generateTheme("uix-app-shell__content")}>
           <slot name="left-navbar"></slot>
-          <main class="relative content flex-grow overflow-y-auto">
+          <main class=${this.generateTheme("uix-app-shell__main")}>
             <slot></slot>
           </main>
           <slot name="right-navbar"></slot>

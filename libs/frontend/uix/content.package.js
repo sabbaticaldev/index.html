@@ -33,15 +33,15 @@ const Table = {
   props: tableProps,
   paginatedRows,
   render() {
-    const headerElements = this.headers.map((header) => html`<th scope="col" class="p-3">${header}</th>`);
+    const headerElements = this.headers.map((header) => html`<th scope="col" class=${this.generateTheme("uix-table__header")}>${header}</th>`);
     const rowElements = this.paginatedRows().map((row) =>
-      html`<tr>${Array.isArray(row) ? row : Object.values(row).map((cell) => html`<td class="px-3 py-2 text-xs">${cell}</td>`)}</tr>`
+      html`<tr>${Array.isArray(row) ? row : Object.values(row).map((cell) => html`<td class=${this.generateTheme("uix-table__cell")}>${cell}</td>`)}</tr>`
     );
 
     return html`
       <div>
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <table class=${this.generateTheme("uix-table")}>
+          <thead>
             <tr>${headerElements}</tr>
           </thead>
           <tbody>${rowElements}</tbody>
@@ -66,13 +66,13 @@ const MockupPhone = {
   },
   render() {
     return html`
-      <div class="relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-xl h-[700px] w-[400px] shadow-xl">
-        <div class="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute"></div>
-        <div class="h-[32px] w-[3px] bg-gray-800 absolute -left-[17px] top-[72px] rounded-l-lg"></div>
-        <div class="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[124px] rounded-l-lg"></div>
-        <div class="h-[46px] w-[3px] bg-gray-800 absolute -left-[17px] top-[178px] rounded-l-lg"></div>
-        <div class="h-[64px] w-[3px] bg-gray-800 absolute -right-[17px] top-[142px] rounded-r-lg"></div>
-        <div class="rounded-xl overflow-hidden w-[372px] h-[672px] bg-white"><slot></slot></div>
+      <div class=${this.generateTheme("uix-mockup-phone")}>
+        <div class=${this.generateTheme("uix-mockup-phone__top")}></div>
+        <div class=${this.generateTheme("uix-mockup-phone__side", { position: "left", index: 0 })}></div>
+        <div class=${this.generateTheme("uix-mockup-phone__side", { position: "left", index: 1 })}></div>
+        <div class=${this.generateTheme("uix-mockup-phone__side", { position: "left", index: 2 })}></div>
+        <div class=${this.generateTheme("uix-mockup-phone__side", { position: "right", index: 1 })}></div>
+        <div class=${this.generateTheme("uix-mockup-phone__content")}><slot></slot></div>
       </div>
     `;
   },

@@ -21,8 +21,8 @@ const Modal = {
     return html`
       <slot name="button" @click=${this.show.bind(this)}></slot>
       <dialog id="modal" ?open=${this.open} class=${this.generateTheme("uix-modal")}>
-        <div class="modal-box">
-          <uix-button @click=${this.hide.bind(this)} variant="" shape="circle" size="sm" class="absolute right-1 top-0">✕</uix-button>
+        <div class=${this.generateTheme("uix-modal__box")}>
+          <uix-button @click=${this.hide.bind(this)} variant="" shape="circle" size="sm" class=${this.generateTheme("uix-modal__close-button")}>✕</uix-button>
           <uix-list vertical>
             <slot></slot>
             <uix-list>
@@ -104,7 +104,7 @@ const Tab = {
           <button @click=${event => {
     event.stopPropagation();
     this.onclose();
-  }} class="absolute top-1 right-2 text-sm font-bold leading-none group-hover:inline hidden">
+  }} class=${this.generateTheme("uix-tab__close-button")}>
             &times;
           </button>
         `}
@@ -122,10 +122,10 @@ const Pagination = {
   },
   renderPageLink(page, label) {
     const isActive = page === this.currentPage;
-    const linkClass = isActive ? "text-blue-600 bg-blue-50 border border-blue-300" : "text-gray-500 bg-white border border-gray-300";
+    const linkClass = this.generateTheme(isActive ? "uix-pagination__link-active" : "uix-pagination__link");
     return html`
-      <li class="p-2">
-        <a href="#" class="flex items-center justify-center p-2 text-sm leading-tight ${linkClass} hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" @click=${() => this.onPageChange(page)}>
+      <li class=${this.generateTheme("uix-pagination__item")}>
+        <a href="#" class=${linkClass} @click=${() => this.onPageChange(page)}>
           ${label || page}
         </a>
       </li>
@@ -167,11 +167,11 @@ const Pagination = {
     }
 
     return html`
-      <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
-        <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-          Showing <span class="font-semibold text-gray-900 dark:text-white">${startItem}-${endItem}</span> of <span class="font-semibold text-gray-900 dark:text-white">${this.totalResults}</span>
+      <nav class=${this.generateTheme("uix-pagination__nav")} aria-label="Table navigation">
+        <span class=${this.generateTheme("uix-pagination__info")}>
+          Showing <span class=${this.generateTheme("uix-pagination__info-highlight")}>${startItem}-${endItem}</span> of <span class=${this.generateTheme("uix-pagination-info-highlight")}>${this.totalResults}</span>
         </span>
-        <ul class="inline-flex items-stretch -space-x-px">${pageLinks}</ul>
+        <ul class=${this.generateTheme("uix-pagination__list")}>${pageLinks}</ul>
       </nav>
     `;
   },
@@ -204,7 +204,7 @@ const ContextMenu = {
   },
   render() {
     return html`
-      <div class="z-10 absolute top-6 left-10 ${this.open ? "" : "hidden"} bg-white border border-gray-300 shadow-lg">
+      <div class=${this.generateTheme("uix-context-menu")} ?hidden=${!this.open}>
         <slot name="menu"></slot>
       </div>
       <slot @contextmenu=${(e) => {

@@ -1,4 +1,4 @@
-import {   css, html, ifDefined, T } from "helpers";
+import { css, html, ifDefined, T } from "helpers";
 
 const createFormControl = (tagName) => {
   return (props) => html`
@@ -16,7 +16,6 @@ const createFormControl = (tagName) => {
       size=${ifDefined(props.size)}
       label=${ifDefined(props.label)}
       labelAlt=${ifDefined(props.labelAlt)}
-      variant=${ifDefined(props.variant)}
       containerClass="w-full"
     ></${tagName}>
   `;
@@ -182,7 +181,7 @@ const Form = {
         </uix-list>
         <uix-list>
           ${actions ? html`
-            <uix-list responsive gap="md" class="mx-auto mt-10">
+            <uix-list responsive gap="md" class=${this.generateTheme("uix-form-actions")}>
               ${actions.map(action => html`<uix-input type=${action.type} @click=${action.click} class=${action.class} value=${action.value}></uix-input>`)}
             </uix-list>
           ` : ""}
@@ -200,10 +199,10 @@ const FormControl = {
   render() {
     const { label, labelAlt } = this;
     return html`
-      <div class="form-control w-full">
-        ${label ? html`<label class="label"><span class="label-text">${label}</span></label>` : ""}
+      <div class=${this.generateTheme("uix-form-control")}>
+        ${label ? html`<label class=${this.generateTheme("uix-form-control__label")}><span class=${this.generateTheme("uix-form-control__label-text")}>${label}</span></label>` : ""}
         <slot></slot>
-        ${labelAlt && labelAlt.length ? html`<label class="label">${labelAlt.map(alt => html`<span class="label-text-alt">${alt}</span>`)}</label>` : ""}
+        ${labelAlt && labelAlt.length ? html`<label class=${this.generateTheme("uix-form-control__label")}><span class=${this.generateTheme("uix-form-control__label-alt")}>${labelAlt}</span></label>` : ""}
       </div>
     `;
   },
@@ -232,7 +231,6 @@ const Input = {
         <input
           type="text"
           id="filled"
-          style="line-height: 1.05rem;/*quick hack, should find a better fix*/"
           aria-describedby="filled_success_help"
           class=${this.generateTheme("uix-input")}
           .value=${value || ""}
@@ -333,20 +331,21 @@ const Range = {
   ...FormControls("range"),
   render() {
     const { generateTheme, min, max, value } = this;
-    return html`<div>
-      <input
-        class=${generateTheme("uix-range")}
-        type="range"
-        @input=${this.change}
-        min=${min}
-        max=${max}
-        value=${value}
-      />
-      <div class="-mt-2 flex w-full justify-between">
-        <span class="text-sm text-gray-600">Squared</span>
-        <span class="text-sm text-gray-600">Rounded</span>
-      </div>
-    </div>`;
+    return html`
+      <div class=${generateTheme("uix-range")}>
+        <input
+          class=${generateTheme("uix-range__input")}
+          type="range"
+          @input=${this.change}
+          min=${min}
+          max=${max}
+          value=${value}
+        />
+        <div class=${generateTheme("uix-range__labels")}>
+          <span class="text-sm text-gray-600">Squared</span>
+          <span class="text-sm text-gray-600">Rounded</span>
+        </div>
+      </div>`;
   },
 };
 
