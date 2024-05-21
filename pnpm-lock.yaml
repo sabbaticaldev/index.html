@@ -70,22 +70,6 @@ importers:
         specifier: ^0.21.3
         version: 0.21.3
 
-  libs/brazuka:
-    dependencies:
-      backend:
-        specifier: workspace:*
-        version: link:../backend
-      frontend:
-        specifier: workspace:*
-        version: link:../frontend
-      helpers:
-        specifier: workspace:*
-        version: link:../helpers
-    devDependencies:
-      esbuild:
-        specifier: ^0.19.5
-        version: 0.19.12
-
   libs/core:
     devDependencies:
       esbuild:

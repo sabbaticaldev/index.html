@@ -72,8 +72,7 @@ const endpointNotFound = new Response(
 
 export const handleFetch = async ({ event, url }) => {
   const method = event.request.method;
-  const [,, model, id] = url.pathname.split("/");
-  console.log({url, model, method}, ReactiveRecord.models);
+  const [,, model, id] = url.pathname.split("/");  
   if (!ReactiveRecord.models[model]) {
     return endpointNotFound;
   }
