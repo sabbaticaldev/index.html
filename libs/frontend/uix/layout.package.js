@@ -5,6 +5,7 @@ const Block = {
     variant: T.string(),
     spacing: T.string({ defaultValue: "md" }),
     containerClass: T.string(),
+    full: T.boolean(),
   },
   render() {
     const baseClass = this.theme("uix-block");

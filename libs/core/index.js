@@ -11,26 +11,11 @@ import {
   getUnoGenerator,
   layoutKit,
   navigationKit,
-  reactiveViewInstances,
   reset,
   themeClasses,
   uiKit
 } from "frontend";
 import { getUrlBlob, injectStyle, isValidApp } from "helpers";
-
-// Utility function to update styles for all reactive view instances
-const updateAllStyles = async (updateBefore = true, updateAfter = false) => {
-  const result = await window.__unocss_runtime.update();
-  const stylesheet = reset + result.css;
-  for (const instance of reactiveViewInstances) {
-    if (updateBefore) await instance.requestUpdate();
-    await instance.updateStyles(stylesheet);
-    if (updateAfter) await instance.requestUpdate();
-    window._isLoaded = true;
-  }
-};
-
-window.updateAllStyles = updateAllStyles;
 
 // Function to start the frontend with the given app and style
 const startFrontend = ({ app, style }) => {
@@ -67,19 +52,10 @@ const injectApp = async (app, style) => {
   if (app.title) document.title = app.title;
   
   const frontendState = startFrontend({ app, style });
-
   if (app.init) await app.init({ style, app });
-
-  if (window.__unocss_runtime) {
-    window.__unocss_runtime.extractAll();
-    setTimeout(() => {
-      const styleEl = document.createElement("style");
-      styleEl.textContent = reset;
-      document.head.append(styleEl);
-      updateAllStyles();
-    }, 300);
-  }
-
+  const styleEl = document.createElement("style");
+  styleEl.textContent = reset;
+  document.head.append(styleEl);
   return frontendState;
 };
 
@@ -152,7 +128,7 @@ const environmentStrategies = {
     const uno = getUnoGenerator(themeClasses);
     const { css } = await uno.uno.generate(themeClasses, { preflights: true });
     console.log({ css });
-    loadApp({ app: window.App, style: css });
+    loadApp({ app: window.App, style: [reset, css].join(" ") });
   }
 };
 

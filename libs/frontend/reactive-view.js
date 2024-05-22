@@ -46,10 +46,7 @@ const defineSyncProperty = (instance, key, prop) => {
 };
 
 class BaseReactiveView extends LitElement {
-  i18n = i18n;
-  _style;
-  _isLoaded;
-  _styleElement;  
+  i18n = i18n;  
   static formAssociated;
   static _instancesUsingSync = syncKeyMap;
 
@@ -99,9 +96,6 @@ class BaseReactiveView extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.component.connectedCallback?.bind(this)();
-    if (this.constructor._style && !this._isLoaded) {
-      this._injectStyle();
-    }
   }
 
   disconnectedCallback() {
@@ -111,19 +105,6 @@ class BaseReactiveView extends LitElement {
     if (typeof window !== "undefined") {
       navigator.serviceWorker.removeEventListener("message", this.boundServiceWorkerMessageHandler);
     }
-  }
-
-  updateStyles(stylesheet) {
-    this.constructor._style = stylesheet;
-    this._injectStyle();
-  }
-
-  _injectStyle() {
-    const styleEl = document.createElement("style");
-    styleEl.textContent = this.constructor._style;
-    this.shadowRoot.appendChild(styleEl);
-    this._styleElement = styleEl;
-    this._isLoaded = true;
   }
 }
 

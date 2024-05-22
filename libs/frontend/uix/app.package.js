@@ -4,8 +4,10 @@ const AppShell = {
   props: { containerClass: T.string() },
   render() {
     const { containerClass = "" } = this;
+    const baseClass = this.theme("uix-app-shell");
+    
     return html`
-      <div class=${this.theme("uix-app-shell") + containerClass && ` ${containerClass}` || ""}>
+      <div class=${baseClass + (containerClass && ` ${containerClass}` || "")}>
         <slot name="top-navbar"></slot>
         <div class=${this.theme("uix-app-shell__content")}>
           <slot name="left-navbar"></slot>

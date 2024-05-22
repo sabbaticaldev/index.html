@@ -1,4 +1,4 @@
-export { definePackage, defineView,instances as reactiveViewInstances } from "./reactive-view.js";
+export { definePackage, defineView } from "./reactive-view.js";
 export { default as reset } from "./reset.txt";
 export { default as baseTheme, themeClasses } from "./theme.js";
 export { default as appKit } from "./uix/app.package.js";
