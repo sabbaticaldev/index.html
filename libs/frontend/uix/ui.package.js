@@ -22,13 +22,13 @@ const Avatar = {
     const { src, alt, placeholder } = this;
     let content;
     if (src) {
-      content = html`<img src=${src} class=${this.generateTheme("uix-avatar__img")} alt=${alt} />`;
+      content = html`<img src=${src} class=${this.theme("uix-avatar__img")} alt=${alt} />`;
     } else if (placeholder) {
-      content = html`<span class=${this.generateTheme("uix-avatar__img")}>${placeholder}</span>`;
+      content = html`<span class=${this.theme("uix-avatar__img")}>${placeholder}</span>`;
     }
 
     return html`
-      <div class=${this.generateTheme("uix-avatar")}>${content}</div>
+      <div class=${this.theme("uix-avatar")}>${content}</div>
     `;
   },
 };
@@ -41,7 +41,7 @@ const Badge = {
   },
   render() {
     return html`
-      <span @click=${this.click} class=${this.generateTheme("uix-badge")}>
+      <span @click=${this.click} class=${this.theme("uix-badge")}>
         <slot></slot>
       </span>
     `;
@@ -109,7 +109,7 @@ const Text = {
 
     const tag = TAG_MAP[size] || "p";
     return staticHtml`
-      <${unsafeStatic(tag)} class="${unsafeStatic(`${this.generateTheme("uix-text")}`)}">
+      <${unsafeStatic(tag)} class="${unsafeStatic(`${this.theme("uix-text")}`)}">
         <slot></slot>
       </${unsafeStatic(tag)}>
     `;

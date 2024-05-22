@@ -20,9 +20,9 @@ const Modal = {
   render() {
     return html`
       <slot name="button" @click=${this.show.bind(this)}></slot>
-      <dialog id="modal" ?open=${this.open} class=${this.generateTheme("uix-modal")}>
-        <div class=${this.generateTheme("uix-modal__box")}>
-          <uix-button @click=${this.hide.bind(this)} variant="" shape="circle" size="sm" class=${this.generateTheme("uix-modal__close-button")}>✕</uix-button>
+      <dialog id="modal" ?open=${this.open} class=${this.theme("uix-modal")}>
+        <div class=${this.theme("uix-modal__box")}>
+          <uix-button @click=${this.hide.bind(this)} variant="" shape="circle" size="sm" class=${this.theme("uix-modal__close-button")}>✕</uix-button>
           <uix-list vertical>
             <slot></slot>
             <uix-list>
@@ -39,11 +39,11 @@ const Modal = {
 const Tooltip = {
   render() {
     return html`
-      <div class=${this.generateTheme("uix-tooltip")}>
-        <button class=${this.generateTheme("uix-tooltip__button")}>
+      <div class=${this.theme("uix-tooltip")}>
+        <button class=${this.theme("uix-tooltip__button")}>
           <slot name="button"></slot>
         </button>
-        <span class=${this.generateTheme("uix-tooltip__content")}>
+        <span class=${this.theme("uix-tooltip__content")}>
           <slot></slot>
         </span>
       </div>
@@ -53,7 +53,6 @@ const Tooltip = {
 
 const Tabs = {
   props: {
-    items: T.array(),
     size: T.string({ defaultValue: "md" }),
     gap: T.string({ defaultValue: "md" }),
     spacing: T.string({ defaultValue: "md" }),
@@ -67,7 +66,7 @@ const Tabs = {
   },
   render() {
     return html`
-      <div class=${this.generateTheme("uix-tabs")}>
+      <div class=${this.theme("uix-tabs")}>
         <slot></slot>
       </div>
     `;
@@ -76,8 +75,6 @@ const Tabs = {
 
 const Tab = {
   props: {
-    icon: T.string(),
-    label: T.string(),
     active: T.boolean(),
     parent: T.object(),
     onclick: T.function(),
@@ -98,13 +95,13 @@ const Tab = {
   },
   render() {
     return html`
-      <button role="tab" ?active=${this.active} @click=${this.selectTab.bind(this)} class=${this.generateTheme("uix-tab")}>
+      <button role="tab" ?active=${this.active} @click=${this.selectTab.bind(this)} class=${this.theme("uix-tab")}>
         <slot></slot>
         ${this.onclose && html`
           <button @click=${event => {
     event.stopPropagation();
     this.onclose();
-  }} class=${this.generateTheme("uix-tab__close-button")}>
+  }} class=${this.theme("uix-tab__close-button")}>
             &times;
           </button>
         `}
@@ -122,9 +119,9 @@ const Pagination = {
   },
   renderPageLink(page, label) {
     const isActive = page === this.currentPage;
-    const linkClass = this.generateTheme(isActive ? "uix-pagination__link-active" : "uix-pagination__link");
+    const linkClass = this.theme(isActive ? "uix-pagination__link-active" : "uix-pagination__link");
     return html`
-      <li class=${this.generateTheme("uix-pagination__item")}>
+      <li class=${this.theme("uix-pagination__item")}>
         <a href="#" class=${linkClass} @click=${() => this.onPageChange(page)}>
           ${label || page}
         </a>
@@ -167,11 +164,11 @@ const Pagination = {
     }
 
     return html`
-      <nav class=${this.generateTheme("uix-pagination__nav")} aria-label="Table navigation">
-        <span class=${this.generateTheme("uix-pagination__info")}>
-          Showing <span class=${this.generateTheme("uix-pagination__info-highlight")}>${startItem}-${endItem}</span> of <span class=${this.generateTheme("uix-pagination-info-highlight")}>${this.totalResults}</span>
+      <nav class=${this.theme("uix-pagination__nav")} aria-label="Table navigation">
+        <span class=${this.theme("uix-pagination__info")}>
+          Showing <span class=${this.theme("uix-pagination__info-highlight")}>${startItem}-${endItem}</span> of <span class=${this.theme("uix-pagination-info-highlight")}>${this.totalResults}</span>
         </span>
-        <ul class=${this.generateTheme("uix-pagination__list")}>${pageLinks}</ul>
+        <ul class=${this.theme("uix-pagination__list")}>${pageLinks}</ul>
       </nav>
     `;
   },
@@ -204,7 +201,7 @@ const ContextMenu = {
   },
   render() {
     return html`
-      <div class=${this.generateTheme("uix-context-menu")} ?hidden=${!this.open}>
+      <div class=${this.theme("uix-context-menu")} ?hidden=${!this.open}>
         <slot name="menu"></slot>
       </div>
       <slot @contextmenu=${(e) => {

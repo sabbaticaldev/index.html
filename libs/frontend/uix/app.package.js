@@ -5,11 +5,11 @@ const AppShell = {
   render() {
     const { containerClass = "" } = this;
     return html`
-      <div class=${this.generateTheme("uix-app-shell") + containerClass && ` ${containerClass}` || ""}>
+      <div class=${this.theme("uix-app-shell") + containerClass && ` ${containerClass}` || ""}>
         <slot name="top-navbar"></slot>
-        <div class=${this.generateTheme("uix-app-shell__content")}>
+        <div class=${this.theme("uix-app-shell__content")}>
           <slot name="left-navbar"></slot>
-          <main class=${this.generateTheme("uix-app-shell__main")}>
+          <main class=${this.theme("uix-app-shell__main")}>
             <slot></slot>
           </main>
           <slot name="right-navbar"></slot>

@@ -24,7 +24,7 @@ const paginatedRows = function () {
 const Card = {
   props: cardProps,
   render() {
-    const baseClass = this.generateTheme("uix-card");
+    const baseClass = this.theme("uix-card");
     return html`<uix-block containerClass=${baseClass} spacing=${this.spacing}><slot></slot></uix-block>`;
   },
 };
@@ -33,14 +33,14 @@ const Table = {
   props: tableProps,
   paginatedRows,
   render() {
-    const headerElements = this.headers.map((header) => html`<th scope="col" class=${this.generateTheme("uix-table__header")}>${header}</th>`);
+    const headerElements = this.headers.map((header) => html`<th scope="col" class=${this.theme("uix-table__header")}>${header}</th>`);
     const rowElements = this.paginatedRows().map((row) =>
-      html`<tr>${Array.isArray(row) ? row : Object.values(row).map((cell) => html`<td class=${this.generateTheme("uix-table__cell")}>${cell}</td>`)}</tr>`
+      html`<tr>${Array.isArray(row) ? row : Object.values(row).map((cell) => html`<td class=${this.theme("uix-table__cell")}>${cell}</td>`)}</tr>`
     );
 
     return html`
       <div>
-        <table class=${this.generateTheme("uix-table")}>
+        <table class=${this.theme("uix-table")}>
           <thead>
             <tr>${headerElements}</tr>
           </thead>
@@ -66,13 +66,13 @@ const MockupPhone = {
   },
   render() {
     return html`
-      <div class=${this.generateTheme("uix-mockup-phone")}>
-        <div class=${this.generateTheme("uix-mockup-phone__top")}></div>
-        <div class=${this.generateTheme("uix-mockup-phone__side", { position: "left", index: 0 })}></div>
-        <div class=${this.generateTheme("uix-mockup-phone__side", { position: "left", index: 1 })}></div>
-        <div class=${this.generateTheme("uix-mockup-phone__side", { position: "left", index: 2 })}></div>
-        <div class=${this.generateTheme("uix-mockup-phone__side", { position: "right", index: 1 })}></div>
-        <div class=${this.generateTheme("uix-mockup-phone__content")}><slot></slot></div>
+      <div class=${this.theme("uix-mockup-phone")}>
+        <div class=${this.theme("uix-mockup-phone__top")}></div>
+        <div class=${this.theme("uix-mockup-phone__side", { position: "left", index: 0 })}></div>
+        <div class=${this.theme("uix-mockup-phone__side", { position: "left", index: 1 })}></div>
+        <div class=${this.theme("uix-mockup-phone__side", { position: "left", index: 2 })}></div>
+        <div class=${this.theme("uix-mockup-phone__side", { position: "right", index: 1 })}></div>
+        <div class=${this.theme("uix-mockup-phone__content")}><slot></slot></div>
       </div>
     `;
   },

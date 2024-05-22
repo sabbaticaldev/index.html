@@ -181,7 +181,7 @@ const Form = {
         </uix-list>
         <uix-list>
           ${actions ? html`
-            <uix-list responsive gap="md" class=${this.generateTheme("uix-form-actions")}>
+            <uix-list responsive gap="md" class=${this.theme("uix-form-actions")}>
               ${actions.map(action => html`<uix-input type=${action.type} @click=${action.click} class=${action.class} value=${action.value}></uix-input>`)}
             </uix-list>
           ` : ""}
@@ -199,10 +199,10 @@ const FormControl = {
   render() {
     const { label, labelAlt } = this;
     return html`
-      <div class=${this.generateTheme("uix-form-control")}>
-        ${label ? html`<label class=${this.generateTheme("uix-form-control__label")}><span class=${this.generateTheme("uix-form-control__label-text")}>${label}</span></label>` : ""}
+      <div class=${this.theme("uix-form-control")}>
+        ${label ? html`<label class=${this.theme("uix-form-control__label")}><span class=${this.theme("uix-form-control__label-text")}>${label}</span></label>` : ""}
         <slot></slot>
-        ${labelAlt && labelAlt.length ? html`<label class=${this.generateTheme("uix-form-control__label")}><span class=${this.generateTheme("uix-form-control__label-alt")}>${labelAlt}</span></label>` : ""}
+        ${labelAlt && labelAlt.length ? html`<label class=${this.theme("uix-form-control__label")}><span class=${this.theme("uix-form-control__label-alt")}>${labelAlt}</span></label>` : ""}
       </div>
     `;
   },
@@ -232,7 +232,7 @@ const Input = {
           type="text"
           id="filled"
           aria-describedby="filled_success_help"
-          class=${this.generateTheme("uix-input")}
+          class=${this.theme("uix-input")}
           .value=${value || ""}
           ?autofocus=${autofocus}
           ?disabled=${disabled}
@@ -244,7 +244,7 @@ const Input = {
           type=${type}
           placeholder=" "
         />
-        <label for="filled" class=${this.generateTheme("uix-input__label")}>
+        <label for="filled" class=${this.theme("uix-input__label")}>
           ${placeholder}
         </label>
       </div>
@@ -278,7 +278,7 @@ const Select = {
       <select
         name=${name}
         @change=${this.change}
-        class=${this.generateTheme("uix-select")}
+        class=${this.theme("uix-select")}
       >
         ${(options && options.map(option => html` <option>${option}</option> `)) || ""}
         <slot></slot>
@@ -306,7 +306,7 @@ const Textarea = {
     const { autofocus, value, name, placeholder, disabled, rows, required, keydown } = this;
     return html`
       <textarea
-        class=${this.generateTheme("uix-textarea")}
+        class=${this.theme("uix-textarea")}
         placeholder=${placeholder}
         ?disabled=${disabled}
         name=${name}
@@ -330,18 +330,18 @@ const Range = {
   },
   ...FormControls("range"),
   render() {
-    const { generateTheme, min, max, value } = this;
+    const { theme, min, max, value } = this;
     return html`
-      <div class=${generateTheme("uix-range")}>
+      <div class=${theme("uix-range")}>
         <input
-          class=${generateTheme("uix-range__input")}
+          class=${theme("uix-range__input")}
           type="range"
           @input=${this.change}
           min=${min}
           max=${max}
           value=${value}
         />
-        <div class=${generateTheme("uix-range__labels")}>
+        <div class=${theme("uix-range__labels")}>
           <span class="text-sm text-gray-600">Squared</span>
           <span class="text-sm text-gray-600">Rounded</span>
         </div>
@@ -371,7 +371,7 @@ const Checkbox = {
     const { checked, change, disabled, name } = this;
     return html`
       <input
-        class=${this.generateTheme("uix-checkbox")}
+        class=${this.theme("uix-checkbox")}
         type="checkbox"
         name=${name}
         @change=${function (e) {
@@ -394,8 +394,8 @@ const IconButton = {
   },
   render() {
     const { icon, alt } = this;
-    return html`<button alt=${alt} class=${this.generateTheme("uix-icon-button")}>
-      <uix-icon class=${this.generateTheme("uix-icon-button__icon")} name=${icon}></uix-icon>
+    return html`<button alt=${alt} class=${this.theme("uix-icon-button")}>
+      <uix-icon class=${this.theme("uix-icon-button__icon")} name=${icon}></uix-icon>
     </button>`;
   },
 };
@@ -411,7 +411,7 @@ const Button = {
   },
   render() {
     const { type, click, href, dropdown } = this;
-    const btnClass = this.generateTheme("uix-button");
+    const btnClass = this.theme("uix-button");
     if (dropdown) {
       return html` <details class="text-left" ?open=${dropdown === "open"}>
         ${(href && html`<summary class=${btnClass}><a href=${href}><slot></slot></a></summary>`) || ""}
@@ -433,6 +433,61 @@ const Button = {
   },
 };
 
+const ColorPicker = {
+  props: {
+    selectedColor: T.string(),
+    colors: T.array({ defaultValue: [] }),
+    colorKey: T.string(),
+    updateTheme: T.function(),
+    theme: T.object(),
+  },
+  render: function () {
+    const { selectedColor, colors, colorKey, updateTheme, theme } = this;
+    return html`
+      <div class="grid grid-cols-14">
+        ${colors.map(
+    (color) =>
+      html`
+              <div class="group relative w-6 h-6 cursor-pointer">
+                <span
+                  @click=${() =>
+    updateTheme({
+      ...theme,
+      colors: { ...theme.colors, [colorKey]: color },
+    })}
+                  class=${`w-6 h-6 bg-${color}-500 block ${
+    color === selectedColor
+      ? "scale-110"
+      : "hover:scale-110 transform transition ease-out duration-150"
+  }`}
+                ></span>
+                <div
+                  class="absolute left-0 mt-1 opacity-0 group-hover:opacity-100 transition  pointer-events-none group-hover:pointer-events-auto"
+                >
+                  ${Array.from({ length: 9 }, (_, i) => i + 1).map(
+    (shade) => html`
+                      <span
+                        @click=${() =>
+    updateTheme({
+      ...theme,
+      colors: {
+        ...theme.colors,
+        [colorKey]: color,
+      },
+    })}
+                        class=${`w-6 h-6 block bg-${color}-${shade}00`}
+                      ></span>
+                    `,
+  )}
+                </div>
+              </div>
+            `,
+  )}
+      </div>
+    `;
+  },
+};
+
 export default {
   i18n: {},
   views: {
@@ -446,5 +501,7 @@ export default {
     "uix-checkbox": Checkbox,
     "uix-icon-button": IconButton,
     "uix-button": Button,
+
+    "uix-color-picker": ColorPicker,
   },
 };

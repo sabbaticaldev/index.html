@@ -33,7 +33,7 @@ export default {
     "uix-time": {
       props: { timestamp: T.number() },
       render: function () {
-        return html`<time class=${this.generateTheme("uix-time")}>${datetime.formatTime(this.timestamp)}</time>`;
+        return html`<time class=${this.theme("uix-time")}>${datetime.formatTime(this.timestamp)}</time>`;
       },
     },
     "uix-calendar-day": {
@@ -48,9 +48,9 @@ export default {
         return html`
           <button
             type="button"
-            class=${this.generateTheme("uix-calendar-day", { previous: this.previous, next: this.next, currentDay: this.currentDay, selected: this.selected })}
+            class=${this.theme("uix-calendar-day", { previous: this.previous, next: this.next, currentDay: this.currentDay, selected: this.selected })}
           >
-            <time datetime="2022-01-01" class=${this.generateTheme("uix-calendar-day__time", { selected: this.selected })}>${this.day}</time>
+            <time datetime="2022-01-01" class=${this.theme("uix-calendar-day__time", { selected: this.selected })}>${this.day}</time>
           </button>`;
       },
     },
@@ -66,10 +66,10 @@ export default {
 
         return html`
           <uix-list vertical>
-            <div class=${this.generateTheme("uix-calendar-month__header")}>
+            <div class=${this.theme("uix-calendar-month__header")}>
               <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
             </div>
-            <div class=${this.generateTheme("uix-calendar-month__grid")}>
+            <div class=${this.theme("uix-calendar-month__grid")}>
               ${renderCalendarDays([...Array(daysToPrepend)].map((_, i) => previousMonthDays - daysToPrepend + i + 1), { month: this.month - 1, attributes: "previous=true" })}
               ${renderCurrentMonthDays(this.month, this.year, this.selectedDay)}
               ${renderCalendarDays([...Array(7 - getLastDayOfMonth(this.month, this.year))].map((_, i) => i + 1), { month: this.month + 1, attributes: "next=true" })}

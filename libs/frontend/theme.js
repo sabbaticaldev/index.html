@@ -78,7 +78,7 @@ const generateVariants = (variantSettings, colors) => {
 
 const cls = (arr) => arr.filter(Boolean).join(" ");
 
-export const generateTheme = (userTheme) => {
+const createBaseTheme = (userTheme) => {
   const BaseVariants = generateVariants(userTheme.baseVariants, userTheme.colors);
   const ReverseVariants = generateVariants(userTheme.reverseVariants, userTheme.colors);
   const TextColors = generateTextColorVariants(userTheme.textVariant, userTheme.colors);
@@ -89,8 +89,23 @@ export const generateTheme = (userTheme) => {
     variant: BaseVariants,
     size: [SpacingSizes, TextSizes]
   };
-
+  const generateColorClass = (color, variation) => `bg-${color}-${variation}`;
+  
+  const colorPickerStyles = {
+    colorPickerGrid: "grid grid-cols-14",
+    colorPickerColorBlock: ({ selectedColor }) => `group relative w-6 h-6 cursor-pointer ${selectedColor ? "scale-110" : "hover:scale-110 transform transition ease-out duration-150"}`,
+    colorPickerColor: ({ color }) => `w-6 h-6 block ${generateColorClass(color, 500)}`,
+    colorPickerShadesContainer: "absolute left-0 mt-1 opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto",
+    colorPickerShade: ({ color, shade }) => `w-6 h-6 block ${generateColorClass(color, shade * 100)}`,
+  };
+  
   return {
+
+    "color-picker__grid": colorPickerStyles.colorPickerGrid,
+    "color-picker__color-block": colorPickerStyles.colorPickerColorBlock,
+    "color-picker__color": colorPickerStyles.colorPickerColor,
+    "color-picker__shades-container": colorPickerStyles.colorPickerShadesContainer,
+    "color-picker__shade": colorPickerStyles.colorPickerShade,
     "uix-avatar": { ...commonStyles, size: DimensionSizes },
     "uix-avatar__img": { _base: "", size: DimensionSizes },
     "uix-badge": { ...commonStyles, size: [SpacingSizes, TextSizes] },
@@ -289,9 +304,9 @@ export const baseTheme = {
   }
 };
 export default baseTheme;
-let Theme = generateTheme(baseTheme);
+let Theme = createBaseTheme(baseTheme);
 
 export const updateTheme = (theme) => {
-  Theme = generateTheme(theme);
+  Theme = createBaseTheme(theme);
   window?.updateAllStyles?.(true, true);
 };

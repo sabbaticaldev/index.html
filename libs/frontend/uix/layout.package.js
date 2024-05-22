@@ -7,7 +7,7 @@ const Block = {
     containerClass: T.string(),
   },
   render() {
-    const baseClass = this.generateTheme("uix-block");
+    const baseClass = this.theme("uix-block");
     return html`
       <div class=${baseClass}>
         <slot></slot>
@@ -40,8 +40,9 @@ const List = {
   ...droparea,
   render() {
     const { tag } = this;
-    const baseClass = this.generateTheme("uix-list");
+    const baseClass = this.theme("uix-list");
     return staticHtml`
+      <div class="flex-col"></div>
       <${unsafeStatic(tag)} class="${unsafeStatic(baseClass)}">
         <slot></slot>
       </${unsafeStatic(tag)}>
@@ -57,12 +58,12 @@ const Divider = {
   render() {
     const { label } = this;
     return html`
-      <div class=${this.generateTheme("uix-divider")}>
-        <div class=${this.generateTheme("uix-divider__border")}></div>
+      <div class=${this.theme("uix-divider")}>
+        <div class=${this.theme("uix-divider__border")}></div>
         ${label &&
         html`
-          <div class=${this.generateTheme("uix-divider__label")}>${label}</div>
-          <div class=${this.generateTheme("uix-divider__border")}></div>
+          <div class=${this.theme("uix-divider__label")}>${label}</div>
+          <div class=${this.theme("uix-divider__border")}></div>
         `}
       </div>
     `;

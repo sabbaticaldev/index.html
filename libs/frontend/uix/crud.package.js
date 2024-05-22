@@ -26,16 +26,16 @@ const CrudSearch = {
   },
   render() {
     return html`
-      <form class=${this.generateTheme("uix-crud-search__form")}>
+      <form class=${this.theme("uix-crud-search__form")}>
         <label for="simple-search" class="sr-only">Search</label>
-        <div class=${this.generateTheme("uix-crud-search__input-container")}>
-          <div class=${this.generateTheme("uix-crud-search__input-icon")}>
+        <div class=${this.theme("uix-crud-search__input-container")}>
+          <div class=${this.theme("uix-crud-search__input-icon")}>
             <uix-icon name="search"></uix-icon>
           </div>
           <input
             type="text"
             id="simple-search"
-            class=${this.generateTheme("uix-crud-search__input")}
+            class=${this.theme("uix-crud-search__input")}
             placeholder="Search"
             required=""
           />
@@ -57,9 +57,9 @@ const CrudActions = {
     return html`
       <uix-list>
         <uix-crud-new-modal .addRow=${(newRow) => this.setRows([...this.rows, newRow])} model=${this.model} .fields=${this.fields}></uix-crud-new-modal>
-        <uix-button dropdown="hide" class=${this.generateTheme("uix-crud-actions__button")}>
+        <uix-button dropdown="hide" class=${this.theme("uix-crud-actions__button")}>
           <uix-icon name="chevron-down"></uix-icon> Actions
-          <ul slot="dropdown" class=${this.generateTheme("uix-crud-actions__dropdown")}>
+          <ul slot="dropdown" class=${this.theme("uix-crud-actions__dropdown")}>
             <li>
               <app-import-csv-button .setRows=${this.setRows} .rows=${this.rows} model=${this.model} .fields=${this.fields}></app-import-csv-button>
             </li>
@@ -96,8 +96,8 @@ const CrudNewModal = {
     return html`
       <uix-modal title="Create new">
         ${icon
-    ? html`<uix-icon-button slot="button" icon=${icon} class=${this.generateTheme("uix-crud-new-modal__icon")}></uix-icon-button>`
-    : html`<uix-button slot="button" variant="primary" class=${this.generateTheme("uix-crud-new-modal__button")}>+ new</uix-button>`}
+    ? html`<uix-icon-button slot="button" icon=${icon} class=${this.theme("uix-crud-new-modal__icon")}></uix-icon-button>`
+    : html`<uix-button slot="button" variant="primary" class=${this.theme("uix-crud-new-modal__button")}>+ new</uix-button>`}
         <uix-form
           title="New"
           color="base"

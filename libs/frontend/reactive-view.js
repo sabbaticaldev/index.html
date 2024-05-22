@@ -64,7 +64,7 @@ class BaseReactiveView extends LitElement {
     componentInit?.(this);
 
     Object.assign(this, litPropsAndEvents);    
-    this.generateTheme = (element) => getElementTheme(element, this);
+    this.theme = (element) => getElementTheme(element, this);
 
     Object.entries(props || {}).forEach(([key, prop]) => {
       this[key] = prop.defaultValue;
