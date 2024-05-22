@@ -306,7 +306,30 @@ export const baseTheme = {
 export default baseTheme;
 let Theme = createBaseTheme(baseTheme);
 
-export const updateTheme = (theme) => {
-  Theme = createBaseTheme(theme);
-  window?.updateAllStyles?.(true, true);
+
+export const extractSafelistFromTheme = (userTheme) => {
+  const theme = userTheme || Theme;
+  const safelist = new Set();
+
+  const addClassToSafelist = (className) => {
+    if (className) {
+      className.split(" ").forEach(cls => safelist.add(cls));
+    }
+  };
+
+  const traverseTheme = (obj) => {
+    if (typeof obj === "string") {
+      addClassToSafelist(obj);
+    } else if (Array.isArray(obj)) {
+      obj.forEach(traverseTheme);
+    } else if (typeof obj === "object" && obj !== null) {
+      Object.values(obj).forEach(traverseTheme);
+    }
+  };
+
+  traverseTheme(theme);
+
+  return Array.from(safelist);
 };
+
+export let themeClasses = extractSafelistFromTheme(Theme);

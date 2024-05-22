@@ -12,6 +12,7 @@
     "esbuild": "^0.21.3"
   },
   "dependencies": {
+    "@unocss/runtime": "^0.60.3",
     "helpers": "workspace:*"
   }
 }

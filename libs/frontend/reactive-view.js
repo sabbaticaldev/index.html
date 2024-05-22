@@ -1,7 +1,7 @@
 import { i18n, stringToType, url } from "helpers";
 import { LitElement } from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
 
-import { getElementTheme, updateTheme } from "./theme.js";
+import { getElementTheme } from "./theme.js";
 
 const isServer = typeof localStorage === "undefined";
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
@@ -49,8 +49,7 @@ class BaseReactiveView extends LitElement {
   i18n = i18n;
   _style;
   _isLoaded;
-  _styleElement;
-  static updateTheme = updateTheme;
+  _styleElement;  
   static formAssociated;
   static _instancesUsingSync = syncKeyMap;
 

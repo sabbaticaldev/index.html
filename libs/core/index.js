@@ -8,16 +8,18 @@ import {
   definePackage,
   docsKit,
   formKit,
+  getUnoGenerator,
   layoutKit,
   navigationKit,
   reactiveViewInstances,
   reset,
+  themeClasses,
   uiKit
 } from "frontend";
 import { getUrlBlob, injectStyle, isValidApp } from "helpers";
 
 // Utility function to update styles for all reactive view instances
-const updateAllStyles = async (updateBefore = false, updateAfter = false) => {
+const updateAllStyles = async (updateBefore = true, updateAfter = false) => {
   const result = await window.__unocss_runtime.update();
   const stylesheet = reset + result.css;
   for (const instance of reactiveViewInstances) {
@@ -146,8 +148,11 @@ const environmentStrategies = {
         window.location.reload();
       }
     });
-    await import("unocss");
-    loadApp({ app: window.App });
+    
+    const uno = getUnoGenerator(themeClasses);
+    const { css } = await uno.uno.generate(themeClasses, { preflights: true });
+    console.log({ css });
+    loadApp({ app: window.App, style: css });
   }
 };
 

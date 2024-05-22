@@ -1,22 +1,12 @@
 import chokidar from "chokidar";
 import * as esbuild from "esbuild";
 import alias from "esbuild-plugin-alias";
-import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import WebSocket, { WebSocketServer } from "ws";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-async function copyThemeFile() {
-  const srcPath = path.join(__dirname, "libs/frontend/uno.global.js");
-  const destPath = path.join(__dirname, "app/dist/uno.global.js");
-  try {
-    await fs.copyFile(srcPath, destPath);
-    console.log("Theme file copied to dist folder.");
-  } catch (err) {
-    console.error("Error copying theme file:", err);
-  }
-}
+
 
 const isWatchMode = process.argv.includes("--watch");
 const watch = [];
@@ -62,7 +52,6 @@ const buildTasks = [
 ];
 
 if (isWatchMode) {
-  copyThemeFile();
   const wss = new WebSocketServer({ port: 4001 });
   wss.on("connection", () => {
     console.log("Client connected");

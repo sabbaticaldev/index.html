@@ -40,6 +40,8 @@
     ]
   },
   "dependencies": {
+    "@unocss/preset-web-fonts": "^0.60.3",
+    "@unocss/runtime": "^0.60.3",
     "@whiskeysockets/baileys": "^6.6.0",
     "esbuild-plugin-alias": "^0.2.1",
     "express": "^4.19.2",
