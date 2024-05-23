@@ -98,12 +98,16 @@ const createBaseTheme = (userTheme) => {
     colorPickerShadesContainer: "absolute left-0 mt-1 opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto",
     colorPickerShade: ({ color, shade }) => `w-6 h-6 block ${generateColorClass(color, shade * 100)}`,
   };
-  
+  const ColorPickerClasses = Array.from({ length: 9 }, (_, i) => i + 1).map(
+    (shade) =>
+      commonColors.map(color => `bg-${color}-${shade}00`).concat(greyColors.map(color => `bg-${color}-${shade}00`)));
+
   return {
 
     "color-picker__grid": colorPickerStyles.colorPickerGrid,
     "color-picker__color-block": colorPickerStyles.colorPickerColorBlock,
     "color-picker__color": colorPickerStyles.colorPickerColor,
+    "color-picker__color_options": ColorPickerClasses,
     "color-picker__shades-container": colorPickerStyles.colorPickerShadesContainer,
     "color-picker__shade": colorPickerStyles.colorPickerShade,
     "uix-avatar": { ...commonStyles, size: DimensionSizes },
@@ -273,11 +277,33 @@ const clipRoundedClasses = [
   "[clip-path:circle(100% at 50% 50%)]"
 ];
 
+
+const commonColors = [
+  "red",
+  "orange",
+  "yellow",
+  "lime",
+  "green",
+  "teal",
+  "cyan",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "pink",
+  "rose",
+  "blue-gray",
+];
+
+const greyColors = ["gray", "zinc", "true-gray", "warm-gray", "blue-gray"];
+
 export const baseTheme = {
   colors: {
     default: "gray", primary: "blue", secondary: "pink", accent: "yellow",
     base: "gray", info: "teal", success: "green", warning: "orange", error: "red"
   },
+  commonColors, 
+  greyColors,
   borderRadius: null,
   fontStyles: "font-bold leading-5 hover:leading-5",
   textVariant: "700",
@@ -310,7 +336,7 @@ let Theme = createBaseTheme(baseTheme);
 export const extractSafelistFromTheme = (userTheme) => {
   const theme = userTheme || Theme;
   const safelist = new Set();
-
+  console.log({theme});
   const addClassToSafelist = (className) => {
     if (className) {
       className.split(" ").forEach(cls => safelist.add(cls));

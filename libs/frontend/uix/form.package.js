@@ -443,6 +443,7 @@ const ColorPicker = {
   },
   render: function () {
     const { selectedColor, colors, colorKey, updateTheme, theme } = this;
+    
     return html`
       <div class="grid grid-cols-14">
         ${colors.map(
