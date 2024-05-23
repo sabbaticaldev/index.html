@@ -215,7 +215,34 @@ const ContextMenu = {
   },
 };
 
+const theme = (userTheme, props) => ({
+  "uix-modal": { _base: props.cls(["rounded-lg bg-white p-8 shadow-2xl min-w-[768px] min-h-[400px]", props.borderRadius]), size: props.SpacingSizes },
+  "uix-tooltip": { _base: props.cls(["group relative m-12", props.borderRadius]), spacing: props.SpacingSizes },
+  "uix-tooltip__button": { _base: props.cls(["bg-gray-500 px-4 py-2 text-sm shadow-sm text-white", props.borderRadius]), variant: props.BaseVariants, spacing: props.SpacingSizes },
+  "uix-tooltip__content": "absolute top-10 scale-0 transition-all rounded bg-gray-800 p-2 text-white text-xs group-hover:scale-100",
+  "uix-tabs": "flex w-full overflow-x-auto overflow-y-hidden border-gray-200",
+  "uix-tab": {
+    _base: props.cls(["relative group", userTheme.flexCenter, "px-2 py-2 -mb-px sm:px-4 -px-1 whitespace-nowrap focus:outline-none", userTheme.borderStyles, userTheme.borderWidth]),
+    active: {
+      true: props.cls([userTheme.activeTextColor, "border-blue-500"]),
+      false: props.cls([userTheme.defaultTextColor, userTheme.hoverBorder])
+    },
+    variant: props.BaseVariants,
+    size: props.SpacingSizes
+  },
+  "uix-tab__summary": "cursor-pointer",
+  "uix-tab__close-button": "absolute top-1 right-2 text-sm font-bold leading-none group-hover:inline hidden",
+  "uix-pagination__nav": "flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4",
+  "uix-pagination__info": "text-sm font-normal text-gray-500 dark:text-gray-400",
+  "uix-pagination__info-highlight": "font-semibold text-gray-900 dark:text-white",
+  "uix-pagination__list": "inline-flex items-stretch -space-x-px",
+  "uix-pagination__item": "p-2",
+  "uix-pagination__link": "flex items-center justify-center p-2 text-sm leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
+  "uix-pagination__link-active": "flex items-center justify-center p-2 text-sm leading-tight text-blue-600 bg-blue-50 border border-blue-300",
+  "uix-context-menu": "z-10 absolute top-6 left-10 bg-white border border-gray-300 shadow-lg",
+});
 export default {
+  theme,
   views: {
     "uix-modal": Modal,
     "uix-tooltip": Tooltip,

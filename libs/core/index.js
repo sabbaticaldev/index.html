@@ -5,48 +5,51 @@ import {
   contentKit,
   crudKit,
   datetimeKit,
-  definePackage,
+  defineView,
   docsKit,
+  extractSafelistFromTheme,
   formKit,
   getUnoGenerator,
   layoutKit,
   navigationKit,
   reset,
-  themeClasses,
   uiKit
 } from "frontend";
 import { getUrlBlob, injectStyle, isValidApp } from "helpers";
 
-// Function to start the frontend with the given app and style
-const startFrontend = ({ app, style }) => {
-  const packages = [
+export const loadFrontendFiles = (app) => {
+  const theme = {};
+
+  const packages = {
     app,
     appKit,
-    navigationKit,
-    docsKit,
     chatKit,
-    uiKit,
+    contentKit,
     crudKit,
+    datetimeKit,
+    docsKit,
     formKit,
     layoutKit,
-    contentKit,
-    datetimeKit
-  ];
-  
-  return packages.reduce(
-    (acc, pkg) => {
-      const result = definePackage({ pkg, style });
-      return {
-        ...app,
-        models: { ...acc.models, ...result.models },
-        views: { ...acc.views, ...result.views },
-      };
-    },
-    { models: {}, views: {} }
-  );
+    navigationKit,
+    uiKit
+  };
+
+  const loadedPackages = Object.keys(packages).reduce((acc, key) => {
+    const { views, theme: packageTheme } = packages[key];
+    theme[key] = packageTheme;
+    return { ...acc, views: { ...acc.views, ...views } };
+  }, { views: {} });
+
+  return { ...loadedPackages, theme };
 };
 
-// Function to inject the app and initialize the frontend and backend as necessary
+export const startFrontend = ({ app, style }) => {
+  const { views } = app;
+  Object.entries(views).forEach(([tag, component]) => {
+    defineView({ tag, component, style });
+  });
+};
+
 const injectApp = async (app, style) => {
   if (!app) throw new Error("Error: no App found");
   if (app.title) document.title = app.title;
@@ -59,7 +62,6 @@ const injectApp = async (app, style) => {
   return frontendState;
 };
 
-// Function to load the app from a blob URL
 const loadAppFromBlob = async ({ app, style }, frontendOnly) => {
   const blobURL = URL.createObjectURL(app);
   const module = await import(blobURL);
@@ -72,6 +74,12 @@ const loadAppFromBlob = async ({ app, style }, frontendOnly) => {
 
 // Function to load the app and register the service worker if available
 const loadApp = async ({ app, style }) => {
+  const loadedApp = loadFrontendFiles(app);
+  console.log({ loadedApp });
+  const themeClasses = extractSafelistFromTheme(null, loadedApp.theme);
+  const uno = getUnoGenerator(themeClasses);
+  const { css } = await uno.uno.generate(themeClasses, { preflights: true });
+  
   if (!app) return console.error("DEBUG: App not found.");  
   if (!isValidApp(app)) return console.error("DEBUG: App is invalid.", { app });  
   if ("serviceWorker" in navigator) {    
@@ -82,7 +90,8 @@ const loadApp = async ({ app, style }) => {
       const registration = await navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
       console.info("ServiceWorker registration successful:", registration);
       setTimeout(async ()=> {
-        await injectApp(app, style);
+
+        await injectApp(loadedApp, [reset, css, style].filter(s => s).join(" "));
       }, 0);
       
     }
@@ -124,11 +133,7 @@ const environmentStrategies = {
         window.location.reload();
       }
     });
-    
-    const uno = getUnoGenerator(themeClasses);
-    const { css } = await uno.uno.generate(themeClasses, { preflights: true });
-    console.log({ css });
-    loadApp({ app: window.App, style: [reset, css].join(" ") });
+    loadApp({ app: window.App });
   }
 };
 

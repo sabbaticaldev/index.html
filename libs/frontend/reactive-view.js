@@ -1,5 +1,4 @@
-import { i18n, stringToType, url } from "helpers";
-import { LitElement } from "https://cdn.jsdelivr.net/gh/lit/dist@3.1.3/all/lit-all.min.js";
+import { i18n, LitElement, stringToType, url } from "helpers";
 
 import { getElementTheme } from "./theme.js";
 
@@ -60,7 +59,7 @@ class BaseReactiveView extends LitElement {
     componentInit?.(this);
 
     Object.assign(this, litPropsAndEvents);    
-    this.theme = (element) => getElementTheme(element, this);
+    this.theme = (element, props) => getElementTheme(element, props, this);
 
     Object.entries(props || {}).forEach(([key, prop]) => {
       this[key] = prop.defaultValue;

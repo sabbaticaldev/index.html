@@ -27,8 +27,21 @@ const renderCurrentMonthDays = (month, year, selectedDay) =>
     ></uix-calendar-day>
   `);
 
+const theme = () => ({
+  "uix-time": "whitespace-nowrap",
+  "uix-calendar-day": ({ previous, next, currentDay, selected }) => ({
+    _base: `focus:z-10 w-full p-1.5 ${!next && !previous || currentDay || selected ? "bg-white" : ""} ${currentDay ? "text-indigo-600 font-semibold" : ""}`
+  }),
+  "uix-calendar-day__time": ({ selected }) => ({
+    _base: `mx-auto flex h-7 w-7 items-center justify-center rounded-full ${selected ? "bg-gray-900 font-semibold text-white" : ""}`
+  }),
+  "uix-calendar-month__header": "mt-6 grid grid-cols-7 text-center text-xs leading-6 text-gray-500",
+  "uix-calendar-month__grid": "isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200"
+});
+
 export default {
   i18n: {},
+  theme,
   views: {
     "uix-time": {
       props: { timestamp: T.number() },

@@ -56,9 +56,17 @@ const ChatCard = {
     `;
   },
 };
-
+const theme = () => ({
+  "uix-chat__message-container": "flex items-center",
+  "uix-chat__message": "flex flex-col bg-white p-3 rounded-lg shadow-md",
+  "uix-chat__timestamp": "text-xs text-gray-500 text-right mt-1",
+  "uix-chat__sender": "tracking-wide text-gray-700",
+  "uix-chat__message-preview": "text-gray-400 text-ellipsis text-xs overflow-hidden whitespace-nowrap w-36",
+  "uix-chat__timestamp-container": "text-right flex flex-col justify-evenly"
+});
 export default {
   i18n: {},
+  theme,
   views: {
     "uix-chat-message": ChatMessage,
     "uix-chat-card": ChatCard,

@@ -115,8 +115,15 @@ const Text = {
     `;
   },
 };
+const theme = (userTheme, props = {}) => ({
+  "uix-avatar": { ...props.commonStyles, size: props.DimensionSizes },
+  "uix-avatar__img": { _base: "", size: props.DimensionSizes },
+  "uix-badge": { ...props.commonStyles, size: [props.SpacingSizes, props.TextSizes] },
+  "uix-text": { _base: "", variant: props.TextColors, weight: props.FontWeight, font: props.FontType, leading: props.LeadingSizes, size: [props.LeadingSizes, props.TrackingSizes, props.TextSizes] },
+});
 
 export default {
+  theme,
   views: {
     "uix-avatar": Avatar,
     "uix-badge": Badge,

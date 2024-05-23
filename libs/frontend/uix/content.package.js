@@ -78,7 +78,33 @@ const MockupPhone = {
   },
 };
 
+
+const theme = (userTheme, props) => ({
+  "uix-card": { _base: "shadow", spacing: props.SpacingSizes, variant: props.BaseVariants },
+  "uix-block": { spacing: props.SpacingSizes, variant: props.BaseVariants },
+  "uix-list": {
+    _base: "flex", spacing: props.SpacingSizes, gap: props.Gaps, justify: props.JustifyContent,
+    full: ({ vertical }) => ({ true: vertical ? "w-full" : "h-full" }),
+    vertical: { true: "flex-col" },
+    responsive: ({ vertical }) => ({ true: vertical ? "lg:flex-col sm:flex-row" : "sm:flex-col lg:flex-row" }),
+    reverse: ({ vertical }) => ({ true: vertical ? "flex-col-reverse" : "flex-row-reverse" })
+  },
+  "uix-divider": "flex items-center my-2",
+  "uix-divider__border": "border-t border-gray-400 flex-grow",
+  "uix-divider__label": "px-3 text-gray-800 font-bold text-2xl",
+  "uix-mockup-phone": "relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-xl h-[700px] w-[400px] shadow-xl",
+  "uix-mockup-phone__top": "w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute",
+  "uix-mockup-phone__side": ({ position = "left", index = 0 }) => ({
+    _base: `h-[${index === 0 ? 32 : index === 1 ? 46 : 64}px] w-[3px] bg-gray-800 absolute -${position}-[17px] top-[${index === 0 ? 72 : index === 1 ? 124 : 142}px] rounded-${position === "left" ? "l" : "r"}-lg`
+  }),
+  "uix-mockup-phone__content": "rounded-xl overflow-hidden w-[372px] h-[672px] bg-white",
+  "uix-table": "w-full text-sm text-left text-gray-500 dark:text-gray-400",
+  "uix-table__header": "p-3 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400",
+  "uix-table__cell": "px-3 py-2 text-xs",
+});
+
 export default {
+  theme,
   views: {
     "uix-card": Card,
     "uix-table": Table,

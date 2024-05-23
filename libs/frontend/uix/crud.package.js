@@ -202,9 +202,20 @@ const ImportCsvButton = {
     `;
   },
 };
+const theme = () => ({
+  "uix-crud-search-form": "flex items-center flex-grow",
+  "uix-crud-search-input__container": "relative w-full",
+  "uix-crud-search-input__icon": "absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none",
+  "uix-crud-search-input": "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+  "uix-crud-actions__button": "text-left",
+  "uix-crud-actions__dropdown": "flex flex-col",
+  "uix-crud-new-modal__icon": "",
+  "uix-crud-new-modal__button": "text-left"
+});
 
 export default {
   i18n: {},
+  theme,
   views: {
     "uix-crud": Crud,
     "uix-crud-search": CrudSearch,

@@ -9,7 +9,7 @@ export { default as url } from "./url.js";
 
 // Exporting lit functions and directives to be used in the *.package.js and components using the frontend framework. 
 // If you need any Lit function from helpers, add and export it here
-export  { css, html } from "lit";
+export  { css, html, LitElement } from "lit";
 export { ifDefined } from "lit/directives/if-defined.js";
 export { createRef,ref } from "lit/directives/ref.js";
 export { repeat } from "lit/directives/repeat.js";
