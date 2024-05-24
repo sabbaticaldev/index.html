@@ -54,8 +54,9 @@ const Tooltip = {
 const Tabs = {
   props: {
     size: T.string({ defaultValue: "md" }),
-    gap: T.string({ defaultValue: "md" }),
+    gap: T.string({ defaultValue: "" }),
     spacing: T.string({ defaultValue: "md" }),
+    vertical: T.boolean(),
     full: T.boolean(),
     selectTab: T.string(),
   },
@@ -64,11 +65,13 @@ const Tabs = {
     const tabs = slot.assignedNodes().filter(node => node.tagName && node.tagName.toLowerCase() === "uix-tab");
     tabs.forEach(tab => tab.setActive(false));
   },
+
+
   render() {
     return html`
-      <div class=${this.theme("uix-tabs")}>
+      <uix-list ?vertical=${this.vertical} spacing=${this.spacing} ?full=${this.full} gap=${this.gap}>
         <slot></slot>
-      </div>
+      </uix-list>
     `;
   },
 };
@@ -219,10 +222,9 @@ const theme = (userTheme, props) => ({
   "uix-modal": { _base: props.cls(["rounded-lg bg-white p-8 shadow-2xl min-w-[768px] min-h-[400px]", props.borderRadius]), size: props.SpacingSizes },
   "uix-tooltip": { _base: props.cls(["group relative m-12", props.borderRadius]), spacing: props.SpacingSizes },
   "uix-tooltip__button": { _base: props.cls(["bg-gray-500 px-4 py-2 text-sm shadow-sm text-white", props.borderRadius]), variant: props.BaseVariants, spacing: props.SpacingSizes },
-  "uix-tooltip__content": "absolute top-10 scale-0 transition-all rounded bg-gray-800 p-2 text-white text-xs group-hover:scale-100",
-  "uix-tabs": "flex w-full overflow-x-auto overflow-y-hidden border-gray-200",
+  "uix-tooltip__content": "absolute top-10 scale-0 transition-all rounded bg-gray-800 p-2 text-white text-xs group-hover:scale-100",  
   "uix-tab": {
-    _base: props.cls(["relative group", userTheme.flexCenter, "px-2 py-2 -mb-px sm:px-4 -px-1 whitespace-nowrap focus:outline-none", userTheme.borderStyles, userTheme.borderWidth]),
+    _base: props.cls(["relative group", userTheme.flexCenter, "p-2 -mb-px sm:px-4 -px-1 w-full h-full whitespace-nowrap focus:outline-none", userTheme.borderStyles, userTheme.borderWidth]),
     active: {
       true: props.cls([userTheme.activeTextColor, "border-blue-500"]),
       false: props.cls([userTheme.defaultTextColor, userTheme.hoverBorder])
