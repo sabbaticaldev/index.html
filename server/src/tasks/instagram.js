@@ -5,14 +5,13 @@ import path from "path";
 import { downloadMedia } from "../services/drive.js";
 import { embedCaptionToImage, generateCaptionImage } from "../services/image.js";
 import { fetchInstagramData } from "../services/instagram.js";
-import { generatePrompt, LLM, loadPromptData } from "../services/llm/index.js";
+import { generatePrompt, LLM, loadTemplate } from "../services/llm/index.js";
 import { createGridVideo, embedCaptionToVideo } from "../services/video.js";
 import { connectToWhatsApp, sendWhatsAppMessage } from "../services/whatsapp/index.js";
 import settings from "../settings.js";
 import { executeTasks } from "../utils.js";
 
 const deps = {};
-
 export async function createTopVideos(options) {
   const {
     url,
@@ -149,14 +148,16 @@ export async function createReelRipOff(options) {
         key: "llm",
         dependencies: ["instagram"],
         operation: async () => {
-          const promptData = loadPromptData("instagram", "SocialMediaPost.json");
+          const generalTemplate = loadTemplate("instagram/socialMediaPost.json");
+          const specificTemplate = loadTemplate("templates.json");
+
           const prompt = generatePrompt({
-            hashtags,
+            postDescription: deps.instagram.description,
             contentStyle,
             captionStyle,
-            postDescription: deps.instagram.description,
-            persona: "AllForTraveler"
-          }, promptData);
+            persona: "AllForTraveler",
+            hashtags
+          }, generalTemplate, specificTemplate.socialMediaPost);
 
           const post = await LLM.execute("bedrock", prompt);
           fs.writeFileSync(postPath, JSON.stringify(post));

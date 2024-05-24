@@ -1,3 +1,4 @@
+// src/services/llm/index.js
 import fs from "fs";
 import path from "path";
 
@@ -27,17 +28,16 @@ const LLM = (() => {
   };
 })();
 
-const loadPromptData = (task, promptFile) => {
-  const filePath = path.join(settings.__dirname, "prompts", task, promptFile);
+const loadTemplate = (templateFile) => {
+  const filePath = path.join(settings.__dirname, "prompts", templateFile);
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 };
 
-const generatePrompt = (config, promptData) => {
+const generatePrompt = (config, templateData, specificData) => {
   const { postDescription, contentStyle, captionStyle, persona = "AllForTraveler", hashtags = [] } = config;
-  const personaDetails = promptData.persona || "AllForTraveler";
   const formattedHashtags = hashtags.length > 0 ? hashtags.map(tag => `#${tag}`).join(" ") : "";
-  const formatParams = promptData.formatParams;
-  const exampleParams = promptData.exampleParams;
+  const formatParams = templateData.formatParams;
+  const exampleParams = templateData.exampleParams;
 
   const format = Object.entries(formatParams).map(([key, value]) => {
     return value === null ? `"${key}",` : `"${key}", // ${value}`;
@@ -47,26 +47,22 @@ const generatePrompt = (config, promptData) => {
     return `"${key}": "${value}"`;
   }).join(",\n    ");
 
-  return `
-      Create a social media post for the persona: ${personaDetails}.
-      Tone: ${promptData.tone}
-      ------
-      Based on this description: "${postDescription}"
+  let prompt = specificData.prompt
+    .replace("{persona}", templateData.persona || "AllForTraveler")
+    .replace("{postDescription}", postDescription)
+    .replace("{formattedHashtags}", formattedHashtags)
+    .replace("{tone}", templateData.tone || specificData.tone)
+    .replace("{expectedFormat}", `Expected format:\n{\n    ${format}\n}`)
+    .replace("{example}", `Example:\n{\n    ${example}\n}`);
 
-      Expected format:
-      {
-        ${format}
-      }
-      
-      Example:
-      {
-        ${example}
-      }
+  if (contentStyle) {
+    prompt += `\nFor the content style, use this as reference: ${contentStyle}`;
+  }
+  if (captionStyle) {
+    prompt += `\nFor the caption style, use this as reference: ${captionStyle}`;
+  }
 
-      ${contentStyle ? `For the content style, use this as reference: ${contentStyle}` : ""}
-      ${captionStyle ? `For the caption style, use this as reference: ${captionStyle}` : ""}
-      ${formattedHashtags ? `Hashtags: ${formattedHashtags}` : ""}
-    `;
+  return prompt;
 };
 
-export { generatePrompt,LLM, loadPromptData };
+export { generatePrompt, LLM, loadTemplate };

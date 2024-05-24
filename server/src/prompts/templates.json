@@ -1,0 +1,5 @@
+{
+  "socialMediaPost": {
+    "prompt": "Create a social media post for the persona: {persona}.\nTone: {tone}\n------\nBased on this description: \"{postDescription}\"\n\n{expectedFormat}\n\n{example}\n\n{contentStyle}\n{captionStyle}\n{formattedHashtags}"
+  }
+}
