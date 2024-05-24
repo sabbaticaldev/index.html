@@ -12,8 +12,7 @@ import {
   getUnoGenerator,
   layoutKit,
   navigationKit,
-  reset,
-  uiKit
+  reset  
 } from "frontend";
 import { getUrlBlob, injectStyle, isValidApp } from "helpers";
 
@@ -30,8 +29,7 @@ export const loadFrontendFiles = (app) => {
     docsKit,
     formKit,
     layoutKit,
-    navigationKit,
-    uiKit
+    navigationKit
   };
 
   const loadedPackages = Object.keys(packages).reduce((acc, key) => {
