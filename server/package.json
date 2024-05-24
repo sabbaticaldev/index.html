@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "A Node.js project to download Instagram videos, extract audio, transcribe it, and generate social media posts.",
   "main": "index.js",
-  "module": "index",
+  "module": "./src/index",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "task": "node tasks/index.js"
+    "start": "node ./src/index.js",
+    "task": "node ./src/tasks/index.js"
   },
   "keywords": [
     "instagram",
