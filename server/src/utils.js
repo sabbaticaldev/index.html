@@ -1,24 +1,20 @@
 import fs from "fs";
 import readline from "readline";
 
-export function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-function promptUser(question) {
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => {
-      resolve(["yes", "y", "1"].includes(answer.trim().toLowerCase()));
-    });
+const promptUser = question => new Promise(resolve => {
+  rl.question(question, answer => {
+    resolve(["yes", "y", "1"].includes(answer.trim().toLowerCase()));
   });
-}
+});
 
-export async function checkAndExecute({description, filePath, operation, prompt}) {
+const checkAndExecute = async ({ description, filePath, operation, prompt }) => {
   let attempt = 0;
   while (true) {
     if (prompt && !filePath) {
@@ -27,63 +23,46 @@ export async function checkAndExecute({description, filePath, operation, prompt}
         console.log(`Operation ${description} was skipped by the user.`);
         return;
       }
-    } 
+    }
     if (fs.existsSync(filePath)) {
-      let redo;
-      if(prompt) {
-        redo = await promptUser(`File ${filePath} exists. Redo ${description}? (yes/no): `);
-      }
-      
-      if (!redo) {
-        if (filePath.endsWith(".json")) {
-          const fileContent = fs.readFileSync(filePath, "utf8");
-          return JSON.parse(fileContent);
-        }
-        return filePath;
+      if (prompt && !await promptUser(`File ${filePath} exists. Redo ${description}? (yes/no): `)) {
+        return filePath.endsWith(".json") ? JSON.parse(fs.readFileSync(filePath, "utf8")) : filePath;
       }
     }
 
     try {
       console.log("Running operation:", description);
-      const result = await operation();
-      return result;
+      return await operation();
     } catch (error) {
       console.error(`Error during ${description}:`, error);
       attempt++;
-      if(prompt) {
-        const retry = await promptUser(`Attempt ${attempt} failed. Retry ${description}? (yes/no): `);
-        if (!retry) {
-          throw new Error(`User decided not to retry ${description} after failure.`);
-        }
+      if (prompt && !await promptUser(`Attempt ${attempt} failed. Retry ${description}? (yes/no): `)) {
+        throw new Error(`User decided not to retry ${description} after failure.`);
       }
     }
   }
-}
+};
 
-export async function executeTasks({ tasks: taskList, prompt, deps }) {
+export const executeTasks = async ({ tasks, prompt, deps = {} }) => {
   try {
-    for (const task of taskList) {
+    for (const task of tasks) {
       if (task.dependencies) {
         await Promise.all(task.dependencies.map(dep => deps[dep]));
-      }    
+      }
       const result = await checkAndExecute({ ...task, prompt });
-      if(task.key) {
+      if (task.key) {
         deps[task.key] = result;
       }
     }
-  }
-  catch(error) {
-    console.error({error});
-  }
-  finally {
+  } catch (error) {
+    console.error({ error });
+  } finally {
     rl.close();
   }
-}
+};
 
-
-export async function fetchMapImage(mapUrl) {
+export const fetchMapImage = async mapUrl => {
   const response = await fetch(mapUrl);
-  console.log({mapUrl});
-  const buffer = await response.arrayBuffer();
-  return buffer;
-}
+  console.log({ mapUrl });
+  return response.arrayBuffer();
+};

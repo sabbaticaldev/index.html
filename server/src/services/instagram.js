@@ -4,18 +4,6 @@ import { IgApiClient } from "instagram-private-api";
 import fetch from "node-fetch";
 
 import settings from "../settings.js";
-import { generateSocialMediaPostPrompt } from "./llm/tasks/instagram.js";
-
-export const generateSocialMediaPost = async (LLM, params) => {
-  const prompt = generateSocialMediaPostPrompt(params);  
-  try {
-    const content = await LLM(prompt);
-    return content;
-  } catch (error) {
-    console.error("Error generating social media post:", error);
-    throw error;
-  }
-};
 
 export async function fetchInstagramData(url) {
   const options = {

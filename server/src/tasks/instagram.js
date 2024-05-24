@@ -3,14 +3,13 @@ import fs from "fs";
 import path from "path";
 
 import { downloadMedia } from "../services/drive.js";
-import { embedCaptionToImage,generateCaptionImage } from "../services/image.js";
-import { fetchInstagramData, generateSocialMediaPost } from "../services/instagram.js";
-import LLM from "../services/llm/index.js";
-import { createGridVideo,embedCaptionToVideo } from "../services/video.js";
+import { embedCaptionToImage, generateCaptionImage } from "../services/image.js";
+import { fetchInstagramData } from "../services/instagram.js";
+import { generatePrompt, LLM, loadPromptData } from "../services/llm/index.js";
+import { createGridVideo, embedCaptionToVideo } from "../services/video.js";
 import { connectToWhatsApp, sendWhatsAppMessage } from "../services/whatsapp/index.js";
 import settings from "../settings.js";
-import { executeTasks }from "../utils.js";
-
+import { executeTasks } from "../utils.js";
 
 const deps = {};
 
@@ -55,7 +54,6 @@ export async function createTopVideos(options) {
         filePath: finalVideoPath,
         dependencies: ["introVideo", "gridVideo"],
         operation: async () => {
-          // Example command for combining videos sequentially with ffmpeg
           const command = `ffmpeg -f concat -safe 0 -i <(printf "file '%s'\nfile '%s'" ${introVideoPath} ${gridVideoPath}) -c copy ${finalVideoPath}`;
           await exec(command);
           return finalVideoPath;
@@ -77,35 +75,51 @@ export async function createTopVideos(options) {
 }
 
 export async function createReelRipOff(options) {
-  const { url, invert = true, pointSize = 26, 
-    textColor = "white", strokeWidth = 2, captionBackground = "none", hashtags = true, 
-    captionDuration, contentStyle, captionStyle, captionPadding,
-    caption, captionPosition = "top", captionWidth = 600,
-    secondaryCaption } = options;
+  const {
+    url,
+    invert = true,
+    pointSize = 26,
+    textColor = "white",
+    strokeWidth = 2,
+    captionBackground = "none",
+    hashtags = true,
+    captionDuration,
+    contentStyle,
+    captionStyle,
+    captionPadding,
+    caption,
+    captionPosition = "top",
+    captionWidth = 600,
+    secondaryCaption
+  } = options;
+
   try {
     const reelId = new URL(url).pathname.split("/")[2];
     const outputFolderPath = `downloads/${reelId}`;
     fs.mkdirSync(outputFolderPath, { recursive: true });
+
     let captionConfig, captionPath;
     captionPath = path.join(outputFolderPath, "caption.png");
     captionConfig = {
       captionPosition,
       width: captionWidth,
       pointsize: pointSize,
-      backgroundColor: captionBackground, 
-      textColor: textColor, 
+      backgroundColor: captionBackground,
+      textColor: textColor,
       strokeWidth: strokeWidth,
       padding: captionPadding,
       gravity: "center",
-      font: "Rubik Mono One",      
+      font: "Rubik Mono One",
       outputPath: captionPath
     };
+
     const instagramJSONPath = path.join(outputFolderPath, "instagram.json");
     const postPath = path.join(outputFolderPath, "llm.json");
     const videoPath = path.join(outputFolderPath, "video.mp4");
     const imagePath = path.join(outputFolderPath, "image.jpg");
     const finalImagePath = path.join(outputFolderPath, "cover.png");
     const finalVideoPath = path.join(outputFolderPath, "final.mp4");
+
     const tasks = [
       {
         description: "Instagram data download",
@@ -135,9 +149,16 @@ export async function createReelRipOff(options) {
         key: "llm",
         dependencies: ["instagram"],
         operation: async () => {
-          const llm = LLM("bedrock");
-          const post = await generateSocialMediaPost(llm, { hashtags, contentStyle, captionStyle, postDescription: deps.instagram.description });
-          
+          const promptData = loadPromptData("instagram", "SocialMediaPost.json");
+          const prompt = generatePrompt({
+            hashtags,
+            contentStyle,
+            captionStyle,
+            postDescription: deps.instagram.description,
+            persona: "AllForTraveler"
+          }, promptData);
+
+          const post = await LLM.execute("bedrock", prompt);
           fs.writeFileSync(postPath, JSON.stringify(post));
           return post;
         }
@@ -175,7 +196,7 @@ export async function createReelRipOff(options) {
         })
       },
       {
-        description: "Send whatsapp messages",
+        description: "Send WhatsApp messages",
         dependencies: ["llm"],
         operation: async () => {
           const sock = await connectToWhatsApp({ keepAlive: true });
@@ -186,19 +207,19 @@ export async function createReelRipOff(options) {
             { video: fs.readFileSync(finalVideoPath) },
             { text: deps.llm.description },
             { text: url }
-          ];          
+          ];
           await sendWhatsAppMessage({ sock, messages, phoneNumber: settings.ADMIN_PHONE_NUMBER });
         }
       }
     ];
+
     await executeTasks({ tasks, prompt: true, deps });
   } catch (error) {
     console.error(`Error processing reel: ${error.message}`, { error });
   }
 }
 
-
-// TODO
+//todo
 export async function createMapImageWithEventPins(options) {
   
 }
