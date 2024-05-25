@@ -1,6 +1,6 @@
 // Dependencies
 import polyline from "@mapbox/polyline";
-const { decode: polylineDecode }  = polyline;
+const { decode: polylineDecode } = polyline;
 import fetch from "node-fetch";
 
 import { MAP_TYPES } from "../../constants.js";
@@ -9,7 +9,7 @@ import { fetchMapImage } from "../../utils.js";
 export default {
   fetchMapImage: async ({ lat, lng, zoom, size, apiKey, mapType }) => {
     const mapboxMapType = MAP_TYPES[mapType]?.mapbox || "streets-v11";
-    const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/${mapboxMapType}/static/${lng},${lat},${zoom}/${size}?access_token=${apiKey}`;      
+    const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/${mapboxMapType}/static/${lng},${lat},${zoom}/${size}?access_token=${apiKey}`;
     return fetchMapImage(mapUrl);
   },
   fetchRouteCoordinates: async (start, end, apiKey) => {
@@ -25,7 +25,9 @@ export default {
     return [];
   },
   fetchSingleCoordinate: async (location, apiKey) => {
-    const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${apiKey}`;
+    const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+      location,
+    )}.json?access_token=${apiKey}`;
     const response = await fetch(geocodeUrl);
     const data = await response.json();
     if (data.features && data.features.length > 0) {
@@ -33,5 +35,5 @@ export default {
       return { lat: center[1], lng: center[0] };
     }
     return null;
-  }
+  },
 };

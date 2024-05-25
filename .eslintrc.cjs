@@ -1,3 +1,4 @@
+
 module.exports = {
   env: {
     browser: true,
@@ -20,16 +21,28 @@ module.exports = {
     sourceType: "module",
   },
   plugins: [
-    // Add the simple-import-sort plugin
     "simple-import-sort",
+    "prettier"
   ],
   rules: {
     indent: ["error", 2],
     "linebreak-style": ["error", "unix"],
     quotes: ["error", "double"],
     semi: ["error", "always"],
-    // Add simple-import-sort rules
+    "no-multi-spaces": ["error"],
+    "no-trailing-spaces": ["error"],
+    "object-curly-spacing": ["error", "always"],
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
+    "comma-dangle": ["error", "always-multiline"],
+    "eol-last": ["error", "always"],
+    "arrow-spacing": ["error", { "before": true, "after": true }],
+    "space-infix-ops": ["error", { "int32Hint": false }],
+    "space-before-blocks": ["error", "always"],
+    "key-spacing": ["error", { "beforeColon": false, "afterColon": true }],
+    "keyword-spacing": ["error", { "before": true, "after": true }],
+    "prettier/prettier": ["error", {
+      "endOfLine": "auto",
+    }],
   },
 };

@@ -7,8 +7,7 @@ import init from "https://esm.sh/@unocss/runtime";
 // pass unocss options
 // TODO Handle undefined
 window.__unocss = {
-  theme:
-    window.__custom && window.__custom.theme ? window.__custom.theme : {},
+  theme: window.__custom && window.__custom.theme ? window.__custom.theme : {},
 };
 
 const getUnoGenerator = (safelist) => {

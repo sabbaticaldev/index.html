@@ -4,14 +4,14 @@ export default {
   props: {
     language: {
       defaultValue: "en",
-      scope: "app"
+      scope: "app",
     },
     dropdown: {
-      defaultValue: false
+      defaultValue: false,
     },
     i18n: {
-      title: "Change Language"
-    }
+      title: "Change Language",
+    },
   },
   firstUpdated: () => {},
   render: function () {
@@ -21,12 +21,12 @@ export default {
       setLanguage,
       dropdown,
       setDropdown,
-      i18n: t
+      i18n: t,
     } = this;
     const languages = {
       en: "English",
       es: "Español",
-      pt: "Português"
+      pt: "Português",
     };
 
     const handleLanguageChange = (code) => (
@@ -70,10 +70,10 @@ export default {
                 </span>
                 ${name}
               </button>
-            </li>`
-  )}
+            </li>`,
+          )}
         </ul>
       </div>
     </div>`;
-  }
+  },
 };

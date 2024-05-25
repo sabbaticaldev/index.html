@@ -12,7 +12,7 @@ const LLM = (() => {
 
   return {
     execute: async (provider, prompt, options = {}) => {
-      const { responseFormat = "json" } = options;       
+      const { responseFormat = "json" } = options;
       const llmClient = client[provider];
       if (!llmClient) {
         throw new Error(`Unsupported LLM provider: ${provider}`);
@@ -49,9 +49,16 @@ const generatePrompt = (config, templateFile, responseFormat) => {
 
   // Generate example input and output
   const exampleInput = generateExample(templateData.exampleInput);
-  const exampleOutput = generateExample(templateData.exampleOutput, responseFormat, rootElement);
-  prompt = prompt.replace("{example}", `Input:\n${exampleInput}\nOutput:\n${exampleOutput}`);
-  console.log({exampleInput, exampleOutput});
+  const exampleOutput = generateExample(
+    templateData.exampleOutput,
+    responseFormat,
+    rootElement,
+  );
+  prompt = prompt.replace(
+    "{example}",
+    `Input:\n${exampleInput}\nOutput:\n${exampleOutput}`,
+  );
+  console.log({ exampleInput, exampleOutput });
   //console.log({prompt});
   return prompt;
 };
@@ -66,7 +73,7 @@ const generateExample = (exampleData, responseFormat = "json", rootElement) => {
 };
 
 const cleanLLMResponse = (response, format) => {
-  console.log({response, format});
+  console.log({ response, format });
   if (format === "json") {
     const firstBraceIndex = response.indexOf("{");
     const lastBraceIndex = response.lastIndexOf("}");

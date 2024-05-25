@@ -8,19 +8,18 @@ async function main() {
   const app = express();
   const port = 3000;
   const importDelay = 1000;
-  const maxGroups = 5; 
+  const maxGroups = 5;
   await connectToWhatsApp({ keepAlive: true, credential: "default" });
-  
+
   app.use(express.json());
   app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
+      "Origin, X-Requested-With, Content-Type, Accept",
     );
     next();
   });
-
 
   app.get("/import-tags", async (req, res) => {
     try {
@@ -32,10 +31,12 @@ async function main() {
   });
   app.get("/import-groups", async (req, res) => {
     try {
-      const datetime = req.query.datetime ? decodeURIComponent(req.query.datetime) : undefined;
+      const datetime = req.query.datetime
+        ? decodeURIComponent(req.query.datetime)
+        : undefined;
       const delay = req.query.delay || importDelay;
       const max = req.query.max || maxGroups;
-      const groups = await importGroups({delay, max, datetime});
+      const groups = await importGroups({ delay, max, datetime });
       res.status(200).send(groups);
     } catch (error) {
       console.error("Error importing groups:", error);
@@ -48,20 +49,19 @@ async function main() {
     if (!url) {
       return res.status(400).send({ error: "URL is required" });
     }
-  
+
     try {
-      const response = await fetchGroup(url); 
+      const response = await fetchGroup(url);
       res.send(response);
     } catch (error) {
       console.error("Error processing request:", error);
       res.status(500).send({ error: "Error processing request" });
     }
   });
-  
 
   app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
   });
 }
 
-main().catch(err => console.error(err));
+main().catch((err) => console.error(err));

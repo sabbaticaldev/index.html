@@ -1,11 +1,9 @@
 export {
   messageHandler,
   requestUpdate,
-  startBackend
+  startBackend,
 } from "./libs/appstate.js";
-import {
-  requestUpdate,
-} from "./libs/appstate.js";
+import { requestUpdate } from "./libs/appstate.js";
 import { BOOL_TABLE } from "./libs/constants.js";
 import idbAdapter from "./libs/indexeddb.js";
 import ReactiveRecord from "./libs/reactive-record.js";
@@ -69,10 +67,9 @@ const endpointNotFound = new Response(
   },
 );
 
-
 export const handleFetch = async ({ event, url }) => {
   const method = event.request.method;
-  const [,, model, id] = url.pathname.split("/");  
+  const [, , model, id] = url.pathname.split("/");
   if (!ReactiveRecord.models[model]) {
     return endpointNotFound;
   }
@@ -85,13 +82,16 @@ export const handleFetch = async ({ event, url }) => {
       }),
       {},
     );
-    
+
     const bodyMethods = ["POST", "PATCH"];
     const bodyParams = bodyMethods.includes(method)
-      ? await event.request.clone().json().catch((err) => {
-        console.error("Failed to parse request body", err);
-        return {};
-      })
+      ? await event.request
+        .clone()
+        .json()
+        .catch((err) => {
+          console.error("Failed to parse request body", err);
+          return {};
+        })
       : {};
 
     const params = { ...queryParams, ...bodyParams };
@@ -104,16 +104,14 @@ export const handleFetch = async ({ event, url }) => {
           ? ReactiveRecord.addMany(model, params)
           : ReactiveRecord.add(model, params),
       PATCH: () =>
-        id
-          ? ReactiveRecord.edit(model, { id, ...params })
-          : endpointNotFound,
+        id ? ReactiveRecord.edit(model, { id, ...params }) : endpointNotFound,
       DELETE: () => (id ? ReactiveRecord.remove(model, id) : endpointNotFound),
     };
 
     if (!actionMap[method]) {
       return endpointNotFound;
     }
-    
+
     const response = await actionMap[method]();
 
     if (["POST", "PATCH", "DELETE"].includes(method)) {
@@ -129,14 +127,11 @@ export const handleFetch = async ({ event, url }) => {
   } catch (error) {
     console.error({ error });
     console.trace();
-    return new Response(
-      JSON.stringify({ error: "Internal Server Error" }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }
 };

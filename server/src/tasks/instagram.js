@@ -3,11 +3,17 @@ import fs from "fs";
 import path from "path";
 
 import { downloadMedia } from "../services/drive.js";
-import { embedCaptionToImage, generateCaptionImage } from "../services/image.js";
+import {
+  embedCaptionToImage,
+  generateCaptionImage,
+} from "../services/image.js";
 import { fetchInstagramData } from "../services/instagram.js";
 import { generatePrompt, LLM, loadTemplate } from "../services/llm/index.js";
 import { createGridVideo, embedCaptionToVideo } from "../services/video.js";
-import { connectToWhatsApp, sendWhatsAppMessage } from "../services/whatsapp/index.js";
+import {
+  connectToWhatsApp,
+  sendWhatsAppMessage,
+} from "../services/whatsapp/index.js";
 import settings from "../settings.js";
 import { executeTasks } from "../utils.js";
 
@@ -19,7 +25,7 @@ export async function createTopVideos(options) {
     captions = [],
     videos = [],
     captionStyle,
-    contentStyle
+    contentStyle,
   } = options;
 
   try {
@@ -35,18 +41,19 @@ export async function createTopVideos(options) {
       {
         description: "Download and prepare intro video",
         filePath: introVideoPath,
-        operation: async () => downloadMedia(url, introVideoPath)
+        operation: async () => downloadMedia(url, introVideoPath),
       },
       {
         description: "Create grid video from multiple sources",
         filePath: gridVideoPath,
-        operation: async () => createGridVideo({
-          videos,
-          captions,
-          outputPath: gridVideoPath,
-          duration,
-          style: captionStyle
-        })
+        operation: async () =>
+          createGridVideo({
+            videos,
+            captions,
+            outputPath: gridVideoPath,
+            duration,
+            style: captionStyle,
+          }),
       },
       {
         description: "Combine intro and grid videos",
@@ -56,15 +63,22 @@ export async function createTopVideos(options) {
           const command = `ffmpeg -f concat -safe 0 -i <(printf "file '%s'\nfile '%s'" ${introVideoPath} ${gridVideoPath}) -c copy ${finalVideoPath}`;
           await exec(command);
           return finalVideoPath;
-        }
+        },
       },
       {
         description: "Send final video over WhatsApp",
         operation: async () => {
           const sock = await connectToWhatsApp({ keepAlive: true });
-          await sendWhatsAppMessage(sock, { video: fs.readFileSync(finalVideoPath), text: "Check out the top places to visit!" }, settings.ADMIN_PHONE_NUMBER);
-        }
-      }
+          await sendWhatsAppMessage(
+            sock,
+            {
+              video: fs.readFileSync(finalVideoPath),
+              text: "Check out the top places to visit!",
+            },
+            settings.ADMIN_PHONE_NUMBER,
+          );
+        },
+      },
     ];
 
     await executeTasks({ tasks, prompt: true, deps });
@@ -89,7 +103,7 @@ export async function createReelRipOff(options) {
     caption,
     captionPosition = "top",
     captionWidth = 600,
-    secondaryCaption
+    secondaryCaption,
   } = options;
 
   try {
@@ -109,7 +123,7 @@ export async function createReelRipOff(options) {
       padding: captionPadding,
       gravity: "center",
       font: "Rubik Mono One",
-      outputPath: captionPath
+      outputPath: captionPath,
     };
 
     const instagramJSONPath = path.join(outputFolderPath, "instagram.json");
@@ -128,19 +142,21 @@ export async function createReelRipOff(options) {
           const instagram = await fetchInstagramData(url);
           fs.writeFileSync(instagramJSONPath, JSON.stringify(instagram));
           return instagram;
-        }
+        },
       },
       {
         description: "Video download",
         filePath: videoPath,
         dependencies: ["instagram"],
-        operation: async () => await downloadMedia(deps.instagram.video, reelId, "video")
+        operation: async () =>
+          await downloadMedia(deps.instagram.video, reelId, "video"),
       },
       {
         description: "Image download",
         filePath: imagePath,
         dependencies: ["instagram"],
-        operation: async () => await downloadMedia(deps.instagram.image, reelId, "image")
+        operation: async () =>
+          await downloadMedia(deps.instagram.image, reelId, "image"),
       },
       {
         description: "LLM post generation",
@@ -148,53 +164,64 @@ export async function createReelRipOff(options) {
         key: "llm",
         dependencies: ["instagram"],
         operation: async () => {
-          const generalTemplate = loadTemplate("instagram/socialMediaPost.json");
+          const generalTemplate = loadTemplate(
+            "instagram/socialMediaPost.json",
+          );
           const specificTemplate = loadTemplate("templates.json");
 
-          const prompt = generatePrompt({
-            postDescription: deps.instagram.description,
-            contentStyle,
-            captionStyle,
-            persona: "AllForTraveler",
-            hashtags
-          }, generalTemplate, specificTemplate.socialMediaPost);
+          const prompt = generatePrompt(
+            {
+              postDescription: deps.instagram.description,
+              contentStyle,
+              captionStyle,
+              persona: "AllForTraveler",
+              hashtags,
+            },
+            generalTemplate,
+            specificTemplate.socialMediaPost,
+          );
 
           const post = await LLM.execute("bedrock", prompt);
           fs.writeFileSync(postPath, JSON.stringify(post));
           return post;
-        }
+        },
       },
       {
         description: "Caption image generation",
         filePath: captionPath,
         dependencies: ["llm"],
         operation: async () => {
-          return await generateCaptionImage(caption || deps.llm.caption, captionConfig);
-        }
+          return await generateCaptionImage(
+            caption || deps.llm.caption,
+            captionConfig,
+          );
+        },
       },
       {
         description: "Image caption embedding",
         filePath: finalImagePath,
-        operation: () => embedCaptionToImage({
-          imagePath,
-          captionPath,
-          invert,
-          outputPath: finalImagePath,
-          secondaryCaption,
-          captionPosition
-        })
+        operation: () =>
+          embedCaptionToImage({
+            imagePath,
+            captionPath,
+            invert,
+            outputPath: finalImagePath,
+            secondaryCaption,
+            captionPosition,
+          }),
       },
       {
         description: "Video caption embedding",
         filePath: finalVideoPath,
-        operation: async () => await embedCaptionToVideo({
-          videoPath,
-          captionPath,
-          invert,
-          outputPath: finalVideoPath,
-          captionDuration,
-          captionPosition
-        })
+        operation: async () =>
+          await embedCaptionToVideo({
+            videoPath,
+            captionPath,
+            invert,
+            outputPath: finalVideoPath,
+            captionDuration,
+            captionPosition,
+          }),
       },
       {
         description: "Send WhatsApp messages",
@@ -207,11 +234,15 @@ export async function createReelRipOff(options) {
             { video: fs.readFileSync(videoPath) },
             { video: fs.readFileSync(finalVideoPath) },
             { text: deps.llm.description },
-            { text: url }
+            { text: url },
           ];
-          await sendWhatsAppMessage({ sock, messages, phoneNumber: settings.ADMIN_PHONE_NUMBER });
-        }
-      }
+          await sendWhatsAppMessage({
+            sock,
+            messages,
+            phoneNumber: settings.ADMIN_PHONE_NUMBER,
+          });
+        },
+      },
     ];
 
     await executeTasks({ tasks, prompt: true, deps });
@@ -221,6 +252,4 @@ export async function createReelRipOff(options) {
 }
 
 //todo
-export async function createMapImageWithEventPins(options) {
-  
-}
+export async function createMapImageWithEventPins(options) {}

@@ -14,29 +14,31 @@ export async function extractAudio(videoPath) {
       .run();
   });
 }
-  
+
 export async function transcribeAudio(audioPath) {
   const transcribeService = new AWS.TranscribeService();
-    
+
   const jobName = `TranscriptionJob-${Date.now()}`;
   const audioUri = `file://${audioPath}`;
-    
+
   const params = {
-    LanguageCode: "en-US", 
+    LanguageCode: "en-US",
     Media: { MediaFileUri: audioUri },
     MediaFormat: "wav",
     TranscriptionJobName: jobName,
-    OutputBucketName: process.env.AWS_S3_BUCKET
+    OutputBucketName: process.env.AWS_S3_BUCKET,
   };
-    
+
   // Start the transcription job
   await transcribeService.startTranscriptionJob(params).promise();
-    
+
   // Poll the transcription job status
   return new Promise((resolve, reject) => {
     const checkJobDone = setInterval(async () => {
       try {
-        const job = await transcribeService.getTranscriptionJob({ TranscriptionJobName: jobName }).promise();
+        const job = await transcribeService
+          .getTranscriptionJob({ TranscriptionJobName: jobName })
+          .promise();
         if (job.TranscriptionJob.TranscriptionJobStatus === "COMPLETED") {
           clearInterval(checkJobDone);
           // Fetch the transcription from the specified S3 bucket or from the URI provided in the job

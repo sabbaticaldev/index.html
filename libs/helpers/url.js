@@ -14,7 +14,7 @@ export default {
     window.history?.replaceState?.(
       {},
       "",
-      `${window.location.pathname}?${params}`
+      `${window.location.pathname}?${params}`,
     );
     return { key };
   },
@@ -25,8 +25,8 @@ export default {
     window.history.replaceState?.(
       {},
       "",
-      `${window.location.pathname}?${params}`
+      `${window.location.pathname}?${params}`,
     );
     return { key };
-  }
+  },
 };

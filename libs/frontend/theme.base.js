@@ -1,7 +1,15 @@
 export default {
   colors: {
-    default: "gray", button: "white", primary: "blue", secondary: "pink", accent: "yellow",
-    base: "gray", info: "teal", success: "green", warning: "orange", error: "red"
+    default: "gray",
+    button: "white",
+    primary: "blue",
+    secondary: "pink",
+    accent: "yellow",
+    base: "gray",
+    info: "teal",
+    success: "green",
+    warning: "orange",
+    error: "red",
   },
   borderRadius: 3,
   fontStyles: "font-bold leading-5 hover:leading-5",
@@ -14,11 +22,17 @@ export default {
   borderWidth: "border-b-2",
   flexCenter: "flex flex-row items-center gap-2 text-center justify-center",
   baseVariants: {
-    bgVariation: "200", textVariation: "700", hoverBgVariation: "100",
-    hoverTextVariation: "800", accentVariation: "400"
+    bgVariation: "200",
+    textVariation: "700",
+    hoverBgVariation: "100",
+    hoverTextVariation: "800",
+    accentVariation: "400",
   },
   reverseVariants: {
-    bgVariation: "700", textVariation: "white", hoverBgVariation: "600",
-    hoverTextVariation: "100", accentVariation: "200"
-  }
+    bgVariation: "700",
+    textVariation: "white",
+    hoverBgVariation: "600",
+    hoverTextVariation: "100",
+    accentVariation: "200",
+  },
 };

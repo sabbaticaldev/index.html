@@ -62,4 +62,3 @@ export const extractPathParams = (endpoint, requestPath, regex) => {
     {},
   );
 };
-  

@@ -5,9 +5,11 @@ const AppShell = {
   render() {
     const { containerClass = "" } = this;
     const baseClass = this.theme("uix-app-shell");
-    
+
     return html`
-      <div class=${baseClass + (containerClass && ` ${containerClass}` || "")}>
+      <div
+        class=${baseClass + ((containerClass && ` ${containerClass}`) || "")}
+      >
         <slot name="top-navbar"></slot>
         <div class=${this.theme("uix-app-shell__content")}>
           <slot name="left-navbar"></slot>
@@ -35,10 +37,10 @@ const Router = {
       : html`<uix-block>404: Page not found</uix-block>`;
   },
 };
-const theme = ({
+const theme = {
   "uix-app-shell": "w-full h-full flex flex-col",
   "uix-app-shell__content": "flex h-full",
-  "uix-app-shell__main": "relative content flex-grow overflow-y-auto"
+  "uix-app-shell__main": "relative content flex-grow overflow-y-auto",
 });
 
 export default {
@@ -49,4 +51,3 @@ export default {
     "uix-router": Router,
   },
 };
-

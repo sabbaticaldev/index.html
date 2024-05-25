@@ -13,7 +13,7 @@ const createPlaceholderElement = () => {
       "bg-primary",
       "border",
       "transition-all",
-      "m-auto"
+      "m-auto",
     );
   }
   return placeholderElement;
@@ -45,7 +45,7 @@ export const draggable = {
       this.dropItem?.({
         droparea: currentDroparea,
         item: currentDraggedItem,
-        position: currentPosition
+        position: currentPosition,
       });
 
       // Reset state
@@ -71,7 +71,7 @@ export const draggable = {
       this.removeEventListener("dragstart", this.dragstart);
       this.removeEventListener("dragend", this.dragend);
     }
-  }
+  },
 };
 export const droparea = {
   drop: function (event) {
@@ -105,7 +105,7 @@ export const droparea = {
     event.preventDefault();
     const droparea = event.currentTarget;
     const items = Array.from(droparea.children).filter(
-      (child) => !child.classList.contains("drag-placeholder")
+      (child) => !child.classList.contains("drag-placeholder"),
     );
 
     if (!items.length) {
@@ -163,5 +163,5 @@ export const droparea = {
       this.removeEventListener("dragover", this.dragover);
       this.removeEventListener("dragleave", this.dragleave);
     }
-  }
+  },
 };

@@ -20,7 +20,7 @@ const typeHandlers = {
       console.error("Failed to parse object from string:", error);
       return defaultValue;
     }
-  }
+  },
 };
 
 export const stringToType = (value, typeDefinition) => {
@@ -35,119 +35,119 @@ export const T = {
   boolean: (options = {}) => ({
     type: "boolean",
     defaultValue: !!options.defaultValue || false,
-    ...options
+    ...options,
   }),
 
   string: (options = {}) => ({
     type: "string",
     defaultValue: options.defaultValue || "",
     enum: options.enum || [],
-    ...options
+    ...options,
   }),
 
   array: (options = {}) => ({
     type: "array",
     defaultValue: options.defaultValue || [],
     enum: options.enum || [],
-    ...options
+    ...options,
   }),
 
   number: (options = {}) => ({
     type: "number",
     defaultValue: options.defaultValue || undefined,
-    ...options
+    ...options,
   }),
 
   date: (options = {}) => ({
     type: "date",
     defaultValue: options.defaultValue || undefined,
-    ...options
+    ...options,
   }),
 
   function: (options = {}) => ({
     type: "function",
     defaultValue: options.defaultValue || undefined,
-    ...options
+    ...options,
   }),
 
   object: (options = {}) => ({
     type: "object",
     defaultValue: options.defaultValue || undefined,
-    ...options
+    ...options,
   }),
 
   one: (relationship, targetForeignKey, options = {}) => ({
     type: "one",
     relationship,
     targetForeignKey: targetForeignKey,
-    ...options
+    ...options,
   }),
   many: (relationship, targetForeignKey, options = {}) => ({
     type: "many",
     relationship,
     targetForeignKey: targetForeignKey,
-    ...options
+    ...options,
   }),
 
   created_by: (referenceField, options = {}) => ({
     type: "object",
     metadata: "user",
     referenceField,
-    ...options
+    ...options,
   }),
   created_at: (referenceField, options = {}) => ({
     type: "string",
     metadata: "timestamp",
     referenceField,
-    ...options
+    ...options,
   }),
 
   text: (options = {}) => ({
     formType: "text",
     type: T.string(options),
-    ...options
+    ...options,
   }),
   datetime: (options = {}) => ({
     formType: "datetime",
     type: T.string(options),
-    ...options
+    ...options,
   }),
 
   time: (options = {}) => ({
     formType: "time",
     type: T.string(options),
-    ...options
+    ...options,
   }),
 
   checkbox: (options = {}) => ({
     formType: "checkbox",
     type: T.boolean(options),
-    ...options
+    ...options,
   }),
 
   radio: (options = {}) => ({
     formType: "radio",
     type: T.boolean(options),
-    ...options
+    ...options,
   }),
 
   toggle: (options = {}) => ({
     formType: "toggle",
     type: T.boolean(options),
-    ...options
+    ...options,
   }),
 
   textarea: (options = {}) => ({
     formType: "textarea",
     type: T.string(options),
-    ...options
+    ...options,
   }),
 
   custom: (customFormType, options) => ({
     customFormType,
     type: T[customFormType](options),
-    ...options
-  })
+    ...options,
+  }),
 };
 
 export default T;

@@ -22,7 +22,7 @@ function readDirectory(directory) {
         traverseDirectory(fullPath);
       } else if (entry.isFile() && entry.name.endsWith(".js")) {
         const content = fs.readFileSync(fullPath, "utf8");
-        files[fullPath] = content;        
+        files[fullPath] = content;
       }
     }
   }
@@ -43,8 +43,15 @@ async function runESLintFix(files) {
 }
 
 export async function refactorFolder(options) {
-  const { contextSrc, refactoringFiles, taskPrompt, responseFormat = "json" } = options;
-  const outputDirectory = `code/${refactoringFiles.replace(/[^a-z0-9]/gi, "_").toLowerCase()}`;
+  const {
+    contextSrc,
+    refactoringFiles,
+    taskPrompt,
+    responseFormat = "json",
+  } = options;
+  const outputDirectory = `code/${refactoringFiles
+    .replace(/[^a-z0-9]/gi, "_")
+    .toLowerCase()}`;
   const contextFilePath = path.join(outputDirectory, "context.json");
   const promptFilePath = path.join(outputDirectory, "prompt.txt");
 
@@ -55,7 +62,7 @@ export async function refactorFolder(options) {
       description: "Load template",
       key: "template",
       filePath: path.join(outputDirectory, "template.json"),
-      operation: async () => loadTemplate("coding/refactor.json")
+      operation: async () => loadTemplate("coding/refactor.json"),
     },
     {
       description: "Read context source directory and encode file contents",
@@ -63,26 +70,36 @@ export async function refactorFolder(options) {
       filePath: contextFilePath,
       operation: async () => {
         if (fs.existsSync(contextFilePath)) {
-          const confirm = await checkAndExecute({ description: "Context already exists. Fetch again?", operation: async () => false, prompt: true });
+          const confirm = await checkAndExecute({
+            description: "Context already exists. Fetch again?",
+            operation: async () => false,
+            prompt: true,
+          });
           if (!confirm) {
             return JSON.parse(fs.readFileSync(contextFilePath, "utf8"));
           }
         }
         const contextFileMap = readDirectory(contextSrc);
-        fs.writeFileSync(contextFilePath, JSON.stringify(contextFileMap, null, 2));
+        fs.writeFileSync(
+          contextFilePath,
+          JSON.stringify(contextFileMap, null, 2),
+        );
         return contextFileMap;
-      }
+      },
     },
     {
       description: "Read refactoring files directory and encode file contents",
       key: "refactoringFileMap",
       filePath: path.join(outputDirectory, "refactoringFileMap.json"),
       operation: async () => {
-        if (fs.existsSync(refactoringFiles) && fs.lstatSync(refactoringFiles).isDirectory()) {
+        if (
+          fs.existsSync(refactoringFiles) &&
+          fs.lstatSync(refactoringFiles).isDirectory()
+        ) {
           return readDirectory(refactoringFiles);
         }
         return null;
-      }
+      },
     },
     {
       description: "Generate refactor prompt",
@@ -91,15 +108,19 @@ export async function refactorFolder(options) {
       filePath: promptFilePath,
       operation: async () => {
         const exampleParams = deps.template.exampleParams;
-        const generatedPrompt = generatePrompt({
-          contextSrc: JSON.stringify(deps.contextFileMap, null, 2),
-          refactoringFiles,
-          taskPrompt,
-          exampleParams
-        }, "coding/refactor.json", responseFormat);
+        const generatedPrompt = generatePrompt(
+          {
+            contextSrc: JSON.stringify(deps.contextFileMap, null, 2),
+            refactoringFiles,
+            taskPrompt,
+            exampleParams,
+          },
+          "coding/refactor.json",
+          responseFormat,
+        );
         fs.writeFileSync(promptFilePath, generatedPrompt);
         return generatedPrompt;
-      }
+      },
     },
     {
       description: "Execute LLM to refactor code",
@@ -107,22 +128,30 @@ export async function refactorFolder(options) {
       dependencies: ["prompt"],
       filePath: path.join(outputDirectory, "refactoredFileMap.json"),
       operation: async () => {
-        const response = await LLM.execute("bedrock", deps.prompt, { responseFormat });
-        fs.writeFileSync(path.join(outputDirectory, "llmResponse.json"), JSON.stringify(response, null, 2));
+        const response = await LLM.execute("bedrock", deps.prompt, {
+          responseFormat,
+        });
+        fs.writeFileSync(
+          path.join(outputDirectory, "llmResponse.json"),
+          JSON.stringify(response, null, 2),
+        );
         return response?.files || [];
-      }
+      },
     },
     {
       description: "Save refactored files from map",
       key: "savedFilePaths",
       dependencies: ["refactoredFileMap"],
-      filePath: () => (deps.refactoredFileMap).map(file => path.join(outputDirectory, file.filepath)),
+      filePath: () =>
+        deps.refactoredFileMap.map((file) =>
+          path.join(outputDirectory, file.filepath),
+        ),
       operation: async ({ filepath, index }) => {
         const file = deps.refactoredFileMap[index];
         fs.mkdirSync(path.dirname(filepath), { recursive: true });
         fs.writeFileSync(filepath, file.content, "utf-8");
         return filepath;
-      }
+      },
     },
     {
       description: "Run ESLint fix on refactored files",
@@ -131,20 +160,21 @@ export async function refactorFolder(options) {
       operation: async ({ filepath }) => {
         await runESLintFix([filepath]);
         return filepath;
-      }
+      },
     },
     {
       description: "Prompt and save files to original path",
       dependencies: ["refactoredFileMap", "savedFilePaths"],
-      filePath: () => (deps.refactoredFileMap || []).map(file => file.filepath),
+      filePath: () =>
+        (deps.refactoredFileMap || []).map((file) => file.filepath),
       operation: async ({ filepath, index }) => {
         const eslintedFilepath = deps.savedFilePaths[index];
         const content = fs.readFileSync(eslintedFilepath, "utf-8");
         fs.mkdirSync(path.dirname(filepath), { recursive: true });
-        fs.writeFileSync(filepath, content, "utf-8");        
+        fs.writeFileSync(filepath, content, "utf-8");
         return content;
-      }
-    }
+      },
+    },
   ];
 
   try {

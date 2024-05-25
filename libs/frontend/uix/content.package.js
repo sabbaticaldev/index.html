@@ -25,7 +25,9 @@ const Card = {
   props: cardProps,
   render() {
     const baseClass = this.theme("uix-card");
-    return html`<uix-block containerClass=${baseClass} spacing=${this.spacing}><slot></slot></uix-block>`;
+    return html`<uix-block containerClass=${baseClass} spacing=${this.spacing}
+      ><slot></slot
+    ></uix-block>`;
   },
 };
 
@@ -33,18 +35,35 @@ const Table = {
   props: tableProps,
   paginatedRows,
   render() {
-    const headerElements = this.headers.map((header) => html`<th scope="col" class=${this.theme("uix-table__header")}>${header}</th>`);
-    const rowElements = this.paginatedRows().map((row) =>
-      html`<tr>${Array.isArray(row) ? row : Object.values(row).map((cell) => html`<td class=${this.theme("uix-table__cell")}>${cell}</td>`)}</tr>`
+    const headerElements = this.headers.map(
+      (header) =>
+        html`<th scope="col" class=${this.theme("uix-table__header")}>
+          ${header}
+        </th>`,
+    );
+    const rowElements = this.paginatedRows().map(
+      (row) =>
+        html`<tr>
+          ${Array.isArray(row)
+    ? row
+    : Object.values(row).map(
+      (cell) =>
+        html`<td class=${this.theme("uix-table__cell")}>${cell}</td>`,
+    )}
+        </tr>`,
     );
 
     return html`
       <div>
         <table class=${this.theme("uix-table")}>
           <thead>
-            <tr>${headerElements}</tr>
+            <tr>
+              ${headerElements}
+            </tr>
           </thead>
-          <tbody>${rowElements}</tbody>
+          <tbody>
+            ${rowElements}
+          </tbody>
         </table>
         <uix-pagination
           totalResults=${this.rows.length}
@@ -68,11 +87,33 @@ const MockupPhone = {
     return html`
       <div class=${this.theme("uix-mockup-phone")}>
         <div class=${this.theme("uix-mockup-phone__top")}></div>
-        <div class=${this.theme("uix-mockup-phone__side", { position: "left", index: 0 })}></div>
-        <div class=${this.theme("uix-mockup-phone__side", { position: "left", index: 1 })}></div>
-        <div class=${this.theme("uix-mockup-phone__side", { position: "left", index: 2 })}></div>
-        <div class=${this.theme("uix-mockup-phone__side", { position: "right", index: 1 })}></div>
-        <div class=${this.theme("uix-mockup-phone__content")}><slot></slot></div>
+        <div
+          class=${this.theme("uix-mockup-phone__side", {
+    position: "left",
+    index: 0,
+  })}
+        ></div>
+        <div
+          class=${this.theme("uix-mockup-phone__side", {
+    position: "left",
+    index: 1,
+  })}
+        ></div>
+        <div
+          class=${this.theme("uix-mockup-phone__side", {
+    position: "left",
+    index: 2,
+  })}
+        ></div>
+        <div
+          class=${this.theme("uix-mockup-phone__side", {
+    position: "right",
+    index: 1,
+  })}
+        ></div>
+        <div class=${this.theme("uix-mockup-phone__content")}>
+          <slot></slot>
+        </div>
       </div>
     `;
   },
@@ -100,14 +141,18 @@ const Avatar = {
     const { src, alt, placeholder } = this;
     let content;
     if (src) {
-      content = html`<img src=${src} class=${this.theme("uix-avatar__img")} alt=${alt} />`;
+      content = html`<img
+        src=${src}
+        class=${this.theme("uix-avatar__img")}
+        alt=${alt}
+      />`;
     } else if (placeholder) {
-      content = html`<span class=${this.theme("uix-avatar__img")}>${placeholder}</span>`;
+      content = html`<span class=${this.theme("uix-avatar__img")}
+        >${placeholder}</span
+      >`;
     }
 
-    return html`
-      <div class=${this.theme("uix-avatar")}>${content}</div>
-    `;
+    return html` <div class=${this.theme("uix-avatar")}>${content}</div> `;
   },
 };
 
@@ -168,7 +213,9 @@ const Loading = {
     return html`
       <span class="${loadingClass}">
         ${message ? html`<span>${message}</span>` : ""}
-        ${message && type === "spinner" ? html`<uix-icon name="spinner"></uix-icon>` : ""}
+        ${message && type === "spinner"
+    ? html`<uix-icon name="spinner"></uix-icon>`
+    : ""}
       </span>
     `;
   },
@@ -188,12 +235,15 @@ const Text = {
     const { size } = this;
     const isLink = Boolean(this.onclick || this.href);
     const tag = isLink ? "a" : TAG_MAP[size] || "p";
-    
-    return isLink ?
-      html`<a href=${this.href || "#"} @click=${this.onclick}><slot></slot></a>`
-      : 
-      staticHtml`
-      <${unsafeStatic(tag)} class="${unsafeStatic(`${this.theme("uix-text")}`)}">
+
+    return isLink
+      ? html`<a href=${this.href || "#"} @click=${this.onclick}
+          ><slot></slot
+        ></a>`
+      : staticHtml`
+      <${unsafeStatic(tag)} class="${unsafeStatic(
+  `${this.theme("uix-text")}`,
+)}">
         <slot></slot>
       </${unsafeStatic(tag)}>
     `;
@@ -201,32 +251,61 @@ const Text = {
 };
 
 const theme = (userTheme, props) => ({
-  "uix-card": { _base: "shadow", spacing: props.SpacingSizes, variant: props.BaseVariants },
+  "uix-card": {
+    _base: "shadow",
+    spacing: props.SpacingSizes,
+    variant: props.BaseVariants,
+  },
   "uix-block": { spacing: props.SpacingSizes, variant: props.BaseVariants },
   "uix-list": {
-    _base: "flex", spacing: props.SpacingSizes, gap: props.Gaps, justify: props.JustifyContent,
+    _base: "flex",
+    spacing: props.SpacingSizes,
+    gap: props.Gaps,
+    justify: props.JustifyContent,
     full: ({ vertical }) => ({ true: vertical ? "w-full" : "h-full" }),
     vertical: { true: "flex-col" },
-    responsive: ({ vertical }) => ({ true: vertical ? "lg:flex-col sm:flex-row" : "sm:flex-col lg:flex-row" }),
-    reverse: ({ vertical }) => ({ true: vertical ? "flex-col-reverse" : "flex-row-reverse" })
+    responsive: ({ vertical }) => ({
+      true: vertical ? "lg:flex-col sm:flex-row" : "sm:flex-col lg:flex-row",
+    }),
+    reverse: ({ vertical }) => ({
+      true: vertical ? "flex-col-reverse" : "flex-row-reverse",
+    }),
   },
   "uix-divider": "flex items-center my-2",
   "uix-divider__border": "border-t border-gray-400 flex-grow",
   "uix-divider__label": "px-3 text-gray-800 font-bold text-2xl",
-  "uix-mockup-phone": "relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-xl h-[700px] w-[400px] shadow-xl",
-  "uix-mockup-phone__top": "w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute",
+  "uix-mockup-phone":
+    "relative mx-auto border-gray-800 bg-gray-800 border-[14px] rounded-xl h-[700px] w-[400px] shadow-xl",
+  "uix-mockup-phone__top":
+    "w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute",
   "uix-mockup-phone__side": ({ position = "left", index = 0 }) => ({
-    _base: `h-[${index === 0 ? 32 : index === 1 ? 46 : 64}px] w-[3px] bg-gray-800 absolute -${position}-[17px] top-[${index === 0 ? 72 : index === 1 ? 124 : 142}px] rounded-${position === "left" ? "l" : "r"}-lg`
+    _base: `h-[${
+      index === 0 ? 32 : index === 1 ? 46 : 64
+    }px] w-[3px] bg-gray-800 absolute -${position}-[17px] top-[${
+      index === 0 ? 72 : index === 1 ? 124 : 142
+    }px] rounded-${position === "left" ? "l" : "r"}-lg`,
   }),
-  "uix-mockup-phone__content": "rounded-xl overflow-hidden w-[372px] h-[672px] bg-white",
+  "uix-mockup-phone__content":
+    "rounded-xl overflow-hidden w-[372px] h-[672px] bg-white",
   "uix-table": "w-full text-sm text-left text-gray-500 dark:text-gray-400",
-  "uix-table__header": "p-3 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400",
+  "uix-table__header":
+    "p-3 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400",
   "uix-table__cell": "px-3 py-2 text-xs",
 
   "uix-avatar": { ...props.commonStyles, size: props.DimensionSizes },
   "uix-avatar__img": { _base: "", size: props.DimensionSizes },
-  "uix-badge": { ...props.commonStyles, size: [props.SpacingSizes, props.TextSizes] },
-  "uix-text": { _base: "", variant: props.TextColors, weight: props.FontWeight, font: props.FontType, leading: props.LeadingSizes, size: [props.LeadingSizes, props.TrackingSizes, props.TextSizes] },
+  "uix-badge": {
+    ...props.commonStyles,
+    size: [props.SpacingSizes, props.TextSizes],
+  },
+  "uix-text": {
+    _base: "",
+    variant: props.TextColors,
+    weight: props.FontWeight,
+    font: props.FontType,
+    leading: props.LeadingSizes,
+    size: [props.LeadingSizes, props.TrackingSizes, props.TextSizes],
+  },
 });
 
 export default {

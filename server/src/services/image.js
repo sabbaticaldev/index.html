@@ -2,7 +2,7 @@ import { exec } from "child_process";
 import fs from "fs";
 import util from "util";
 
-export async function generateCaptionImage(caption, config) {  
+export async function generateCaptionImage(caption, config) {
   const {
     width = 900,
     height,
@@ -17,33 +17,43 @@ export async function generateCaptionImage(caption, config) {
     outputPath,
   } = config;
   // Step 1: Create base text image with Pango
-  const baseTextCommand = `convert -size ${width}${height ? `x${height}` : ""} ` +
-` -background ${backgroundColor}`  +
-`${padding ? ` -bordercolor '${borderColor || backgroundColor}' -border ${padding} ` : " "}`+
-` -fill '${textColor}' ` +
-` -font '${font}' ` +
-" -gravity center "+
-` -pointsize ${pointsize} ` +
-` pango:'${caption.replace(/'/g, "'\\''")}' ` +
-` PNG32:${outputPath}-base.png`;
+  const baseTextCommand =
+    `convert -size ${width}${height ? `x${height}` : ""} ` +
+    ` -background ${backgroundColor}` +
+    `${
+      padding
+        ? ` -bordercolor '${
+          borderColor || backgroundColor
+        }' -border ${padding} `
+        : " "
+    }` +
+    ` -fill '${textColor}' ` +
+    ` -font '${font}' ` +
+    " -gravity center " +
+    ` -pointsize ${pointsize} ` +
+    ` pango:'${caption.replace(/'/g, "'\\''")}' ` +
+    ` PNG32:${outputPath}-base.png`;
 
   // Step 2: Create stroke image
-  const strokeTextCommand = `convert ${outputPath}-base.png ` +
-  " -bordercolor 'none' -border 3 " +
-  ` -alpha set -channel RGBA -morphology EdgeOut 'Diamond:${strokeWidth}' ` +
-  ` PNG32:${outputPath}-stroke.png`;
+  const strokeTextCommand =
+    `convert ${outputPath}-base.png ` +
+    " -bordercolor 'none' -border 3 " +
+    ` -alpha set -channel RGBA -morphology EdgeOut 'Diamond:${strokeWidth}' ` +
+    ` PNG32:${outputPath}-stroke.png`;
 
   // Step 3: Colorize stroke
-  const colorizeStrokeCommand = `convert ${outputPath}-stroke.png ` +
-      `-fill '${strokeColor}' -colorize 100 ` +
-      `PNG32:${outputPath}-stroke.png`;
+  const colorizeStrokeCommand =
+    `convert ${outputPath}-stroke.png ` +
+    `-fill '${strokeColor}' -colorize 100 ` +
+    `PNG32:${outputPath}-stroke.png`;
 
   // Step 4: Composite the base text over the stroke
-  const compositeCommand = `convert ${outputPath}-stroke.png ` +
- ` ${outputPath}-base.png ` +
- " -gravity center -composite " +
- ` -bordercolor 'none' -border ${padding} ` +
- ` ${outputPath}`;
+  const compositeCommand =
+    `convert ${outputPath}-stroke.png ` +
+    ` ${outputPath}-base.png ` +
+    " -gravity center -composite " +
+    ` -bordercolor 'none' -border ${padding} ` +
+    ` ${outputPath}`;
 
   // Execute commands
   try {
@@ -63,7 +73,13 @@ export async function generateCaptionImage(caption, config) {
 }
 
 const execAsync = util.promisify(exec);
-export async function embedCaptionToImage({ imagePath, flip, captionPath, outputPath, captionPosition }) {  
+export async function embedCaptionToImage({
+  imagePath,
+  flip,
+  captionPath,
+  outputPath,
+  captionPosition,
+}) {
   // First, check if flipping is needed and handle it
   const tempImagePath = flip ? `${outputPath}-temp.png` : imagePath;
   const flipCommand = flip ? `convert ${imagePath} -flop ${tempImagePath}` : "";
@@ -74,22 +90,28 @@ export async function embedCaptionToImage({ imagePath, flip, captionPath, output
 
   // Get dimensions of the caption image
   const captionHeightCommand = `identify -format "%h" ${captionPath}`;
-  const captionHeight = parseInt(await execAsync(captionHeightCommand).then(output => output.stdout.trim()));
+  const captionHeight = parseInt(
+    await execAsync(captionHeightCommand).then((output) =>
+      output.stdout.trim(),
+    ),
+  );
 
   // Calculate the overlay position based on the caption height and video/image height
   const imageHeightCommand = `identify -format "%h" ${tempImagePath}`;
-  const imageHeight = parseInt(await execAsync(imageHeightCommand).then(output => output.stdout.trim()));
+  const imageHeight = parseInt(
+    await execAsync(imageHeightCommand).then((output) => output.stdout.trim()),
+  );
   let overlayYPosition = captionPosition;
   if (captionPosition === "top") {
-    overlayYPosition = imageHeight * 0.1;  // 10% from the top
+    overlayYPosition = imageHeight * 0.1; // 10% from the top
   } else if (captionPosition === "bottom") {
-    overlayYPosition = imageHeight - (imageHeight * 0.1 + captionHeight);  // 10% from the bottom plus caption height
+    overlayYPosition = imageHeight - (imageHeight * 0.1 + captionHeight); // 10% from the bottom plus caption height
   } else if (captionPosition === "center") {
-    overlayYPosition = (imageHeight / 2) - (captionHeight / 2);  // Centered vertically
+    overlayYPosition = imageHeight / 2 - captionHeight / 2; // Centered vertically
   }
 
   const command = `convert ${tempImagePath} ${captionPath} -gravity north -geometry +0+${overlayYPosition} -composite ${outputPath}`;
-  console.log({captionPosition, command});
+  console.log({ captionPosition, command });
   try {
     await execAsync(command);
     console.log("Final image created successfully:", outputPath);
@@ -113,7 +135,7 @@ export async function AnimateImage({
   panDirection = "bottom-to-top",
   startPosition = "center",
   endPosition = "center",
-  resolution = "1920x1080"
+  resolution = "1920x1080",
 }) {
   const { width, height } = await getImageDimensions(imagePath);
   let cropWidth = Math.floor(width / zoomLevel);
@@ -123,18 +145,42 @@ export async function AnimateImage({
   cropWidth = Math.min(cropWidth, width);
   cropHeight = Math.min(cropHeight, height);
 
-  const { x: startX, y: startY } = calculatePosition(startPosition, width, height, cropWidth, cropHeight);
-  const { x: endX, y: endY } = calculatePosition(endPosition, width, height, cropWidth, cropHeight);
+  const { x: startX, y: startY } = calculatePosition(
+    startPosition,
+    width,
+    height,
+    cropWidth,
+    cropHeight,
+  );
+  const { x: endX, y: endY } = calculatePosition(
+    endPosition,
+    width,
+    height,
+    cropWidth,
+    cropHeight,
+  );
 
   const panDirections = {
-    "left-to-right": { x: `'min(linear(t,0,${duration},${startX},${endX}),iw-${cropWidth})'`,y:startY },
-    "top-to-bottom": { x: startX, y:`'min(linear(t,0,${duration},${startY},${endY}),ih-${cropHeight})'`},
-    "right-to-left": { x: `'max(linear(t,0,${duration},${startX},${endX}),0)'`,y:startY},
-    "bottom-to-top": { x: startX, y:`'max(linear(t,0,${duration},${startY},${endY}),0)'`}
+    "left-to-right": {
+      x: `'min(linear(t,0,${duration},${startX},${endX}),iw-${cropWidth})'`,
+      y: startY,
+    },
+    "top-to-bottom": {
+      x: startX,
+      y: `'min(linear(t,0,${duration},${startY},${endY}),ih-${cropHeight})'`,
+    },
+    "right-to-left": {
+      x: `'max(linear(t,0,${duration},${startX},${endX}),0)'`,
+      y: startY,
+    },
+    "bottom-to-top": {
+      x: startX,
+      y: `'max(linear(t,0,${duration},${startY},${endY}),0)'`,
+    },
   };
 
   const position = panDirections[panDirection];
-  
+
   const ffmpegCommand = `ffmpeg -loop 1 -i "${imagePath}" -vf "crop=${cropWidth}:${cropHeight},zoompan=z='min(pzoom+0.0015,${zoomLevel})':d=1:x=${position.x}:y=${position.y}" -t ${duration} -r ${frameRate} -s ${resolution} "${outputPath}"`;
 
   try {
@@ -147,7 +193,6 @@ export async function AnimateImage({
   }
 }
 
-
 async function getImageDimensions(filePath) {
   const command = `identify -format "%wx%h" "${filePath}"`;
   const output = await execAsync(command);
@@ -155,9 +200,15 @@ async function getImageDimensions(filePath) {
   return { width, height };
 }
 
-function calculatePosition(position, imgWidth, imgHeight, cropWidth, cropHeight) {
+function calculatePosition(
+  position,
+  imgWidth,
+  imgHeight,
+  cropWidth,
+  cropHeight,
+) {
   // Calculate positions based on descriptors or numbers
-  switch(position) {
+  switch (position) {
   case "center":
     return { x: (imgWidth - cropWidth) / 2, y: (imgHeight - cropHeight) / 2 };
   case "top-left":

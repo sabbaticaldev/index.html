@@ -1,25 +1,34 @@
 import { html, T } from "helpers";
 
-
 const formattedTitle = (title) => title.toLowerCase().replace(/ /g, "-");
 
-const renderExamples = (examples) => examples.map(example => html`
-  <section id="${formattedTitle(example.title)}">
-    <uix-block>
-      <uix-text size="4">${example.title}</uix-text>
-      <p>${example.description}</p>
-    </uix-block>
-    <uix-block>${example.codeComponent}</uix-block>
-    <uix-block><uix-mockup-code code=${example.code}></uix-mockup-code></uix-block>
-  </section>
-`);
+const renderExamples = (examples) =>
+  examples.map(
+    (example) => html`
+      <section id="${formattedTitle(example.title)}">
+        <uix-block>
+          <uix-text size="4">${example.title}</uix-text>
+          <p>${example.description}</p>
+        </uix-block>
+        <uix-block>${example.codeComponent}</uix-block>
+        <uix-block
+          ><uix-mockup-code code=${example.code}></uix-mockup-code
+        ></uix-block>
+      </section>
+    `,
+  );
 
 const renderContents = (examples) => html`
   <ul>
     <li><a href="#description">Description</a></li>
     <li><a href="#properties">Properties</a></li>
     <li><a href="#examples">Examples</a></li>
-    ${examples.map(example => html`<li><a href="#${formattedTitle(example.title)}">${example.title}</a></li>`)}
+    ${examples.map(
+    (example) =>
+      html`<li>
+          <a href="#${formattedTitle(example.title)}">${example.title}</a>
+        </li>`,
+  )}
     <li><a href="#source-code">Source Code</a></li>
   </ul>
 `;
@@ -43,7 +52,15 @@ export default {
                 <p>${this.description}</p>
               </uix-block>
               <uix-block>
-                <uix-table .headers=${["Type", "Property", "Description", "Lit Property?"]} .rows=${this.tableData}></uix-table>
+                <uix-table
+                  .headers=${[
+    "Type",
+    "Property",
+    "Description",
+    "Lit Property?",
+  ]}
+                  .rows=${this.tableData}
+                ></uix-table>
               </uix-block>
               <uix-divider></uix-divider>
               ${renderExamples(this.examples)}

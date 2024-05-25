@@ -12,7 +12,7 @@ import {
   getUnoGenerator,
   layoutKit,
   navigationKit,
-  reset  
+  reset,
 } from "frontend";
 import { getUrlBlob, injectStyle, isValidApp } from "helpers";
 
@@ -29,14 +29,17 @@ export const loadFrontendFiles = (app) => {
     docsKit,
     formKit,
     layoutKit,
-    navigationKit
+    navigationKit,
   };
 
-  const loadedPackages = Object.keys(packages).reduce((acc, key) => {
-    const { views, theme: packageTheme } = packages[key];
-    theme[key] = packageTheme;
-    return { ...acc, views: { ...acc.views, ...views } };
-  }, { views: {} });
+  const loadedPackages = Object.keys(packages).reduce(
+    (acc, key) => {
+      const { views, theme: packageTheme } = packages[key];
+      theme[key] = packageTheme;
+      return { ...acc, views: { ...acc.views, ...views } };
+    },
+    { views: {} },
+  );
 
   return { ...loadedPackages, theme };
 };
@@ -51,7 +54,7 @@ export const startFrontend = ({ app, style }) => {
 const injectApp = async (app, style) => {
   if (!app) throw new Error("Error: no App found");
   if (app.title) document.title = app.title;
-  
+
   const frontendState = startFrontend({ app, style });
   if (app.init) await app.init({ style, app });
   const styleEl = document.createElement("style");
@@ -77,31 +80,38 @@ const loadApp = async ({ app, style }) => {
   const themeClasses = extractSafelistFromTheme(null, loadedApp.theme);
   const uno = getUnoGenerator(themeClasses);
   const { css } = await uno.uno.generate(themeClasses, { preflights: true });
-  
-  if (!app) return console.error("DEBUG: App not found.");  
-  if (!isValidApp(app)) return console.error("DEBUG: App is invalid.", { app });  
-  if ("serviceWorker" in navigator) {    
-    try {
-      const appData = await startBackend({ ...app, models: app.models, version: app.version });
-      console.log("Starting app ", {appData});
-      console.log("start service worker");
-      const registration = await navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
-      console.info("ServiceWorker registration successful:", registration);
-      setTimeout(async ()=> {
 
-        await injectApp(loadedApp, [reset, css, style].filter(s => s).join(" "));
+  if (!app) return console.error("DEBUG: App not found.");
+  if (!isValidApp(app)) return console.error("DEBUG: App is invalid.", { app });
+  if ("serviceWorker" in navigator) {
+    try {
+      const appData = await startBackend({
+        ...app,
+        models: app.models,
+        version: app.version,
+      });
+      console.log("Starting app ", { appData });
+      console.log("start service worker");
+      const registration = await navigator.serviceWorker.register(
+        "/service-worker.js",
+        { scope: "/" },
+      );
+      console.info("ServiceWorker registration successful:", registration);
+      setTimeout(async () => {
+        await injectApp(
+          loadedApp,
+          [reset, css, style].filter((s) => s).join(" "),
+        );
       }, 0);
-      
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error loading service-worker", { error });
     }
-      
   }
 };
 
 // Function to get the current style
-const getStyle = () => [reset, decodeURIComponent(window.location.search.substring(1))].join(" ");
+const getStyle = () =>
+  [reset, decodeURIComponent(window.location.search.substring(1))].join(" ");
 
 // Strategies for different environments
 const environmentStrategies = {
@@ -132,7 +142,7 @@ const environmentStrategies = {
       }
     });
     loadApp({ app: window.App });
-  }
+  },
 };
 
 // Bootstrap function to initialize the application based on the environment

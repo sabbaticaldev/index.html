@@ -45,7 +45,7 @@ const defineSyncProperty = (instance, key, prop) => {
 };
 
 class BaseReactiveView extends LitElement {
-  i18n = i18n;  
+  i18n = i18n;
   static formAssociated;
   static _instancesUsingSync = syncKeyMap;
 
@@ -58,7 +58,7 @@ class BaseReactiveView extends LitElement {
     const { init: componentInit, props, ...litPropsAndEvents } = this.component;
     componentInit?.(this);
 
-    Object.assign(this, litPropsAndEvents);    
+    Object.assign(this, litPropsAndEvents);
     this.theme = (element, props) => getElementTheme(element, props, this);
 
     Object.entries(props || {}).forEach(([key, prop]) => {
@@ -73,13 +73,18 @@ class BaseReactiveView extends LitElement {
     });
 
     if (typeof window !== "undefined") {
-      this.boundServiceWorkerMessageHandler = this.handleServiceWorkerMessage.bind(this);
-      navigator.serviceWorker.addEventListener("message", this.boundServiceWorkerMessageHandler);
+      this.boundServiceWorkerMessageHandler =
+        this.handleServiceWorkerMessage.bind(this);
+      navigator.serviceWorker.addEventListener(
+        "message",
+        this.boundServiceWorkerMessageHandler,
+      );
     }
   }
 
   q(element) {
-    return this._queryCache[element] ??= this.shadowRoot.querySelector(element);
+    return (this._queryCache[element] ??=
+      this.shadowRoot.querySelector(element));
   }
 
   qa(element) {
@@ -99,14 +104,18 @@ class BaseReactiveView extends LitElement {
 
   disconnectedCallback() {
     this.component.disconnectedCallback?.bind(this)();
-    BaseReactiveView._instancesUsingSync.forEach((instances) => instances.delete(this));
+    BaseReactiveView._instancesUsingSync.forEach((instances) =>
+      instances.delete(this),
+    );
     super.disconnectedCallback();
     if (typeof window !== "undefined") {
-      navigator.serviceWorker.removeEventListener("message", this.boundServiceWorkerMessageHandler);
+      navigator.serviceWorker.removeEventListener(
+        "message",
+        this.boundServiceWorkerMessageHandler,
+      );
     }
   }
 }
-
 
 const TYPE_MAP = {
   boolean: Boolean,
@@ -118,7 +127,7 @@ const TYPE_MAP = {
 };
 
 let _tailwindBase;
-const getProperties = (props) => 
+const getProperties = (props) =>
   Object.keys(props || {}).reduce((acc, key) => {
     const value = props[key];
     acc[key] = { ...value, type: TYPE_MAP[value.type] || TYPE_MAP.string };
@@ -139,7 +148,10 @@ export function defineView({ tag, component, style }) {
     _tailwindBase.replaceSync(style);
   }
 
-  ReactiveView.styles = [_tailwindBase, ...Array.isArray(component.style) ? component.style : []].filter(Boolean);
+  ReactiveView.styles = [
+    _tailwindBase,
+    ...(Array.isArray(component.style) ? component.style : []),
+  ].filter(Boolean);
 
   customElements.define(tag, ReactiveView);
   return ReactiveView;
@@ -147,8 +159,11 @@ export function defineView({ tag, component, style }) {
 
 export const definePackage = ({ pkg, style }) => {
   const views = Object.fromEntries(
-    Object.entries(pkg.views).map(([tag, component]) => [tag, defineView({ tag, component, style })])
+    Object.entries(pkg.views).map(([tag, component]) => [
+      tag,
+      defineView({ tag, component, style }),
+    ]),
   );
-  return {  ...pkg, views };
+  return { ...pkg, views };
 };
 export default BaseReactiveView;

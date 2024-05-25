@@ -11,10 +11,22 @@ const Crud = {
   render() {
     return html`
       <uix-list containerClass="justify-between" spacing="md">
-        <uix-crud-search .model=${this.model} .setRows=${this.setRows}></uix-crud-search>
-        <uix-crud-actions .model=${this.model} .rows=${this.rows} .setRows=${this.setRows} .fields=${this.fields} .ModelClass=${this.ModelClass}></uix-crud-actions>
+        <uix-crud-search
+          .model=${this.model}
+          .setRows=${this.setRows}
+        ></uix-crud-search>
+        <uix-crud-actions
+          .model=${this.model}
+          .rows=${this.rows}
+          .setRows=${this.setRows}
+          .fields=${this.fields}
+          .ModelClass=${this.ModelClass}
+        ></uix-crud-actions>
       </uix-list>
-      <uix-crud-table .rows=${this.rows} .fields=${this.fields}></uix-crud-table>
+      <uix-crud-table
+        .rows=${this.rows}
+        .fields=${this.fields}
+      ></uix-crud-table>
     `;
   },
 };
@@ -56,19 +68,35 @@ const CrudActions = {
   render() {
     return html`
       <uix-list>
-        <uix-crud-new-modal .addRow=${(newRow) => this.setRows([...this.rows, newRow])} model=${this.model} .fields=${this.fields}></uix-crud-new-modal>
-        <uix-button dropdown="hide" class=${this.theme("uix-crud-actions__button")}>
+        <uix-crud-new-modal
+          .addRow=${(newRow) => this.setRows([...this.rows, newRow])}
+          model=${this.model}
+          .fields=${this.fields}
+        ></uix-crud-new-modal>
+        <uix-button
+          dropdown="hide"
+          class=${this.theme("uix-crud-actions__button")}
+        >
           <uix-icon name="chevron-down"></uix-icon> Actions
           <ul slot="dropdown" class=${this.theme("uix-crud-actions__dropdown")}>
             <li>
-              <app-import-csv-button .setRows=${this.setRows} .rows=${this.rows} model=${this.model} .fields=${this.fields}></app-import-csv-button>
+              <app-import-csv-button
+                .setRows=${this.setRows}
+                .rows=${this.rows}
+                model=${this.model}
+                .fields=${this.fields}
+              ></app-import-csv-button>
             </li>
             <li>
-              <uix-button size="xs" variant="secondary">Export as CSV</uix-button>
+              <uix-button size="xs" variant="secondary"
+                >Export as CSV</uix-button
+              >
             </li>
           </ul>
         </uix-button>
-        <uix-button>Filter <uix-icon name="chevron-down"></uix-icon></uix-button>
+        <uix-button
+          >Filter <uix-icon name="chevron-down"></uix-icon
+        ></uix-button>
       </uix-list>
     `;
   },
@@ -80,7 +108,10 @@ const CrudTable = {
     fields: T.object(),
   },
   render() {
-    return html`<uix-table .headers=${this.fields} .rows=${this.rows}></uix-table>`;
+    return html`<uix-table
+      .headers=${this.fields}
+      .rows=${this.rows}
+    ></uix-table>`;
   },
 };
 
@@ -96,8 +127,17 @@ const CrudNewModal = {
     return html`
       <uix-modal title="Create new">
         ${icon
-    ? html`<uix-icon-button slot="button" icon=${icon} class=${this.theme("uix-crud-new-modal__icon")}></uix-icon-button>`
-    : html`<uix-button slot="button" variant="primary" class=${this.theme("uix-crud-new-modal__button")}>+ new</uix-button>`}
+    ? html`<uix-icon-button
+              slot="button"
+              icon=${icon}
+              class=${this.theme("uix-crud-new-modal__icon")}
+            ></uix-icon-button>`
+    : html`<uix-button
+              slot="button"
+              variant="primary"
+              class=${this.theme("uix-crud-new-modal__button")}
+              >+ new</uix-button
+            >`}
         <uix-form
           title="New"
           color="base"
@@ -154,7 +194,11 @@ const ImportCsvButton = {
     const { setRows, CSVRows, fields = [], CSVFields, model } = this;
     const form = this.q("uix-form");
     return html`
-      <uix-button @click=${() => this.q("#ImportCSVFileInput").click()} size="xs" variant="secondary">
+      <uix-button
+        @click=${() => this.q("#ImportCSVFileInput").click()}
+        size="xs"
+        variant="secondary"
+      >
         Import CSV
       </uix-button>
       <uix-modal>
@@ -166,7 +210,9 @@ const ImportCsvButton = {
           @change=${this.handleFileChange}
         />
         <uix-list vertical>
-          <uix-text size="lg" weight="bold">Select the matching CSV fields:</uix-text>
+          <uix-text size="lg" weight="bold"
+            >Select the matching CSV fields:</uix-text
+          >
           ${html`<uix-form
             title="New"
             color="base"
@@ -205,12 +251,14 @@ const ImportCsvButton = {
 const theme = () => ({
   "uix-crud-search-form": "flex items-center flex-grow",
   "uix-crud-search-input__container": "relative w-full",
-  "uix-crud-search-input__icon": "absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none",
-  "uix-crud-search-input": "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+  "uix-crud-search-input__icon":
+    "absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none",
+  "uix-crud-search-input":
+    "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
   "uix-crud-actions__button": "text-left",
   "uix-crud-actions__dropdown": "flex flex-col",
   "uix-crud-new-modal__icon": "",
-  "uix-crud-new-modal__button": "text-left"
+  "uix-crud-new-modal__button": "text-left",
 });
 
 export default {

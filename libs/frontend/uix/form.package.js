@@ -42,7 +42,15 @@ const renderField = (field, host) => {
     return html`
       <uix-form-control
         .label=${field.label || ""}
-        .labelAlt=${llm ? [html`<uix-icon class="cursor-pointer" name="brush-outline" @click=${() => host.wizardForm(field.name)}></uix-icon>`] : field.labelAlt || []}
+        .labelAlt=${llm
+    ? [
+      html`<uix-icon
+                class="cursor-pointer"
+                name="brush-outline"
+                @click=${() => host.wizardForm(field.name)}
+              ></uix-icon>`,
+    ]
+    : field.labelAlt || []}
       >
         ${fieldComponent}
       </uix-form-control>
@@ -70,7 +78,11 @@ const FormControls = (element) => ({
     formData.append(this.$input.name, value);
     setTimeout(() => {
       this._internals.setFormValue(formData);
-      this._internals.setValidity(this.$input.validity, this.$input.validationMessage, this.$input);
+      this._internals.setValidity(
+        this.$input.validity,
+        this.$input.validationMessage,
+        this.$input,
+      );
     }, 0);
   },
   formAssociated: true,
@@ -79,7 +91,11 @@ const FormControls = (element) => ({
     this._internals = this.attachInternals();
     this.$input = this.q(element || "input");
     if (this.$input) {
-      this._internals.setValidity(this.$input.validity, this.$input.validationMessage, this.$input);
+      this._internals.setValidity(
+        this.$input.validity,
+        this.$input.validationMessage,
+        this.$input,
+      );
     }
   },
   formResetCallback() {
@@ -107,8 +123,12 @@ const Form = {
     return this.$form;
   },
   validate() {
-    const formControls = this.getForm().querySelectorAll("uix-input, uix-select, uix-textarea, uix-file-input");
-    return Array.from(formControls).every(control => control.reportValidity());
+    const formControls = this.getForm().querySelectorAll(
+      "uix-input, uix-select, uix-textarea, uix-file-input",
+    );
+    return Array.from(formControls).every((control) =>
+      control.reportValidity(),
+    );
   },
   submit() {
     if (this.validate()) {
@@ -116,8 +136,10 @@ const Form = {
     }
   },
   reset() {
-    const formControls = this.getForm().querySelectorAll("uix-input, uix-select, uix-textarea, uix-file-input");
-    formControls.forEach(control => control.formResetCallback?.());
+    const formControls = this.getForm().querySelectorAll(
+      "uix-input, uix-select, uix-textarea, uix-file-input",
+    );
+    formControls.forEach((control) => control.formResetCallback?.());
   },
   formData() {
     const formData = new FormData(this.getForm());
@@ -158,14 +180,19 @@ const Form = {
       const response = await this.llm.send(prompt);
       const obj = JSON.parse(response);
       const form = this.getForm();
-      Object.keys(obj).forEach(key => form.elements[key].setValue(obj[key]));
+      Object.keys(obj).forEach((key) => form.elements[key].setValue(obj[key]));
     }
   },
   renderField(row) {
     if (Array.isArray(row)) {
       return html`
         <uix-list>
-          ${row.map(field => html`<uix-block spacing="0" class="w-full">${renderField(field, this)}</uix-block>`)}
+          ${row.map(
+    (field) =>
+      html`<uix-block spacing="0" class="w-full"
+                >${renderField(field, this)}</uix-block
+              >`,
+  )}
         </uix-list>
       `;
     } else {
@@ -177,14 +204,28 @@ const Form = {
     return html`
       <form class="m-0" method=${method} action=${endpoint}>
         <uix-list gap="lg" vertical>
-          ${fields.map(field => renderField(field))}
+          ${fields.map((field) => renderField(field))}
         </uix-list>
         <uix-list>
-          ${actions ? html`
-            <uix-list responsive gap="md" class=${this.theme("uix-form-actions")}>
-              ${actions.map(action => html`<uix-input type=${action.type} @click=${action.click} class=${action.class} value=${action.value}></uix-input>`)}
-            </uix-list>
-          ` : ""}
+          ${actions
+    ? html`
+                <uix-list
+                  responsive
+                  gap="md"
+                  class=${this.theme("uix-form-actions")}
+                >
+                  ${actions.map(
+    (action) =>
+      html`<uix-input
+                        type=${action.type}
+                        @click=${action.click}
+                        class=${action.class}
+                        value=${action.value}
+                      ></uix-input>`,
+  )}
+                </uix-list>
+              `
+    : ""}
         </uix-list>
       </form>
     `;
@@ -200,9 +241,21 @@ const FormControl = {
     const { label, labelAlt } = this;
     return html`
       <div class=${this.theme("uix-form-control")}>
-        ${label ? html`<label class=${this.theme("uix-form-control__label")}><span class=${this.theme("uix-form-control__label-text")}>${label}</span></label>` : ""}
+        ${label
+    ? html`<label class=${this.theme("uix-form-control__label")}
+              ><span class=${this.theme("uix-form-control__label-text")}
+                >${label}</span
+              ></label
+            >`
+    : ""}
         <slot></slot>
-        ${labelAlt && labelAlt.length ? html`<label class=${this.theme("uix-form-control__label")}><span class=${this.theme("uix-form-control__label-alt")}>${labelAlt}</span></label>` : ""}
+        ${labelAlt && labelAlt.length
+    ? html`<label class=${this.theme("uix-form-control__label")}
+              ><span class=${this.theme("uix-form-control__label-alt")}
+                >${labelAlt}</span
+              ></label
+            >`
+    : ""}
       </div>
     `;
   },
@@ -217,7 +270,19 @@ const Input = {
     disabled: T.boolean(),
     regex: T.string(),
     required: T.boolean(),
-    type: T.string({ defaultValue: "text", enum: ["text", "password", "email", "number", "decimal", "search", "tel", "url"] }),
+    type: T.string({
+      defaultValue: "text",
+      enum: [
+        "text",
+        "password",
+        "email",
+        "number",
+        "decimal",
+        "search",
+        "tel",
+        "url",
+      ],
+    }),
     maxLength: T.number(),
     variant: T.string({ defaultValue: "default" }),
     size: T.string({ defaultValue: "md" }),
@@ -225,7 +290,18 @@ const Input = {
   },
   ...FormControls("input"),
   render() {
-    const { name, autofocus, value, change, placeholder, disabled, required, regex, type, keydown } = this;
+    const {
+      name,
+      autofocus,
+      value,
+      change,
+      placeholder,
+      disabled,
+      required,
+      regex,
+      type,
+      keydown,
+    } = this;
     return html`
       <div class="relative">
         <input
@@ -280,7 +356,9 @@ const Select = {
         @change=${this.change}
         class=${this.theme("uix-select")}
       >
-        ${(options && options.map(option => html` <option>${option}</option> `)) || ""}
+        ${(options &&
+          options.map((option) => html` <option>${option}</option> `)) ||
+        ""}
         <slot></slot>
       </select>
     `;
@@ -303,7 +381,16 @@ const Textarea = {
   },
   ...FormControls("textarea"),
   render() {
-    const { autofocus, value, name, placeholder, disabled, rows, required, keydown } = this;
+    const {
+      autofocus,
+      value,
+      name,
+      placeholder,
+      disabled,
+      rows,
+      required,
+      keydown,
+    } = this;
     return html`
       <textarea
         class=${this.theme("uix-textarea")}
@@ -316,7 +403,8 @@ const Textarea = {
         @input=${this.change}
         @keydown=${keydown}
       >
-${value}</textarea>
+${value}</textarea
+      >
     `;
   },
 };
@@ -331,21 +419,20 @@ const Range = {
   ...FormControls("range"),
   render() {
     const { theme, min, max, value } = this;
-    return html`
-      <div class=${theme("uix-range")}>
-        <input
-          class=${theme("uix-range__input")}
-          type="range"
-          @input=${this.change}
-          min=${min}
-          max=${max}
-          value=${value}
-        />
-        <div class=${theme("uix-range__labels")}>
-          <span class="text-sm text-gray-600">Squared</span>
-          <span class="text-sm text-gray-600">Rounded</span>
-        </div>
-      </div>`;
+    return html` <div class=${theme("uix-range")}>
+      <input
+        class=${theme("uix-range__input")}
+        type="range"
+        @input=${this.change}
+        min=${min}
+        max=${max}
+        value=${value}
+      />
+      <div class=${theme("uix-range__labels")}>
+        <span class="text-sm text-gray-600">Squared</span>
+        <span class="text-sm text-gray-600">Rounded</span>
+      </div>
+    </div>`;
   },
 };
 
@@ -395,7 +482,10 @@ const IconButton = {
   render() {
     const { icon, alt } = this;
     return html`<button alt=${alt} class=${this.theme("uix-icon-button")}>
-      <uix-icon class=${this.theme("uix-icon-button__icon")} name=${icon}></uix-icon>
+      <uix-icon
+        class=${this.theme("uix-icon-button__icon")}
+        name=${icon}
+      ></uix-icon>
     </button>`;
   },
 };
@@ -412,23 +502,36 @@ const Button = {
   render() {
     const { type, click, href, dropdown } = this;
     const btnClass = this.theme("uix-button");
-    
+
     if (dropdown) {
       return html` <details class="text-left" ?open=${dropdown === "open"}>
-        ${(href && html`<summary class=${btnClass}><a href=${href}><slot></slot></a></summary>`) || ""}
-        ${(!href && html`<summary class=${btnClass}><slot></slot></summary>`) || ""}
+        ${(href &&
+          html`<summary class=${btnClass}>
+            <a href=${href}><slot></slot></a>
+          </summary>`) ||
+        ""}
+        ${(!href && html`<summary class=${btnClass}><slot></slot></summary>`) ||
+        ""}
         <slot name="dropdown"></slot>
       </details>`;
     }
 
     return href
       ? html`
-          <a class=${btnClass} href=${href} @click=${(event) => click?.({ event, props: this })}>
+          <a
+            class=${btnClass}
+            href=${href}
+            @click=${(event) => click?.({ event, props: this })}
+          >
             <slot></slot>
           </a>
         `
       : html`
-          <button type=${type || "button"} class=${btnClass} @click=${(event) => click?.({ event, props: this })}>
+          <button
+            type=${type || "button"}
+            class=${btnClass}
+            @click=${(event) => click?.({ event, props: this })}
+          >
             <slot></slot>
           </button>
         `;
@@ -441,36 +544,45 @@ const ColorPicker = {
     colors: T.array({ defaultValue: [] }),
     colorKey: T.string(),
     updateTheme: T.function(),
-    userTheme: T.object()
+    userTheme: T.object(),
   },
   render: function () {
     const { selectedColor, colors, colorKey, updateTheme, userTheme } = this;
-    
+
     return html`
       <div class=${this.theme("uix-color-picker")}>
         ${colors.map(
     (color) =>
       html`
-              <div class=${this.theme("uix-color-picker__color-block", { selectedColor })}>
-                <span
-                  @click=${() => updateTheme({
-    ...userTheme,
-    colors: { ...userTheme.colors, [colorKey]: color },
+              <div
+                class=${this.theme("uix-color-picker__color-block", {
+    selectedColor,
   })}
+              >
+                <span
+                  @click=${() =>
+    updateTheme({
+      ...userTheme,
+      colors: { ...userTheme.colors, [colorKey]: color },
+    })}
                   class=${this.theme("uix-color-picker__color", { color })}
                 ></span>
                 <div class=${this.theme("uix-color-picker__shades-container")}>
                   ${Array.from({ length: 9 }, (_, i) => i + 1).map(
     (shade) => html`
                       <span
-                        @click=${() => updateTheme({
-    ...userTheme,
-    colors: {
-      ...userTheme.colors,
-      [colorKey]: color,
-    },
+                        @click=${() =>
+    updateTheme({
+      ...userTheme,
+      colors: {
+        ...userTheme.colors,
+        [colorKey]: color,
+      },
+    })}
+                        class=${this.theme("uix-color-picker__shade", {
+    color,
+    shade,
   })}
-                        class=${this.theme("uix-color-picker__shade", { color, shade })}
                       ></span>
                     `,
   )}
@@ -482,68 +594,115 @@ const ColorPicker = {
     `;
   },
 };
-const theme = (userTheme, props) => !console.log({userTheme, props}) && ({
-  "uix-form-control": "form-control w-full",
-  "uix-form-control__label": "label",
-  "uix-form-control__label-text": "label-text",
-  "uix-form-control__label-alt": "label-text-alt",
-  "uix-input": {
-    _base: props.cls(["block w-full appearance-none focus:outline-none focus:ring-0", userTheme.defaultTextColor, userTheme.borderStyles, userTheme.borderWidth, props.borderRadius]),
-    active: {
-      true: props.cls([userTheme.activeTextColor, "border-blue-500"]),
-      false: props.cls([userTheme.defaultTextColor, userTheme.hoverBorder])
+const theme = (userTheme, props) =>
+  !console.log({ userTheme, props }) && {
+    "uix-form-control": "form-control w-full",
+    "uix-form-control__label": "label",
+    "uix-form-control__label-text": "label-text",
+    "uix-form-control__label-alt": "label-text-alt",
+    "uix-input": {
+      _base: props.cls([
+        "block w-full appearance-none focus:outline-none focus:ring-0",
+        userTheme.defaultTextColor,
+        userTheme.borderStyles,
+        userTheme.borderWidth,
+        props.borderRadius,
+      ]),
+      active: {
+        true: props.cls([userTheme.activeTextColor, "border-blue-500"]),
+        false: props.cls([userTheme.defaultTextColor, userTheme.hoverBorder]),
+      },
+      variant: props.BaseVariants,
+      size: [props.SpacingSizes, props.TextSizes],
     },
-    variant: props.BaseVariants,
-    size: [props.SpacingSizes, props.TextSizes]
-  },
-  "uix-input__label": {
-    variant: props.BaseVariants,
-    _base: props.cls(["absolute text-sm duration-300 transform -translate-y-4 scale-75 top-0.5 z-10 origin-[0] left-2.5",
-      "peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"])
-  },
-  "uix-select": {
-    _base: props.cls(["block w-full appearance-none focus:outline-none focus:ring-0", userTheme.defaultTextColor, userTheme.borderStyles, userTheme.borderWidth, props.borderRadius]),
-    active: {
-      true: props.cls([userTheme.activeTextColor, "border-blue-500"]),
-      false: props.cls([userTheme.defaultTextColor, userTheme.hoverBorder])
+    "uix-input__label": {
+      variant: props.BaseVariants,
+      _base: props.cls([
+        "absolute text-sm duration-300 transform -translate-y-4 scale-75 top-0.5 z-10 origin-[0] left-2.5",
+        "peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4",
+      ]),
     },
-    variant: props.BaseVariants,
-    size: [props.SpacingSizes, props.TextSizes]
-  },
-  "uix-textarea": {
-    _base: props.cls(["block w-full appearance-none focus:outline-none focus:ring-0", userTheme.defaultTextColor, userTheme.borderStyles, userTheme.borderWidth, props.borderRadius]),
-    active: {
-      true: props.cls([userTheme.activeTextColor, "border-blue-500"]),
-      false: props.cls([userTheme.defaultTextColor, userTheme.hoverBorder])
+    "uix-select": {
+      _base: props.cls([
+        "block w-full appearance-none focus:outline-none focus:ring-0",
+        userTheme.defaultTextColor,
+        userTheme.borderStyles,
+        userTheme.borderWidth,
+        props.borderRadius,
+      ]),
+      active: {
+        true: props.cls([userTheme.activeTextColor, "border-blue-500"]),
+        false: props.cls([userTheme.defaultTextColor, userTheme.hoverBorder]),
+      },
+      variant: props.BaseVariants,
+      size: [props.SpacingSizes, props.TextSizes],
     },
-    variant: props.BaseVariants,
-    size: [props.SpacingSizes, props.TextSizes]
-  },
-  "uix-range": {
-    _base: props.cls(["w-full"]),
-    variant: props.BaseVariants,
-    size: [props.SpacingSizes, props.TextSizes]
-  },
-  "uix-range__input": "w-full",
-  "uix-checkbox": {
-    _base: props.cls(["before:content[''] peer before:transition-opacity hover:before:opacity-10 checked:opacity-100 opacity-30", props.ClipRoundedClasses[userTheme.borderRadius]]),
-    variant: props.ReverseVariants,
-    size: props.DimensionSizes
-  },
-  "uix-icon-button": { _base: props.cls(["transition ease-in-out duration-200 mx-auto", props.borderRadius]), variant: props.BaseVariants },
-  "uix-icon-button__icon": { _base: props.cls(["mx-auto"]), size: props.TextSizes },
-  "uix-button": {
-    _base: props.cls(["cursor-pointer transition ease-in-out duration-200 gap-2 w-full", userTheme.flexCenter, userTheme.fontStyles, props.borderRadius, "text-" + userTheme.colors.button]),
-    variant: props.ReverseVariants,
-    size: [props.ButtonSizes, props.TextSizes]
-  },
-  "uix-color-picker": "grid grid-cols-14",
-  "uix-color-picker__color-block": ({ selectedColor }) => `group relative w-6 h-6 cursor-pointer ${selectedColor ? "scale-110" : "hover:scale-110 transform transition ease-out duration-150"}`,
-  "uix-color-picker__color": ({ color }) => `w-6 h-6 block ${props.generateColorClass(color, 500)}`,
-  "uix-color-picker__color_options": props.ColorPickerClasses,
-  "uix-color-picker__shades-container": "absolute left-0 mt-1 opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto",
-  "uix-color-picker__shade": ({ color, shade }) => `w-6 h-6 block ${props.generateColorClass(color, shade * 100)}`,
-});
+    "uix-textarea": {
+      _base: props.cls([
+        "block w-full appearance-none focus:outline-none focus:ring-0",
+        userTheme.defaultTextColor,
+        userTheme.borderStyles,
+        userTheme.borderWidth,
+        props.borderRadius,
+      ]),
+      active: {
+        true: props.cls([userTheme.activeTextColor, "border-blue-500"]),
+        false: props.cls([userTheme.defaultTextColor, userTheme.hoverBorder]),
+      },
+      variant: props.BaseVariants,
+      size: [props.SpacingSizes, props.TextSizes],
+    },
+    "uix-range": {
+      _base: props.cls(["w-full"]),
+      variant: props.BaseVariants,
+      size: [props.SpacingSizes, props.TextSizes],
+    },
+    "uix-range__input": "w-full",
+    "uix-checkbox": {
+      _base: props.cls([
+        "before:content[''] peer before:transition-opacity hover:before:opacity-10 checked:opacity-100 opacity-30",
+        props.ClipRoundedClasses[userTheme.borderRadius],
+      ]),
+      variant: props.ReverseVariants,
+      size: props.DimensionSizes,
+    },
+    "uix-icon-button": {
+      _base: props.cls([
+        "transition ease-in-out duration-200 mx-auto",
+        props.borderRadius,
+      ]),
+      variant: props.BaseVariants,
+    },
+    "uix-icon-button__icon": {
+      _base: props.cls(["mx-auto"]),
+      size: props.TextSizes,
+    },
+    "uix-button": {
+      _base: props.cls([
+        "cursor-pointer transition ease-in-out duration-200 gap-2 w-full",
+        userTheme.flexCenter,
+        userTheme.fontStyles,
+        props.borderRadius,
+        "text-" + userTheme.colors.button,
+      ]),
+      variant: props.ReverseVariants,
+      size: [props.ButtonSizes, props.TextSizes],
+    },
+    "uix-color-picker": "grid grid-cols-14",
+    "uix-color-picker__color-block": ({ selectedColor }) =>
+      `group relative w-6 h-6 cursor-pointer ${
+        selectedColor
+          ? "scale-110"
+          : "hover:scale-110 transform transition ease-out duration-150"
+      }`,
+    "uix-color-picker__color": ({ color }) =>
+      `w-6 h-6 block ${props.generateColorClass(color, 500)}`,
+    "uix-color-picker__color_options": props.ColorPickerClasses,
+    "uix-color-picker__shades-container":
+      "absolute left-0 mt-1 opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto",
+    "uix-color-picker__shade": ({ color, shade }) =>
+      `w-6 h-6 block ${props.generateColorClass(color, shade * 100)}`,
+  };
 
 export default {
   i18n: {},

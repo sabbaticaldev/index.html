@@ -6,7 +6,7 @@ let models = {};
 export const events = {
   INIT_BACKEND: async (data, { source }) => {
     source.postMessage({
-      type: "BACKEND_INITIALIZED"
+      type: "BACKEND_INITIALIZED",
     });
   },
   PAGE_BUILDER_UPDATE_PAGE: async (data, { P2P }) => {
@@ -46,7 +46,7 @@ export const workspaceModelDefinition = {
     primary: true,
   },
   models: {
-    type: "object",    
+    type: "object",
   },
   version: {
     type: "number",
@@ -56,17 +56,21 @@ export const workspaceModelDefinition = {
   },
 };
 
-const initializeDatabase = async ({ dbName = "default", models = {}, version = 1 }) => {
+const initializeDatabase = async ({
+  dbName = "default",
+  models = {},
+  version = 1,
+}) => {
   const stores = await createDatabase(dbName, Object.keys(models), version);
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
-  console.log("APP STATE ",{models});
+  console.log("APP STATE ", { models });
 };
 
-const importData = async ({app, data = {}}) => {
+const importData = async ({ app, data = {} }) => {
   const dataArray = Object.entries(data);
-  if(dataArray.length) {
-  // Check if the data has already been migrated
+  if (dataArray.length) {
+    // Check if the data has already been migrated
     const migrationTimestamp = app?.migrationTimestamp || 0;
 
     // If no migration timestamp or it is zero, perform the data import
