@@ -9,14 +9,14 @@ import { checkAndExecute, executeTasks } from "../utils.js";
 const execAsync = util.promisify(exec);
 const deps = {};
 
-function readDirectory(directory) {
+function readDirectory(source) {
   const files = {};
 
-  function traverseDirectory(currentPath) {
-    const entries = fs.readdirSync(currentPath, { withFileTypes: true });
+  function traverseDirectory(directory) {
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
 
     for (const entry of entries) {
-      const fullPath = path.join(currentPath, entry.name);
+      const fullPath = path.join(directory, entry.name);
 
       if (entry.isDirectory()) {
         traverseDirectory(fullPath);
@@ -27,16 +27,20 @@ function readDirectory(directory) {
     }
   }
 
-  traverseDirectory(directory);
+  if (Array.isArray(source)) {
+    source.forEach(traverseDirectory);
+  } else {
+    traverseDirectory(source);
+  }
+
   return files;
 }
 
 async function runESLintFix(files) {
   const fileArgs = files.join(" ");
   try {
-    const { stdout, stderr } = await execAsync(`npx eslint --fix ${fileArgs}`);
-    console.log("ESLint output:", stdout);
-    console.error("ESLint errors:", stderr);
+    await execAsync(`npx eslint --fix ${fileArgs}`);
+    console.log("EsLint succesful");
   } catch (error) {
     console.error("ESLint failed:", error);
   }
@@ -137,6 +141,7 @@ export async function refactorFolder(options) {
         );
 
         const commitMessage = response.commitMessage;
+        console.log({ commitMessage }, fs.existsSync(".git"));
         if (commitMessage && fs.existsSync(".git")) {
           fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
           console.log(`Commit message saved at ${commitMessageFilePath}`);

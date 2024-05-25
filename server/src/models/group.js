@@ -1,4 +1,3 @@
-import fs from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import ogs from "open-graph-scraper";
 import path from "path";
@@ -6,7 +5,7 @@ import path from "path";
 import LLM from "../services/llm/index.js";
 import { processGroupInfo } from "../services/llm/tasks/whatsapp.js";
 import { connectToWhatsApp } from "../services/whatsapp/index.js";
-import { executeTasks, sleep } from "../utils.js";
+import { executeTasks } from "../utils.js";
 
 const DATA_FOLDER = "./app/apps/allfortraveler/data/";
 
@@ -78,7 +77,7 @@ const processGroupInvite = async (url) => {
       operation: async () => {
         const llm = LLM("bedrock");
         const groupInfo = await processGroupInfo(llm, deps);
-        fs.writeFileSync(llmPath, JSON.stringify(groupInfo));
+        writeFile(llmPath, JSON.stringify(groupInfo));
         return groupInfo;
       },
     },
@@ -145,11 +144,11 @@ export const fetchGroup = async (url) => {
 
     return groupData
       ? {
-        ...groupData,
-        name: ogResult.ogTitle,
-        image: ogResult?.ogImage?.[0]?.url,
-        url,
-      }
+          ...groupData,
+          name: ogResult.ogTitle,
+          image: ogResult?.ogImage?.[0]?.url,
+          url,
+        }
       : {};
   } catch (error) {
     console.error("Error fetching group data:", error);
@@ -164,19 +163,18 @@ export const importGroups = async ({ delay, max, datetime = null }) => {
 
   const groups = datetime
     ? await Promise.all(
-      (await fs.readdir(groupsPath))
-        .slice(0, max)
-        .map((file) =>
-          readFile(path.join(groupsPath, file), "utf8").then(JSON.parse),
+        (await fs.readdir(groupsPath))
+          .slice(0, max)
+          .map((file) =>
+            readFile(path.join(groupsPath, file), "utf8").then(JSON.parse),
         ),
-    )
+      )
     : JSON.parse(await readFile(groupsPath, "utf8")).slice(0, max);
 
   const importedGroups = [];
 
   for (const group of groups) {
     const response = await fetchGroup(group.url);
-    await sleep(delay);
 
     if (response?.status !== "BAD_REQUEST") {
       console.log(`Creating group for URL: ${group.url}`);

@@ -9,12 +9,16 @@ const TAGS_PATHS = {
 
 export async function importTags() {
   try {
-    const tagPromises = Object.entries(TAGS_PATHS).map(async ([key, path]) => {
-      const tags = JSON.parse(await readFile(path, "utf8"));
-      return tags.map((tag) => ({ id: tag, [key]: true }));
-    });
-
-    const allTags = (await Promise.all(tagPromises)).flat();
+    const allTags = (
+      await Promise.all(
+        Object.entries(TAGS_PATHS).map(async ([key, path]) =>
+          JSON.parse(await readFile(path, "utf8")).map((tag) => ({
+            id: tag,
+            [key]: true,
+          })),
+        ),
+      )
+    ).flat();
 
     return allTags;
   } catch (error) {

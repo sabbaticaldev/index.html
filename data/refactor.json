@@ -1,6 +1,6 @@
 {
-  "contextSrc": "server/src/models",
-  "refactoringFiles": "group.js and tag.js",
-  "taskPrompt": "Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable",
+  "contextSrc": ["libs/frontend", "app/apps/design"],
+  "refactoringFiles": "layout.package.js",
+  "taskPrompt": "There are some components in the apps/design/sections that doesn't exist yet in layout.package.js. Let's create them. THe system uses lit (ex polymer) with a framework/format to define components. Follow the same format. Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable",
   "responseFormat": "xml"
 }
