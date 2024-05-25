@@ -54,7 +54,7 @@ export async function refactorFolder(options) {
     .toLowerCase()}`;
   const contextFilePath = path.join(outputDirectory, "context.json");
   const promptFilePath = path.join(outputDirectory, "prompt.txt");
-
+  const commitMessageFilePath = path.join(".git", "COMMIT_EDITMSG");
   fs.mkdirSync(outputDirectory, { recursive: true });
 
   const tasks = [
@@ -135,6 +135,12 @@ export async function refactorFolder(options) {
           path.join(outputDirectory, "llmResponse.json"),
           JSON.stringify(response, null, 2),
         );
+
+        const commitMessage = response.commitMessage;
+        if (commitMessage && fs.existsSync(".git")) {
+          fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
+          console.log(`Commit message saved at ${commitMessageFilePath}`);
+        }
         return response?.files || [];
       },
     },

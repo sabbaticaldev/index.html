@@ -6,8 +6,8 @@
   "module": "./src/index",
   "type": "module",
   "scripts": {
-    "start": "node ./src/index.js",
-    "task": "node ./src/tasks/index.js"
+    "server": "node ./server/src/index.js",
+    "task": "node ./server/src/tasks/index.js"
   },
   "keywords": [
     "instagram",

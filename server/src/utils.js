@@ -103,7 +103,7 @@ export const executeTasks = async ({ tasks, prompt, deps = {} }) => {
   } catch (error) {
     console.error({ error });
   } finally {
-    rl.close();
+    process.exit(0);
   }
 };
 

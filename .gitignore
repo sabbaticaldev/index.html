@@ -15,3 +15,7 @@ baileys_store.json
 yarn-error.log
 app/apps/allfortraveler/data/
 server/.baileys
+auth_info_baileys/*
+downloads/*
+code/
+.env

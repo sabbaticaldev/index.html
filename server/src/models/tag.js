@@ -1,34 +1,24 @@
-
 import { readFile } from "fs/promises";
+
 const DATA_FOLDER = "./app/apps/allfortraveler/data/";
-const CITIES_JSON = DATA_FOLDER + "tags/cities.json";
-const COUNTRIES_JSON = DATA_FOLDER + "tags/countries.json";
-const TAGS_JSON = DATA_FOLDER + "tags/tags.json";
+const TAGS_PATHS = {
+  cities: DATA_FOLDER + "tags/cities.json",
+  countries: DATA_FOLDER + "tags/countries.json",
+  tags: DATA_FOLDER + "tags/tags.json",
+};
+
 export async function importTags() {
   try {
-    const cities = JSON.parse(await readFile(CITIES_JSON, "utf8"));
-    const countries = JSON.parse(await readFile(COUNTRIES_JSON, "utf8"));
-    const tags = JSON.parse(await readFile(TAGS_JSON, "utf8"));
-    const allTags = [];
-    
-    // Process cities
-    cities.forEach(city => {
-      allTags.push({ id: city, city: true });
+    const tagPromises = Object.entries(TAGS_PATHS).map(async ([key, path]) => {
+      const tags = JSON.parse(await readFile(path, "utf8"));
+      return tags.map((tag) => ({ id: tag, [key]: true }));
     });
-    
-    // Process countries
-    countries.forEach(country => {
-      allTags.push({ id: country, country: true });
-    });
-    
-    // Process other tags
-    tags.forEach(tag => {
-      allTags.push({ id: tag });
-    });
-    
-    return allTags; // Return the array with all tags
+
+    const allTags = (await Promise.all(tagPromises)).flat();
+
+    return allTags;
   } catch (error) {
     console.error("Error importing tags:", error);
-    throw error; // Rethrow error for handling in Express
+    throw error;
   }
 }

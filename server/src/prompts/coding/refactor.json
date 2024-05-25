@@ -8,7 +8,8 @@
     "taskPrompt": "Specific instructions on what should be done with the code."
   },
   "outputParams": {
-    "files": "Array of files with refactored code. The file contain a filepath (full relative path and filename). and content."
+    "files": "Array of files with refactored code. The file contain a filepath (full relative path and filename). and content.",
+    "commitMessage": "Description of what changed for git commit"
   },
   "exampleInput": {
     "contextSrc": {
@@ -30,6 +31,7 @@
         "filepath": "src/models.js",
         "content": "<html>Refactored file content here</html>"
       }
-    ]
+    ],
+    "commitMessage": "Refactored src/models.js and utils.js, fixed X, Y, added Z"
   }
 }
