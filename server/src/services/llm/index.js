@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 import settings from "../../settings.js";
-import { convertToXML, parseXML } from "../../utils.js";
+import { generateXMLFormat, parseXML } from "../../utils.js";
 import bedrock from "./engines/bedrock.js";
 
 const LLM = (() => {
@@ -38,10 +38,7 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   const templateData = loadTemplate(templateFile);
   let prompt = templateData.prompt;
   const inputParameters = Object.keys(templateData.inputParams);
-
-  // Generate expected format based on responseFormat
-  const generatedFormat = generateExpectedFormat(templateData.exampleOutput, responseFormat);
-  prompt = prompt.replace("{expectedFormat}", generatedFormat);
+  const rootElement = Object.keys(templateData.outputParams)[0];
 
   // Replace placeholders with actual values
   inputParameters.forEach((param) => {
@@ -51,23 +48,15 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   });
 
   // Generate example input and output
-  const exampleInput = generateExample(templateData.exampleInput, responseFormat, "files");
-  const exampleOutput = generateExample(templateData.exampleOutput, responseFormat, "files");
+  const exampleInput = generateExample(templateData.exampleInput);
+  const exampleOutput = generateExample(templateData.exampleOutput, responseFormat, rootElement);
   prompt = prompt.replace("{example}", `Input:\n${exampleInput}\nOutput:\n${exampleOutput}`);
-  console.log({prompt});
+  console.log({exampleInput, exampleOutput});
+  //console.log({prompt});
   return prompt;
 };
 
-const generateExpectedFormat = (exampleOutput, responseFormat) => {
-  if (responseFormat === "json") {
-    return JSON.stringify(exampleOutput, null, 2);
-  } else if (responseFormat === "xml") {
-    return generateXMLFormat(exampleOutput, "files");
-  }
-  return "";
-};
-
-const generateExample = (exampleData, responseFormat, rootElement) => {
+const generateExample = (exampleData, responseFormat = "json", rootElement) => {
   if (responseFormat === "json") {
     return JSON.stringify(exampleData, null, 2);
   } else if (responseFormat === "xml") {
@@ -76,12 +65,6 @@ const generateExample = (exampleData, responseFormat, rootElement) => {
   return "";
 };
 
-const generateXMLFormat = (exampleOutput, rootElement = "root") => {
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<${rootElement}>
-  ${convertToXML(exampleOutput)}
-</${rootElement}>`;
-};
 const cleanLLMResponse = (response, format) => {
   console.log({response, format});
   if (format === "json") {
@@ -104,4 +87,4 @@ const cleanLLMResponse = (response, format) => {
   }
 };
 
-export { cleanLLMResponse,generatePrompt, LLM, loadTemplate };
+export { cleanLLMResponse, generatePrompt, LLM, loadTemplate };

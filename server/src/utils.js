@@ -1,7 +1,6 @@
-
 import fs from "fs";
 import readline from "readline";
-import { Builder,parseString } from "xml2js";
+import { parseString } from "xml2js";
 
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -16,7 +15,7 @@ const promptUser = question => new Promise(resolve => {
   });
 });
 
-const checkAndExecute = async ({ description, filePath, operation, prompt }) => {
+export const checkAndExecute = async ({ description, filePath, operation, prompt }) => {
   let attempt = 0;
   while (true) {
     if (prompt && !filePath) {
@@ -26,7 +25,7 @@ const checkAndExecute = async ({ description, filePath, operation, prompt }) => 
         return;
       }
     }
-    if (fs.existsSync(filePath)) {
+    if (filePath && fs.existsSync(filePath)) {
       if (prompt && !await promptUser(`File ${filePath} exists. Redo ${description}? (yes/no): `)) {
         return filePath.endsWith(".json") ? JSON.parse(fs.readFileSync(filePath, "utf8")) : filePath;
       }
@@ -51,7 +50,27 @@ export const executeTasks = async ({ tasks, prompt, deps = {} }) => {
       if (task.dependencies) {
         await Promise.all(task.dependencies.map(dep => deps[dep]));
       }
-      const result = await checkAndExecute({ ...task, prompt });
+
+      const result = await checkAndExecute({
+        ...task,
+        prompt,
+        operation: async () => {
+          const { filePath } = task;
+          let files;
+          if (Array.isArray(filePath)) {
+            files = filePath;
+          } 
+          else if (typeof filePath === "function") {
+            files = filePath();
+          }
+          if(files)
+            return await Promise.all(files.map((filepath, index) => task.operation({ filepath, index })));
+          else {
+            return await task.operation({ filepath: task.filePath });
+          }
+        }
+      });
+
       if (task.key) {
         deps[task.key] = result;
       }
@@ -65,42 +84,66 @@ export const executeTasks = async ({ tasks, prompt, deps = {} }) => {
 
 export const fetchMapImage = async mapUrl => {
   const response = await fetch(mapUrl);
-  console.log({ mapUrl });
   return response.arrayBuffer();
 };
 
 export const parseXML = (xml) => {
-  console.log(JSON.stringify(xml));
   let result;
-  parseString(xml, { explicitArray: false }, (err, parsedResult) => {
+  parseString(xml, { explicitArray: false, mergeAttrs: true, explicitRoot: false }, (err, parsedResult) => {
     if (err) {
-      console.log({err});
       throw new Error("Failed to parse XML");
     }
-    result = parsedResult;
+
+    // Transform <item> arrays back into proper arrays
+    const transform = (obj) => {
+      if (typeof obj !== "object" || obj === null) return obj;
+      if (Array.isArray(obj)) return obj.map(transform);
+      return Object.entries(obj).reduce((acc, [key, value]) => {
+        if (key === "item" && Array.isArray(value)) {
+          acc = value.map(transform);
+        } else {
+          acc[key] = transform(value);
+        }
+        return acc;
+      }, {});
+    };
+
+    result = transform(parsedResult);
   });
   return result;
 };
 
-const escapeXML = (str) => {
-  if (typeof str === "string") {
-    return `<![CDATA[${str}]]>`;
-  }
-  return str;
-};
+export const generateXMLFormat = (exampleOutput, rootElement = "files") => {
+  const needsCDATA = (str) => {
+    const pattern = /[^\w\s.,-]/;  // Regex to check for non-alphanumeric characters and some allowed symbols
+    return pattern.test(str);
+  };
 
-export const convertToXML = (obj) => {
-  if (typeof obj !== "object" || obj === null) {
-    return escapeXML(obj);
-  }
-
-  return Object.entries(obj).map(([key, value]) => {
-    if (Array.isArray(value)) {
-      return value.map(item => `<${key.slice(0, -1)}>${convertToXML(item)}</${key.slice(0, -1)}>`).join("");
-    } else if (typeof value === "object") {
-      return `<${key}>${convertToXML(value)}</${key}>`;
-    } else {
-      return `<${key}>${escapeXML(value)}</${key}>`;
+  const escapeXML = (str) => {
+    if (typeof str === "string" && needsCDATA(str)) {
+      return `<![CDATA[${str}]]>`;
     }
-  }).join("");
+    return str;
+  };
+
+  const convertToXML = (obj) => {
+    if (typeof obj !== "object" || obj === null) {
+      return escapeXML(obj);
+    }
+
+    return Object.entries(obj).map(([key, value]) => {
+      if (Array.isArray(value)) {
+        return `<${key}>${value.map(item => `<item>${convertToXML(item)}</item>`).join("")}</${key}>`;
+      } else if (typeof value === "object") {
+        return `<${key}>${convertToXML(value)}</${key}>`;
+      } else {
+        return `<${key}>${escapeXML(value)}</${key}>`;
+      }
+    }).join("");
+  };
+
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<${rootElement}>
+  ${convertToXML(exampleOutput)}
+</${rootElement}>`;
 };

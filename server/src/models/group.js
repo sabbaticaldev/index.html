@@ -16,6 +16,54 @@ const GROUPS_JSON = DATA_FOLDER + "groups.json";
 const deps = {};
 let sock;
 
+const fetchOGData = async (url) => {
+  const { result } = await ogs({ url });
+  return result;
+};    
+
+const getInviteCode = (url) => url.split("chat.whatsapp.com/")[1];
+
+export async function processGroup(inviteUrl, sock) {  
+  let groupData = { status: "BAD_REQUEST" };
+  let groupId;
+  const inviteCode = getInviteCode(inviteUrl);
+  
+  try {    
+    groupData = await sock.groupGetInviteInfo(inviteCode);
+    groupId = groupData?.id || groupData;    
+    console.log("Console 1", {groupData});
+    if(groupData?.size === 1 && groupId) {
+      groupData = await sock.groupAcceptInvite(getInviteCode(inviteUrl));
+      console.log("Console 2", {groupData});
+      groupData = await sock.groupMetadata(groupId);
+      console.log("Console 3", {groupData});
+    }    
+  }
+  catch(error) {    
+    if (error.message !== "bad-request") {
+      try {
+        groupData = await sock.groupGetInviteInfo(inviteCode);
+        if (error.message === "conflict") {
+          groupData = await sock.groupMetadata(groupData.id);
+        } else if (error.message === "not-authorized") {
+          groupData.status = "NOT_AUTHORIZED";
+        }
+      } catch (innerError) {
+        console.log({ innerError });
+      }
+    }
+    console.error({ error });
+  }
+  finally {
+    if (groupData.size === 1) {
+      groupData.status = "REQUEST";
+    } else if (groupData.size > 1) {
+      groupData.status = "JOINED";
+    }
+  }
+  return groupData;
+}
+
 const processGroupInvite = async (url) => {
   try {
     sock = await connectToWhatsApp({ keepAlive: true });
@@ -109,57 +157,9 @@ export async function fetchGroupData(url) {
     inviteUrl: url,
     metadata: data,
   };
-}
-const getInviteCode = (url) => url.split("chat.whatsapp.com/")[1];
-  
-export async function processGroup(inviteUrl, sock) {  
-  let groupData = { status: "BAD_REQUEST" };
-  let groupId;
-  const inviteCode = getInviteCode(inviteUrl);
-  
-  try {    
-    groupData = await sock.groupGetInviteInfo(inviteCode);
-    groupId = groupData?.id || groupData;    
-    console.log("Console 1", {groupData});
-    if(groupData?.size === 1 && groupId) {
-      groupData = await sock.groupAcceptInvite(getInviteCode(inviteUrl));
-      console.log("Console 2", {groupData});
-      groupData = await sock.groupMetadata(groupId);
-      console.log("Console 3", {groupData});
-    }    
-  }
-  catch(error) {    
-    if (error.message !== "bad-request") {
-      try {
-        groupData = await sock.groupGetInviteInfo(inviteCode);
-        if (error.message === "conflict") {
-          groupData = await sock.groupMetadata(groupData.id);
-        } else if (error.message === "not-authorized") {
-          groupData.status = "NOT_AUTHORIZED";
-        }
-      } catch (innerError) {
-        console.log({ innerError });
-      }
-    }
-    console.error({ error });
-  }
-  finally {
-    if (groupData.size === 1) {
-      groupData.status = "REQUEST";
-    } else if (groupData.size > 1) {
-      groupData.status = "JOINED";
-    }
-  }
-  return groupData;
-}
-  
-
+} 
 
 export async function fetchGroup(url) {
-  const fetchOGData = async (url) => {
-    const { result } = await ogs({ url });
-    return result;
-  };    
   try {
     const ogResult = await fetchOGData(url);
     const groupData = await processGroupInvite(url);
