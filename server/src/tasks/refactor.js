@@ -4,7 +4,8 @@ import path from "path";
 import { generatePrompt, LLM, loadTemplate } from "../services/llm/index.js";
 import { executeTasks } from "../utils.js";
 
-// Function to read directory and encode file contents
+const deps = {};
+
 function readDirectory(directory) {
   const files = {};
 
@@ -19,7 +20,7 @@ function readDirectory(directory) {
       } else if (entry.isFile() && entry.name.endsWith(".js")) {
         const relativePath = path.relative(directory, fullPath);
         const content = fs.readFileSync(fullPath, "utf8");
-        files[relativePath] = Buffer.from(content).toString("base64");  // Encode content to base64
+        files[relativePath] = content;
       }
     }
   }
@@ -28,48 +29,69 @@ function readDirectory(directory) {
   return files;
 }
 
-// Function to save files from the map
 function saveFilesFromMap(fileMap, targetDirectory) {
-  for (const [relativePath, encodedContent] of Object.entries(fileMap)) {
-    const decodedContent = Buffer.from(encodedContent, "base64").toString("utf8");
+  for (const [relativePath, content] of Object.entries(fileMap)) {
     const fullPath = path.join(targetDirectory, relativePath);
 
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-    fs.writeFileSync(fullPath, decodedContent);
+    fs.writeFileSync(fullPath, content);
   }
 }
 
 export async function refactorFolder(options) {
-  const { directory } = options;
+  const { contextFiles, refactoringFiles, taskPrompt, responseFormat = "json" } = options;
   const outputDirectory = `refactored_${new Date().getTime()}`;
-  
+
   const tasks = [
     {
-      description: "Read directory and encode file contents",
-      key: "fileMap",
-      operation: async () => readDirectory(directory)
+      description: "Load template",
+      key: "template",
+      operation: async () => loadTemplate("coding/refactor.json")
+    },
+    {
+      description: "Read context source directory and encode file contents",
+      key: "contextFileMap",
+      operation: async () => readDirectory(contextFiles)
+    },
+    {
+      description: "Read refactoring files directory and encode file contents",
+      key: "refactoringFileMap",
+      operation: async () => {
+        if (fs.existsSync(refactoringFiles) && fs.lstatSync(refactoringFiles).isDirectory()) {
+          return readDirectory(refactoringFiles);
+        }
+        return null;
+      }
     },
     {
       description: "Generate refactor prompt",
       key: "prompt",
-      dependencies: ["fileMap"],
-      operation: async (deps) => {
-        const templateData = loadTemplate("refactorCode");
-        return generatePrompt({ code: JSON.stringify(deps.fileMap, null, 2) }, templateData);
+      dependencies: ["template", "contextFileMap", "refactoringFileMap"],
+      operation: async () => {
+        const exampleParams = deps.template.exampleParams;
+        return generatePrompt({
+          contextFiles: JSON.stringify(deps.contextFileMap, null, 2),
+          targetFiles: JSON.stringify(deps.refactoringFileMap || {}, null, 2),
+          taskPrompt,
+          exampleParams
+        }, "coding/refactor.json", responseFormat);
       }
     },
     {
       description: "Execute LLM to refactor code",
       key: "refactoredFileMap",
       dependencies: ["prompt"],
-      operation: async (deps) => {
-        return LLM.execute("bedrock", deps.prompt);
+      operation: async () => {
+        const response = await LLM.execute("bedrock", deps.prompt, {
+          responseFormat
+        });
+        return response;
       }
     },
     {
       description: "Save refactored files from map",
       dependencies: ["refactoredFileMap"],
-      operation: async (deps) => {
+      operation: async () => {
         saveFilesFromMap(deps.refactoredFileMap, outputDirectory);
         console.log(`Refactored files saved at ${outputDirectory}`);
         return outputDirectory;
@@ -78,7 +100,7 @@ export async function refactorFolder(options) {
   ];
 
   try {
-    await executeTasks({ tasks, prompt: true });
+    await executeTasks({ tasks, prompt: true, deps });
   } catch (error) {
     console.error("Error refactoring folder:", error);
     throw error;

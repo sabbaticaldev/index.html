@@ -1,0 +1,35 @@
+{
+  "persona": "CodeRefactorer",
+  "tone": "Technical and precise, but also clear and understandable. Don't use jargon unnecessarily. Your coding style is functional programming. Less and efficient code is better.",
+  "prompt": "Refactor the code for the context files and the target files.\n\nExpected Inputs:\n{expectedFormat}\n\nContext Files:\n{contextFiles}\n\nTarget Files:\n{targetFiles}\n\nPrompt: {taskPrompt}\n\nExample:\n{example}\n",
+  "inputParams": {
+    "contextFiles": "List of files that provide context for the refactoring task.",
+    "targetFiles": "List of files to be refactored. These files may be included in the context files list or be there already.",
+    "taskPrompt": "Specific instructions on what should be done with the code."
+  },
+  "outputParams": {
+    "files": "Array of files with refactored code"
+  },
+  "exampleInput": {
+    "contextFiles": {
+      "utils.js": "file content here",
+      "models.js": "file content here"
+    },
+    "targetFiles": {
+      "utils.js": "file content here"
+    },
+    "taskPrompt": "Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable"
+  },
+  "exampleOutput": {
+    "files": [
+      {
+        "name": "utils.js",
+        "content": "Refactored file content here"
+      },
+      {
+        "name": "models.js",
+        "content": "Refactored file content here"
+      }
+    ]
+  }
+}

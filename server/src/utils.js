@@ -1,5 +1,7 @@
+
 import fs from "fs";
 import readline from "readline";
+import { Builder,parseString } from "xml2js";
 
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -65,4 +67,40 @@ export const fetchMapImage = async mapUrl => {
   const response = await fetch(mapUrl);
   console.log({ mapUrl });
   return response.arrayBuffer();
+};
+
+export const parseXML = (xml) => {
+  console.log(JSON.stringify(xml));
+  let result;
+  parseString(xml, { explicitArray: false }, (err, parsedResult) => {
+    if (err) {
+      console.log({err});
+      throw new Error("Failed to parse XML");
+    }
+    result = parsedResult;
+  });
+  return result;
+};
+
+const escapeXML = (str) => {
+  if (typeof str === "string") {
+    return `<![CDATA[${str}]]>`;
+  }
+  return str;
+};
+
+export const convertToXML = (obj) => {
+  if (typeof obj !== "object" || obj === null) {
+    return escapeXML(obj);
+  }
+
+  return Object.entries(obj).map(([key, value]) => {
+    if (Array.isArray(value)) {
+      return value.map(item => `<${key.slice(0, -1)}>${convertToXML(item)}</${key.slice(0, -1)}>`).join("");
+    } else if (typeof value === "object") {
+      return `<${key}>${convertToXML(value)}</${key}>`;
+    } else {
+      return `<${key}>${escapeXML(value)}</${key}>`;
+    }
+  }).join("");
 };
