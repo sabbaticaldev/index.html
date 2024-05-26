@@ -1,6 +1,6 @@
 {
   "contextSrc": ["libs/frontend", "app/apps/design"],
   "refactoringFiles": "form.package.js",
-  "taskPrompt": "Let's refactor form.package.js, creating components inside form/ and importing them. Refactor ALL components, don't remove any. Each component should have their own theme property. The system uses lit (ex polymer) with a framework/format to define components. Create complete components using other UI Kits as reference. If the documentation is too simple, extrapolate it and refactor also the documentation file. Follow the same format. Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable. Always end with the root XML element. Don't add comments. ",
+  "taskPrompt": "Let's continue refactoring form.package.js, there are a few more components there that we want to migrate to form/ folder and add to the package.js. Each component should have their own theme property. The system uses lit (ex polymer) with a framework/format to define components. Create complete components using other UI Kits as reference. If the documentation is too simple, extrapolate it and refactor also the documentation file. Follow the same format. Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable. Always end with the root XML element. Don't add comments. ",
   "responseFormat": "xml"
 }
