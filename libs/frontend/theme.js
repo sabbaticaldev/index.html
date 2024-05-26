@@ -166,7 +166,10 @@ const createProps = (userTheme) => {
     generateClass("text", color, variation);
   const generateBorderColorClass = (color, variation) =>
     generateClass("border", color, variation);
-
+  const generateAllColorClasses = (color) =>
+    Array.from({ length: 9 }, (_, i) => i + 1).map(
+      (shade) => `bg-${color}-${shade}00`,
+    );
   const generateTextColorVariants = (textVariation, colors) =>
     Object.fromEntries(
       Object.keys(colors).map((colorKey) => [
@@ -224,12 +227,9 @@ const createProps = (userTheme) => {
     size: [baseSpacingSizes, baseTextSizes],
   };
   // TODO: refactor this, greyColors and commonColors shouldn\'t be in baseTheme
-  const ColorPickerClasses = Array.from({ length: 9 }, (_, i) => i + 1).map(
-    (shade) =>
-      baseTheme.commonColors
-        .map((color) => `bg-${color}-${shade}00`)
-        .concat(baseTheme.greyColors.map((color) => `bg-${color}-${shade}00`)),
-  );
+  const ColorPickerClasses = baseTheme.commonColors
+    .map(generateAllColorClasses)
+    .concat(baseTheme.greyColors.map(generateAllColorClasses));
 
   return {
     cls,
@@ -266,6 +266,7 @@ const createProps = (userTheme) => {
     commonColors: baseTheme.commonColors,
     greyColors: baseTheme.greyColors,
     baseTheme,
+    generateAllColorClasses,
     generateColorClass,
   };
 };
@@ -273,7 +274,6 @@ const createProps = (userTheme) => {
 export const extractSafelistFromTheme = () => {
   const safelist = new Set();
   const addClassToSafelist = (className) => {
-    console.log({ className });
     if (className) className.split(" ").forEach((cls) => safelist.add(cls));
   };
 
@@ -284,7 +284,6 @@ export const extractSafelistFromTheme = () => {
       Object.values(obj)
         .filter((v) => v)
         .forEach((value) => {
-          console.log({ value });
           if (typeof value === "function") {
             traverseTheme(value({}, themeProps));
           } else {
@@ -313,6 +312,5 @@ export const loadTheme = (views) => {
       Object.keys(elementTheme).forEach(
         (entry) => (Theme[entry] = elementTheme[entry]),
       );
-    console.log({ Theme });
   });
 };

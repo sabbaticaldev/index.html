@@ -66,6 +66,7 @@ export const AccordionItem = {
     },
   },
   render() {
+    console.log({ open: this.open });
     return html`
       <div class=${this.theme("uix-accordion-item", { open: this.open })}>
         <div

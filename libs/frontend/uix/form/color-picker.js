@@ -8,8 +8,9 @@ const ColorPicker = {
     updateTheme: T.function(),
     userTheme: T.object(),
   },
-  theme: ({ generateColorClass }) => ({
+  theme: ({ generateColorClass, ColorPickerClasses = [] }) => ({
     "uix-color-picker": "grid grid-cols-14",
+    "uix-color-picker__colors": ColorPickerClasses.flat().join(" "),
     "uix-color-picker__color-block": ({ selectedColor }) =>
       `group relative w-6 h-6 cursor-pointer ${
         selectedColor

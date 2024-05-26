@@ -2,14 +2,14 @@ import { i18n, LitElement, stringToType, url } from "helpers";
 
 import { Theme } from "./theme.js";
 
-const resolveThemeValue = ({ theme, props = {}, key = "" }) => {
+const resolveThemeValue = ({ theme = {}, props = {}, key = "" }) => {
   if (Array.isArray(theme)) {
     return theme.map((entry) => entry[key]).join(" ");
   }
   if (typeof theme === "function") {
     return theme(props);
   }
-  return key ? theme[key] : "";
+  return theme[key];
 };
 
 export const getElementTheme = (element, props = {}, instance = {}) => {
@@ -34,6 +34,7 @@ export const getElementTheme = (element, props = {}, instance = {}) => {
       props: { ...props, ...instance },
       key,
     });
+
     if (themeValue) {
       acc.push(typeof themeValue === "object" ? themeValue[key] : themeValue);
     }
