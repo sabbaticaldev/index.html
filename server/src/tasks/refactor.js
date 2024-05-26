@@ -32,7 +32,7 @@ function readDirectory(source) {
   } else {
     traverseDirectory(source);
   }
-
+  console.log({ files });
   return files;
 }
 
@@ -146,6 +146,7 @@ export async function refactorFolder(options) {
           fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
           console.log(`Commit message saved at ${commitMessageFilePath}`);
         }
+        console.log(response.files);
         return response?.files || [];
       },
     },
@@ -158,6 +159,7 @@ export async function refactorFolder(options) {
           path.join(outputDirectory, file.filepath),
         ),
       operation: async ({ filepath, index }) => {
+        console.log(deps.refactoredFileMap);
         const file = deps.refactoredFileMap[index];
         fs.mkdirSync(path.dirname(filepath), { recursive: true });
         fs.writeFileSync(filepath, file.content, "utf-8");

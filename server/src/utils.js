@@ -119,7 +119,7 @@ export const parseXML = (xml) => {
     { explicitArray: false, mergeAttrs: true, explicitRoot: false },
     (err, parsedResult) => {
       if (err) {
-        throw new Error("Failed to parse XML");
+        throw new Error("Failed to parse XML", { err });
       }
 
       // Transform <item> arrays back into proper arrays
