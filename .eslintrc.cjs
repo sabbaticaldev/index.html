@@ -3,7 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ["eslint:recommended", "prettier"],
+  extends: ["eslint:recommended", "plugin:prettier/recommended"],
   overrides: [
     {
       env: {
