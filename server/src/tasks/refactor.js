@@ -154,9 +154,10 @@ export async function refactorFolder(options) {
       key: "savedFilePaths",
       dependencies: ["refactoredFileMap"],
       filePath: () =>
-        deps.refactoredFileMap.map((file) =>
-          path.join(outputDirectory, file.filepath),
-        ),
+        (Array.isArray(deps.refactoredFileMap)
+          ? deps.refactoredFileMap
+          : Object.values(deps.refactoredFileMap)
+        ).map((file) => path.join(outputDirectory, file.filepath)),
       operation: async ({ filepath, index }) => {
         const file = deps.refactoredFileMap[index];
         fs.mkdirSync(path.dirname(filepath), { recursive: true });

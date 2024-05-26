@@ -7,7 +7,9 @@ export default {
   },
   render() {
     const { routes, currentRoute } = this;
+
     const routeItem = routes.find((route) => route.path === currentRoute);
+
     return routeItem
       ? html`${routeItem.component}`
       : html`<uix-block>404: Page not found</uix-block>`;

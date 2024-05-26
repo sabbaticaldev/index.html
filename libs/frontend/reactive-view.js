@@ -12,10 +12,10 @@ const resolveThemeValue = ({ theme = {}, props = {}, key = "" }) => {
   return theme[key];
 };
 
-export const getElementTheme = (element, props = {}, instance = {}) => {
+export const getElementTheme = (element, extraProps = {}, instance = {}) => {
+  const props = { ...extraProps, ...instance };
   const { containerClass } = instance.component || {};
   const elementTheme = Theme[element] || containerClass || "";
-
   if (typeof elementTheme === "string") {
     return elementTheme;
   }
@@ -23,15 +23,15 @@ export const getElementTheme = (element, props = {}, instance = {}) => {
   if (typeof elementTheme === "function") {
     return resolveThemeValue({
       theme: elementTheme,
-      props: { ...props, ...instance },
+      props,
     });
   }
 
   const classes = Object.entries(elementTheme).reduce((acc, [attr, theme]) => {
-    const key = instance[attr];
+    const key = instance[attr] || props[attr];
     const themeValue = resolveThemeValue({
       theme,
-      props: { ...props, ...instance },
+      props,
       key,
     });
 
@@ -70,13 +70,13 @@ const defineSyncProperty = (instance, key, prop) => {
           ? newValue
           : JSON.stringify(newValue)
         : null;
-      syncAdapters[prop.sync].setItem(prop.key || key, value);
-      instance.requestUpdate(key, instance[key]);
-      syncKeyMap.get(syncKey).forEach((inst) => {
-        if (inst !== instance) {
-          inst.requestUpdate();
-        }
-      });
+      const currentValue = instance[key];
+      if (currentValue !== value) {
+        console.log({ currentValue, value });
+        syncAdapters[prop.sync].setItem(prop.key || key, value);
+        instance[key] = value;
+        instance.requestUpdate();
+      }
     }
   };
 

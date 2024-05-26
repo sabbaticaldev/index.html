@@ -7,18 +7,17 @@ const Modal = {
     parent: T.object(),
     open: T.boolean(),
   },
-  theme: {
-    "uix-modal": (_, { cls, SpacingSizes, borderRadius }) => ({
+  theme: ({ cls, SpacingSizes, borderRadius }) => ({
+    "uix-modal": {
       _base: cls([
         "rounded-lg bg-white p-8 shadow-2xl min-w-[768px] min-h-[400px]",
         borderRadius,
       ]),
       size: SpacingSizes,
-    }),
+    },
     "uix-modal__box": "modal-box",
-    "uix-modal__close-button": (_, { cls, borderRadius }) =>
-      cls(["absolute right-1 top-0", borderRadius]),
-  },
+    "uix-modal__close-button": cls(["absolute right-1 top-0", borderRadius]),
+  }),
   firstUpdated() {
     this.$modal = this.shadowRoot.querySelector("#modal");
     if (this.parent) this.parent.hide = this.hide.bind(this);

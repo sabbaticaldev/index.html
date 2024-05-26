@@ -1,9 +1,21 @@
 const typeHandlers = {
   boolean: (value) => value === "true",
   string: (value) => value,
-  array: (value, defaultValue) => {
+  array: (value, defaultValue, itemType) => {
     try {
-      return JSON.parse(value);
+      const parsedArray = JSON.parse(value);
+      return parsedArray.map((item) => {
+        if (itemType) {
+          return Object.entries(item).reduce((obj, [key, value]) => {
+            obj[key] = typeHandlers[itemType[key].type](
+              value,
+              itemType[key].defaultValue,
+            );
+            return obj;
+          }, {});
+        }
+        return item;
+      });
     } catch (error) {
       console.error("Failed to parse array from string:", error);
       return defaultValue;
@@ -13,9 +25,20 @@ const typeHandlers = {
     isNaN(Number(value)) ? defaultValue : Number(value),
   date: (value) => new Date(value),
   function: (value) => new Function(value), // Caution: security risk!
-  object: (value, defaultValue) => {
+  object: (value, defaultValue, objectType) => {
     try {
-      return JSON.parse(value);
+      const parsedObject = JSON.parse(value);
+      return Object.entries(parsedObject).reduce((obj, [key, value]) => {
+        if (objectType && objectType[key]) {
+          obj[key] = typeHandlers[objectType[key].type](
+            value,
+            objectType[key].defaultValue,
+          );
+        } else {
+          obj[key] = value;
+        }
+        return obj;
+      }, {});
     } catch (error) {
       console.error("Failed to parse object from string:", error);
       return defaultValue;
@@ -26,7 +49,11 @@ const typeHandlers = {
 export const stringToType = (value, typeDefinition) => {
   const handler = typeHandlers[typeDefinition.type];
   if (handler) {
-    return handler(value, typeDefinition.defaultValue);
+    return handler(
+      value,
+      typeDefinition.defaultValue,
+      typeDefinition.itemType || typeDefinition.objectType,
+    );
   }
   return value || typeDefinition.defaultValue;
 };
@@ -48,7 +75,7 @@ export const T = {
   array: (options = {}) => ({
     type: "array",
     defaultValue: options.defaultValue || [],
-    enum: options.enum || [],
+    itemType: options.type,
     ...options,
   }),
 
@@ -73,6 +100,7 @@ export const T = {
   object: (options = {}) => ({
     type: "object",
     defaultValue: options.defaultValue || undefined,
+    objectType: options.type,
     ...options,
   }),
 
