@@ -1,13 +1,20 @@
 import { html, T } from "helpers";
 
-const Tabs = {
+export default {
   props: {
     size: T.string({ defaultValue: "md" }),
     gap: T.string({ defaultValue: "" }),
     spacing: T.string({ defaultValue: "md" }),
     vertical: T.boolean(),
     full: T.boolean(),
-    selectTab: T.string(),
+    tabs: T.array({
+      defaultValue: [],
+      type: {
+        label: T.string(),
+        content: T.string(),
+        active: T.boolean(),
+      },
+    }),
   },
   theme: {
     "uix-tabs": (_, { cls, baseTheme, SpacingSizes }) => ({
@@ -18,15 +25,29 @@ const Tabs = {
       spacing: SpacingSizes,
       full: { true: "w-full h-full" },
     }),
+    "uix-tab": (_, { cls, baseTheme, BaseVariants, SpacingSizes }) => ({
+      _base: cls([
+        "relative group",
+        baseTheme.flexCenter,
+        "p-2 -mb-px sm:px-4 -px-1 w-full h-full whitespace-nowrap focus:outline-none",
+        baseTheme.borderStyles,
+        baseTheme.borderWidth,
+      ]),
+      active: {
+        true: cls([baseTheme.activeTextColor, "border-blue-500"]),
+        false: cls([baseTheme.defaultTextColor, baseTheme.hoverBorder]),
+      },
+      variant: BaseVariants,
+      size: SpacingSizes,
+    }),
   },
   unselectTab() {
-    const slot = this.shadowRoot.querySelector("slot");
-    const tabs = slot
-      .assignedNodes()
-      .filter(
-        (node) => node.tagName && node.tagName.toLowerCase() === "uix-tab",
-      );
-    tabs.forEach((tab) => tab.setActive(false));
+    this.tabs = this.tabs.map((tab) => ({ ...tab, active: false }));
+  },
+  selectTab(tab) {
+    this.unselectTab();
+    tab.active = true;
+    this.requestUpdate();
   },
   render() {
     return html`
@@ -36,10 +57,20 @@ const Tabs = {
         ?full=${this.full}
         gap=${this.gap}
       >
-        <slot></slot>
+        ${this.tabs.map(
+    (tab) => html`
+            <button
+              role="tab"
+              ?active=${tab.active}
+              @click=${() => this.selectTab(tab)}
+              class=${this.theme("uix-tab")}
+            >
+              ${tab.label}
+            </button>
+          `,
+  )}
       </uix-list>
+      ${this.tabs.map((tab) => tab.active && html` <div>${tab.content}</div> `)}
     `;
   },
 };
-
-export default Tabs;

@@ -1,6 +1,6 @@
-import Accordion, { AccordionItem } from "./accordion.js";
+import Accordion from "./accordion.js";
 import Block from "./block.js";
-import Card, { CardBody, CardFooter, CardHeader } from "./card.js";
+import Card from "./card.js";
 import Container from "./container.js";
 import Divider from "./divider.js";
 import Flex from "./flex.js";
@@ -21,11 +21,7 @@ const views = {
   "uix-list": List,
   "uix-divider": Divider,
   "uix-accordion": Accordion,
-  "uix-accordion-item": AccordionItem,
   "uix-card": Card,
-  "uix-card-header": CardHeader,
-  "uix-card-body": CardBody,
-  "uix-card-footer": CardFooter,
 };
 
 export default {
