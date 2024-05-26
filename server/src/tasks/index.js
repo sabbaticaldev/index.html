@@ -1,34 +1,48 @@
 import fs from "fs";
+import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { GetTrends } from "../services/instagram.js";
+import settings from "../settings.js";
 import { createReelRipOff } from "./instagram.js";
 import { createMapVideo, createZoomInVideo } from "./maps.js";
 import { refactorFolder } from "./refactor.js";
 import { CreateVideoFromImage } from "./video.js";
-
-// Helper function to determine if input is a file and read JSON
-const readJsonFile = (filePath) => {
-  try {
-    const data = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Failed to read or parse file:", error);
-    throw error; // Rethrow to handle it in the command handler
+// Helper function to determine if input is a file and read JSON or JS asynchronously
+const readFile = async (filePath) => {
+  const fullFilePath = path.resolve(settings.__dirname, "../../", filePath);
+  console.log({ fullFilePath });
+  if (filePath.endsWith(".json")) {
+    try {
+      const data = fs.readFileSync(fullFilePath, "utf8");
+      return JSON.parse(data);
+    } catch (error) {
+      console.error("Failed to read or parse JSON file:", error);
+      throw error;
+    }
+  } else if (filePath.endsWith(".js")) {
+    try {
+      const module = await import(`file://${fullFilePath}`);
+      return module.default;
+    } catch (error) {
+      console.error("Failed to import JS module:", error);
+      throw error;
+    }
+  } else {
+    throw new Error("Unsupported file type");
   }
 };
 
-// Helper function to parse input as JSON or return as URL
+// Helper function to parse input as JSON/JS or return as URL
 const parseInput = (input) => {
   try {
-    if (input.endsWith(".json")) {
-      return readJsonFile(input);
+    if (input.endsWith(".json") || input.endsWith(".js")) {
+      return readFile(input);
     }
-    JSON.parse(input);
-    return JSON.parse(input);
+    return { url: input }; // Assuming input is a URL or a direct path
   } catch (error) {
-    // Assuming input is a URL or a direct path
+    console.error("Failed to parse input:", error);
     return { url: input };
   }
 };
@@ -39,12 +53,12 @@ const yarg = yargs(hideBin(process.argv))
     "Create an Instagram reel",
     (yargs) => {
       yargs.positional("input", {
-        describe: "Path to a JSON configuration file or JSON string",
+        describe: "Path to a JSON or JS configuration file or JSON string",
         type: "string",
       });
     },
     async (argv) => {
-      const config = parseInput(argv.input);
+      const config = await parseInput(argv.input);
       await createReelRipOff(config);
     },
   )
@@ -53,12 +67,12 @@ const yarg = yargs(hideBin(process.argv))
     "Create an animated video from an image",
     (yargs) => {
       yargs.positional("input", {
-        describe: "Path to a JSON configuration file or JSON string",
+        describe: "Path to a JSON or JS configuration file or JSON string",
         type: "string",
       });
     },
     async (argv) => {
-      const config = parseInput(argv.input);
+      const config = await parseInput(argv.input);
       await CreateVideoFromImage(config);
     },
   )
@@ -68,12 +82,12 @@ const yarg = yargs(hideBin(process.argv))
     (yargs) => {
       yargs.positional("input", {
         describe:
-          "Path to a JSON configuration file or JSON string with route details",
+          "Path to a JSON or JS configuration file or JSON string with route details",
         type: "string",
       });
     },
     async (argv) => {
-      const config = parseInput(argv.input);
+      const config = await parseInput(argv.input);
       await createMapVideo(config);
     },
   )
@@ -83,28 +97,27 @@ const yarg = yargs(hideBin(process.argv))
     (yargs) => {
       yargs.positional("input", {
         describe:
-          "Path to a JSON configuration file or JSON string with route details",
+          "Path to a JSON or JS configuration file or JSON string with route details",
         type: "string",
       });
     },
     async (argv) => {
-      const config = parseInput(argv.input);
+      const config = await parseInput(argv.input);
       await createZoomInVideo(config);
     },
   )
-
   .command(
     "refactor <input>",
     "Refactor JavaScript files in a directory",
     (yargs) => {
       yargs.positional("input", {
         describe:
-          "Path to a JSON configuration file or JSON string with refactoring details",
+          "Path to a JSON or JS configuration file or JSON string with refactoring details",
         type: "string",
       });
     },
     async (argv) => {
-      const config = parseInput(argv.input);
+      const config = await parseInput(argv.input);
       await refactorFolder(config);
     },
   )

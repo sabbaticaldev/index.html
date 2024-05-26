@@ -32,7 +32,6 @@ function readDirectory(source) {
   } else {
     traverseDirectory(source);
   }
-  console.log({ files });
   return files;
 }
 

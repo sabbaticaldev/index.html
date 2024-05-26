@@ -1,6 +1,6 @@
 {
   "contextSrc": ["libs/frontend", "app/apps/design"],
   "refactoringFiles": "all files related to the change",
-  "taskPrompt": "we just refactored our code to move some components that were packed in a package to have their own component, with that the theme property that was created in the package level now moved to each component. the code isn't completely refactored to work like that, help me find a issue with the traverseTheme that should work with a theme in the component level that is a function",
+  "taskPrompt": "We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files. Now I want your help reviewing all the components and the structure we have and help me create the building blocks components that are missing for a complete solution were we can create all blocks for apps and landing pages. For now I want you to create only the placeholder files of the new components with a small descrition, next step we will iterate over creating those files and extending their documentation",
   "responseFormat": "xml"
 }
