@@ -1,6 +1,6 @@
 {
   "contextSrc": ["libs/frontend", "app/apps/design"],
-  "refactoringFiles": "frontend packages uix/chat.package.js uix/datetime.package.js",
-  "taskPrompt": "Let's refactor uix/chat.package.js & uix/datetime.package.js, we will extract the individual components to their own files like uix/datetime/ or uix/chat/, creating components inside libs/frontend/uix/chat/ and libs/frontend/uix/datetime/ and importing them in a package.js file. Refactor ALL components, don't remove any. Each component should have their own theme property. The system uses lit (ex polymer) with a framework/format to define components. Follow the same code style. Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable. Always end with the root XML element. Don't add comments to the files. ",
+  "refactoringFiles": "frontend package uix/crud.package.js",
+  "taskPrompt": "Let's refactor uix/crud.package.js, we will extract the individual components to their own files uix/crud/, creating components inside libs/frontend/uix/chat/ and libs/frontend/uix/crud/ and importing them in a package.js file. Refactor ALL components, don't remove any. Each component should have their own theme property. ",
   "responseFormat": "xml"
 }

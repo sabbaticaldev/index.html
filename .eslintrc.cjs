@@ -1,4 +1,3 @@
-
 module.exports = {
   env: {
     browser: true,
@@ -20,10 +19,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: [
-    "simple-import-sort",
-    "prettier"
-  ],
+  plugins: ["simple-import-sort", "prettier"],
   rules: {
     indent: ["error", 2],
     "linebreak-style": ["error", "unix"],
@@ -36,13 +32,16 @@ module.exports = {
     "simple-import-sort/exports": "error",
     "comma-dangle": ["error", "always-multiline"],
     "eol-last": ["error", "always"],
-    "arrow-spacing": ["error", { "before": true, "after": true }],
-    "space-infix-ops": ["error", { "int32Hint": false }],
+    "arrow-spacing": ["error", { before: true, after: true }],
+    "space-infix-ops": ["error", { int32Hint: false }],
     "space-before-blocks": ["error", "always"],
-    "key-spacing": ["error", { "beforeColon": false, "afterColon": true }],
-    "keyword-spacing": ["error", { "before": true, "after": true }],
-    "prettier/prettier": ["error", {
-      "endOfLine": "auto",
-    }],
+    "key-spacing": ["error", { beforeColon: false, afterColon: true }],
+    "keyword-spacing": ["error", { before: true, after: true }],
+    "prettier/prettier": [
+      "error",
+      {
+        endOfLine: "auto",
+      },
+    ],
   },
 };
