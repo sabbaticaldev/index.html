@@ -4,7 +4,6 @@ const createMapping = (prefix, mapping) =>
   Object.fromEntries(
     Object.entries(mapping).map(([key, value]) => [key, `${prefix}-${value}`]),
   );
-let Theme;
 
 baseTheme.commonColors = [
   "red",
@@ -24,8 +23,6 @@ baseTheme.commonColors = [
 ];
 
 baseTheme.greyColors = ["gray", "zinc", "true-gray", "warm-gray", "blue-gray"];
-
-export default baseTheme;
 
 const baseVariants = {
   thin: "thin",
@@ -226,7 +223,7 @@ const createProps = (userTheme) => {
     variant: BaseVariants,
     size: [baseSpacingSizes, baseTextSizes],
   };
-  // TODO: refactor this, greyColors and commonColors shouldn't be in baseTheme
+  // TODO: refactor this, greyColors and commonColors shouldn\'t be in baseTheme
   const ColorPickerClasses = Array.from({ length: 9 }, (_, i) => i + 1).map(
     (shade) =>
       baseTheme.commonColors
@@ -268,74 +265,54 @@ const createProps = (userTheme) => {
     commonStyles,
     commonColors: baseTheme.commonColors,
     greyColors: baseTheme.greyColors,
+    baseTheme,
     generateColorClass,
   };
 };
 
-const resolveThemeValue = ({ elementTheme, props = {}, key = "" }) => {
-  if (Array.isArray(elementTheme))
-    return elementTheme.map((entry) => entry[key]).join(" ");
-  if (typeof elementTheme === "function") return elementTheme(props);
-  if (key) return elementTheme[key];
-  return "";
-};
-
-export const getElementTheme = (element, props = {}, elementInstance = {}) => {
-  const defaultElement = Theme[element];
-  if (!defaultElement) return elementInstance["containerClass"] || "";
-  const classes =
-    typeof defaultElement === "string"
-      ? [defaultElement]
-      : typeof defaultElement === "function"
-        ? [
-          resolveThemeValue({
-            elementTheme: defaultElement,
-            props: { ...props, ...elementInstance },
-          }),
-        ]
-        : Object.keys(defaultElement).reduce((acc, attr) => {
-          const elementTheme = defaultElement[attr];
-          const resolvedThemeValue = resolveThemeValue({
-            elementTheme,
-            key: elementInstance[attr],
-          });
-          if (resolvedThemeValue) acc.push(resolvedThemeValue);
-          return acc;
-        }, []);
-  if (defaultElement["_base"]) classes.push(defaultElement["_base"]);
-  if (elementInstance["containerClass"])
-    classes.push(elementInstance["containerClass"]);
-  return classes.join(" ");
-};
-
-const createBaseTheme = (userTheme, components = {}) => {
-  const theme = userTheme || baseTheme;
-  const props = createProps(theme);
-  const generatedTheme = Object.keys(components)
-    .map((key) =>
-      typeof components[key] === "function"
-        ? components[key](theme, props)
-        : components[key],
-    )
-    .reduce((acc, obj) => ({ ...acc, ...obj }), {});
-  return generatedTheme;
-};
-
-export const extractSafelistFromTheme = (userTheme, components) => {
-  Theme = createBaseTheme(userTheme || baseTheme, components);
+export const extractSafelistFromTheme = () => {
   const safelist = new Set();
   const addClassToSafelist = (className) => {
+    console.log({ className });
     if (className) className.split(" ").forEach((cls) => safelist.add(cls));
   };
 
   const traverseTheme = (obj) => {
     if (typeof obj === "string") addClassToSafelist(obj);
     else if (Array.isArray(obj)) obj.forEach(traverseTheme);
-    else if (typeof obj === "object" && obj !== null)
-      Object.values(obj).forEach(traverseTheme);
-    else if (typeof obj === "function") traverseTheme(obj({}));
+    else if (typeof obj === "object" && obj !== null) {
+      Object.values(obj)
+        .filter((v) => v)
+        .forEach((value) => {
+          console.log({ value });
+          if (typeof value === "function") {
+            traverseTheme(value({}, themeProps));
+          } else {
+            traverseTheme(value);
+          }
+        });
+    }
   };
 
   traverseTheme(Theme);
   return Array.from(safelist);
+};
+
+export const Theme = {};
+export let themeProps = createProps(baseTheme);
+export default baseTheme;
+
+export const loadTheme = (views) => {
+  Object.keys(views).forEach((key) => {
+    const component = views[key];
+    const { theme, tag } = component;
+    const elementTheme =
+      theme && typeof theme === "function" ? theme(themeProps) : theme;
+    if (typeof elementTheme === "string") Theme[tag] = elementTheme;
+    else if (typeof elementTheme === "object")
+      Object.keys(elementTheme).forEach(
+        (entry) => (Theme[entry] = elementTheme[entry]),
+      );
+    console.log({ Theme });
+  });
 };

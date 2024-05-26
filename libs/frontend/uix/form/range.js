@@ -29,11 +29,11 @@ const Range = {
       </div>
     `;
   },
-  theme: ({ cls, userTheme }) => ({
+  theme: ({ cls, BaseVariants, TextSizes, SpacingSizes }) => ({
     "uix-range": {
       _base: cls(["w-full"]),
-      variant: userTheme.BaseVariants,
-      size: [userTheme.SpacingSizes, userTheme.TextSizes],
+      variant: BaseVariants,
+      size: [SpacingSizes, TextSizes],
     },
     "uix-range__input": "w-full",
     "uix-range__labels": "-mt-2 flex w-full justify-between",

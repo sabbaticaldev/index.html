@@ -11,14 +11,14 @@ import {
   formKit,
   getUnoGenerator,
   layoutKit,
+  loadTheme,
   navigationKit,
   reset,
 } from "frontend";
 import { getUrlBlob, injectStyle, isValidApp } from "helpers";
 
+//TODO: change the gathering of the theme components to here from reactive-view
 export const loadFrontendFiles = (app) => {
-  const theme = {};
-
   const packages = {
     app,
     appKit,
@@ -34,14 +34,13 @@ export const loadFrontendFiles = (app) => {
 
   const loadedPackages = Object.keys(packages).reduce(
     (acc, key) => {
-      const { views, theme: packageTheme } = packages[key];
-      theme[key] = packageTheme;
+      const { views } = packages[key];
       return { ...acc, views: { ...acc.views, ...views } };
     },
     { views: {} },
   );
-
-  return { ...loadedPackages, theme };
+  loadTheme(loadedPackages.views);
+  return loadedPackages;
 };
 
 export const startFrontend = ({ app, style }) => {
@@ -76,7 +75,6 @@ const loadAppFromBlob = async ({ app, style }, frontendOnly) => {
 // Function to load the app and register the service worker if available
 const loadApp = async ({ app, style }) => {
   const loadedApp = loadFrontendFiles(app);
-  console.log({ loadedApp });
   const themeClasses = extractSafelistFromTheme(null, loadedApp.theme);
   const uno = getUnoGenerator(themeClasses);
   const { css } = await uno.uno.generate(themeClasses, { preflights: true });

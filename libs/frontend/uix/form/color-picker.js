@@ -38,7 +38,7 @@ const ColorPicker = {
                   this.updateTheme({
                     ...this.userTheme,
                     colors: {
-        ...this.userTheme.colors,
+        ...this.baseTheme.colors,
         [this.colorKey]: color,
       },
                   })}
@@ -52,7 +52,7 @@ const ColorPicker = {
                         this.updateTheme({
                           ...this.userTheme,
                           colors: {
-                            ...this.userTheme.colors,
+                            ...this.baseTheme.colors,
                             [this.colorKey]: color,
                           },
                         })}

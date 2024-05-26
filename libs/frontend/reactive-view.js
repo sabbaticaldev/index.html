@@ -1,6 +1,53 @@
 import { i18n, LitElement, stringToType, url } from "helpers";
 
-import { getElementTheme } from "./theme.js";
+import { Theme } from "./theme.js";
+
+const resolveThemeValue = ({ theme, props = {}, key = "" }) => {
+  if (Array.isArray(theme)) {
+    return theme.map((entry) => entry[key]).join(" ");
+  }
+  if (typeof theme === "function") {
+    return theme(props);
+  }
+  return key ? theme[key] : "";
+};
+
+export const getElementTheme = (element, props = {}, instance = {}) => {
+  const { containerClass } = instance.component || {};
+  const elementTheme = Theme[element] || containerClass || "";
+
+  if (typeof elementTheme === "string") {
+    return elementTheme;
+  }
+
+  if (typeof elementTheme === "function") {
+    return resolveThemeValue({
+      theme: elementTheme,
+      props: { ...props, ...instance },
+    });
+  }
+
+  const classes = Object.entries(elementTheme).reduce((acc, [attr, theme]) => {
+    const key = instance[attr];
+    const themeValue = resolveThemeValue({
+      theme,
+      props: { ...props, ...instance },
+      key,
+    });
+    if (themeValue) {
+      acc.push(typeof themeValue === "object" ? themeValue[key] : themeValue);
+    }
+    return acc;
+  }, []);
+
+  if (elementTheme._base) {
+    classes.push(elementTheme._base);
+  }
+  if (containerClass) {
+    classes.push(containerClass);
+  }
+  return classes.join(" ");
+};
 
 const isServer = typeof localStorage === "undefined";
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };

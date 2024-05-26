@@ -176,9 +176,9 @@ const Form = {
       </form>
     `;
   },
-  theme: ({ cls }) => ({
-    "uix-form-actions": cls("mx-auto mt-10"),
-  }),
+  theme: {
+    "uix-form-actions": "mx-auto mt-10",
+  },
 };
 
 export default Form;

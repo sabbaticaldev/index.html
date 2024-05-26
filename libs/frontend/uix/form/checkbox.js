@@ -36,14 +36,14 @@ const Checkbox = {
       />
     `;
   },
-  theme: ({ cls, userTheme }) => ({
+  theme: ({ cls, baseTheme, ClipRoundedClasses }) => ({
     "uix-checkbox": {
       _base: cls([
         "before:content[''] peer before:transition-opacity hover:before:opacity-10 checked:opacity-100 opacity-30",
-        userTheme.ClipRoundedClasses[userTheme.borderRadius],
+        ClipRoundedClasses[baseTheme.borderRadius],
       ]),
-      variant: userTheme.ReverseVariants,
-      size: userTheme.DimensionSizes,
+      variant: baseTheme.ReverseVariants,
+      size: baseTheme.DimensionSizes,
     },
   }),
 };

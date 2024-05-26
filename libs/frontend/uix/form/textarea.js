@@ -44,21 +44,21 @@ ${value}</textarea
       >
     `;
   },
-  theme: ({ cls, userTheme }) => ({
+  theme: ({ cls, baseTheme }) => ({
     "uix-textarea": {
       _base: cls([
         "block w-full appearance-none focus:outline-none focus:ring-0",
-        userTheme.defaultTextColor,
-        userTheme.borderStyles,
-        userTheme.borderWidth,
-        userTheme.borderRadius,
+        baseTheme.defaultTextColor,
+        baseTheme.borderStyles,
+        baseTheme.borderWidth,
+        baseTheme.borderRadius,
       ]),
       active: {
-        true: cls([userTheme.activeTextColor, "border-blue-500"]),
-        false: cls([userTheme.defaultTextColor, userTheme.hoverBorder]),
+        true: cls([baseTheme.activeTextColor, "border-blue-500"]),
+        false: cls([baseTheme.defaultTextColor, baseTheme.hoverBorder]),
       },
-      variant: userTheme.BaseVariants,
-      size: [userTheme.SpacingSizes, userTheme.TextSizes],
+      variant: baseTheme.BaseVariants,
+      size: [baseTheme.SpacingSizes, baseTheme.TextSizes],
     },
   }),
 };

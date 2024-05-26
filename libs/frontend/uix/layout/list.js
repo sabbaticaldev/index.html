@@ -21,6 +21,7 @@ export default {
   },
   theme: ({ JustifyContent, SpacingSizes, Gaps }) => ({
     "uix-list": {
+      _base: "flex",
       spacing: SpacingSizes,
       gap: Gaps,
       justify: JustifyContent,

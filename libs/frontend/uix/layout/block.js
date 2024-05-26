@@ -7,7 +7,7 @@ export default {
     containerClass: T.string(),
     full: T.boolean(),
   },
-  theme: ({ cls, SpacingSizes, BaseVariants }) => ({
+  theme: ({ SpacingSizes, BaseVariants }) => ({
     "uix-block": {
       spacing: SpacingSizes,
       variant: BaseVariants,

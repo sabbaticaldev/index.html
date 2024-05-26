@@ -11,12 +11,12 @@ const Table = {
     const startIndex = (this.currentPage - 1) * this.resultsPerPage;
     return this.rows.slice(startIndex, startIndex + this.resultsPerPage);
   },
-  theme: () => ({
+  theme: {
     "uix-table": "w-full text-sm text-left text-gray-500 dark:text-gray-400",
     "uix-table__header":
       "p-3 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400",
     "uix-table__cell": "px-3 py-2 text-xs",
-  }),
+  },
   render() {
     const headerElements = this.headers.map(
       (header) =>

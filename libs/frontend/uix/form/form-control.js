@@ -31,12 +31,12 @@ const FormControl = {
       </div>
     `;
   },
-  theme: () => ({
+  theme: {
     "uix-form-control": "form-control w-full",
     "uix-form-control__label": "label",
     "uix-form-control__label-text": "label-text",
     "uix-form-control__label-alt": "label-text-alt",
-  }),
+  },
 };
 
 export default FormControl;

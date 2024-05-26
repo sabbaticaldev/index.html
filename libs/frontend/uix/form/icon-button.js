@@ -1,24 +1,5 @@
 import { html, T } from "helpers";
 
-/**
- * Icon Button component
- *
- * The Icon Button component is a button that displays an icon.
- *
- * ## Usage
- *
- * ```html
- * <uix-icon-button icon="home" variant="primary"></uix-icon-button>
- * ```
- *
- * ## Props
- *
- * - `icon`: The name of the icon to display.
- * - `variant`: The variant of the button. Possible values are "default", "primary", "secondary", etc.
- * - `size`: The size of the button. Possible values are "sm", "md", "lg".
- * - `alt`: The alternative text for the icon.
- *
- */
 const IconButton = {
   props: {
     icon: T.string(),
@@ -32,7 +13,7 @@ const IconButton = {
       variant: BaseVariants,
     },
     "uix-icon-button__icon": {
-      _base: cls(["mx-auto"]),
+      _base: "mx-auto",
       size: TextSizes,
     },
   }),

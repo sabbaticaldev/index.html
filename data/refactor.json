@@ -1,6 +1,6 @@
 {
   "contextSrc": ["libs/frontend", "app/apps/design"],
-  "refactoringFiles": "frontend package uix/crud.package.js",
-  "taskPrompt": "Let's refactor uix/crud.package.js, we will extract the individual components to their own files uix/crud/, creating components inside libs/frontend/uix/chat/ and libs/frontend/uix/crud/ and importing them in a package.js file. Refactor ALL components, don't remove any. Each component should have their own theme property. ",
+  "refactoringFiles": "all files related to the change",
+  "taskPrompt": "we just refactored our code to move some components that were packed in a package to have their own component, with that the theme property that was created in the package level now moved to each component. the code isn't completely refactored to work like that, help me find a issue with the traverseTheme that should work with a theme in the component level that is a function",
   "responseFormat": "xml"
 }

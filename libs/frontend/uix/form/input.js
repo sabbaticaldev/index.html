@@ -67,24 +67,24 @@ const Input = {
       </div>
     `;
   },
-  theme: ({ cls, userTheme }) => ({
+  theme: ({ cls, baseTheme }) => ({
     "uix-input": {
       _base: cls([
         "block w-full appearance-none focus:outline-none focus:ring-0",
-        userTheme.defaultTextColor,
-        userTheme.borderStyles,
-        userTheme.borderWidth,
-        userTheme.borderRadius,
+        baseTheme.defaultTextColor,
+        baseTheme.borderStyles,
+        baseTheme.borderWidth,
+        baseTheme.borderRadius,
       ]),
       active: {
-        true: cls([userTheme.activeTextColor, "border-blue-500"]),
-        false: cls([userTheme.defaultTextColor, userTheme.hoverBorder]),
+        true: cls([baseTheme.activeTextColor, "border-blue-500"]),
+        false: cls([baseTheme.defaultTextColor, baseTheme.hoverBorder]),
       },
-      variant: userTheme.BaseVariants,
-      size: [userTheme.SpacingSizes, userTheme.TextSizes],
+      variant: baseTheme.BaseVariants,
+      size: [baseTheme.SpacingSizes, baseTheme.TextSizes],
     },
     "uix-input__label": {
-      variant: userTheme.BaseVariants,
+      variant: baseTheme.BaseVariants,
       _base: cls([
         "absolute text-sm duration-300 transform -translate-y-4 scale-75 top-0.5 z-10 origin-[0] left-2.5",
         "peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4",

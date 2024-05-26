@@ -53,18 +53,18 @@ export const AccordionItem = {
     label: T.string(),
     open: T.boolean(),
   },
-  theme: () => ({
+  theme: {
     "uix-accordion": "",
-    "uix-accordion-item": ({ open }) => ({
+    "uix-accordion-item": {
       _base: "border-b border-gray-200",
       open: { true: "bg-gray-100" },
-    }),
+    },
     "uix-accordion-item__header": "p-4 cursor-pointer",
-    "uix-accordion-item__content": ({ open }) => ({
+    "uix-accordion-item__content": {
       _base: "p-4",
       open: { true: "block", false: "hidden" },
-    }),
-  }),
+    },
+  },
   render() {
     return html`
       <div class=${this.theme("uix-accordion-item", { open: this.open })}>
