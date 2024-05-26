@@ -159,7 +159,6 @@ export async function refactorFolder(options) {
           path.join(outputDirectory, file.filepath),
         ),
       operation: async ({ filepath, index }) => {
-        console.log(deps.refactoredFileMap);
         const file = deps.refactoredFileMap[index];
         fs.mkdirSync(path.dirname(filepath), { recursive: true });
         fs.writeFileSync(filepath, file.content, "utf-8");

@@ -41,7 +41,7 @@ const theme = {
   "uix-app-shell": "w-full h-full flex flex-col",
   "uix-app-shell__content": "flex h-full",
   "uix-app-shell__main": "relative content flex-grow overflow-y-auto",
-});
+};
 
 export default {
   i18n: {},
