@@ -38,7 +38,6 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   const templateData = loadTemplate(templateFile);
   let prompt = templateData.prompt;
   const inputParameters = Object.keys(templateData.inputParams);
-  const rootElement = Object.keys(templateData.outputParams)[0];
 
   // Replace placeholders with actual values
   inputParameters.forEach((param) => {
@@ -52,7 +51,6 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   const exampleOutput = generateExample(
     templateData.exampleOutput,
     responseFormat,
-    rootElement,
   );
   console.log({ exampleOutput });
   prompt = prompt.replace(

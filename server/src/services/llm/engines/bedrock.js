@@ -61,7 +61,7 @@ const bedrockStrategy =
         accept,
         body: JSON.stringify(body),
       };
-      console.log(JSON.stringify(params));
+
       let data;
       try {
         data = await client.send(new InvokeModelCommand(params));
