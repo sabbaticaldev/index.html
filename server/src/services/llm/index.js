@@ -54,12 +54,12 @@ const generatePrompt = (config, templateFile, responseFormat) => {
     responseFormat,
     rootElement,
   );
+  console.log({ exampleOutput });
   prompt = prompt.replace(
     "{example}",
     `Input:\n${exampleInput}\nOutput:\n${exampleOutput}`,
   );
-  console.log({ exampleInput, exampleOutput });
-  //console.log({prompt});
+
   return prompt;
 };
 
@@ -73,7 +73,6 @@ const generateExample = (exampleData, responseFormat = "json", rootElement) => {
 };
 
 const cleanLLMResponse = (response, format) => {
-  console.log({ response, format });
   try {
     if (format === "json") {
       const firstBraceIndex = response.indexOf("{");

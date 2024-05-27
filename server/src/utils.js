@@ -119,6 +119,7 @@ export const parseXML = (xml) => {
     { explicitArray: false, mergeAttrs: true, explicitRoot: false },
     (err, parsedResult) => {
       if (err) {
+        console.log({ err });
         throw new Error("Failed to parse XML");
       }
 
@@ -128,7 +129,11 @@ export const parseXML = (xml) => {
         if (Array.isArray(obj)) return obj.map(transform);
         return Object.entries(obj).reduce((acc, [key, value]) => {
           if (key === "item" && Array.isArray(value)) {
-            acc = value.map(transform);
+            acc[key] = value.map(transform);
+          } else if (typeof value === "object" && value.item) {
+            acc[key] = Array.isArray(value.item)
+              ? value.item.map(transform)
+              : [transform(value.item)];
           } else {
             acc[key] = transform(value);
           }
@@ -142,7 +147,7 @@ export const parseXML = (xml) => {
   return result;
 };
 
-export const generateXMLFormat = (exampleOutput, rootElement = "files") => {
+export const generateXMLFormat = (exampleOutput, rootElement = "root") => {
   const needsCDATA = (str) => {
     const pattern = /[^\w\s.,-]/; // Regex to check for non-alphanumeric characters and some allowed symbols
     return pattern.test(str);
@@ -178,5 +183,6 @@ export const generateXMLFormat = (exampleOutput, rootElement = "files") => {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <${rootElement}>
   ${convertToXML(exampleOutput)}
-</${rootElement}>`;
+</${rootElement}>
+`;
 };

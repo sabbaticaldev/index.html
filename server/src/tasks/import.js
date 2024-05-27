@@ -7,8 +7,8 @@ export const importXmlFiles = async (xmlFilePath) => {
   try {
     const xmlContent = await fs.promises.readFile(xmlFilePath, "utf8");
     const parsedXml = parseXML(xmlContent);
-
-    for (const file of parsedXml.item) {
+    console.log({ parsedXml });
+    for (const file of parsedXml) {
       const { filepath, content } = file;
       const outputPath = path.join(process.cwd(), filepath);
 
