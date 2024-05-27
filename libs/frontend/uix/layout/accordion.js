@@ -14,14 +14,15 @@ export default {
   },
 
   theme: {
-    "uix-accordion": "",
+    "uix-accordion": "divide-y divide-gray-200",
     "uix-accordion-item": {
-      _base: "border-b border-gray-200",
-      open: { true: "bg-gray-100" },
+      _base: "py-4",
+      open: { true: "bg-gray-50" },
     },
-    "uix-accordion-item__header": "p-4 cursor-pointer",
+    "uix-accordion-item__header":
+      "flex justify-between items-center cursor-pointer px-4",
     "uix-accordion-item__content": {
-      _base: "p-4",
+      _base: "px-4 pt-4",
       open: { true: "block", false: "hidden" },
     },
   },
@@ -29,34 +30,36 @@ export default {
     return html`
       <div class=${this.theme("uix-accordion")}>
         ${this.items.map(
-    (item, index) =>
+          (item, index) =>
             html`
               <div
                 class=${this.theme("uix-accordion-item", {
-    open: Boolean(item.open),
-  })}
+                  open: Boolean(item.open),
+                })}
               >
                 <div
                   class=${this.theme("uix-accordion-item__header")}
                   @click=${() => this.setItemOpen(index, !item.open)}
                 >
                   ${item.label}
+                  <uix-icon
+                    name=${item.open ? "chevron-up" : "chevron-down"}
+                  ></uix-icon>
                 </div>
                 <div
                   class=${this.theme("uix-accordion-item__content", {
-    open: Boolean(item.open),
-  })}
+                    open: Boolean(item.open),
+                  })}
                 >
                   ${item.content}
                 </div>
               </div>
             `,
-  )}
+        )}
       </div>
     `;
   },
   setItemOpen(index, open) {
-    console.log({ index, open });
     const item = this.items[index];
     if (!this.allowMultiple) {
       this.items = this.items.map((i) => ({
@@ -65,7 +68,6 @@ export default {
       }));
     } else {
       this.items[index].open = open;
-      console.log(this.items[index]);
       this.requestUpdate();
     }
   },
