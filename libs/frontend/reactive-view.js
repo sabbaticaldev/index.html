@@ -72,10 +72,13 @@ const defineSyncProperty = (instance, key, prop) => {
         : null;
       const currentValue = instance[key];
       if (currentValue !== value) {
-        console.log({ currentValue, value });
         syncAdapters[prop.sync].setItem(prop.key || key, value);
         instance[key] = value;
         instance.requestUpdate();
+        syncKeyMap.get(syncKey).forEach((syncInstance) => {
+          if (syncInstance === instance) return;
+          syncInstance.requestUpdate();
+        });
       }
     }
   };
