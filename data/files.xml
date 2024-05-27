@@ -1,0 +1,468 @@
+<files>
+    <item>
+      <filepath><![CDATA[app/apps/design/app.js]]></filepath>
+      <content><![CDATA[import { baseTheme } from "frontend";
+import { html, T } from "helpers";
+
+import sharedPackage from "/shared.package.js";
+
+import { appSection } from "./sections/app/package.js";
+import { pageSection } from "./sections/page/package.js";
+
+const sections = {
+  app: appSection,
+  page: pageSection,
+};
+
+export default {
+  i18n: {},
+  ...sharedPackage,
+  views: {
+    ...sharedPackage.views,
+    "app-page": {
+      render: function () {
+        return html`
+          <uix-list justify="between">
+            <app-design
+              class=${this.theme("app-design__container")}
+            ></app-design>
+            <app-design-menu></app-design-menu>
+          </uix-list>
+        `;
+      },
+    },
+    "app-design": {
+      theme: {
+        "app-design__container": "grow",
+      },
+      props: {
+        currentRoute: T.string({
+          sync: "url",
+        }),
+        routes: T.array(),
+      },
+      connectedCallback: function () {
+        this.setRoutes(
+          Object.entries(sections)
+            .map(([sectionKey, sectionComponents]) =>
+              Object.entries(sectionComponents).map(
+                ([componentKey, component]) => ({
+                  path: [sectionKey, componentKey].join("-"),
+                  component: this.renderActiveSection(component),
+                  label: component.label,
+                  sectionLabel:
+                    sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1),
+                }),
+              ),
+            )
+            .flat(),
+        );
+      },
+      render: function () {
+        const { routes } = this;
+        return html`
+          <uix-block>
+            <uix-text size="4xl">Design System</uix-text>
+            <uix-divider></uix-divider>
+            <uix-list>
+              <uix-accordion
+                allowMultiple
+                .items=${Object.entries(sections).map(
+    ([sectionKey, sectionComponents]) => ({
+      label: sectionKey,
+      content: html`<uix-list vertical
+                      >${Object.entries(sectionComponents).map(
+        ([componentKey, component]) => html`<uix-text
+                          size="sm"
+                          .onclick=${() =>
+        this.setCurrentRoute(
+          [sectionKey, componentKey].join("-"),
+                            )}
+                          >${component.label}</uix-text
+                        >`,
+      )}
+                    </uix-list>`,
+    }),
+  )}
+              ></uix-accordion>
+              <uix-router
+                .routes=${routes}
+                currentRoute=${this.currentRoute || "app-app-shell"}
+              ></uix-router>
+            </uix-list>
+          </uix-block>
+        `;
+      },
+      setCurrentRoute(route) {
+        this.currentRoute = route;
+      },
+      renderActiveSection(component) {
+        return html`
+          <uix-list vertical gap="lg" spacing="lg">
+            ${component.components.map((example) => {
+              return html`
+                <div>
+                  <uix-text size="lg">${example.label}</uix-text>
+                  ${example.render()}
+                </div>
+              `;
+            })}
+          </uix-list>
+        `;
+      },
+    },
+    "app-design-menu": {
+      props: {
+        userTheme: T.object({
+          defaultValue: baseTheme,
+        }),
+      },
+      updateTheme: function (theme) {
+        this.setTheme(theme);
+        setTimeout(() => {
+          this.constructor.updateTheme(theme);
+        }, 0);
+      },
+      render: function () {
+        const { userTheme = baseTheme, setUserTheme } = this;
+
+        return html`
+          <uix-list
+            vertical
+            gap="md"
+            class=${this.theme("app-design-menu__container")}
+          >
+            <uix-text weight="medium" size="3xl"> Theme </uix-text>
+            <section>
+              <uix-text weight="medium" size="xl">Primary color</uix-text>
+              <uix-color-picker
+                .selectedColor=${baseTheme.colors.primary}
+                .colors=${baseTheme.commonColors}
+                colorKey="primary"
+                .updateTheme=${(theme) => this.updateTheme(theme)}
+                .userTheme=${userTheme}
+              ></uix-color-picker>
+            </section>
+            <section>
+              <uix-text weight="medium" size="xl">Secondary color</uix-text>
+              <uix-color-picker
+                .selectedColor=${baseTheme.colors.secondary}
+                .colors=${baseTheme.commonColors}
+                colorKey="secondary"
+                .updateTheme=${(theme) => this.updateTheme(theme)}
+                .userTheme=${userTheme}
+              ></uix-color-picker>
+            </section>
+            <section>
+              <uix-text weight="medium" size="xl">Gray color</uix-text>
+              <uix-color-picker
+                .selectedColor=${baseTheme.colors.grey}
+                .colors=${baseTheme.greyColors}
+                colorKey="default"
+                .updateTheme=${(theme) => this.updateTheme(theme)}
+                .userTheme=${userTheme}
+              ></uix-color-picker>
+            </section>
+            <section>
+              <uix-text weight="medium" size="xl">Border</uix-text>
+              <uix-range
+                variant="accent"
+                max="8"
+                value=${userTheme.borderRadius}
+                .change=${(value) => {
+                  const newTheme = { ...userTheme, borderRadius: value };
+                  setUserTheme(newTheme);
+                  setTimeout(() => {
+                    this.updateTheme(newTheme);
+                  }, 0);
+                }}
+              ></uix-range>
+            </section>
+            <section>
+              <uix-text weight="medium" size="xl">Scaling</uix-text>
+              <uix-list gap="md">
+                ${["90%", "95%", "100%", "105%", "110%"].map(
+                  (scale) => html` <uix-button> ${scale} </uix-button> `,
+  )}
+              </uix-list>
+            </section>
+            <footer>
+              <uix-button
+                variant="primary"
+                @click=${() => this.updateTheme(userTheme)}
+              >
+                Save
+              </uix-button>
+            </footer>
+          </uix-list>
+        `;
+      },
+    },
+  },
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/app/app-shell.js]]></filepath>
+      <content><![CDATA[import { html } from "helpers";
+
+export const appShellSection = {
+  label: "App Shell",
+  components: [
+    {
+      label: "Default App Shell",
+      render: () => html`
+        <uix-app-shell>
+          <uix-header slot="top-navbar">
+            <uix-logo>MyLogo</uix-logo>
+            <uix-navigation>
+              <uix-nav-item href="#">Home</uix-nav-item>
+              <uix-nav-item href="#">About</uix-nav-item>
+              <uix-nav-item href="#">Contact</uix-nav-item>
+            </uix-navigation>
+          </uix-header>
+          <uix-drawer slot="left-navbar">
+            <uix-list vertical>
+              <uix-list-item>Menu Item 1</uix-list-item>
+              <uix-list-item>Menu Item 2</uix-list-item>
+            </uix-list>
+          </uix-drawer>
+          <uix-block>
+            <p>Main content goes here.</p>
+          </uix-block>
+          <uix-footer slot="bottom-navbar">
+            <p>© 2024 Your Company</p>
+          </uix-footer>
+        </uix-app-shell>
+      `,
+    },
+  ],
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/app/package.js]]></filepath>
+      <content><![CDATA[import { appShellSection } from "./app-shell.js";
+import { routerSection } from "./router.js";
+
+export const appSection = {
+  appShell: appShellSection,
+  router: routerSection,
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/app/router.js]]></filepath>
+      <content><![CDATA[import { html } from "helpers";
+
+export const routerSection = {
+  label: "Router",
+  components: [
+    {
+      label: "Default Router",
+      render: () => html`
+        <uix-router
+          .routes=${[
+            { path: "/", component: html`<uix-block>Home</uix-block>` },
+            { path: "/about", component: html`<uix-block>About</uix-block>` },
+            { path: "/contact", component: html`<uix-block>Contact</uix-block>` },
+          ]}
+        ></uix-router>
+      `,
+    },
+  ],
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/page/feature-block.js]]></filepath>
+      <content><![CDATA[import { html } from "helpers";
+
+export const featureBlockSection = {
+  label: "Feature Block",
+  components: [
+    {
+      label: "Default Feature Block",
+      render: () => html`
+        <uix-feature-block
+          icon="star"
+          title="Amazing Feature"
+          description="Some details about this amazing feature."
+        ></uix-feature-block>
+      `,
+    },
+  ],
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/page/feature-list.js]]></filepath>
+      <content><![CDATA[import { html } from "helpers";
+
+export const featureListSection = {
+  label: "Feature List",
+  components: [
+    {
+      label: "Default Feature List",
+      render: () => html`
+        <uix-feature-list
+          .items=${[
+            { icon: "checkmark-circle", text: "Feature 1" },
+            { icon: "checkmark-circle", text: "Feature 2" },
+          ]}
+        ></uix-feature-list>
+      `,
+    },
+  ],
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/page/footer.js]]></filepath>
+      <content><![CDATA[import { html } from "helpers";
+
+export const footerSection = {
+  label: "Footer",
+  components: [
+    {
+      label: "Default Footer",
+      render: () => html`
+        <uix-footer
+          copyright="© 2024 Your Company"
+          .links=${[
+            { text: "Privacy Policy", href: "#" },
+            { text: "Terms of Service", href: "#" },
+          ]}
+        ></uix-footer>
+      `,
+    },
+  ],
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/page/header.js]]></filepath>
+      <content><![CDATA[import { html } from "helpers";
+
+export const headerSection = {
+  label: "Header",
+  components: [
+    {
+      label: "Default Header",
+      render: () => html`
+        <uix-header
+          logo="MyLogo"
+          .navItems=${[
+            { text: "Home", href: "#" },
+            { text: "About", href: "#" },
+            { text: "Contact", href: "#" },
+          ]}
+        ></uix-header>
+      `,
+    },
+  ],
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/page/hero.js]]></filepath>
+      <content><![CDATA[import { html } from "helpers";
+
+export const heroSection = {
+  label: "Hero",
+  components: [
+    {
+      label: "Default Hero",
+      render: () => html`
+        <uix-hero
+          title="Welcome to Our Website"
+          subtitle="Discover our features and services."
+          buttonText="Get Started"
+          .buttonClick=${() => console.log("Get Started clicked")}
+        ></uix-hero>
+      `,
+    },
+  ],
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/page/package.js]]></filepath>
+      <content><![CDATA[import { featureBlockSection } from "./feature-block.js";
+import { featureListSection } from "./feature-list.js";
+import { footerSection } from "./footer.js";
+import { headerSection } from "./header.js";
+import { heroSection } from "./hero.js";
+import { pricingTableSection } from "./pricing-table.js";
+import { statsSection } from "./stats.js";
+import { testimonialSection } from "./testimonial.js";
+
+export const pageSection = {
+  featureBlock: featureBlockSection,
+  featureList: featureListSection,
+  footer: footerSection,
+  header: headerSection,
+  hero: heroSection,
+  pricingTable: pricingTableSection,
+  stats: statsSection,
+  testimonial: testimonialSection,
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/page/pricing-table.js]]></filepath>
+      <content><![CDATA[import { html } from "helpers";
+
+export const pricingTableSection = {
+  label: "Pricing Table",
+  components: [
+    {
+      label: "Default Pricing Table",
+      render: () => html`
+        <uix-pricing-table
+          .plans=${[
+            {
+              name: "Basic Plan",
+              price: "$9.99/month",
+              buttonText: "Choose Plan",
+              buttonClick: () => console.log("Basic Plan clicked"),
+            },
+            {
+              name: "Pro Plan",
+              price: "$19.99/month",
+              buttonText: "Choose Plan",
+              buttonClick: () => console.log("Pro Plan clicked"),
+            },
+          ]}
+        ></uix-pricing-table>
+      `,
+    },
+  ],
+};
+]]></content>
+    </item>
+    <item>
+      <filepath><![CDATA[app/apps/design/sections/page/stats.js]]></filepath>
+      <content><![CDATA[import { html } from "helpers";
+
+export const statsSection = {
+  label: "Stats",
+  components: [
+    {
+      label: "Default Stats",
+      render: () => html`
+        <uix-stats
+          .items=${[
+            { value: "10k+", label: "Users" },
+            { value: "500+", label: "Projects" },
+          ]}
+        ></uix-stats>
+      `,
+    },
+  ],
+};
+]]></content>
+    </item>
+    <item>
+    </files>
+    

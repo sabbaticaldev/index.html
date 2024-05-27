@@ -5,10 +5,12 @@ import { hideBin } from "yargs/helpers";
 
 import { GetTrends } from "../services/instagram.js";
 import settings from "../settings.js";
+import { importXmlFiles } from "./import.js";
 import { createReelRipOff } from "./instagram.js";
 import { createMapVideo, createZoomInVideo } from "./maps.js";
 import { refactorFolder } from "./refactor.js";
 import { CreateVideoFromImage } from "./video.js";
+
 // Helper function to determine if input is a file and read JSON or JS asynchronously
 const readFile = async (filePath) => {
   const fullFilePath = path.resolve(settings.__dirname, "../../", filePath);
@@ -122,6 +124,20 @@ const yarg = yargs(hideBin(process.argv))
     },
   )
   .command(
+    "importXml <input>",
+    "Import files from an XML file",
+    (yargs) => {
+      yargs.positional("input", {
+        describe: "Path to an XML file with file import details",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const xmlFilePath = argv.input;
+      await importXmlFiles(xmlFilePath);
+    },
+  )
+  .command(
     "get-trends <type>",
     "Fetch trending data from Instagram",
     (yargs) => {
@@ -159,7 +175,7 @@ const yarg = yargs(hideBin(process.argv))
 yarg
   .demandCommand(
     1,
-    "You must specify a command (reel, animate, map-route, map-zoom, refactor, get-trends, or get-media) and provide necessary input.",
+    "You must specify a command (reel, animate, map-route, map-zoom, refactor, importXml, get-trends, or get-media) and provide necessary input.",
   )
   .help()
   .parse();

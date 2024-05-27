@@ -119,7 +119,6 @@ export const parseXML = (xml) => {
     { explicitArray: false, mergeAttrs: true, explicitRoot: false },
     (err, parsedResult) => {
       if (err) {
-        console.log({ err, length: xml.length, last: xml.slice(-500) });
         throw new Error("Failed to parse XML");
       }
 

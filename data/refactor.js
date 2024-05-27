@@ -1,9 +1,15 @@
 export default {
-  contextSrc: ["libs/frontend", "app/apps/design"],
-  refactoringFiles:
-    "app/apps/design/sections/app files, app/apps/design/sections/page files and app/apps/design/app.js",
-  taskPrompt: `We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
-  lets refactor design/app.js and the new sections folders/files to reflect the components related to app and to page
+  contextSrc: ["server/src/"],
+  refactoringFiles: "files affected by the change",
+  taskPrompt: `
+  we have tasks that are run like pnpm tasks reel reel.json and pnpm tasks refactor refactor.json
+  now I want to crete one that will be pnpm tasks importXml file.xml
+  the tasks/index.js is already refactored, no need to give me it
+  
+  it will have the format: 
+  <files><item><filepath><![CDATA[src/utils.js]]></filepath><content><![CDATA[<html>Refactored file content here &&</html>]]></content></item><item><filepath><![CDATA[src/models.js]]></filepath><content><![CDATA[<html>Refactored file content here</html>]]></content></item></files>
+
+  and it should import the files to the filepath specified and the content just like the last parts of pnpm tasks refactor
   `,
   responseFormat: "xml",
 };
