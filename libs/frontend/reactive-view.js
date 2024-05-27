@@ -4,7 +4,7 @@ import { Theme } from "./theme.js";
 
 const resolveThemeValue = ({ theme = {}, props = {}, key = "" }) => {
   if (Array.isArray(theme)) {
-    return theme.map((entry) => entry[key]).join(" ");
+    return theme.map((entry) => entry && entry[key]).join(" ");
   }
   if (typeof theme === "function") {
     return theme(props);
