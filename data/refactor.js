@@ -1,9 +1,9 @@
 export default {
   contextSrc: ["libs/frontend", "app/apps/design"],
   refactoringFiles:
-    "the refactored app/apps/design/app.js, the added package.js files for each section",
+    "libs/frontend/ for the uix/app and the uix/page folders and files that change and the change in frontend/index.js importing them",
   taskPrompt: `We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
-  let's refactor design/app.js to reduce the amount of imports. Let's create a package.js for each section and include there the imports and then in design/app.js import the sections. Update app.js logic to accept this new format of receiving the sections/components
+  lets refactor libs/frontend to split the uix/app components into app and page and have each their own components as refactored previously in the app/apps/design/sections
   `,
   responseFormat: "xml",
 };
