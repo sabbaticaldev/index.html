@@ -13,6 +13,7 @@ import {
   layoutKit,
   loadTheme,
   navigationKit,
+  pageKit,
   reset,
 } from "frontend";
 import { getUrlBlob, injectStyle, isValidApp } from "helpers";
@@ -25,6 +26,7 @@ export const loadFrontendFiles = (app) => {
     chatKit,
     contentKit,
     crudKit,
+    pageKit,
     datetimeKit,
     docsKit,
     formKit,
