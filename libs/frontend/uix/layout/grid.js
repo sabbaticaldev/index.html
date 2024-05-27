@@ -1,12 +1,14 @@
-// grid.js
-import { html } from "helpers";
+import { html, T } from "helpers";
 
 const Grid = {
   props: {
-    // Define grid props like columns, rows, gap, etc.
+    cols: T.string({ defaultValue: "1" }),
+    rows: T.string({ defaultValue: "1" }),
+    gap: T.string({ defaultValue: "0" }),
   },
   theme: {
-    // Define grid theme classes
+    "uix-grid": ({ cols, rows, gap }) =>
+      `grid grid-cols-${cols} grid-rows-${rows} gap-${gap}`,
   },
   render() {
     return html`

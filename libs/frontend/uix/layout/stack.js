@@ -1,12 +1,13 @@
-// stack.js
-import { html } from "helpers";
+import { html, T } from "helpers";
 
 const Stack = {
   props: {
-    // Define stack props like direction, spacing, etc.
+    spacing: T.string({ defaultValue: "0" }),
+    direction: T.string({ defaultValue: "column" }),
   },
   theme: {
-    // Define stack theme classes
+    "uix-stack": ({ spacing, direction }) =>
+      `flex flex-${direction} space-${direction}-${spacing}`,
   },
   render() {
     return html`

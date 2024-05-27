@@ -1,12 +1,16 @@
-// flex.js
-import { html } from "helpers";
+import { html, T } from "helpers";
 
 const Flex = {
   props: {
-    // Define flex props like direction, wrap, justify, align, etc.
+    direction: T.string({ defaultValue: "row" }),
+    wrap: T.string({ defaultValue: "nowrap" }),
+    justify: T.string({ defaultValue: "start" }),
+    align: T.string({ defaultValue: "stretch" }),
+    gap: T.string({ defaultValue: "0" }),
   },
   theme: {
-    // Define flex theme classes
+    "uix-flex": ({ direction, wrap, justify, align, gap }) =>
+      `flex flex-${direction} flex-${wrap} justify-${justify} items-${align} gap-${gap}`,
   },
   render() {
     return html`
