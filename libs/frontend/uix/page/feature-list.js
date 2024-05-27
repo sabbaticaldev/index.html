@@ -1,5 +1,4 @@
 import { html, T } from "helpers";
-
 const FeatureList = {
   props: {
     items: T.array({
@@ -17,21 +16,20 @@ const FeatureList = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-feature-list")}>
+      <uix-list class=${this.theme("uix-feature-list")}>
         ${this.items.map(
-          (item) => html`
-            <div class=${this.theme("uix-feature-list__item")}>
+    (item) => html`
+            <uix-list class=${this.theme("uix-feature-list__item")}>
               <uix-icon
                 class=${this.theme("uix-feature-list__icon")}
                 name=${item.icon}
               ></uix-icon>
-              <p>${item.text}</p>
-            </div>
+              <uix-text>${item.text}</uix-text>
+            </uix-list>
           `,
   )}
-      </div>
+      </uix-list>
     `;
   },
 };
-
 export default FeatureList;

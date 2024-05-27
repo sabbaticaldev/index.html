@@ -1,5 +1,4 @@
 import { html, T } from "helpers";
-
 const FeatureBlock = {
   props: {
     icon: T.string(),
@@ -14,7 +13,7 @@ const FeatureBlock = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-feature-block")}>
+      <uix-block class=${this.theme("uix-feature-block")}>
         <uix-icon
           class=${this.theme("uix-feature-block__icon")}
           name=${this.icon}
@@ -22,12 +21,11 @@ const FeatureBlock = {
         <uix-text class=${this.theme("uix-feature-block__title")} size="xl"
           >${this.title}</uix-text
         >
-        <p class=${this.theme("uix-feature-block__description")}>
-          ${this.description}
-        </p>
-      </div>
+        <uix-text class=${this.theme("uix-feature-block__description")}
+          >${this.description}</uix-text
+        >
+      </uix-block>
     `;
   },
 };
-
 export default FeatureBlock;

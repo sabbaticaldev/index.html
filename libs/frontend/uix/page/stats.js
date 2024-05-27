@@ -1,5 +1,4 @@
 import { html, T } from "helpers";
-
 const Stats = {
   props: {
     items: T.array({
@@ -18,20 +17,21 @@ const Stats = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-stats")}>
+      <uix-list class=${this.theme("uix-stats")}>
         ${this.items.map(
-          (item) => html`
-            <div class=${this.theme("uix-stat")}>
+    (item) => html`
+            <uix-block class=${this.theme("uix-stat")}>
               <uix-text class=${this.theme("uix-stat__value")} size="2xl"
                 >${item.value}</uix-text
               >
-              <p class=${this.theme("uix-stat__label")}>${item.label}</p>
-            </div>
+              <uix-text class=${this.theme("uix-stat__label")}
+                >${item.label}</uix-text
+              >
+            </uix-block>
           `,
   )}
-      </div>
+      </uix-list>
     `;
   },
 };
-
 export default Stats;

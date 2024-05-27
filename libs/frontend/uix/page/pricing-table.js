@@ -1,5 +1,4 @@
 import { html, T } from "helpers";
-
 const PricingTable = {
   props: {
     plans: T.array({
@@ -20,25 +19,24 @@ const PricingTable = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-pricing-table")}>
+      <uix-list class=${this.theme("uix-pricing-table")}>
         ${this.plans.map(
-          (plan) => html`
-            <div class=${this.theme("uix-pricing-plan")}>
+    (plan) => html`
+            <uix-block class=${this.theme("uix-pricing-plan")}>
               <uix-text class=${this.theme("uix-pricing-plan__name")} size="xl"
                 >${plan.name}</uix-text
               >
-              <p class=${this.theme("uix-pricing-plan__price")}>
-                ${plan.price}
-              </p>
+              <uix-text class=${this.theme("uix-pricing-plan__price")}
+                >${plan.price}</uix-text
+              >
               <uix-button @click=${plan.buttonClick}
                 >${plan.buttonText}</uix-button
               >
-            </div>
+            </uix-block>
           `,
-        )}
-      </div>
+  )}
+      </uix-list>
     `;
   },
 };
-
 export default PricingTable;

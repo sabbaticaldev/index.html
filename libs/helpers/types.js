@@ -68,7 +68,7 @@ export const T = {
   string: (options = {}) => ({
     type: "string",
     defaultValue: options.defaultValue || "",
-    enum: options.enum || [],
+    enum: options.enum,
     ...options,
   }),
 

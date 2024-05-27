@@ -1,16 +1,26 @@
-// container.js
-import { html } from "helpers";
+import { html, T } from "helpers";
 
 const Container = {
   props: {
-    // Define container props like maxWidth, padding, etc.
+    width: T.string({ defaultValue: "full" }),
+    height: T.string({ defaultValue: "auto" }),
+    align: T.string({ defaultValue: "center" }),
+    justify: T.string({ defaultValue: "center" }),
+    padding: T.string({ defaultValue: "4" }),
+    responsive: T.boolean({ defaultValue: false }),
   },
   theme: {
-    // Define container theme classes
+    "uix-container": {
+      _base: ({ width, height, align, justify, padding }) =>
+        `w-${width} h-${height} flex flex-col items-${align} justify-${justify} p-${padding}`,
+      responsive: {
+        true: "sm:w-full md:w-4/5 lg:w-3/4 xl:w-2/3",
+      },
+    },
   },
   render() {
     return html`
-      <div class=${this.theme("uix-container")}>
+      <div class=${this.theme("uix-container", this)}>
         <slot></slot>
       </div>
     `;

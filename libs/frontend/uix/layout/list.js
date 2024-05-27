@@ -15,7 +15,6 @@ export default {
     justify: T.string(),
     spacing: T.string({ defaultValue: "sm" }),
     gap: T.string({ defaultValue: "sm" }),
-    full: T.boolean(),
     rounded: T.boolean(),
     containerClass: T.string(),
   },
@@ -25,14 +24,15 @@ export default {
       spacing: SpacingSizes,
       gap: Gaps,
       justify: JustifyContent,
-      full: ({ vertical }) => ({ true: vertical ? "w-full" : "h-full" }),
-      vertical: { true: "flex-col" },
-      responsive: ({ vertical }) => ({
-        true: vertical ? "lg:flex-col sm:flex-row" : "sm:flex-col lg:flex-row",
-      }),
-      reverse: ({ vertical }) => ({
-        true: vertical ? "flex-col-reverse" : "flex-row-reverse",
-      }),
+      vertical: { true: "flex-col w-full", false: "h-full" },
+      responsive: {
+        true: "lg:flex-col sm:flex-row",
+        false: "sm:flex-col lg:flex-row",
+      },
+      reverse: {
+        true: "flex-col-reverse",
+        false: "flex-row-reverse",
+      },
     },
   }),
   ...droparea,

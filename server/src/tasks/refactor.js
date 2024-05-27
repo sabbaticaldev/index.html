@@ -5,19 +5,14 @@ import util from "util";
 
 import { generatePrompt, LLM, loadTemplate } from "../services/llm/index.js";
 import { checkAndExecute, executeTasks } from "../utils.js";
-
 const execAsync = util.promisify(exec);
 const deps = {};
-
 function readDirectory(source) {
   const files = {};
-
   function traverseDirectory(directory) {
     const entries = fs.readdirSync(directory, { withFileTypes: true });
-
     for (const entry of entries) {
       const fullPath = path.join(directory, entry.name);
-
       if (entry.isDirectory()) {
         traverseDirectory(fullPath);
       } else if (entry.isFile() && entry.name.endsWith(".js")) {
@@ -26,7 +21,6 @@ function readDirectory(source) {
       }
     }
   }
-
   if (Array.isArray(source)) {
     source.forEach(traverseDirectory);
   } else {
@@ -34,7 +28,6 @@ function readDirectory(source) {
   }
   return files;
 }
-
 async function runESLintFix(files) {
   const fileArgs = files.join(" ");
   try {
@@ -44,13 +37,13 @@ async function runESLintFix(files) {
     console.error("ESLint failed:", error);
   }
 }
-
 export async function refactorFolder(options) {
   const {
     contextSrc,
     refactoringFiles,
     taskPrompt,
     responseFormat = "json",
+    strategy = "file",
   } = options;
   const outputDirectory = `code/${refactoringFiles
     .replace(/[^a-z0-9]/gi, "_")
@@ -59,7 +52,6 @@ export async function refactorFolder(options) {
   const promptFilePath = path.join(outputDirectory, "prompt.txt");
   const commitMessageFilePath = path.join(".git", "COMMIT_EDITMSG");
   fs.mkdirSync(outputDirectory, { recursive: true });
-
   const tasks = [
     {
       description: "Load template",
@@ -117,6 +109,7 @@ export async function refactorFolder(options) {
             refactoringFiles,
             taskPrompt,
             exampleParams,
+            strategy,
           },
           "coding/refactor.json",
           responseFormat,
@@ -138,7 +131,6 @@ export async function refactorFolder(options) {
           path.join(outputDirectory, "llmResponse.json"),
           JSON.stringify(response, null, 2),
         );
-
         const commitMessage = response.commitMessage;
         console.log({ commitMessage }, fs.existsSync(".git"));
         if (commitMessage && fs.existsSync(".git")) {
@@ -188,7 +180,6 @@ export async function refactorFolder(options) {
       },
     },
   ];
-
   try {
     await executeTasks({ tasks, deps, prompt: true });
   } catch (error) {

@@ -1,13 +1,14 @@
 import { html, T } from "helpers";
 
 export default {
+  tag: "uix-divider",
   props: {
     label: T.string(),
     spacing: T.string({ default: "md" }),
   },
   theme: ({ SpacingSizes }) => ({
     "uix-divider": {
-      _base: "flex items-center my-2",
+      _base: "w-full block flex items-center my-2",
       spacing: SpacingSizes,
     },
     "uix-divider__border": "border-t border-gray-400 flex-grow",
@@ -15,14 +16,12 @@ export default {
   }),
   render() {
     return html`
-      <div class=${this.theme("uix-divider")}>
+      <div class=${this.theme("uix-divider__border")}></div>
+      ${this.label &&
+      html`
+        <div class=${this.theme("uix-divider__label")}>${this.label}</div>
         <div class=${this.theme("uix-divider__border")}></div>
-        ${this.label &&
-        html`
-          <div class=${this.theme("uix-divider__label")}>${this.label}</div>
-          <div class=${this.theme("uix-divider__border")}></div>
-        `}
-      </div>
+      `}
     `;
   },
 };

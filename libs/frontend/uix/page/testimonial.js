@@ -1,5 +1,4 @@
 import { html, T } from "helpers";
-
 const Testimonial = {
   props: {
     quote: T.string(),
@@ -12,12 +11,15 @@ const Testimonial = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-testimonial")}>
-        <p class=${this.theme("uix-testimonial__quote")}>${this.quote}</p>
-        <p class=${this.theme("uix-testimonial__author")}>${this.author}</p>
-      </div>
+      <uix-block class=${this.theme("uix-testimonial")}>
+        <uix-text class=${this.theme("uix-testimonial__quote")}
+          >${this.quote}</uix-text
+        >
+        <uix-text class=${this.theme("uix-testimonial__author")}
+          >${this.author}</uix-text
+        >
+      </uix-block>
     `;
   },
 };
-
 export default Testimonial;

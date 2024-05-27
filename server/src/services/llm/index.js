@@ -4,12 +4,8 @@ import path from "path";
 import settings from "../../settings.js";
 import { generateXMLFormat, parseXML } from "../../utils.js";
 import bedrock from "./engines/bedrock.js";
-
 const LLM = (() => {
-  const client = {
-    bedrock: bedrock(settings),
-  };
-
+  const client = { bedrock: bedrock(settings) };
   return {
     execute: async (provider, prompt, options = {}) => {
       const { responseFormat = "json" } = options;
@@ -17,7 +13,6 @@ const LLM = (() => {
       if (!llmClient) {
         throw new Error(`Unsupported LLM provider: ${provider}`);
       }
-
       try {
         let response = await llmClient(prompt, options);
         response = cleanLLMResponse(response, responseFormat);
@@ -29,7 +24,6 @@ const LLM = (() => {
     },
   };
 })();
-
 const loadTemplate = (templateFile) => {
   const filePath = path.join(settings.__dirname, "prompts", templateFile);
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -38,15 +32,11 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   const templateData = loadTemplate(templateFile);
   let prompt = templateData.prompt;
   const inputParameters = Object.keys(templateData.inputParams);
-
-  // Replace placeholders with actual values
   inputParameters.forEach((param) => {
     const value = JSON.stringify(config[param], null, 2) || "";
     const placeholder = `{${param}}`;
     prompt = prompt.replace(placeholder, value);
   });
-
-  // Generate example input and output
   const exampleInput = generateExample(templateData.exampleInput);
   const exampleOutput = generateExample(
     templateData.exampleOutput,
@@ -54,13 +44,11 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   );
   console.log({ exampleOutput });
   prompt = prompt.replace(
-    "{example}",
+    "Input:\n{exampleInput}\nOutput:\n{exampleOutput}",
     `Input:\n${exampleInput}\nOutput:\n${exampleOutput}`,
   );
-
   return prompt;
 };
-
 const generateExample = (exampleData, responseFormat = "json", rootElement) => {
   if (responseFormat === "json") {
     return JSON.stringify(exampleData, null, 2);
@@ -69,7 +57,6 @@ const generateExample = (exampleData, responseFormat = "json", rootElement) => {
   }
   return "";
 };
-
 const cleanLLMResponse = (response, format) => {
   try {
     if (format === "json") {
@@ -87,7 +74,6 @@ const cleanLLMResponse = (response, format) => {
       }
       return parseXML(response);
     } else {
-      // Assuming plain text
       return response.trim();
     }
   } catch (error) {
@@ -95,5 +81,4 @@ const cleanLLMResponse = (response, format) => {
     return response;
   }
 };
-
 export { cleanLLMResponse, generatePrompt, LLM, loadTemplate };

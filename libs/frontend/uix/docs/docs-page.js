@@ -5,7 +5,7 @@ const formattedTitle = (title) => title.toLowerCase().replace(/ /g, "-");
 const renderExamples = (examples) =>
   examples.map(
     (example) => html`
-      <section id="${formattedTitle(example.title)}">
+      <uix-container id="${formattedTitle(example.title)}">
         <uix-block>
           <uix-text size="4">${example.title}</uix-text>
           <p>${example.description}</p>
@@ -14,7 +14,7 @@ const renderExamples = (examples) =>
         <uix-block
           ><uix-mockup-code code=${example.code}></uix-mockup-code
         ></uix-block>
-      </section>
+      </uix-container>
     `,
   );
 
@@ -41,13 +41,13 @@ export default {
     examples: T.array(),
   },
   theme: {
-    "uix-docs-page__container": "flex-grow",
+    "uix-docs-page": "flex-grow",
     "uix-docs-page__contents": "w-1/4 lg:w-1/3 xl:w-1/3",
   },
   render() {
     return html`
       <uix-list layout="responsive">
-        <uix-block class=${this.theme("uix-docs-page__container")}>
+        <uix-block class=${this.theme("uix-docs-page")}>
           <uix-block>
             <uix-text size="2">${this.title}</uix-text>
             <p>${this.description}</p>
