@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import readline from "readline";
 import { parseString } from "xml2js";
 
@@ -186,3 +187,68 @@ export const generateXMLFormat = (exampleOutput, rootElement = "root") => {
 </${rootElement}>
 `;
 };
+
+/**
+ * Apply a unified diff patch to the original content.
+ * Note: This is a simplified implementation and assumes the diffs
+ * are straightforward and do not contain complex conflict resolutions.
+ * @param {string} originalContent - The original content of the file.
+ * @param {string} patchContent - The unified diff patch content.
+ * @returns {string} - The new content with the patch applied.
+ */
+export function applyPatch(originalContent, patchContent) {
+  const originalLines = originalContent.split("\n");
+  const patchLines = patchContent.split("\n");
+  let newContent = [...originalLines];
+  let offset = 0;
+
+  for (const line of patchLines) {
+    if (line.startsWith("@@")) {
+      // Example line: @@ -1,7 +1,7 @@
+      // This regex extracts '1' from the starting position of the change in the original file
+      const lineNumMatch = line.match(/\-(\d+),\d+ \+/);
+      if (lineNumMatch && lineNumMatch.length > 1) {
+        offset = parseInt(lineNumMatch[1], 10) - 1; // Adjust for zero-based index
+      }
+    } else if (line.startsWith("-")) {
+      newContent.splice(offset, 1); // Remove line at current offset
+    } else if (line.startsWith("+")) {
+      newContent.splice(offset, 0, line.substring(1)); // Add new line at current offset
+      offset++;
+    } else if (line.startsWith(" ")) {
+      offset++; // Unchanged line, move to next
+    }
+  }
+
+  return newContent.join("\n");
+}
+
+function readDirectory(sources, extensions = [".js"]) {
+  const files = {};
+
+  function traverseDirectory(directory) {
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        traverseDirectory(fullPath);
+      } else if (
+        entry.isFile() &&
+        extensions.includes(path.extname(entry.name))
+      ) {
+        files[fullPath] = fs.readFileSync(fullPath, "utf8");
+      }
+    }
+  }
+
+  // Handle multiple source directories
+  if (Array.isArray(sources)) {
+    sources.forEach((source) => traverseDirectory(source));
+  } else {
+    traverseDirectory(sources);
+  }
+
+  return files;
+}
+
+export { readDirectory };

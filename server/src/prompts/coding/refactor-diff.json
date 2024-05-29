@@ -1,0 +1,35 @@
+{
+  "persona": "CodeRefactorer",
+  "prompt": "Generate a set of diff patches to refactor the provided files according to the specified coding standards. Consider any file renaming or path changes as necessary.\n\nContext Files:\n{contextFiles}\nRefactoring Files:\n{refactoringFiles}\n\nPrompt: {taskPrompt}",
+  "inputParams": {
+    "contextFiles": "JSON object containing paths and content of context files.",
+    "refactoringFiles": "JSON object containing paths and content of files to be refactored.",
+    "taskPrompt": "Specific instructions or standards to follow for the refactoring."
+  },
+  "outputParams": {
+    "diffPatches": "Array of objects each containing a filepath and the associated diff patch."
+  },
+  "exampleInput": {
+    "contextFiles": {
+      "src/utils.js": "function oldFunction() { console.log('old'); }",
+      "src/constants.js": "const MAX_SIZE = 100;"
+    },
+    "refactoringFiles": {
+      "src/utils.js": "function oldFunction() { console.log('old'); }",
+      "src/constants.js": "const MAX_SIZE = 100;"
+    },
+    "taskPrompt": "Refactor to include new coding standards and consider renaming 'constants.js' to 'config.js'."
+  },
+  "exampleOutput": {
+    "diffPatches": [
+      {
+        "filepath": "src/utils.js",
+        "diff": "-1 function oldFunction() { +1 function newFunction() {"
+      },
+      {
+        "filepath": "src/config.js",
+        "diff": "0a1,2 > const MIN_SIZE = 1; > const MAX_SIZE = 200;"
+      }
+    ]
+  }
+}

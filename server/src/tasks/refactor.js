@@ -3,8 +3,8 @@ import fs from "fs";
 import path from "path";
 import util from "util";
 
-import { generatePrompt, LLM, loadTemplate } from "../services/llm/index.js";
-import { checkAndExecute, executeTasks } from "../utils.js";
+import { generatePrompt, LLM } from "../services/llm/index.js";
+import { applyPatch, executeTasks } from "../utils.js";
 const execAsync = util.promisify(exec);
 const deps = {};
 function readDirectory(source) {
@@ -51,29 +51,16 @@ export async function refactorFolder(options) {
   const contextFilePath = path.join(outputDirectory, "context.json");
   const promptFilePath = path.join(outputDirectory, "prompt.txt");
   const commitMessageFilePath = path.join(".git", "COMMIT_EDITMSG");
+
+  const template = strategy === "diff" ? "refactor-diff" : "refactor";
+  const templateFile = `coding/${template}.json`;
   fs.mkdirSync(outputDirectory, { recursive: true });
   const tasks = [
-    {
-      description: "Load template",
-      key: "template",
-      filePath: path.join(outputDirectory, "template.json"),
-      operation: async () => loadTemplate("coding/refactor.json"),
-    },
     {
       description: "Read context source directory and encode file contents",
       key: "contextFileMap",
       filePath: contextFilePath,
       operation: async () => {
-        if (fs.existsSync(contextFilePath)) {
-          const confirm = await checkAndExecute({
-            description: "Context already exists. Fetch again?",
-            operation: async () => false,
-            prompt: true,
-          });
-          if (!confirm) {
-            return JSON.parse(fs.readFileSync(contextFilePath, "utf8"));
-          }
-        }
         const contextFileMap = readDirectory(contextSrc);
         fs.writeFileSync(
           contextFilePath,
@@ -102,16 +89,14 @@ export async function refactorFolder(options) {
       dependencies: ["template", "contextFileMap", "refactoringFileMap"],
       filePath: promptFilePath,
       operation: async () => {
-        const exampleParams = deps.template.exampleParams;
         const generatedPrompt = generatePrompt(
           {
             contextSrc: JSON.stringify(deps.contextFileMap, null, 2),
             refactoringFiles,
             taskPrompt,
-            exampleParams,
             strategy,
           },
-          "coding/refactor.json",
+          templateFile,
           responseFormat,
         );
         fs.writeFileSync(promptFilePath, generatedPrompt);
@@ -132,7 +117,6 @@ export async function refactorFolder(options) {
           JSON.stringify(response, null, 2),
         );
         const commitMessage = response.commitMessage;
-        console.log({ commitMessage }, fs.existsSync(".git"));
         if (commitMessage && fs.existsSync(".git")) {
           fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
           console.log(`Commit message saved at ${commitMessageFilePath}`);
@@ -173,9 +157,18 @@ export async function refactorFolder(options) {
         (deps.refactoredFileMap || []).map((file) => file.filepath),
       operation: async ({ filepath, index }) => {
         const eslintedFilepath = deps.savedFilePaths[index];
+
+        const fullPath = path.join(outputDirectory, filepath);
         const content = fs.readFileSync(eslintedFilepath, "utf-8");
         fs.mkdirSync(path.dirname(filepath), { recursive: true });
-        fs.writeFileSync(filepath, content, "utf-8");
+
+        if (strategy === "diff") {
+          const originalContent = fs.readFileSync(filepath, "utf-8");
+          const newContent = applyPatch(originalContent, content);
+          fs.writeFileSync(fullPath, newContent, "utf-8");
+        } else {
+          fs.writeFileSync(fullPath, content, "utf-8");
+        }
         return content;
       },
     },
