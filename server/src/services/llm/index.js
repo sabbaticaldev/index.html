@@ -16,6 +16,7 @@ const LLM = (() => {
       try {
         let response = await llmClient(prompt, options);
         response = cleanLLMResponse(response, responseFormat);
+        console.log({ response });
         return response;
       } catch (error) {
         console.error("Error executing LLM request:", error);
@@ -32,21 +33,24 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   const templateData = loadTemplate(templateFile);
   let prompt = templateData.prompt;
   const inputParameters = Object.keys(templateData.inputParams);
-  inputParameters.forEach((param) => {
-    const value = JSON.stringify(config[param], null, 2) || "";
+  const allParameters = inputParameters.concat([
+    "exampleInput",
+    "exampleOutput",
+  ]);
+
+  allParameters.forEach((param) => {
+    let value;
+    if (param === "exampleInput") {
+      value = generateExample(templateData.exampleInput);
+    } else if (param === "exampleOutput") {
+      value = generateExample(templateData.exampleOutput, responseFormat);
+    } else {
+      value = JSON.stringify(config[param], null, 2) || "";
+    }
     const placeholder = `{${param}}`;
+
     prompt = prompt.replace(placeholder, value);
   });
-  const exampleInput = generateExample(templateData.exampleInput);
-  const exampleOutput = generateExample(
-    templateData.exampleOutput,
-    responseFormat,
-  );
-  console.log({ exampleOutput });
-  prompt = prompt.replace(
-    "Input:\n{exampleInput}\nOutput:\n{exampleOutput}",
-    `Input:\n${exampleInput}\nOutput:\n${exampleOutput}`,
-  );
   return prompt;
 };
 const generateExample = (exampleData, responseFormat = "json", rootElement) => {
@@ -77,7 +81,6 @@ const cleanLLMResponse = (response, format) => {
       return response.trim();
     }
   } catch (error) {
-    console.log({ error });
     return response;
   }
 };

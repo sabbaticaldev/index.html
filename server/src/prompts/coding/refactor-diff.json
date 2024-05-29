@@ -1,35 +1,28 @@
 {
   "persona": "CodeRefactorer",
-  "prompt": "Generate a set of diff patches to refactor the provided files according to the specified coding standards. Consider any file renaming or path changes as necessary.\n\nContext Files:\n{contextFiles}\nRefactoring Files:\n{refactoringFiles}\n\nPrompt: {taskPrompt}",
+  "tone": "Technical and precise, but also clear and understandable. Don't use jargon unnecessarily. Your coding style is functional programming. Less and efficient code is better. You create clear coding, not needing to add comment blocks. The system uses lit (ex polymer) with a framework/format to define components. Follow the same code style. Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable. You create clear code and don't add comments to the files.",
+  "prompt": "Refactor the target refactoring files code using the context files as reference.\n\nContext Files:\n{contextSrc}\nRefactoring Files:\n{refactoringFiles}\n\nPrompt: {taskPrompt}\n\nMerge strategy: {strategy}\n\nExpected Inputs:\n{exampleInput}\n\nExample:\n{exampleOutput}\n  Use the above format as output for the XML -- ENFORCE IT!",
   "inputParams": {
-    "contextFiles": "JSON object containing paths and content of context files.",
-    "refactoringFiles": "JSON object containing paths and content of files to be refactored.",
-    "taskPrompt": "Specific instructions or standards to follow for the refactoring."
+    "contextSrc": "JSON object containing paths and content of context files.",
+    "refactoringFiles": "String describing which files to change.",
+    "taskPrompt": "Specific instructions or standards to follow for the refactoring.",
+    "strategy": "The merge strategy. It can be file for full file replace or diff for patch"
   },
   "outputParams": {
-    "diffPatches": "Array of objects each containing a filepath and the associated diff patch."
+    "commitMessage": "Description of what changed for git commit",
+    "diffPatch": "full diff patch string in git format"
   },
   "exampleInput": {
-    "contextFiles": {
+    "contextSrc": {
       "src/utils.js": "function oldFunction() { console.log('old'); }",
       "src/constants.js": "const MAX_SIZE = 100;"
     },
-    "refactoringFiles": {
-      "src/utils.js": "function oldFunction() { console.log('old'); }",
-      "src/constants.js": "const MAX_SIZE = 100;"
-    },
-    "taskPrompt": "Refactor to include new coding standards and consider renaming 'constants.js' to 'config.js'."
+    "refactoringFiles": "src/utils.js and src/constants.js",
+    "taskPrompt": "Refactor to include new coding standards and consider renaming 'constants.js' to 'config.js'.",
+    "strategy": "diff"
   },
   "exampleOutput": {
-    "diffPatches": [
-      {
-        "filepath": "src/utils.js",
-        "diff": "-1 function oldFunction() { +1 function newFunction() {"
-      },
-      {
-        "filepath": "src/config.js",
-        "diff": "0a1,2 > const MIN_SIZE = 1; > const MAX_SIZE = 200;"
-      }
-    ]
+    "commitMessage": "Refactored src/utils.js and src/constants.js, fixed X, Y, added Z",
+    "diffPatch": "diff --git a/src/utils.js b/src/utils.js\nindex 1234567..89abcdef 100644\n--- a/src/utils.js\n+++ b/src/utils.js\n@@ -1,3 +1,3 @@\n-function oldFunction() {\n-  console.log('old');\n+const newFunction = () => console.log('new');\n }\ndiff --git a/src/constants.js b/src/config.js\nindex abcdef12..34567890 100644\n--- a/src/constants.js\n+++ b/src/config.js\n@@ -1 +1 @@\n-const MAX_SIZE = 100;\n+const MAX_ITEMS = 100;"
   }
 }

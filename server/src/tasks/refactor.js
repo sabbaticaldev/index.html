@@ -121,7 +121,6 @@ export async function refactorFolder(options) {
           fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
           console.log(`Commit message saved at ${commitMessageFilePath}`);
         }
-        console.log(response.files);
         return response?.files || [];
       },
     },
@@ -161,13 +160,13 @@ export async function refactorFolder(options) {
         const fullPath = path.join(outputDirectory, filepath);
         const content = fs.readFileSync(eslintedFilepath, "utf-8");
         fs.mkdirSync(path.dirname(filepath), { recursive: true });
-
+        console.log({ fullPath });
         if (strategy === "diff") {
           const originalContent = fs.readFileSync(filepath, "utf-8");
           const newContent = applyPatch(originalContent, content);
-          fs.writeFileSync(fullPath, newContent, "utf-8");
+          fs.writeFileSync(filepath, newContent, "utf-8");
         } else {
-          fs.writeFileSync(fullPath, content, "utf-8");
+          fs.writeFileSync(filepath, content, "utf-8");
         }
         return content;
       },
