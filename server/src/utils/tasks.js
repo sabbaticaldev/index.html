@@ -18,9 +18,18 @@ export const checkAndExecute = async ({
   filePath,
   operation,
   prompt,
+  condition,
 }) => {
   let attempt = 0;
   while (true) {
+    if (condition !== undefined) {
+      const conditionResult =
+        typeof condition === "function" ? await condition() : condition;
+      if (!conditionResult) {
+        console.log(`Condition not met for ${description}, skipping...`);
+        return;
+      }
+    }
     if (prompt && !filePath) {
       const confirm = await promptUser(
         `Proceed with ${description}? (yes/no): `,
@@ -42,7 +51,6 @@ export const checkAndExecute = async ({
           : filePath;
       }
     }
-
     try {
       console.log("Running operation:", description);
       return await operation();

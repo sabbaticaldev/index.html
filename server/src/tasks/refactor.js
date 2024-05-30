@@ -5,7 +5,7 @@ import util from "util";
 
 import { generatePrompt, LLM } from "../services/llm/index.js";
 import { executeTasks } from "../utils.js";
-import { importPatchFile } from "./import.js";
+import { importPatchContent } from "./import.js";
 
 const execAsync = util.promisify(exec);
 const deps = {};
@@ -108,9 +108,9 @@ export async function refactorFolder(options) {
     },
     {
       description: "Execute LLM to refactor code",
-      key: "refactoredFileMap",
+      key: "llmResponse",
       dependencies: ["prompt"],
-      filePath: path.join(outputDirectory, "refactoredFileMap.json"),
+      filePath: path.join(outputDirectory, "llmResponse.json"),
       operation: async () => {
         const response = await LLM.execute(llmProvider, deps.prompt, {
           responseFormat,
@@ -124,23 +124,39 @@ export async function refactorFolder(options) {
           fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
           console.log(`Commit message saved at ${commitMessageFilePath}`);
         }
-        return response?.files || [];
+
+        return isDiff ? response.diffPatch : response.files;
       },
     },
     {
       description: "Save refactored files from map",
       key: "savedFilePaths",
-      dependencies: ["refactoredFileMap"],
+      condition: !isDiff && Array.isArray(deps.llmResponse),
+      dependencies: ["llmResponse"],
       filePath: () =>
-        (Array.isArray(deps.refactoredFileMap)
-          ? deps.refactoredFileMap
-          : Object.values(deps.refactoredFileMap)
-        ).map((file) => path.join(outputDirectory, file.filepath)),
+        (Array.isArray(deps.llmResponse)
+          ? deps.llmResponse
+          : Object.values(deps.llmResponse)
+        ).map((file) => file.filepath),
       operation: async ({ filepath, index }) => {
-        const file = deps.refactoredFileMap[index];
+        const file = deps.llmResponse[index];
         fs.mkdirSync(path.dirname(filepath), { recursive: true });
         fs.writeFileSync(filepath, file.content, "utf-8");
         return filepath;
+      },
+    },
+    {
+      description: "Apply patch to refactored files",
+      condition: isDiff,
+      key: "savedFilePaths",
+      dependencies: ["llmResponse"],
+      operation: async () => {
+        if (deps.llmResponse) {
+          console.log({ response: deps.llmResponse });
+          const files = await importPatchContent(deps.llmResponse);
+          console.log({ files });
+          return files;
+        }
       },
     },
     {
@@ -150,19 +166,6 @@ export async function refactorFolder(options) {
       operation: async ({ filepath }) => {
         await runESLintFix([filepath]);
         return filepath;
-      },
-    },
-    {
-      description: "Prompt and save files to original path",
-      dependencies: ["refactoredFileMap", "savedFilePaths"],
-      filePath: () =>
-        (deps.refactoredFileMap || []).map((file) => file.filepath),
-      operation: async ({ filepath, index }) => {
-        const eslintedFilepath = deps.savedFilePaths[index];
-        const content = fs.readFileSync(eslintedFilepath, "utf-8");
-        fs.mkdirSync(path.dirname(filepath), { recursive: true });
-        fs.writeFileSync(filepath, content, "utf-8");
-        return content;
       },
     },
   ];

@@ -30,7 +30,22 @@ export const importXmlFiles = async (input) => {
 export const importPatchFile = async (input) => {
   try {
     const patchContent = await fs.promises.readFile(input, "utf8");
+    return await importPatchContent(patchContent);
+  } catch (error) {
+    console.error("Error importing patch files:", error);
+    throw error;
+  }
+};
+
+/**
+ * Imports patch content by applying the patches and writing the updated content.
+ * @param {string} patchContent - The content of the patch file.
+ * @returns {Promise<string[]>} - An array of file paths of the files that were modified.
+ */
+export const importPatchContent = async (patchContent) => {
+  try {
     const filePatches = parsePatch(patchContent);
+    const modifiedFiles = [];
 
     for (const [filepath, patchLines] of Object.entries(filePatches)) {
       const fullPath = path.join(process.cwd(), filepath);
@@ -48,9 +63,12 @@ export const importPatchFile = async (input) => {
       await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
       await fs.promises.writeFile(outputPath, newContent, "utf8");
       console.log(`File imported: ${outputPath}`);
+      modifiedFiles.push(outputPath);
     }
+
+    return modifiedFiles;
   } catch (error) {
-    console.error("Error importing patch files:", error);
+    console.error("Error importing patch content:", error);
     throw error;
   }
 };
