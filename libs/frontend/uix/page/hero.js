@@ -1,7 +1,7 @@
 import { html, T } from "helpers";
 const Hero = {
+  tag: "uix-hero",
   props: {
-    tag: "uix-hero",
     title: T.string(),
     subtitle: T.string(),
     buttonText: T.string(),

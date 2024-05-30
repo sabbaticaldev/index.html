@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 export default {
+  tag: "uix-tabs",
   props: {
     size: T.string({ defaultValue: "md" }),
     gap: T.string({ defaultValue: "" }),

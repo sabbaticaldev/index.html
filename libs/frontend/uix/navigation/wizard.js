@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Wizard = {
+  tag: "uix-wizard",
   props: {
     steps: T.array({
       defaultValue: [],

@@ -1,5 +1,6 @@
 import { html, T } from "helpers";
 const FeatureBlock = {
+  tag: "uix-feature-block",
   props: {
     icon: T.string(),
     title: T.string(),

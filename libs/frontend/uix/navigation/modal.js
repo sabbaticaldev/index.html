@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Modal = {
+  tag: "uix-modal",
   props: {
     actions: T.function(),
     size: T.string({ defaultValue: "md" }),

@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Drawer = {
+  tag: "uix-drawer",
   props: {
     open: T.boolean({ defaultValue: false }),
     position: T.string({ defaultValue: "left" }),

@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Breadcrumb = {
+  tag: "uix-breadcrumb",
   props: {
     items: T.array({
       defaultValue: [],

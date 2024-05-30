@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Stepper = {
+  tag: "uix-stepper",
   props: {
     steps: T.array({
       defaultValue: [],

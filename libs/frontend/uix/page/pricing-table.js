@@ -1,7 +1,7 @@
 import { html, T } from "helpers";
 const PricingTable = {
+  tag: "uix-pricing-table",
   props: {
-    tag: "uix-pricing-table",
     plans: T.array({
       defaultValue: [],
       type: {

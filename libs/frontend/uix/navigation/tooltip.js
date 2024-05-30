@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Tooltip = {
+  tag: "uix-tooltip",
   props: {
     spacing: T.string({ defaultValue: "md" }),
   },

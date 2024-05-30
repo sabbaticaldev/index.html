@@ -1,7 +1,7 @@
 import { html, T } from "helpers";
 const Header = {
+  tag: "uix-header",
   props: {
-    tag: "uix-header",
     logo: T.string(),
     navItems: T.array({
       defaultValue: [],

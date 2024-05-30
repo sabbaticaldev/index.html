@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Pagination = {
+  tag: "uix-pagination",
   props: {
     totalResults: T.number(),
     currentPage: T.number(),

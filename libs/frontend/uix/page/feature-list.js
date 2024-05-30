@@ -1,7 +1,7 @@
 import { html, T } from "helpers";
 const FeatureList = {
+  tag: "uix-feature-list",
   props: {
-    tag: "uix-feature-list",
     items: T.array({
       defaultValue: [],
       type: {

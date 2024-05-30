@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 export default {
+  tag: "uix-router",
   props: {
     routes: T.array(),
     currentRoute: T.string(),

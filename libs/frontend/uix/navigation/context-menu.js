@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const ContextMenu = {
+  tag: "uix-context-menu",
   props: { open: T.boolean(), contextmenu: T.function() },
   theme: {
     "uix-context-menu":
