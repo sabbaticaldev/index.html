@@ -1,0 +1,96 @@
+    diff --git a/libs/frontend/uix/page/feature-block.js b/libs/frontend/uix/page/feature-block.js
+index 1234567..89abcde 100644
+--- a/libs/frontend/uix/page/feature-block.js
++++ b/libs/frontend/uix/page/feature-block.js
+@@ -1,6 +1,7 @@
+ import { html, T } from "helpers";
+ const FeatureBlock = {
+   props: {
++    tag: "uix-feature-block",
+     icon: T.string(),
+     title: T.string(),
+     description: T.string(),
+diff --git a/libs/frontend/uix/page/feature-list.js b/libs/frontend/uix/page/feature-list.js
+index 1234567..89abcde 100644
+--- a/libs/frontend/uix/page/feature-list.js
++++ b/libs/frontend/uix/page/feature-list.js
+@@ -1,6 +1,7 @@
+ import { html, T } from "helpers";
+ const FeatureList = {
+   props: {
++    tag: "uix-feature-list",
+     items: T.array({
+       defaultValue: [],
+       type: {
+diff --git a/libs/frontend/uix/page/footer.js b/libs/frontend/uix/page/footer.js
+index 1234567..89abcde 100644
+--- a/libs/frontend/uix/page/footer.js
++++ b/libs/frontend/uix/page/footer.js
+@@ -1,6 +1,7 @@
+ import { html, T } from "helpers";
+ const Footer = {
+   props: {
++    tag: "uix-footer",
+     copyright: T.string(),
+     links: T.array({
+       defaultValue: [],
+diff --git a/libs/frontend/uix/page/header.js b/libs/frontend/uix/page/header.js
+index 1234567..89abcde 100644
+--- a/libs/frontend/uix/page/header.js
++++ b/libs/frontend/uix/page/header.js
+@@ -1,6 +1,7 @@
+ import { html, T } from "helpers";
+ const Header = {
+   props: {
++    tag: "uix-header",
+     logo: T.string(),
+     navItems: T.array({
+       defaultValue: [],
+diff --git a/libs/frontend/uix/page/hero.js b/libs/frontend/uix/page/hero.js
+index 1234567..89abcde 100644
+--- a/libs/frontend/uix/page/hero.js
++++ b/libs/frontend/uix/page/hero.js
+@@ -1,6 +1,7 @@
+ import { html, T } from "helpers";
+ const Hero = {
+   props: {
++    tag: "uix-hero",
+     title: T.string(),
+     subtitle: T.string(),
+     buttonText: T.string(),
+diff --git a/libs/frontend/uix/page/pricing-table.js b/libs/frontend/uix/page/pricing-table.js
+index 1234567..89abcde 100644
+--- a/libs/frontend/uix/page/pricing-table.js
++++ b/libs/frontend/uix/page/pricing-table.js
+@@ -1,6 +1,7 @@
+ import { html, T } from "helpers";
+ const PricingTable = {
+   props: {
++    tag: "uix-pricing-table",
+     plans: T.array({
+       defaultValue: [],
+       type: {
+diff --git a/libs/frontend/uix/page/stats.js b/libs/frontend/uix/page/stats.js
+index 1234567..89abcde 100644
+--- a/libs/frontend/uix/page/stats.js
++++ b/libs/frontend/uix/page/stats.js
+@@ -1,6 +1,7 @@
+ import { html, T } from "helpers";
+ const Stats = {
+   props: {
++    tag: "uix-stats",
+     items: T.array({
+       defaultValue: [],
+       type: {
+diff --git a/libs/frontend/uix/page/testimonial.js b/libs/frontend/uix/page/testimonial.js
+index 1234567..89abcde 100644
+--- a/libs/frontend/uix/page/testimonial.js
++++ b/libs/frontend/uix/page/testimonial.js
+@@ -1,6 +1,7 @@
+ import { html, T } from "helpers";
+ const Testimonial = {
+   props: {
++    tag: "uix-testimonial",
+     quote: T.string(),
+     author: T.string(),
+   },

@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 const Testimonial = {
   props: {
+    tag: "uix-testimonial",
     quote: T.string(),
     author: T.string(),
   },

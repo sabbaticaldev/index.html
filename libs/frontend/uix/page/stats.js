@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 const Stats = {
   props: {
+    tag: "uix-stats",
     items: T.array({
       defaultValue: [],
       type: {

@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 const Footer = {
   props: {
+    tag: "uix-footer",
     copyright: T.string(),
     links: T.array({
       defaultValue: [],
