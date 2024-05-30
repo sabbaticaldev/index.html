@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const VideoPlayer = {
+  tag: "uix-video-player",
   props: {
     src: T.string(),
     poster: T.string(),

@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Avatar = {
+  tag: "uix-avatar",
   props: {
     src: T.string(),
     alt: T.string({ defaultValue: "" }),

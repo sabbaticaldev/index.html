@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Rating = {
+  tag: "uix-rating",
   props: {
     value: T.number({ defaultValue: 0 }),
     max: T.number({ defaultValue: 5 }),

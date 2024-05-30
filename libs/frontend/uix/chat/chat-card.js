@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 export default {
+  tag: "uix-chat-card",
   props: {
     message: T.string(),
     timestamp: T.string(),

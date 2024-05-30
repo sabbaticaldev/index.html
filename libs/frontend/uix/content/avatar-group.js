@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const AvatarGroup = {
+  tag: "uix-avatar-group",
   props: {
     avatars: T.array({
       defaultValue: [],

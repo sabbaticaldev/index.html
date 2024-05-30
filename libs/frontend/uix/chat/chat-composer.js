@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const ChatComposer = {
+  tag: "uix-chat-composer",
   props: {
     placeholder: T.string({ defaultValue: "Type a message..." }),
     send: T.function(),

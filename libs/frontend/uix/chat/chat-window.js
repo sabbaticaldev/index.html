@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const ChatWindow = {
+  tag: "uix-chat-window",
   props: {
     messages: T.array({ defaultValue: [] }),
   },

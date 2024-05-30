@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Icon = {
+  tag: "uix-icon",
   props: {
     name: T.string(),
     size: T.string({ defaultValue: "" }),

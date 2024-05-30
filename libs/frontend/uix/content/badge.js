@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Badge = {
+  tag: "uix-badge",
   props: {
     size: T.string({ defaultValue: "xs" }),
     variant: T.string({ defaultValue: "default" }),

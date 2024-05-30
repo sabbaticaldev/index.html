@@ -11,6 +11,7 @@ const TAG_MAP = {
   xs: "h6",
 };
 
+  tag: "uix-text",
 const Text = {
   props: {
     size: T.string({}),

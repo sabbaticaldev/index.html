@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Table = {
+  tag: "uix-table",
   props: {
     headers: T.array(),
     rows: T.array(),

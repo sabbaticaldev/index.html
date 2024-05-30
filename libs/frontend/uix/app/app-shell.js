@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 export default {
+  tag: "uix-app-shell",
   props: { containerClass: T.string() },
   theme: {
     "uix-app-shell": "w-full h-full flex flex-col",

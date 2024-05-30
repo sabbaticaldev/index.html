@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Loading = {
+  tag: "uix-loading",
   props: {
     isVisible: T.boolean(),
     message: T.string({ defaultValue: null }),

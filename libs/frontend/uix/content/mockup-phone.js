@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const MockupPhone = {
+  tag: "uix-mockup-phone",
   props: {
     prefix: T.string(),
     code: T.string(),
