@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const DocsExample = {
+  tag: "uix-docs-example",
   props: {
     code: T.string(),
     demo: T.function(),

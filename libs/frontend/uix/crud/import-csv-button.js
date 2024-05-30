@@ -1,6 +1,7 @@
 import { CSV, File, html, post, T } from "helpers";
-
 const ImportCsvButton = {
+  tag: "app-import-csv-button",
+
   props: {
     fields: T.array(),
     rows: T.array(),

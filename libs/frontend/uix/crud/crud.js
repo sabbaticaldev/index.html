@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Crud = {
+  tag: "uix-crud",
   props: {
     model: T.string(),
     rows: T.array(),

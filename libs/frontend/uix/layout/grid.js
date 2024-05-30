@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
-
 const Grid = {
+  tag: "uix-grid",
+
   props: {
     cols: T.string({ defaultValue: "1" }),
     rows: T.string({ defaultValue: "1" }),

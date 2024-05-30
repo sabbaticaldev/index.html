@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const DatePicker = {
+  tag: "uix-date-picker",
   props: {
     value: T.string(),
     min: T.string(),

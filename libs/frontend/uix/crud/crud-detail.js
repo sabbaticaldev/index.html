@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const CrudDetail = {
+  tag: "uix-crud-detail",
   props: {
     item: T.object(),
     fields: T.array(),

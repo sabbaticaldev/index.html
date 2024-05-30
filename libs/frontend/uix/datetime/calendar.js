@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Calendar = {
+  tag: "uix-calendar",
   props: {
     value: T.string(),
     min: T.string(),

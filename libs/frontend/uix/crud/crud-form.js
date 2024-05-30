@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const CrudForm = {
+  tag: "uix-crud-form",
   props: {
     item: T.object(),
     fields: T.array(),

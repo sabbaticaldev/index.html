@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Stack = {
+  tag: "uix-stack",
   props: {
     spacing: T.string({ defaultValue: "0" }),
     direction: T.string({ defaultValue: "column" }),

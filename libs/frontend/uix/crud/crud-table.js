@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const CrudTable = {
+  tag: "uix-crud-table",
   props: {
     rows: T.array(),
     fields: T.object(),

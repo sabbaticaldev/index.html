@@ -6,6 +6,7 @@ export default {
       display: inherit;
     }
   `,
+  tag: "uix-list",
   props: {
     vertical: T.boolean(),
     responsive: T.boolean(),

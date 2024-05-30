@@ -14,8 +14,9 @@ const SelectOption = {
   },
 };
 
-  tag: "uix-select",
 const Select = {
+const Select = {
+  tag: "uix-select",
   ...FormControls("select"),
   props: {
     options: T.array(),

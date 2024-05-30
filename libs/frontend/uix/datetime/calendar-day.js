@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 export default {
+  tag: "uix-calendar-day",
   props: {
     previous: T.boolean(),
     next: T.boolean(),

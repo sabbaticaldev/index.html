@@ -56,12 +56,12 @@ const renderField = (field, host) => {
       </uix-form-control>
     `;
   }
-  tag: "uix-form",
 
   return fieldComponent;
 };
 
 const Form = {
+  tag: "uix-form",
   props: {
     fields: T.array(),
     actions: T.array(),

@@ -39,6 +39,7 @@ const renderCurrentMonthDays = (month, year, selectedDay) =>
   );
 
 export default {
+  tag: "uix-calendar-month",
   props: {
     month: T.number(),
     year: T.number(),

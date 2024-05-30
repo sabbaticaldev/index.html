@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 export default {
+  tag: "uix-block",
   props: {
     variant: T.string(),
     spacing: T.string({ defaultValue: "md" }),

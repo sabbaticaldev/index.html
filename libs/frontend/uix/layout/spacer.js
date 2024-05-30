@@ -2,6 +2,7 @@
 import { html } from "helpers";
 
 const Spacer = {
+  tag: "uix-spacer",
   props: {
     // Define spacer props like size, axis, etc.
   },

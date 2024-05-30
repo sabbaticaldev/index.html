@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const CrudSearch = {
+  tag: "uix-crud-search",
   props: {
     setRows: T.function(),
     model: T.string(),

@@ -146,6 +146,7 @@ export async function refactorFolder(options) {
       },
     },
     {
+      // TODO: refactor patch implementation to use stream and not use XML, this way we could apply the patch for each file as soon as it finishes, improving user feedback
       description: "Apply patch to refactored files",
       condition: isDiff,
       key: "savedFilePaths",

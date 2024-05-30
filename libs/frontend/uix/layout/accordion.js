@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 export default {
+  tag: "uix-accordion",
   props: {
     allowMultiple: T.boolean(),
     items: T.array({

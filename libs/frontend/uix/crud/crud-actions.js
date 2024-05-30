@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const CrudActions = {
+  tag: "uix-crud-actions",
   props: {
     setRows: T.function(),
     model: T.string(),

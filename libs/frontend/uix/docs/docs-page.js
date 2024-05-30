@@ -1,5 +1,4 @@
 import { html, T } from "helpers";
-
 const formattedTitle = (title) => title.toLowerCase().replace(/ /g, "-");
 
 const renderExamples = (examples) =>
@@ -34,6 +33,7 @@ const renderContents = (examples) => html`
 `;
 
 export default {
+  tag: "uix-docs-page",
   props: {
     title: T.string(),
     description: T.string(),

@@ -1,6 +1,7 @@
 import { html, post, T } from "helpers";
 
 const CrudNewModal = {
+  tag: "uix-crud-new-modal",
   props: {
     fields: T.array(),
     addRow: T.function(),

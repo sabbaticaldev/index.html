@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Flex = {
+  tag: "uix-flex",
   props: {
     direction: T.string({ defaultValue: "row" }),
     wrap: T.string({ defaultValue: "nowrap" }),

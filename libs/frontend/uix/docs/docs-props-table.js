@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const DocsPropsTable = {
+  tag: "uix-docs-props-table",
   props: {
     props: T.array(),
   },

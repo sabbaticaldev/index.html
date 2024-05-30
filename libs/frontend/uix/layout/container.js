@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Container = {
+  tag: "uix-container",
   props: {
     width: T.string({ defaultValue: "full" }),
     height: T.string({ defaultValue: "auto" }),

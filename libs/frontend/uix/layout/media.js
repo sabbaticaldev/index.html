@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Media = {
+  tag: "uix-media",
   props: {
     src: T.string(),
     alt: T.string(),
