@@ -3,6 +3,7 @@ import { html, T } from "helpers";
 import FormControls from "./form-controls.js";
 
 const SelectOption = {
+  tag: "uix-select-option",
   props: {
     value: T.string(),
     label: T.string(),
@@ -13,6 +14,7 @@ const SelectOption = {
   },
 };
 
+  tag: "uix-select",
 const Select = {
   ...FormControls("select"),
   props: {

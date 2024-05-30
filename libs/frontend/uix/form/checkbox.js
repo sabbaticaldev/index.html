@@ -3,6 +3,7 @@ import { css, html, T } from "helpers";
 import FormControls from "./form-controls.js";
 
 const Checkbox = {
+  tag: "uix-checkbox",
   style: [
     css`
       input[type="checkbox"] {

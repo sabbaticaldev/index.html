@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const CheckboxGroup = {
+  tag: "uix-checkbox-group",
   props: {
     name: T.string(),
     options: T.array(),

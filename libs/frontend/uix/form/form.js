@@ -56,6 +56,7 @@ const renderField = (field, host) => {
       </uix-form-control>
     `;
   }
+  tag: "uix-form",
 
   return fieldComponent;
 };

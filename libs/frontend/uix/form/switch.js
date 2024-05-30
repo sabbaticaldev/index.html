@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Switch = {
+  tag: "uix-switch",
   props: {
     checked: T.boolean(),
     change: T.function(),

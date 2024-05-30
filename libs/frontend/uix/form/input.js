@@ -3,6 +3,7 @@ import { html, ifDefined, T } from "helpers";
 import FormControls from "./form-controls.js";
 
 const Input = {
+  tag: "uix-input",
   props: {
     autofocus: T.boolean(),
     value: T.string(),

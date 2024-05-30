@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const TimeInput = {
+  tag: "uix-time-input",
   props: {
     value: T.string(),
     min: T.string(),

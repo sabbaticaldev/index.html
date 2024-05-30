@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const IconButton = {
+  tag: "uix-icon-button",
   props: {
     icon: T.string(),
     variant: T.string(),

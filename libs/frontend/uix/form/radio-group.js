@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const RadioGroup = {
+  tag: "uix-radio-group",
   props: {
     name: T.string(),
     options: T.array(),

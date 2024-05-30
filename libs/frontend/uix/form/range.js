@@ -3,6 +3,7 @@ import { html, T } from "helpers";
 import FormControls from "./form-controls.js";
 
 const Range = {
+  tag: "uix-range",
   props: {
     variant: T.string(),
     min: T.number({ defaultValue: 0 }),

@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const NumberInput = {
+  tag: "uix-number-input",
   props: {
     value: T.number(),
     min: T.number(),

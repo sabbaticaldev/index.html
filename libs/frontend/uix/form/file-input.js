@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const FileInput = {
+  tag: "uix-file-input",
   props: {
     accept: T.string(),
     multiple: T.boolean(),

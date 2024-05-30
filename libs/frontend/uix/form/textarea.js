@@ -3,6 +3,7 @@ import { html, T } from "helpers";
 import FormControls from "./form-controls.js";
 
 const Textarea = {
+  tag: "uix-textarea",
   props: {
     value: T.string(),
     placeholder: T.string(),

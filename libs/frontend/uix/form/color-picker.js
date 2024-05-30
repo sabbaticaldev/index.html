@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const ColorPicker = {
+  tag: "uix-color-picker",
   props: {
     selectedColor: T.string(),
     colors: T.array({ defaultValue: [] }),

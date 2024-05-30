@@ -4,7 +4,9 @@ import path from "path";
 import util from "util";
 
 import { generatePrompt, LLM } from "../services/llm/index.js";
-import { applyPatch, executeTasks } from "../utils.js";
+import { executeTasks } from "../utils.js";
+import { importPatchFile } from "./import.js";
+
 const execAsync = util.promisify(exec);
 const deps = {};
 function readDirectory(source) {
@@ -52,8 +54,8 @@ export async function refactorFolder(options) {
   const contextFilePath = path.join(outputDirectory, "context.json");
   const promptFilePath = path.join(outputDirectory, "prompt.txt");
   const commitMessageFilePath = path.join(".git", "COMMIT_EDITMSG");
-
-  const template = strategy === "diff" ? "refactor-diff" : "refactor";
+  const isDiff = strategy === "diff";
+  const template = isDiff ? "refactor-diff" : "refactor";
   const templateFile = `coding/${template}.json`;
   fs.mkdirSync(outputDirectory, { recursive: true });
   const tasks = [
@@ -157,18 +159,9 @@ export async function refactorFolder(options) {
         (deps.refactoredFileMap || []).map((file) => file.filepath),
       operation: async ({ filepath, index }) => {
         const eslintedFilepath = deps.savedFilePaths[index];
-
-        const fullPath = path.join(outputDirectory, filepath);
         const content = fs.readFileSync(eslintedFilepath, "utf-8");
         fs.mkdirSync(path.dirname(filepath), { recursive: true });
-        console.log({ fullPath });
-        if (strategy === "diff") {
-          const originalContent = fs.readFileSync(filepath, "utf-8");
-          const newContent = applyPatch(originalContent, content);
-          fs.writeFileSync(filepath, newContent, "utf-8");
-        } else {
-          fs.writeFileSync(filepath, content, "utf-8");
-        }
+        fs.writeFileSync(filepath, content, "utf-8");
         return content;
       },
     },

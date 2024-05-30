@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const Button = {
+  tag: "uix-button",
   props: {
     size: T.string({ defaultValue: "md" }),
     variant: T.string({ defaultValue: "default" }),

@@ -1,6 +1,7 @@
 import { html, T } from "helpers";
 
 const FormControl = {
+  tag: "uix-form-control",
   props: {
     label: T.string({ type: String, defaultValue: null }),
     labelAlt: T.array({ defaultValue: [] }),
