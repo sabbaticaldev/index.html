@@ -3,8 +3,5 @@ import Router from "./router.js";
 
 export default {
   i18n: {},
-  views: {
-    "uix-app-shell": AppShell,
-    "uix-router": Router,
-  },
+  views: { AppShell, Router },
 };

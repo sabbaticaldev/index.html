@@ -10,13 +10,13 @@ import Testimonial from "./testimonial.js";
 export default {
   i18n: {},
   views: {
-    "uix-feature-block": FeatureBlock,
-    "uix-feature-list": FeatureList,
-    "uix-footer": Footer,
-    "uix-header": Header,
-    "uix-hero": Hero,
-    "uix-pricing-table": PricingTable,
-    "uix-stats": Stats,
-    "uix-testimonial": Testimonial,
+    FeatureBlock,
+    FeatureList,
+    Footer,
+    Header,
+    Hero,
+    PricingTable,
+    Stats,
+    Testimonial,
   },
 };

@@ -1,10 +1,10 @@
-export { definePackage, defineView } from "./reactive-view.js";
-export { default as reset } from "./reset.txt";
+export { definePackage, defineView } from "./reactive-view/index.js";
 export {
   default as baseTheme,
   extractSafelistFromTheme,
   loadTheme,
-} from "./theme.js";
+} from "./reactive-view/theme.js";
+export { default as reset } from "./reset.txt";
 export { default as appKit } from "./uix/app/package.js";
 export { default as chatKit } from "./uix/chat/package.js";
 export { default as contentKit } from "./uix/content/package.js";

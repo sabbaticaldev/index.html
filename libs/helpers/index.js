@@ -4,7 +4,7 @@ export { draggable, droparea } from "./droparea.js";
 export * as File from "./file.js";
 export { default as i18n } from "./i18n.js";
 export { get, patch, post, remove } from "./rest.js";
-export { stringToType, T } from "./types.js";
+export { stringToType, T, TYPE_MAP } from "./types.js";
 export { default as url } from "./url.js";
 
 // Exporting lit functions and directives to be used in the *.package.js and components using the frontend framework.

@@ -10,13 +10,13 @@ import ImportCsvButton from "./import-csv-button.js";
 export default {
   i18n: {},
   views: {
-    "uix-crud": Crud,
-    "uix-crud-search": CrudSearch,
-    "uix-crud-actions": CrudActions,
-    "uix-crud-table": CrudTable,
-    "uix-crud-detail": CrudDetail,
-    "uix-crud-form": CrudForm,
-    "uix-crud-new-modal": CrudNewModal,
-    "app-import-csv-button": ImportCsvButton,
+    Crud,
+    CrudSearch,
+    CrudActions,
+    CrudTable,
+    CrudDetail,
+    CrudForm,
+    CrudNewModal,
+    ImportCsvButton,
   },
 };

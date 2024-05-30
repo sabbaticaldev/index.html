@@ -5,10 +5,5 @@ import ChatWindow from "./chat-window.js";
 
 export default {
   i18n: {},
-  views: {
-    "uix-chat-message": ChatMessage,
-    "uix-chat-card": ChatCard,
-    "uix-chat-composer": ChatComposer,
-    "uix-chat-window": ChatWindow,
-  },
+  views: { ChatMessage, ChatCard, ChatComposer, ChatWindow },
 };

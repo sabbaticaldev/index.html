@@ -11,17 +11,17 @@ import Spacer from "./spacer.js";
 import Stack from "./stack.js";
 
 const views = {
-  "uix-grid": Grid,
-  "uix-stack": Stack,
-  "uix-flex": Flex,
-  "uix-container": Container,
-  "uix-media": Media,
-  "uix-spacer": Spacer,
-  "uix-block": Block,
-  "uix-list": List,
-  "uix-divider": Divider,
-  "uix-accordion": Accordion,
-  "uix-card": Card,
+  Grid,
+  Stack,
+  Flex,
+  Container,
+  Media,
+  Spacer,
+  Block,
+  List,
+  Divider,
+  Accordion,
+  Card,
 };
 
 export default {

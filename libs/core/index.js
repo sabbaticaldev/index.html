@@ -48,7 +48,8 @@ export const loadFrontendFiles = (app) => {
 export const startFrontend = ({ app, style }) => {
   const { views } = app;
   Object.entries(views).forEach(([tag, component]) => {
-    defineView({ tag, component, style });
+    if (!component.tag) component.tag = tag;
+    defineView({ component, style });
   });
 };
 

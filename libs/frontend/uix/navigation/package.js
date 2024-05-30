@@ -10,14 +10,14 @@ import Wizard from "./wizard.js";
 
 export default {
   views: {
-    "uix-modal": Modal,
-    "uix-tooltip": Tooltip,
-    "uix-tabs": Tabs,
-    "uix-pagination": Pagination,
-    "uix-context-menu": ContextMenu,
-    "uix-breadcrumb": Breadcrumb,
-    "uix-drawer": Drawer,
-    "uix-stepper": Stepper,
-    "uix-wizard": Wizard,
+    Modal,
+    Tooltip,
+    Tabs,
+    Pagination,
+    ContextMenu,
+    Breadcrumb,
+    Drawer,
+    Stepper,
+    Wizard,
   },
 };

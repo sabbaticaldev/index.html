@@ -6,11 +6,5 @@ import Time from "./time.js";
 
 export default {
   i18n: {},
-  views: {
-    "uix-time": Time,
-    "uix-calendar-day": CalendarDay,
-    "uix-calendar-month": CalendarMonth,
-    "uix-date-picker": DatePicker,
-    "uix-calendar": Calendar,
-  },
+  views: { Time, CalendarDay, CalendarMonth, DatePicker, Calendar },
 };

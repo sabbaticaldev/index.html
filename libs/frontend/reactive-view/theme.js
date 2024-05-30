@@ -1,4 +1,4 @@
-import baseTheme from "./theme.base.js";
+import baseTheme from "../theme.base.js";
 
 const createMapping = (prefix, mapping) =>
   Object.fromEntries(

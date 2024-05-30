@@ -1,3 +1,12 @@
+export const TYPE_MAP = {
+  boolean: Boolean,
+  number: Number,
+  string: String,
+  object: Object,
+  date: Date,
+  array: Array,
+};
+
 const typeHandlers = {
   boolean: (value) => value === "true",
   string: (value) => value,
