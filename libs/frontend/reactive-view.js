@@ -1,53 +1,7 @@
 import { i18n, LitElement, stringToType, url } from "helpers";
 
-import { Theme } from "./theme.js";
-const resolveThemeValue = ({ theme = {}, props = {}, key = "" }) => {
-  if (Array.isArray(theme)) {
-    return theme.map((entry) => entry && entry[key]).join(" ");
-  }
-  if (typeof theme === "function") {
-    return theme(props);
-  }
-  return theme[key];
-};
-export const getElementTheme = (element, extraProps = {}, instance = {}) => {
-  const props = { ...extraProps, ...instance };
-  const { containerClass } = instance.component || {};
-  const elementTheme = Theme[element] || containerClass || "";
-  if (typeof elementTheme === "string") {
-    return elementTheme;
-  }
-  if (typeof elementTheme === "function") {
-    return resolveThemeValue({
-      theme: elementTheme,
-      props,
-    });
-  }
-  const classes = Object.entries(elementTheme).reduce((acc, [attr, theme]) => {
-    if (attr === "_base") return acc;
-    const key = instance[attr] || props[attr];
-    const themeValue = resolveThemeValue({
-      theme,
-      props,
-      key,
-    });
-    if (themeValue) {
-      acc.push(typeof themeValue === "object" ? themeValue[key] : themeValue);
-    }
-    return acc;
-  }, []);
-  if (elementTheme._base) {
-    classes.push(
-      typeof elementTheme._base === "function"
-        ? elementTheme._base(props)
-        : elementTheme._base,
-    );
-  }
-  if (containerClass) {
-    classes.push(containerClass);
-  }
-  return classes.join(" ");
-};
+import { getElementTheme } from "./theme.js";
+
 const isServer = typeof localStorage === "undefined";
 const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
 export const instances = [];
@@ -147,17 +101,15 @@ class BaseReactiveView extends LitElement {
 
     const elementTheme = this.theme("uix-divider");
     if (elementTheme) {
-      console.log({ elementTheme, tag: this.component.tag });
       this.classList.add(...elementTheme.split(" "));
     }
   }
 
   updated(changedProperties) {
-    console.log({ changedProperties });
     const elementTheme = this.theme(this.component.tag);
-    if (elementTheme) {
-      console.log({ elementTheme });
-      this.classList.add(...elementTheme.split(" "));
+    if (elementTheme && elementTheme.split) {
+      const classes = elementTheme.split(" ").filter((v) => !!v);
+      if (classes?.length) this.classList.add(...classes);
     }
   }
   disconnectedCallback() {
@@ -189,6 +141,7 @@ const getProperties = (props) =>
     acc[key] = { ...value, type: TYPE_MAP[value.type] || TYPE_MAP.string };
     return acc;
   }, {});
+
 export function defineView({ tag, component, style }) {
   class ReactiveView extends BaseReactiveView {
     static formAssociated = component.formAssociated;

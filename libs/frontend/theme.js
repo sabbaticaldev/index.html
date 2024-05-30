@@ -314,3 +314,51 @@ export const loadTheme = (views) => {
       );
   });
 };
+
+const resolveThemeValue = ({ theme = {}, props = {}, key = "" }) => {
+  if (Array.isArray(theme)) {
+    return theme.map((entry) => entry && entry[key]).join(" ");
+  }
+  if (typeof theme === "function") {
+    return theme(props);
+  }
+  return theme[key];
+};
+export const getElementTheme = (element, extraProps = {}, instance = {}) => {
+  const props = { ...extraProps, ...instance };
+  const { containerClass } = instance.component || {};
+  const elementTheme = Theme[element] || containerClass || "";
+  if (typeof elementTheme === "string") {
+    return elementTheme;
+  }
+  if (typeof elementTheme === "function") {
+    return resolveThemeValue({
+      theme: elementTheme,
+      props,
+    });
+  }
+  const classes = Object.entries(elementTheme).reduce((acc, [attr, theme]) => {
+    if (attr === "_base") return acc;
+    const key = instance[attr] || props[attr];
+    const themeValue = resolveThemeValue({
+      theme,
+      props,
+      key,
+    });
+    if (themeValue) {
+      acc.push(typeof themeValue === "object" ? themeValue[key] : themeValue);
+    }
+    return acc;
+  }, []);
+  if (elementTheme._base) {
+    classes.push(
+      typeof elementTheme._base === "function"
+        ? elementTheme._base(props)
+        : elementTheme._base,
+    );
+  }
+  if (containerClass) {
+    classes.push(containerClass);
+  }
+  return classes.join(" ") || "";
+};

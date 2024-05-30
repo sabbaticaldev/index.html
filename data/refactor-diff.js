@@ -1,10 +1,10 @@
 export default {
   contextSrc: ["libs/frontend"],
-  refactoringFiles: "uix/navigation components",
+  refactoringFiles: "reactive-view.js and other files affected by the change",
   taskPrompt: `
   We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
   
-  We need to refactor the uix components to have a tag property with its tag (example: uix-hero, uix-header), add it to the object we are exporting.
+  this framework has a pattern similar to signals algorithm implementation but lacks the effect part. 
   `,
 
   responseFormat: "xml",
