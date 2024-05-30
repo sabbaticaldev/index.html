@@ -5,7 +5,7 @@ import { hideBin } from "yargs/helpers";
 
 import { GetTrends } from "../services/instagram.js";
 import settings from "../settings.js";
-import { importXmlFiles } from "./import.js";
+import { importPatchFile, importXmlFiles } from "./import.js";
 import { createReelRipOff } from "./instagram.js";
 import { createMapVideo, createZoomInVideo } from "./maps.js";
 import { refactorFolder } from "./refactor.js";
@@ -14,7 +14,6 @@ import { CreateVideoFromImage } from "./video.js";
 // Helper function to determine if input is a file and read JSON or JS asynchronously
 const readFile = async (filePath) => {
   const fullFilePath = path.resolve(settings.__dirname, "../../", filePath);
-  console.log({ fullFilePath });
   if (filePath.endsWith(".json")) {
     try {
       const data = fs.readFileSync(fullFilePath, "utf8");
@@ -121,6 +120,19 @@ const yarg = yargs(hideBin(process.argv))
     async (argv) => {
       const config = await parseInput(argv.input);
       await refactorFolder(config);
+    },
+  )
+  .command(
+    "applyPatch <input>",
+    "Apply the patch file",
+    (yargs) => {
+      yargs.positional("input", {
+        describe: "Path to an git patch file with files changes",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      await importPatchFile(argv.input);
     },
   )
   .command(

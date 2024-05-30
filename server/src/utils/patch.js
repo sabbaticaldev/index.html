@@ -1,22 +1,50 @@
 /**
- * Apply a unified diff patch to the original content.
- * Note: This is a simplified implementation and assumes the diffs
- * are straightforward and do not contain complex conflict resolutions.
+ * Parses the patch content and returns an object with file paths and their respective patch lines.
+ * @param {string} patchContent - The GitHub diff patch content.
+ * @returns {Object} - An object where keys are file paths and values are arrays of patch lines.
+ */
+export function parsePatch(patchContent) {
+  const patchLines = patchContent.split("\n");
+  const filePatches = {};
+  let currentFile = null;
+  let patchSection = [];
+
+  for (const line of patchLines) {
+    if (line.startsWith("diff --git")) {
+      if (currentFile) {
+        filePatches[currentFile] = patchSection;
+        patchSection = [];
+      }
+      const fileMatch = line.match(/a\/(.+?) b\/(.+)/);
+      if (fileMatch) {
+        currentFile = fileMatch[2];
+      }
+    } else if (line.startsWith("---") || line.startsWith("+++")) {
+      // Ignore these lines
+    } else if (currentFile) {
+      patchSection.push(line);
+    }
+  }
+  if (currentFile) {
+    filePatches[currentFile] = patchSection;
+  }
+  return filePatches;
+}
+
+/**
+ * Applies a unified diff patch to the original content.
  * @param {string} originalContent - The original content of the file.
- * @param {string} patchContent - The unified diff patch content.
+ * @param {Array<string>} patchLines - The unified diff patch lines for the file.
  * @returns {string} - The new content with the patch applied.
  */
-export function applyPatch(originalContent, patchContent) {
+export function applyPatch(originalContent, patchLines) {
   const originalLines = originalContent.split("\n");
-  const patchLines = patchContent.split("\n");
   let newContent = [...originalLines];
   let offset = 0;
 
   for (const line of patchLines) {
     if (line.startsWith("@@")) {
-      // Example line: @@ -1,7 +1,7 @@
-      // This regex extracts '1' from the starting position of the change in the original file
-      const lineNumMatch = line.match(/\\-(\\d+),\\d+ \\+/);
+      const lineNumMatch = line.match(/-(\d+),\d+ \+/);
       if (lineNumMatch && lineNumMatch.length > 1) {
         offset = parseInt(lineNumMatch[1], 10) - 1; // Adjust for zero-based index
       }
