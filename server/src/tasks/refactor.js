@@ -44,6 +44,7 @@ export async function refactorFolder(options) {
     taskPrompt,
     responseFormat = "json",
     strategy = "file",
+    llmProvider = "bedrock",
   } = options;
   const outputDirectory = `code/${refactoringFiles
     .replace(/[^a-z0-9]/gi, "_")
@@ -109,7 +110,7 @@ export async function refactorFolder(options) {
       dependencies: ["prompt"],
       filePath: path.join(outputDirectory, "refactoredFileMap.json"),
       operation: async () => {
-        const response = await LLM.execute("bedrock", deps.prompt, {
+        const response = await LLM.execute(llmProvider, deps.prompt, {
           responseFormat,
         });
         fs.writeFileSync(

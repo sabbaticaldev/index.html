@@ -4,8 +4,9 @@ import path from "path";
 import settings from "../../settings.js";
 import { generateXMLFormat, parseXML } from "../../utils.js";
 import bedrock from "./engines/bedrock.js";
+import openai from "./engines/openai.js";
 const LLM = (() => {
-  const client = { bedrock: bedrock(settings) };
+  const client = { bedrock: bedrock(settings), openai: openai(settings) };
   return {
     execute: async (provider, prompt, options = {}) => {
       const { responseFormat = "json" } = options;
@@ -37,7 +38,7 @@ const generatePrompt = (config, templateFile, responseFormat) => {
     "exampleInput",
     "exampleOutput",
   ]);
-
+  console.log({ allParameters });
   allParameters.forEach((param) => {
     let value;
     if (param === "exampleInput") {

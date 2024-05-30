@@ -17,7 +17,6 @@ const bedrockStrategy =
         topK = 100,
         topP = 0.9,
         stopSequences = ["\\n\\nHuman:"],
-        systemMessage = "answer in a valid JSON format and in English. if any content supplied is not in english, translate it and give back results only in english.",
       } = options;
 
       const client = new BedrockRuntimeClient({
@@ -48,7 +47,6 @@ const bedrockStrategy =
             content: [{ type: "text", text: prefillMessage }],
           },
         ],
-        system: systemMessage,
         max_tokens: maxTokens,
         temperature,
         top_k: topK,
