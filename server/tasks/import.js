@@ -1,8 +1,8 @@
-import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 
-import { parseXML } from "../utils.js";
+import { applyParsedPatches, parsePatch } from "../utils/patch.js";
+import { parseXML } from "../utils/xml.js";
 
 export const importXmlFiles = async (input) => {
   try {
@@ -42,9 +42,50 @@ export const importPatchFile = async (input) => {
  * @returns {Promise<string[]>} - An array of file paths of the files that were modified.
  */
 export const importPatchContent = async (patchContent) => {
-  execSync(
-    `git apply --ignore-space-change --ignore-whitespace - <<< "${patchContent}"`,
-  );
-  const modifiedFiles = execSync("git diff --name-only").toString();
-  return modifiedFiles;
+  try {
+    const filePatches = parsePatch(patchContent);
+    const originalContents = {};
+    const modifiedFiles = [];
+
+    console.log({ filePatches, originalContents });
+
+    for (const oldFilePath of Object.keys(filePatches)) {
+      const fullPath = path.join(process.cwd(), oldFilePath);
+      try {
+        originalContents[oldFilePath] = await fs.promises.readFile(
+          fullPath,
+          "utf8",
+        );
+      } catch (err) {
+        console.warn(`File not found: ${fullPath}. Creating a new file.`);
+        originalContents[oldFilePath] = "";
+      }
+    }
+
+    const updatedFiles = applyParsedPatches(originalContents, filePatches);
+
+    for (const [oldFilePath, { newFilePath }] of Object.entries(filePatches)) {
+      const outputPath = path.join(process.cwd(), newFilePath || oldFilePath);
+      await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+      await fs.promises.writeFile(
+        outputPath,
+        updatedFiles[newFilePath || oldFilePath],
+        "utf8",
+      );
+      console.log(`File imported: ${outputPath}`);
+      modifiedFiles.push(outputPath);
+
+      // If the file was renamed, remove the old file
+      if (newFilePath && newFilePath !== oldFilePath) {
+        const oldFullPath = path.join(process.cwd(), oldFilePath);
+        await fs.promises.unlink(oldFullPath);
+        console.log(`File renamed from ${oldFullPath} to ${outputPath}`);
+      }
+    }
+
+    return modifiedFiles;
+  } catch (error) {
+    console.error("Error importing patch content:", error);
+    throw error;
+  }
 };

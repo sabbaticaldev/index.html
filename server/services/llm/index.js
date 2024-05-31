@@ -45,7 +45,6 @@ const LLM = (() => {
       try {
         let response = await llmClient(prompt, options);
         response = cleanLLMResponse(response, responseFormat);
-        console.log({ response });
         return response;
       } catch (error) {
         console.error("Error executing LLM request:", error);

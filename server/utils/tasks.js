@@ -1,17 +1,33 @@
 import fs from "fs";
+import keypress from "keypress";
 import readline from "readline";
 
+keypress(process.stdin);
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-const promptUser = (question) =>
-  new Promise((resolve) => {
-    rl.question(question, (answer) => {
-      resolve(["yes", "y", "1"].includes(answer.trim().toLowerCase()));
-    });
+const promptUser = (question) => {
+  return new Promise((resolve) => {
+    console.log(question);
+    const handleKeyPress = (ch, key) => {
+      if (key) {
+        const answer = key.name.trim().toLowerCase();
+        if (["y", "yes", "1"].includes(answer)) {
+          process.stdin.removeListener("keypress", handleKeyPress);
+          resolve(true);
+        } else if (["n", "no", "0"].includes(answer)) {
+          process.stdin.removeListener("keypress", handleKeyPress);
+          resolve(false);
+        }
+      }
+    };
+    process.stdin.on("keypress", handleKeyPress);
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
   });
+};
 
 export const checkAndExecute = async ({
   description,
@@ -108,6 +124,8 @@ export const executeTasks = async ({ tasks, prompt, deps = {} }) => {
   } catch (error) {
     console.error({ error });
   } finally {
+    process.stdin.setRawMode(false);
+    process.stdin.pause();
     process.exit(0);
   }
 };

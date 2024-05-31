@@ -153,9 +153,7 @@ export async function refactorFolder(options) {
       dependencies: ["llmResponse"],
       operation: async () => {
         if (deps.llmResponse) {
-          console.log({ response: deps.llmResponse });
           const files = await importPatchContent(deps.llmResponse);
-          console.log({ files });
           return files;
         }
       },
