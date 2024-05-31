@@ -1,6 +1,5 @@
 import fs from "fs";
 import { createWriteStream } from "fs";
-import fetch from "node-fetch";
 import path from "path";
 
 export const downloadMedia = async (url, postId, mediaType) => {

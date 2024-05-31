@@ -6,7 +6,22 @@ import { generateXMLFormat, parseXML } from "../../utils.js";
 import bedrock from "./engines/bedrock.js";
 import openai from "./engines/openai.js";
 const LLM = (() => {
-  const client = { bedrock: bedrock(settings), openai: openai(settings) };
+  const {
+    BEDROCK_MODEL_ID,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_REGION,
+    OPENAI_API_KEY,
+  } = settings;
+  const client = {
+    bedrock: bedrock({
+      BEDROCK_MODEL_ID,
+      AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY,
+      AWS_REGION,
+    }),
+    openai: openai({ OPENAI_API_KEY }),
+  };
   return {
     execute: async (provider, prompt, options = {}) => {
       const { responseFormat = "json" } = options;

@@ -13,7 +13,7 @@ import { CreateVideoFromImage } from "./video.js";
 
 // Helper function to determine if input is a file and read JSON or JS asynchronously
 const readFile = async (filePath) => {
-  const fullFilePath = path.resolve(settings.__dirname, "../../", filePath);
+  const fullFilePath = path.resolve(settings.__dirname, "../", filePath);
   if (filePath.endsWith(".json")) {
     try {
       const data = fs.readFileSync(fullFilePath, "utf8");

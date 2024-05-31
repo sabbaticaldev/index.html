@@ -1,6 +1,5 @@
 import fs from "fs";
 import { IgApiClient } from "instagram-private-api";
-import fetch from "node-fetch";
 
 import settings from "../settings.js";
 

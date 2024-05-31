@@ -4,10 +4,15 @@ import {
 } from "@aws-sdk/client-bedrock-runtime";
 
 const bedrockStrategy =
-  (config) =>
+  ({
+    BEDROCK_MODEL_ID,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_REGION,
+  }) =>
     async (prompt, options = {}) => {
       const {
-        modelId = config.BEDROCK_MODEL_ID,
+        modelId = BEDROCK_MODEL_ID,
         contentType = "application/json",
         responseFormat = "json",
         accept = "application/json",
@@ -21,10 +26,10 @@ const bedrockStrategy =
 
       const client = new BedrockRuntimeClient({
         credentials: {
-          accessKeyId: config.AWS_ACCESS_KEY_ID,
-          secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+          accessKeyId: AWS_ACCESS_KEY_ID,
+          secretAccessKey: AWS_SECRET_ACCESS_KEY,
         },
-        region: config.region,
+        region: AWS_REGION,
       });
 
       let prefillMessage = "";

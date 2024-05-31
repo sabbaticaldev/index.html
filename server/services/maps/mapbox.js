@@ -1,8 +1,6 @@
 // Dependencies
 import polyline from "@mapbox/polyline";
 const { decode: polylineDecode } = polyline;
-import fetch from "node-fetch";
-
 import { MAP_TYPES } from "../../constants.js";
 import { fetchMapImage } from "../../utils.js";
 
