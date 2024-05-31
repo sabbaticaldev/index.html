@@ -11,7 +11,7 @@ export default {
   },
   theme: ({ BaseVariants, SpacingSizes }) => ({
     "uix-card": {
-      _base: "shadow rounded-md overflow-hidden",
+      _base: "block shadow rounded-md overflow-hidden",
       variant: BaseVariants,
       spacing: SpacingSizes,
     },
@@ -25,6 +25,9 @@ export default {
       html` <div class=${this.theme("uix-card__header")}>${this.header}</div> `}
       ${this.body &&
       html` <div class=${this.theme("uix-card__body")}>${this.body}</div> `}
+
+      <slot></slot>
+
       ${this.footer &&
       html` <div class=${this.theme("uix-card__footer")}>${this.footer}</div> `}
     `;

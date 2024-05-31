@@ -4,16 +4,14 @@ const formattedTitle = (title) => title.toLowerCase().replace(/ /g, "-");
 const renderExamples = (examples) =>
   examples.map(
     (example) => html`
-      <uix-container id="${formattedTitle(example.title)}">
-        <uix-block>
-          <uix-text size="4">${example.title}</uix-text>
-          <p>${example.description}</p>
-        </uix-block>
-        <uix-block>${example.codeComponent}</uix-block>
-        <uix-block
-          ><uix-mockup-code code=${example.code}></uix-mockup-code
-        ></uix-block>
-      </uix-container>
+      <uix-block id="${formattedTitle(example.title)}">
+        <uix-text size="4">${example.title}</uix-text>
+        <p>${example.description}</p>
+      </uix-block>
+      <uix-block>${example.codeComponent}</uix-block>
+      <uix-block>
+        <uix-mockup-code code=${example.code}></uix-mockup-code>
+      </uix-block>
     `,
   );
 

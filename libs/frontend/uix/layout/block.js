@@ -10,6 +10,7 @@ export default {
   },
   theme: ({ SpacingSizes, BaseVariants }) => ({
     "uix-block": {
+      _base: "block",
       spacing: SpacingSizes,
       variant: BaseVariants,
       full: { true: "w-full h-full" },

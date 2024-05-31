@@ -27,11 +27,11 @@ const Header = {
         <uix-list class=${this.theme("uix-header__nav")}>
           ${this.navItems.map(
             (item) =>
-      html`<uix-nav-item href=${item.href}
-                  >${item.text}</uix-nav-item>
-          )}
+              html`<uix-nav-item href=${item.href}>
+                ${item.text}
+              </uix-nav-item>`,
+  )}
         </uix-list>
-      
       </uix-block>
     `;
   },
