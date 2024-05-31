@@ -27,6 +27,11 @@ export default {
       open: { true: "block", false: "hidden" },
     },
   },
+  connectedCallback() {
+    this.createEffect(() => {
+      console.log("Running effect", this.items);
+    });
+  },
   render() {
     return html`
       <div class=${this.theme("uix-accordion")}>
