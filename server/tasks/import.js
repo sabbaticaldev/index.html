@@ -1,8 +1,8 @@
+import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 
 import { parseXML } from "../utils.js";
-import { applyPatch, parsePatch } from "../utils/patch.js";
 
 export const importXmlFiles = async (input) => {
   try {
@@ -42,32 +42,9 @@ export const importPatchFile = async (input) => {
  * @returns {Promise<string[]>} - An array of file paths of the files that were modified.
  */
 export const importPatchContent = async (patchContent) => {
-  try {
-    const filePatches = parsePatch(patchContent);
-    const modifiedFiles = [];
-
-    for (const [filepath, patchLines] of Object.entries(filePatches)) {
-      const fullPath = path.join(process.cwd(), filepath);
-      let originalContent = "";
-
-      try {
-        originalContent = await fs.promises.readFile(fullPath, "utf8");
-      } catch (err) {
-        console.warn(`File not found: ${fullPath}. Creating a new file.`);
-      }
-
-      const newContent = applyPatch(originalContent, patchLines);
-      const outputPath = path.join(process.cwd(), filepath);
-
-      await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
-      await fs.promises.writeFile(outputPath, newContent, "utf8");
-      console.log(`File imported: ${outputPath}`);
-      modifiedFiles.push(outputPath);
-    }
-
-    return modifiedFiles;
-  } catch (error) {
-    console.error("Error importing patch content:", error);
-    throw error;
-  }
+  execSync(
+    `git apply --ignore-space-change --ignore-whitespace - <<< "${patchContent}"`,
+  );
+  const modifiedFiles = execSync("git diff --name-only").toString();
+  return modifiedFiles;
 };
