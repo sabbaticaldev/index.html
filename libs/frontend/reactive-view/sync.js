@@ -1,3 +1,4 @@
+// sync.js
 import { stringToType, url } from "helpers";
 
 export const instances = [];
@@ -48,5 +49,15 @@ export const defineSyncProperty = (instance, key, prop) => {
     get: getValue,
     set: setValue,
     configurable: true,
+  });
+};
+
+export const requestUpdateOnUrlChange = () => {
+  syncKeyMap.forEach((instances, syncKey) => {
+    if (syncKey.sync === "url") {
+      instances.forEach((instance) => {
+        instance.requestUpdate();
+      });
+    }
   });
 };

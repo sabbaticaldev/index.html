@@ -1,16 +1,20 @@
 import { i18n, LitElement, TYPE_MAP } from "helpers";
 
-import { defineSyncProperty, syncKeyMap } from "./sync.js";
+import {
+  defineSyncProperty,
+  requestUpdateOnUrlChange,
+  syncKeyMap,
+} from "./sync.js";
 import { getElementTheme } from "./theme.js";
-
+window.addEventListener("popstate", requestUpdateOnUrlChange);
 export const instances = [];
 class ReactiveView extends LitElement {
+  static _instancesUsingSync = syncKeyMap;
   constructor({ component }) {
     super();
     instances.push(this);
     this.component = component;
     this._queryCache = {};
-
     this.initializeComponent(component);
     this.setupProperties(component.props);
     this.setupMessageHandler();
@@ -74,8 +78,21 @@ class ReactiveView extends LitElement {
     super.connectedCallback();
     this.component.connectedCallback?.bind(this)();
   }
-
   updated() {
+    super.updated();
+
+    const themedElements = this.shadowRoot.querySelectorAll("[data-theme]");
+
+    themedElements.forEach((el) => {
+      const themeClassKey = el.getAttribute("data-theme");
+      const elementTheme = getElementTheme(themeClassKey, this, this.props);
+
+      if (elementTheme) {
+        const classes = elementTheme.split(" ").filter((v) => !!v);
+        el.classList.add(...classes);
+      }
+    });
+
     const elementTheme = this.theme(this.component.tag);
     if (elementTheme && elementTheme.split) {
       const classes = elementTheme.split(" ").filter((v) => !!v);
@@ -111,8 +128,7 @@ export function defineView({ key, component, style }) {
   if (!tag)
     console.error(`Error: component ${key} doesn't have a tag property`);
   class View extends ReactiveView {
-    i18n = component.i18n;
-    static _instancesUsingSync = syncKeyMap;
+    i18n = i18n;
     static formAssociated = component.formAssociated;
     static properties = getProperties(component.props);
     constructor() {
