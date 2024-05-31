@@ -27,49 +27,47 @@ const ColorPicker = {
   }),
   render() {
     return html`
-      <div class=${this.theme("uix-color-picker")}>
-        ${this.colors.map(
-          (color) => html`
-            <div
-              class=${this.theme("uix-color-picker__color-block", {
-                selectedColor: this.selectedColor === color,
-              })}
-            >
-              <span
-                @click=${() =>
-                  this.updateTheme({
-                    ...this.userTheme,
-                    colors: {
+      ${this.colors.map(
+    (color) => html`
+          <div
+            class=${this.theme("uix-color-picker__color-block", {
+              selectedColor: this.selectedColor === color,
+            })}
+          >
+            <span
+              @click=${() =>
+    this.updateTheme({
+                  ...this.userTheme,
+      colors: {
         ...this.baseTheme.colors,
         [this.colorKey]: color,
       },
-                  })}
-                class=${this.theme("uix-color-picker__color", { color })}
-              ></span>
-              <div class=${this.theme("uix-color-picker__shades-container")}>
-                ${Array.from({ length: 9 }, (_, i) => i + 1).map(
-                  (shade) => html`
-                    <span
-                      @click=${() =>
-                        this.updateTheme({
-                          ...this.userTheme,
-                          colors: {
-                            ...this.baseTheme.colors,
-                            [this.colorKey]: color,
-                          },
-                        })}
-                      class=${this.theme("uix-color-picker__shade", {
-                        color,
-                        shade,
+    })}
+              class=${this.theme("uix-color-picker__color", { color })}
+            ></span>
+            <div class=${this.theme("uix-color-picker__shades-container")}>
+              ${Array.from({ length: 9 }, (_, i) => i + 1).map(
+                (shade) => html`
+                  <span
+                    @click=${() =>
+    this.updateTheme({
+      ...this.userTheme,
+      colors: {
+        ...this.baseTheme.colors,
+        [this.colorKey]: color,
+      },
                       })}
-                    ></span>
-                  `,
+                    class=${this.theme("uix-color-picker__shade", {
+                      color,
+    shade,
+                    })}
+                  ></span>
+                `,
   )}
-              </div>
             </div>
-          `,
-        )}
-      </div>
+          </div>
+        `,
+  )}
     `;
   },
 };

@@ -12,17 +12,17 @@ const TreeView = {
     }),
   },
   theme: {
-    "uix-treeview": "ml-4",
-    "uix-treeview-item":
+    "uix-treeview__list": "ml-4",
+    "uix-treeview__item":
       "flex items-center mb-1 text-sm font-medium text-gray-900",
-    "uix-treeview-item__icon": "w-4 h-4 mr-2",
-    "uix-treeview-item__label": "cursor-pointer",
+    "uix-treeview__item-icon": "w-4 h-4 mr-2",
+    "uix-treeview__item-label": "cursor-pointer",
   },
   render() {
     const renderTreeItem = (item) => html`
-      <li class=${this.theme("uix-treeview-item")}>
+      <li class=${this.theme("uix-treeview__item")}>
         <svg
-          class=${this.theme("uix-treeview-item__icon")}
+          class=${this.theme("uix-treeview__item-icon")}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -32,12 +32,12 @@ const TreeView = {
             clip-rule="evenodd"
           ></path>
         </svg>
-        <span class=${this.theme("uix-treeview-item__label")}>
+        <span class=${this.theme("uix-treeview__item-label")}>
           ${item.label}
         </span>
         ${item.children &&
         html`
-          <ul class=${this.theme("uix-treeview")}>
+          <ul class=${this.theme("uix-treeview__list")}>
             ${item.children.map(renderTreeItem)}
           </ul>
         `}
@@ -45,7 +45,7 @@ const TreeView = {
     `;
 
     return html`
-      <ul class=${this.theme("uix-treeview")}>
+      <ul class=${this.theme("uix-treeview__list")}>
         ${this.items.map(renderTreeItem)}
       </ul>
     `;

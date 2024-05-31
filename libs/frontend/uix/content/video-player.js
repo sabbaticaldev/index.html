@@ -11,14 +11,14 @@ const VideoPlayer = {
     muted: T.boolean({ defaultValue: false }),
   },
   theme: {
-    "uix-video-player": "w-full",
+    "uix-video-player__element": "w-full",
   },
   render() {
     const { src, poster, autoplay, controls, loop, muted } = this;
 
     return html`
       <video
-        class=${this.theme("uix-video-player")}
+        class=${this.theme("uix-video-player__element")}
         src=${src}
         ?autoplay=${autoplay}
         ?controls=${controls}

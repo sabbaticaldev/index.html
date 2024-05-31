@@ -60,7 +60,7 @@ const renderField = (field, host) => {
   return fieldComponent;
 };
 
-const Form = {
+export default {
   tag: "uix-form",
   props: {
     fields: T.array(),
@@ -68,6 +68,10 @@ const Form = {
     method: T.string({ defaultValue: "post" }),
     endpoint: T.string(),
     llm: T.object(),
+  },
+
+  theme: {
+    "uix-form-actions": "mx-auto mt-10",
   },
   getForm() {
     return this.renderRoot.querySelector("form") || this.$form;
@@ -177,9 +181,4 @@ const Form = {
       </form>
     `;
   },
-  theme: {
-    "uix-form-actions": "mx-auto mt-10",
-  },
 };
-
-export default Form;

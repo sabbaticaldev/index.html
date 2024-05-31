@@ -26,14 +26,12 @@ const Tooltip = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-tooltip")}>
-        <button class=${this.theme("uix-tooltip__button")}>
-          <slot name="button"></slot>
-        </button>
-        <span class=${this.theme("uix-tooltip__content")}>
-          <slot></slot>
-        </span>
-      </div>
+      <button class=${this.theme("uix-tooltip__button")}>
+        <slot name="button"></slot>
+      </button>
+      <span class=${this.theme("uix-tooltip__content")}>
+        <slot></slot>
+      </span>
     `;
   },
 };

@@ -6,13 +6,13 @@ const DocsPropsTable = {
     props: T.array(),
   },
   theme: {
-    "uix-docs-props-table": "w-full",
+    "uix-docs-props-table__element": "w-full",
     "uix-docs-props-table__header": "bg-gray-100 text-left",
     "uix-docs-props-table__cell": "border px-4 py-2",
   },
   render() {
     return html`
-      <table class=${this.theme("uix-docs-props-table")}>
+      <table class=${this.theme("uix-docs-props-table__element")}>
         <thead>
           <tr>
             <th

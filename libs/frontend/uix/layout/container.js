@@ -20,11 +20,7 @@ const Container = {
     },
   },
   render() {
-    return html`
-      <div class=${this.theme("uix-container", this)}>
-        <slot></slot>
-      </div>
-    `;
+    return html` <slot></slot> `;
   },
 };
 

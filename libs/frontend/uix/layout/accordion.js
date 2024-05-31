@@ -29,35 +29,33 @@ export default {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-accordion")}>
-        ${this.items.map(
-          (item, index) =>
-            html`
+      ${this.items.map(
+    (item, index) =>
+          html`
+            <div
+              class=${this.theme("uix-accordion-item", {
+                open: Boolean(item.open),
+  })}
+            >
               <div
-                class=${this.theme("uix-accordion-item", {
-                  open: Boolean(item.open),
-                })}
+                class=${this.theme("uix-accordion-item__header")}
+                @click=${() => this.setItemOpen(index, !item.open)}
               >
-                <div
-                  class=${this.theme("uix-accordion-item__header")}
-                  @click=${() => this.setItemOpen(index, !item.open)}
-                >
-                  ${item.label}
-                  <uix-icon
-                    name=${item.open ? "chevron-up" : "chevron-down"}
-                  ></uix-icon>
-                </div>
-                <div
-                  class=${this.theme("uix-accordion-item__content", {
-                    open: Boolean(item.open),
-                  })}
-                >
-                  ${item.content}
-                </div>
+                ${item.label}
+                <uix-icon
+                  name=${item.open ? "chevron-up" : "chevron-down"}
+                ></uix-icon>
               </div>
-            `,
-        )}
-      </div>
+              <div
+                class=${this.theme("uix-accordion-item__content", {
+                  open: Boolean(item.open),
+  })}
+              >
+                ${item.content}
+              </div>
+            </div>
+          `,
+  )}
     `;
   },
   setItemOpen(index, open) {

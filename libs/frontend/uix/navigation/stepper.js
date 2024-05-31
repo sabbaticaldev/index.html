@@ -32,25 +32,21 @@ const Stepper = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-stepper")}>
-        ${this.steps.map(
-          (step, index) => html`
-            <div
-              class=${this.theme("uix-stepper__step", { active: step.active })}
+      ${this.steps.map(
+    (step, index) => html`
+          <div
+            class=${this.theme("uix-stepper__step", { active: step.active })}
+          >
+            <span
+              class=${this.theme("uix-stepper__marker", {
+    active: step.active,
+              })}
+              >${index + 1}</span
             >
-              <span
-                class=${this.theme("uix-stepper__marker", {
-                  active: step.active,
-                })}
-                >${index + 1}</span
-              >
-              <span class=${this.theme("uix-stepper__label")}
-                >${step.label}</span
-              >
-            </div>
-          `,
+            <span class=${this.theme("uix-stepper__label")}>${step.label}</span>
+          </div>
+        `,
   )}
-      </div>
     `;
   },
 };

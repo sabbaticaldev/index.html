@@ -30,37 +30,33 @@ const Wizard = {
     const activeStepContent = steps[activeStep]?.content;
 
     return html`
-      <div class=${this.theme("uix-wizard")}>
-        <div class=${this.theme("uix-wizard__steps")}>
-          ${steps.map(
-            (step, index) => html`
-              <div
-                class=${this.theme("uix-wizard__step", {
-                  active: index === activeStep,
-                })}
-              >
-                ${step.label}
-              </div>
-            `,
+      <div class=${this.theme("uix-wizard__steps")}>
+        ${steps.map(
+    (step, index) => html`
+            <div
+              class=${this.theme("uix-wizard__step", {
+                active: index === activeStep,
+              })}
+            >
+              ${step.label}
+            </div>
+          `,
   )}
-        </div>
-        <div class=${this.theme("uix-wizard__content")}>
-          ${activeStepContent}
-        </div>
-        <div class=${this.theme("uix-wizard__buttons")}>
-          <button
-            ?disabled=${activeStep === 0}
-            @click=${() => this.setActiveStep(activeStep - 1)}
-          >
-            Previous
-          </button>
-          <button
-            ?disabled=${activeStep === steps.length - 1}
-            @click=${() => this.setActiveStep(activeStep + 1)}
-          >
-            Next
-          </button>
-        </div>
+      </div>
+      <div class=${this.theme("uix-wizard__content")}>${activeStepContent}</div>
+      <div class=${this.theme("uix-wizard__buttons")}>
+        <button
+          ?disabled=${activeStep === 0}
+          @click=${() => this.setActiveStep(activeStep - 1)}
+        >
+          Previous
+        </button>
+        <button
+          ?disabled=${activeStep === steps.length - 1}
+          @click=${() => this.setActiveStep(activeStep + 1)}
+        >
+          Next
+        </button>
       </div>
     `;
   },

@@ -14,25 +14,23 @@ const Range = {
   render() {
     const { theme, min, max, value } = this;
     return html`
-      <div class=${theme("uix-range")}>
-        <input
-          class=${theme("uix-range__input")}
-          type="range"
-          @input=${this.change}
-          min=${min}
-          max=${max}
-          value=${value}
-        />
-        <div class=${theme("uix-range__labels")}>
-          <span class="text-sm text-gray-600">Squared</span>
-          <span class="text-sm text-gray-600">Rounded</span>
-        </div>
+      <input
+        class=${theme("uix-range__input")}
+        type="range"
+        @input=${this.change}
+        min=${min}
+        max=${max}
+        value=${value}
+      />
+      <div class=${theme("uix-range__labels")}>
+        <span class="text-sm text-gray-600">Squared</span>
+        <span class="text-sm text-gray-600">Rounded</span>
       </div>
     `;
   },
   theme: ({ cls, BaseVariants, TextSizes, SpacingSizes }) => ({
     "uix-range": {
-      _base: cls(["w-full"]),
+      _base: "w-full",
       variant: BaseVariants,
       size: [SpacingSizes, TextSizes],
     },

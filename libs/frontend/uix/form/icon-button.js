@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const IconButton = {
+export default {
   tag: "uix-icon-button",
   props: {
     icon: T.string(),
@@ -9,7 +8,7 @@ const IconButton = {
     alt: T.string(),
   },
   theme: ({ cls, borderRadius, BaseVariants, TextSizes }) => ({
-    "uix-icon-button": {
+    "uix-icon-button__element": {
       _base: cls(["transition ease-in-out duration-200 mx-auto", borderRadius]),
       variant: BaseVariants,
     },
@@ -20,7 +19,7 @@ const IconButton = {
   }),
   render() {
     return html`
-      <button alt=${this.alt} class=${this.theme("uix-icon-button")}>
+      <button alt=${this.alt} class=${this.theme("uix-icon-button__element")}>
         <uix-icon
           class=${this.theme("uix-icon-button__icon")}
           name=${this.icon}
@@ -29,5 +28,3 @@ const IconButton = {
     `;
   },
 };
-
-export default IconButton;

@@ -12,14 +12,12 @@ const Testimonial = {
   },
   render() {
     return html`
-      <uix-block class=${this.theme("uix-testimonial")}>
-        <uix-text class=${this.theme("uix-testimonial__quote")}
-          >${this.quote}</uix-text
-        >
-        <uix-text class=${this.theme("uix-testimonial__author")}
-          >${this.author}</uix-text
-        >
-      </uix-block>
+      <uix-text class=${this.theme("uix-testimonial__quote")}
+        >${this.quote}</uix-text
+      >
+      <uix-text class=${this.theme("uix-testimonial__author")}
+        >${this.author}</uix-text
+      >
     `;
   },
 };

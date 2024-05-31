@@ -7,7 +7,7 @@ const Drawer = {
     position: T.string({ defaultValue: "left" }),
   },
   theme: {
-    "uix-drawer": ({ position }) => ({
+    "uix-drawer__element": ({ position }) => ({
       _base:
         "fixed top-0 h-full w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out z-50",
       open: {
@@ -20,7 +20,7 @@ const Drawer = {
   render() {
     return html`
       <div
-        class=${this.theme("uix-drawer", {
+        class=${this.theme("uix-drawer__element", {
           open: this.open,
           position: this.position,
         })}

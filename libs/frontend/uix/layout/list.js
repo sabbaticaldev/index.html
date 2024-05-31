@@ -1,4 +1,4 @@
-import { css, droparea, staticHtml, T, unsafeStatic } from "helpers";
+import { css, droparea, html, T } from "helpers";
 
 export default {
   style: css`
@@ -16,6 +16,8 @@ export default {
     justify: T.string(),
     spacing: T.string({ defaultValue: "sm" }),
     gap: T.string({ defaultValue: "sm" }),
+    wrap: T.string({ defaultValue: "nowrap" }),
+    align: T.string({ defaultValue: "stretch" }),
     rounded: T.boolean(),
     containerClass: T.string(),
   },
@@ -38,11 +40,6 @@ export default {
   }),
   ...droparea,
   render() {
-    const { tag } = this;
-    return staticHtml`
-      <${unsafeStatic(tag)} class=${this.theme("uix-list")}>
-        <slot></slot>
-      </${unsafeStatic(tag)}>
-    `;
+    return html`<slot></slot>`;
   },
 };

@@ -30,7 +30,7 @@ const Text = {
     TrackingSizes,
     TextSizes,
   }) => ({
-    "uix-text": {
+    "uix-text__element": {
       _base: "",
       variant: TextColors,
       weight: FontWeight,
@@ -41,17 +41,12 @@ const Text = {
   }),
   render() {
     const { size } = this;
-    const isLink = Boolean(this.onclick || this.href);
-    const tag = isLink ? "a" : TAG_MAP[size] || "p";
+    const tag = TAG_MAP[size] || "p";
 
-    return isLink
-      ? html`<a href=${this.href || "#"} @click=${this.onclick}
-          ><slot></slot
-        ></a>`
-      : staticHtml`
+    return staticHtml`
       <${unsafeStatic(tag)} class="${unsafeStatic(
-          `${this.theme("uix-text")}`,
-        )}">
+      `${this.theme("uix-text__element")}`,
+)}">
         <slot></slot>
       </${unsafeStatic(tag)}>
     `;

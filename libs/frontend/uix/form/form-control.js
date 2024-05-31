@@ -9,27 +9,25 @@ const FormControl = {
   render() {
     const { label, labelAlt } = this;
     return html`
-      <div class=${this.theme("uix-form-control")}>
-        ${label
-          ? html`
-              <label class=${this.theme("uix-form-control__label")}>
-                <span class=${this.theme("uix-form-control__label-text")}>
-                  ${label}
-                </span>
-              </label>
-            `
-          : ""}
-        <slot></slot>
-        ${labelAlt?.length
-          ? html`
-              <label class=${this.theme("uix-form-control__label")}>
-                <span class=${this.theme("uix-form-control__label-alt")}>
-                  ${labelAlt}
-                </span>
-              </label>
-            `
-          : ""}
-      </div>
+      ${label
+    ? html`
+            <label class=${this.theme("uix-form-control__label")}>
+              <span class=${this.theme("uix-form-control__label-text")}>
+                ${label}
+              </span>
+            </label>
+          `
+    : ""}
+      <slot></slot>
+      ${labelAlt?.length
+    ? html`
+            <label class=${this.theme("uix-form-control__label")}>
+              <span class=${this.theme("uix-form-control__label-alt")}>
+                ${labelAlt}
+              </span>
+            </label>
+          `
+    : ""}
     `;
   },
   theme: {

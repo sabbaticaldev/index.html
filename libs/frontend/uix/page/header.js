@@ -20,21 +20,19 @@ const Header = {
   },
   render() {
     return html`
-      <uix-container class=${this.theme("uix-header")}>
-        <uix-block class=${this.theme("uix-header__block")}>
-          <uix-logo class=${this.theme("uix-header__logo")}
-            >${this.logo}</uix-logo
-          >
-          <uix-list class=${this.theme("uix-header__nav")}>
-            ${this.navItems.map(
-              (item) =>
-                html`<uix-nav-item href=${item.href}
-                  >${item.text}</uix-nav-item
-                >`,
-  )}
-          </uix-list>
-        </uix-block>
-      </uix-container>
+      <uix-block class=${this.theme("uix-header__block")}>
+        <uix-logo class=${this.theme("uix-header__logo")}>
+          ${this.logo}
+        </uix-logo>
+        <uix-list class=${this.theme("uix-header__nav")}>
+          ${this.navItems.map(
+            (item) =>
+      html`<uix-nav-item href=${item.href}
+                  >${item.text}</uix-nav-item>
+          )}
+        </uix-list>
+      
+      </uix-block>
     `;
   },
 };

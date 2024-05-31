@@ -18,7 +18,7 @@ const Button = {
     ButtonSizes,
     TextSizes,
   }) => ({
-    "uix-button": {
+    "uix-button__element": {
       _base: cls([
         "cursor-pointer transition ease-in-out duration-200 gap-2 w-full",
         baseTheme.flexCenter,
@@ -31,7 +31,7 @@ const Button = {
     },
   }),
   render() {
-    const btnClass = this.theme("uix-button");
+    const btnClass = this.theme("uix-button__element");
 
     if (this.dropdown) {
       return html`
@@ -50,11 +50,7 @@ const Button = {
 
     return this.href
       ? html`
-          <a
-            class=${btnClass}
-            href=${this.href}
-            @click=${(event) => this.click?.({ event, props: this })}
-          >
+          <a class=${btnClass} href=${this.href}>
             <slot></slot>
           </a>
         `

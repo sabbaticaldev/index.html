@@ -30,7 +30,7 @@ const Select = {
       <select
         name=${name}
         @change=${this.change}
-        class=${this.theme("uix-select")}
+        class=${this.theme("uix-select__element")}
       >
         ${options?.map((option) => html` <option>${option}</option> `) || ""}
         <slot></slot>
@@ -38,7 +38,7 @@ const Select = {
     `;
   },
   theme: ({ cls, baseTheme }) => ({
-    "uix-select": {
+    "uix-select__element": {
       _base: cls([
         "block w-full appearance-none focus:outline-none focus:ring-0",
         baseTheme.defaultTextColor,

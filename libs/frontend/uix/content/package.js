@@ -2,6 +2,7 @@ import Avatar from "./avatar.js";
 import AvatarGroup from "./avatar-group.js";
 import Badge from "./badge.js";
 import Icon from "./icon.js";
+import Link from "./link.js";
 import MockupPhone from "./mockup-phone.js";
 import Rating from "./rating.js";
 import Table from "./table.js";
@@ -19,6 +20,7 @@ export default {
     Icon,
     MockupPhone,
     Rating,
+    Link,
     Table,
     Text,
     Timeline,

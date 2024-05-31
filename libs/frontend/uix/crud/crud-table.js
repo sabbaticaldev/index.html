@@ -11,9 +11,7 @@ const CrudTable = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-crud-table")}>
-        <uix-table .headers=${this.fields} .rows=${this.rows}></uix-table>
-      </div>
+      <uix-table .headers=${this.fields} .rows=${this.rows}></uix-table>
     `;
   },
 };

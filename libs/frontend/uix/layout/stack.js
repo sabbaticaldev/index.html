@@ -11,11 +11,7 @@ const Stack = {
       `flex flex-${direction} space-${direction}-${spacing}`,
   },
   render() {
-    return html`
-      <div class=${this.theme("uix-stack")}>
-        <slot></slot>
-      </div>
-    `;
+    return html` <slot></slot> `;
   },
 };
 

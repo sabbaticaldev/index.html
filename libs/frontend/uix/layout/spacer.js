@@ -1,16 +1,17 @@
-// spacer.js
-import { html } from "helpers";
+import { html, T } from "helpers";
 
 const Spacer = {
   tag: "uix-spacer",
   props: {
-    // Define spacer props like size, axis, etc.
+    size: T.string({ default: "md" }),
+    horizontal: T.boolean({ default: false }),
   },
-  theme: {
-    // Define spacer theme classes
-  },
+  theme: ({ SpacingSizes }) => ({
+    "uix-spacer": ({ size, horizontal }) =>
+      horizontal ? `w-${SpacingSizes[size]}` : `h-${SpacingSizes[size]}`,
+  }),
   render() {
-    return html` <div class=${this.theme("uix-spacer")}></div> `;
+    return html``;
   },
 };
 

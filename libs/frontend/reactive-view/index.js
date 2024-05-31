@@ -5,10 +5,6 @@ import { getElementTheme } from "./theme.js";
 
 export const instances = [];
 class ReactiveView extends LitElement {
-  i18n = i18n;
-  static formAssociated;
-  static _instancesUsingSync = syncKeyMap;
-
   constructor({ component }) {
     super();
     instances.push(this);
@@ -115,6 +111,8 @@ export function defineView({ key, component, style }) {
   if (!tag)
     console.error(`Error: component ${key} doesn't have a tag property`);
   class View extends ReactiveView {
+    i18n = component.i18n;
+    static _instancesUsingSync = syncKeyMap;
     static formAssociated = component.formAssociated;
     static properties = getProperties(component.props);
     constructor() {

@@ -15,19 +15,17 @@ const Hero = {
   },
   render() {
     return html`
-      <uix-container class=${this.theme("uix-hero")}>
-        <uix-block class=${this.theme("uix-hero__block")}>
-          <uix-text class=${this.theme("uix-hero__title")} size="4xl"
-            >${this.title}</uix-text
-          >
-          <uix-text class=${this.theme("uix-hero__subtitle")}
-            >${this.subtitle}</uix-text
-          >
-          <uix-button variant="primary" @click=${this.buttonClick}
-            >${this.buttonText}</uix-button
-          >
-        </uix-block>
-      </uix-container>
+      <uix-block class=${this.theme("uix-hero__block")}>
+        <uix-text class=${this.theme("uix-hero__title")} size="4xl"
+          >${this.title}</uix-text
+        >
+        <uix-text class=${this.theme("uix-hero__subtitle")}
+          >${this.subtitle}</uix-text
+        >
+        <uix-button variant="primary" @click=${this.buttonClick}
+          >${this.buttonText}</uix-button
+        >
+      </uix-block>
     `;
   },
 };

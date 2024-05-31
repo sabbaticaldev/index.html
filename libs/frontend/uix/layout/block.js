@@ -16,10 +16,6 @@ export default {
     },
   }),
   render() {
-    return html`
-      <div class=${this.theme("uix-block")}>
-        <slot></slot>
-      </div>
-    `;
+    return html` <slot></slot> `;
   },
 };

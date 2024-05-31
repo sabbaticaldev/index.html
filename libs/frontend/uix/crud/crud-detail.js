@@ -14,26 +14,19 @@ const CrudDetail = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-crud-detail")}>
-        ${this.fields.map(
+      ${this.fields.map(
     (field) => html`
-            <div>
-              <strong>${field}: </strong>
-              <span>${this.item[field]}</span>
-            </div>
-          `,
+          <div>
+            <strong>${field}: </strong>
+            <span>${this.item[field]}</span>
+          </div>
+        `,
   )}
-        <div class=${this.theme("uix-crud-detail__actions")}>
-          <uix-button @click=${() => this.editItem(this.item)}>
-            Edit
-          </uix-button>
-          <uix-button
-            variant="error"
-            @click=${() => this.deleteItem(this.item)}
-          >
-            Delete
-          </uix-button>
-        </div>
+      <div class=${this.theme("uix-crud-detail__actions")}>
+        <uix-button @click=${() => this.editItem(this.item)}> Edit </uix-button>
+        <uix-button variant="error" @click=${() => this.deleteItem(this.item)}>
+          Delete
+        </uix-button>
       </div>
     `;
   },

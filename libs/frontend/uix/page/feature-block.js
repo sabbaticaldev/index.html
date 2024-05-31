@@ -14,18 +14,16 @@ const FeatureBlock = {
   },
   render() {
     return html`
-      <uix-block class=${this.theme("uix-feature-block")}>
-        <uix-icon
-          class=${this.theme("uix-feature-block__icon")}
-          name=${this.icon}
-        ></uix-icon>
-        <uix-text class=${this.theme("uix-feature-block__title")} size="xl"
-          >${this.title}</uix-text
-        >
-        <uix-text class=${this.theme("uix-feature-block__description")}
-          >${this.description}</uix-text
-        >
-      </uix-block>
+      <uix-icon
+        class=${this.theme("uix-feature-block__icon")}
+        name=${this.icon}
+      ></uix-icon>
+      <uix-text class=${this.theme("uix-feature-block__title")} size="xl"
+        >${this.title}</uix-text
+      >
+      <uix-text class=${this.theme("uix-feature-block__description")}
+        >${this.description}</uix-text
+      >
     `;
   },
 };

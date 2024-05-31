@@ -14,11 +14,7 @@ const Badge = {
     },
   }),
   render() {
-    return html`
-      <span @click=${this.click} class=${this.theme("uix-badge")}>
-        <slot></slot>
-      </span>
-    `;
+    return html` <slot></slot>`;
   },
 };
 

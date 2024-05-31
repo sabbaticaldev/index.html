@@ -11,14 +11,15 @@ const Stats = {
     }),
   },
   theme: {
-    "uix-stats": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8",
+    "uix-stats__element":
+      "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8",
     "uix-stat": "text-center",
     "uix-stat__value": "text-4xl font-bold mb-2",
     "uix-stat__label": "text-gray-600",
   },
   render() {
     return html`
-      <uix-list class=${this.theme("uix-stats")}>
+      <uix-list class=${this.theme("uix-stats__element")}>
         ${this.items.map(
     (item) => html`
             <uix-block class=${this.theme("uix-stat")}>

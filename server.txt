@@ -1,0 +1,2990 @@
+
+  We created a task runner/CLI that interacts with LLMs to refactor code. For now the system is based on a full file refactoring. 
+  
+  Lets refactor it make use of the personas.json and get a persona for the requests (adding it to the prompts). Be diligent and refactor only the needed files, all of them with a full complete solution
+  
+  in the response remove extra spaces and indentation, we will run eslint after so removing th spaces can save us some tokens which is very important but most important, DONT MAKE UNNECESSARY CHANGES!
+  
+
+Project Path: /home/alanleal/Projects/bootstrapp/server
+
+Source Tree:
+
+```
+server
+├── prompts
+│   ├── instagram-prompts.txt
+│   ├── coding
+│   │   ├── refactor.json
+│   │   └── refactor-diff.json
+│   └── instagram
+│       └── socialMediaPost.json
+├── tasks
+│   ├── refactor.js
+│   ├── maps.js
+│   ├── story.js
+│   ├── video.js
+│   ├── instagram.js
+│   ├── import.js
+│   └── index.js
+├── constants.js
+├── import-groups-txt.js
+├── personas.json
+├── services
+│   ├── llm
+│   │   ├── personas.js
+│   │   ├── engines
+│   │   │   ├── bedrock.js
+│   │   │   └── openai.js
+│   │   └── index.js
+│   ├── maps
+│   │   ├── google.js
+│   │   ├── mapbox.js
+│   │   └── index.js
+│   ├── audio.js
+│   ├── video.js
+│   ├── whatsapp
+│   │   └── index.js
+│   ├── instagram.js
+│   ├── image.js
+│   └── drive.js
+├── settings.js
+├── utils.js
+├── utils
+│   ├── tasks.js
+│   ├── maps.js
+│   ├── sleep.js
+│   ├── xml.js
+│   ├── files.js
+│   └── patch.js
+├── index.js
+└── models
+    ├── group.js
+    └── tag.js
+
+```
+
+`/home/alanleal/Projects/bootstrapp/server/prompts/instagram-prompts.txt`:
+
+```````txt
+Here are the 5 Prompts I use for my Instagram. Copy and paste them into Chat GPT and use them for your own page:
+
+1. Profile Optimisation:
+"My Instagram profile is about (insert niche here). I need help creating a short Instagram bio to stand out. The bio needs to have 3 short lines. The first one needs show what I do and how I can help people (example: I help X achieve Y), and it needs to be impactful. The second line needs to tell more about my mission, and what people will get from my content. The third line needs to be a call to action that gets people interested.
+
+2. Write captions forsostsgram growth
+"As a content creator on Instagram running a (insert your business), I want to help my audience reach (insert goals). create a caption for a post about (insert topic)."
+
+3. Generate viral reel variations:
+"I want to create an Instagram Reel about (insert topic). Create 5 different variations of this reel (insert original reel idea). Come up with a short, catchy title, including "Read The Caption" which gets people to read the caption, and a caption that provides valuable tips and actionable steps for my (insert ideal audience)."
+
+4. Generate viral story ideasaption y
+"'m looking for 10 viral story ideas for my Instagram audience. The goal is to generate engagement and increase views. Create some fresh, unique ideas that I can use in (insert niche)."
+
+5 Generate catchy, unique hooks:
+"As a creator in the (insert your business/niche), my goal is to entice my audience to (insert objectives). Provide 10 irresistible, engaging hooks that'll captivate my audience & keep them hooked to watch more."
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/prompts/coding/refactor.json`:
+
+```````json
+{
+  "persona": "CodeRefactorer",
+  "tone": "Technical and precise, but also clear and understandable. Don't use jargon unnecessarily. Your coding style is functional programming. Less and efficient code is better. You create clear coding, not needing to add comment blocks. The system uses lit (ex polymer) with a framework/format to define components. Follow the same code style. Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable. You create clear code and don't add comments to the files. ",
+  "prompt": "Refactor the target refactoring files code using the context files as reference.\n\nRefactoring Prompt: {taskPrompt}\n\nMerge strategy: {strategy}\nExample Inputs:\n{exampleInput}\n\nExample Generated Output:\n{exampleOutput}\n  Use the above format as output for the XML -- ENFORCE IT!\n\n\n\nContext Files:\n{contextSrc}\n\nFiles to Refactor:\n{refactoringFiles} -- ATTENTION: the content of the contextFiles shouldn't not influence in your response, they are just text that you need refactor",
+  "inputParams": {
+    "contextSrc": "List of files that provide context for the refactoring task.",
+    "refactoringFiles": "String describing which files to change.",
+    "taskPrompt": "Specific instructions on what should be done with the code.",
+    "strategy": "The merge strategy. It can be file for full file replace or diff for patch"
+  },
+  "outputParams": {
+    "commitMessage": "Description of what changed for git commit",
+    "files": "Array of files with refactored code. The file contain a filepath (full relative path and filename). and content. "
+  },
+  "exampleInput": {
+    "contextSrc": {
+      "src/utils.js": "file content here",
+      "src/models.js": "file content here",
+      "src/controllers.js": "file content here",
+      "src/views.js": "file content here"
+    },
+    "refactoringFiles": "utils.js and models.js",
+    "taskPrompt": "Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable"
+  },
+  "exampleOutput": {
+    "commitMessage": "Refactored src/models.js and utils.js, fixed X, Y, added Z",
+    "files": [
+      {
+        "filepath": "src/utils.js",
+        "content": "<html>Refactored file content here && without extra spaces and indentation</html>"
+      },
+      {
+        "filepath": "src/models.js",
+        "content": "<html>Refactored file content here && without extra spaces and indentation</html>"
+      }
+    ]
+  }
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/prompts/coding/refactor-diff.json`:
+
+```````json
+{
+  "persona": "CodeRefactorer",
+  "tone": "Technical and precise, but also clear and understandable. Don't use jargon unnecessarily. Your coding style is functional programming. Less and efficient code is better. You create clear coding, not needing to add comment blocks. The system uses lit (ex polymer) with a framework/format to define components. Follow the same code style. Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable. You create clear code and don't add comments to the files.",
+  "prompt": "Refactor the target refactoring files code using the context files as reference.\n\nPrompt: {taskPrompt}\n\nMerge strategy: {strategy}\nExample Inputs:\n{exampleInput}\n\nExample Generated Output:\n{exampleOutput}\n  Use the above format as output for the XML -- ENFORCE IT!\n\nContext Files:\n{contextSrc}\nRefactoring Files:\n{refactoringFiles}\n\n",
+  "inputParams": {
+    "contextSrc": "JSON object containing paths and content of context files.",
+    "refactoringFiles": "String describing which files to change.",
+    "taskPrompt": "Specific instructions or standards to follow for the refactoring.",
+    "strategy": "The merge strategy. It can be file for full file replace or diff for patch"
+  },
+  "outputParams": {
+    "commitMessage": "Description of what changed for git commit",
+    "diffPatch": "full diff patch string in git format"
+  },
+  "exampleInput": {
+    "contextSrc": {
+      "src/utils.js": "function oldFunction() { console.log('old'); }",
+      "src/constants.js": "const MAX_SIZE = 100;"
+    },
+    "refactoringFiles": "src/utils.js and src/constants.js",
+    "taskPrompt": "Refactor to include new coding standards and consider renaming 'constants.js' to 'config.js'.",
+    "strategy": "diff"
+  },
+  "exampleOutput": {
+    "commitMessage": "Refactored src/utils.js and src/constants.js, fixed X, Y, added Z",
+    "diffPatch": "diff --git a/src/utils.js b/src/utils.js\nindex 1234567..89abcdef 100644\n--- a/src/utils.js\n+++ b/src/utils.js\n@@ -1,3 +1,3 @@\n-function oldFunction() {\n-  console.log('old');\n+const newFunction = () => console.log('new');\n }\ndiff --git a/src/constants.js b/src/config.js\nindex abcdef12..34567890 100644\n--- a/src/constants.js\n+++ b/src/config.js\n@@ -1 +1 @@\n-const MAX_SIZE = 100;\n+const MAX_ITEMS = 100;"
+  }
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/prompts/instagram/socialMediaPost.json`:
+
+```````json
+{
+  "persona": "AllForTraveler",
+  "tone": "Inspirational and informative, but also personal. Don't sound like a robot or marketing person",
+  "prompt": "Create a social media post for the persona: {persona}.\nTone: {tone}\n------\nBased on this description: \"{postDescription}\"\n\n{expectedFormat}\n\n{example}\n\n{contentStyle}\n{captionStyle}\n{formattedHashtags}",
+  "inputParams": {
+    "postDescription": "if any content supplied is not in english, translate it and give back results only in english. Change the tone and expand the content from the point of view of a guide (called AllForTraveler, a social media influencer that shares traveling tips). Use emoticons to make the reading easier. Be careful to not use wrong information like date, time, events, don't say things that create commitment to the AllForTraveler account. We are not part of the post, we are reposting other people's adventures. Don't use the same idea of the current post, get another point of view. If there are hashtags, use them to create engaging and useful content related to it. Use max 300 chars (not counting hashtags)."
+  },
+  "outputParams": {
+    "description": "The detailed description of the newly generated social media post content.",
+    "caption": "Short, catchy hook/caption related to the content",
+    "hashtags": "List of relevant hashtags",
+    "credits": "Credit to the original content creator",
+    "city": "City name for location tagging",
+    "country": "Country name for location tagging"
+  },
+  "exampleOutput": {
+    "description": "Discover the Breathtaking Hardergrat Trail\\n📍Hardergrat, Switzerland 🇨🇭🏔️\\n\\nAre you ready for an unforgettable adventure in the heart of the Swiss Alps? 🇨🇭\\n\\n 📸@adventureblog  \\n\\n #list #of #hashtags",
+    "caption": "📍Hardergrat, Switzerland 🇨🇭",
+    "hashtags": "#Adventure #Hike #SwissAlps",
+    "credits": "@adventureblog",
+    "city": "Interlaken",
+    "country": "Switzerland"
+  }
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/tasks/refactor.js`:
+
+```````js
+import { exec } from "child_process";
+import fs from "fs";
+import path from "path";
+import util from "util";
+
+import { generatePrompt, LLM } from "../services/llm/index.js";
+import { executeTasks } from "../utils.js";
+import { importPatchContent } from "./import.js";
+
+const execAsync = util.promisify(exec);
+const deps = {};
+function readDirectory(source) {
+  const files = {};
+  function traverseDirectory(directory) {
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        traverseDirectory(fullPath);
+      } else if (entry.isFile() && entry.name.endsWith(".js")) {
+        const content = fs.readFileSync(fullPath, "utf8");
+        files[fullPath] = content;
+      }
+    }
+  }
+  if (Array.isArray(source)) {
+    source.forEach(traverseDirectory);
+  } else {
+    traverseDirectory(source);
+  }
+  return files;
+}
+async function runESLintFix(files) {
+  const fileArgs = files.join(" ");
+  try {
+    await execAsync(`npx eslint --fix ${fileArgs}`);
+    console.log("EsLint succesful");
+  } catch (error) {
+    console.error("ESLint failed:", error);
+  }
+}
+export async function refactorFolder(options) {
+  const {
+    contextSrc,
+    refactoringFiles,
+    taskPrompt,
+    responseFormat = "json",
+    strategy = "file",
+    llmProvider = "bedrock",
+  } = options;
+  const outputDirectory = `code/${refactoringFiles
+    .replace(/[^a-z0-9]/gi, "_")
+    .toLowerCase()}`;
+  const contextFilePath = path.join(outputDirectory, "context.json");
+  const promptFilePath = path.join(outputDirectory, "prompt.txt");
+  const commitMessageFilePath = path.join(".git", "COMMIT_EDITMSG");
+  const isDiff = strategy === "diff";
+  const template = isDiff ? "refactor-diff" : "refactor";
+  const templateFile = `coding/${template}.json`;
+  fs.mkdirSync(outputDirectory, { recursive: true });
+  const tasks = [
+    {
+      description: "Read context source directory and encode file contents",
+      key: "contextFileMap",
+      filePath: contextFilePath,
+      operation: async () => {
+        const contextFileMap = readDirectory(contextSrc);
+        fs.writeFileSync(
+          contextFilePath,
+          JSON.stringify(contextFileMap, null, 2),
+        );
+        return contextFileMap;
+      },
+    },
+    {
+      description: "Read refactoring files directory and encode file contents",
+      key: "refactoringFileMap",
+      filePath: path.join(outputDirectory, "refactoringFileMap.json"),
+      operation: async () => {
+        if (
+          fs.existsSync(refactoringFiles) &&
+          fs.lstatSync(refactoringFiles).isDirectory()
+        ) {
+          return readDirectory(refactoringFiles);
+        }
+        return null;
+      },
+    },
+    {
+      description: "Generate refactor prompt",
+      key: "prompt",
+      dependencies: ["template", "contextFileMap", "refactoringFileMap"],
+      filePath: promptFilePath,
+      operation: async () => {
+        const generatedPrompt = generatePrompt(
+          {
+            contextSrc: JSON.stringify(deps.contextFileMap, null, 2),
+            refactoringFiles,
+            taskPrompt,
+            strategy,
+          },
+          templateFile,
+          responseFormat,
+        );
+        fs.writeFileSync(promptFilePath, generatedPrompt);
+        return generatedPrompt;
+      },
+    },
+    {
+      description: "Execute LLM to refactor code",
+      key: "llmResponse",
+      dependencies: ["prompt"],
+      filePath: path.join(outputDirectory, "llmResponse.json"),
+      operation: async () => {
+        const response = await LLM.execute(llmProvider, deps.prompt, {
+          responseFormat,
+        });
+        fs.writeFileSync(
+          path.join(outputDirectory, "llmResponse.json"),
+          JSON.stringify(response, null, 2),
+        );
+        const commitMessage = response.commitMessage;
+        if (commitMessage && fs.existsSync(".git")) {
+          fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
+          console.log(`Commit message saved at ${commitMessageFilePath}`);
+        }
+
+        return isDiff ? response.diffPatch : response.files;
+      },
+    },
+    {
+      description: "Save refactored files from map",
+      key: "savedFilePaths",
+      condition: !isDiff && Array.isArray(deps.llmResponse),
+      dependencies: ["llmResponse"],
+      filePath: () =>
+        (Array.isArray(deps.llmResponse)
+          ? deps.llmResponse
+          : Object.values(deps.llmResponse)
+        ).map((file) => file.filepath),
+      operation: async ({ filepath, index }) => {
+        const file = deps.llmResponse[index];
+        fs.mkdirSync(path.dirname(filepath), { recursive: true });
+        fs.writeFileSync(filepath, file.content, "utf-8");
+        return filepath;
+      },
+    },
+    {
+      // TODO: refactor patch implementation to use stream and not use XML, this way we could apply the patch for each file as soon as it finishes, improving user feedback
+      description: "Apply patch to refactored files",
+      condition: isDiff,
+      key: "savedFilePaths",
+      dependencies: ["llmResponse"],
+      operation: async () => {
+        if (deps.llmResponse) {
+          console.log({ response: deps.llmResponse });
+          const files = await importPatchContent(deps.llmResponse);
+          console.log({ files });
+          return files;
+        }
+      },
+    },
+    {
+      description: "Run ESLint fix on refactored files",
+      dependencies: ["savedFilePaths"],
+      filePath: () => deps.savedFilePaths,
+      operation: async ({ filepath }) => {
+        await runESLintFix([filepath]);
+        return filepath;
+      },
+    },
+  ];
+  try {
+    await executeTasks({ tasks, deps, prompt: true });
+  } catch (error) {
+    console.error("Error refactoring folder:", error);
+    throw error;
+  }
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/tasks/maps.js`:
+
+```````js
+import { exec } from "child_process";
+import fs from "fs";
+import path from "path";
+import util from "util";
+
+import mapServices from "../services/maps/index.js";
+import { executeTasks } from "../utils.js";
+
+const execAsync = util.promisify(exec);
+
+// Download and save map images using a specific map service
+async function downloadMapImages(coords, outputFolderPath, config, provider) {
+  const mapConfig = mapServices[provider];
+  for (const [index, { lat, lng }] of coords.entries()) {
+    const buffer = await mapConfig.fetchMapImage({ ...config, lat, lng });
+    const imagePath = path.join(outputFolderPath, `frame_${index}.png`);
+    fs.writeFileSync(imagePath, Buffer.from(buffer));
+    console.log(`Image saved at ${imagePath}`);
+  }
+}
+
+async function downloadZoomedImages(
+  coord,
+  outputFolderPath,
+  { startZoom, endZoom, size, apiKey, mapType, provider, zoomStep = 1 },
+) {
+  const mapConfig = mapServices[provider];
+  let x = 1;
+  for (let zoom = startZoom; zoom <= endZoom; zoom += zoomStep) {
+    const buffer = await mapConfig.fetchMapImage({
+      lat: coord.lat,
+      lng: coord.lng,
+      zoom,
+      size,
+      apiKey,
+      mapType,
+    });
+    const imagePath = path.join(outputFolderPath, `frame_${x++}.png`);
+    fs.writeFileSync(imagePath, Buffer.from(buffer));
+    console.log(`Zoom level ${zoom} image saved at ${imagePath}`);
+  }
+}
+
+async function createAnimation(
+  imageFolder,
+  outputFile,
+  {
+    frameRate = 24,
+    duration = 10,
+    resolution = "1920x1080",
+    startHold = 1,
+    endHold = 1,
+  },
+) {
+  const inputPattern = path.join(imageFolder, "frame_%d.png");
+  const totalDuration = duration + startHold + endHold; // Adjust total duration to account for hold frames
+
+  // Construct the ffmpeg command with tpad for holding the first and last frames
+  const ffmpegCommand =
+    `ffmpeg -framerate ${frameRate} -i "${inputPattern}" ` +
+    `-vf "tpad=start_duration=${startHold}:start_mode=clone:stop_duration=${endHold}:stop_mode=clone" ` + // Add tpad filter with clone
+    `-t ${totalDuration} -s ${resolution} -c:v libx264 -r ${frameRate} -pix_fmt yuv420p "${outputFile}"`;
+
+  await execAsync(ffmpegCommand);
+  console.log("Animation created successfully");
+}
+
+export async function createMapVideo(options) {
+  const {
+    start,
+    end,
+    apiKey,
+    frameRate,
+    duration,
+    resolution,
+    zoom,
+    size,
+    pathColor,
+    pathWeight,
+    mapType,
+    provider = "google",
+  } = options;
+  const outputFolderPath = `downloads/route_${new Date().getTime()}`;
+  fs.mkdirSync(outputFolderPath, { recursive: true });
+
+  const mapConfig = mapServices[provider];
+  const coordinates = await mapConfig.fetchRouteCoordinates(start, end, apiKey);
+  const tasks = [
+    {
+      description: "Fetching route coordinates and downloading map images",
+      operation: async () =>
+        downloadMapImages(coordinates, outputFolderPath, {
+          zoom,
+          size,
+          pathColor,
+          pathWeight,
+          apiKey,
+          mapType,
+          provider,
+        }),
+    },
+    {
+      description: "Creating animated video",
+      operation: async () =>
+        createAnimation(
+          outputFolderPath,
+          path.join(outputFolderPath, "route_animation.mp4"),
+          {
+            frameRate,
+            duration,
+            resolution,
+          },
+        ),
+    },
+  ];
+  await executeTasks({ tasks });
+}
+export async function createZoomInVideo(options) {
+  const {
+    location,
+    apiKey,
+    frameRate,
+    duration,
+    resolution,
+    startZoom,
+    endZoom,
+    mapType,
+    zoomStep,
+    provider = "google",
+    startHold,
+    endHold,
+  } = options;
+  const outputFolderPath = `downloads/zoom_${new Date().getTime()}`;
+  fs.mkdirSync(outputFolderPath, { recursive: true });
+
+  const mapConfig = mapServices[provider];
+  const coord = await mapConfig.fetchSingleCoordinate(location, apiKey);
+  const tasks = [
+    {
+      description: "Downloading zoomed map images",
+      operation: async () =>
+        downloadZoomedImages(coord, outputFolderPath, {
+          startZoom,
+          endZoom,
+          size: "600x400",
+          apiKey,
+          mapType,
+          provider,
+          zoomStep,
+        }),
+    },
+    {
+      description: "Creating zoom-in video",
+      operation: async () =>
+        createAnimation(
+          outputFolderPath,
+          path.join(outputFolderPath, "zoom_animation.mp4"),
+          {
+            frameRate,
+            duration,
+            resolution,
+            startHold,
+            endHold,
+          },
+        ),
+    },
+  ];
+
+  await executeTasks({ tasks });
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/tasks/story.js`:
+
+```````js
+import { downloadMedia } from "../services/drive.js";
+import { fetchInstagramData } from "../services/instagram.js";
+
+export default async function handleStory(url) {
+  const storyId = new URL(url).pathname.split("/")[2];
+  const data = await fetchInstagramData(url);
+  const imagePath = await downloadMedia(data.image, storyId);
+  console.log(`Processed story with image: ${imagePath}`);
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/tasks/video.js`:
+
+```````js
+import fs from "fs";
+import path from "path";
+
+import { AnimateImage } from "../services/image.js";
+import {
+  connectToWhatsApp,
+  sendWhatsAppMessage,
+} from "../services/whatsapp/index.js";
+import settings from "../settings.js";
+import { executeTasks } from "../utils.js";
+
+const deps = {};
+
+export async function CreateVideoFromImage(options) {
+  const {
+    url: imagePath,
+    duration = 10,
+    frameRate = 24,
+    zoomLevel = 1.2,
+    panDirection = "left-to-right",
+    startPosition = "center",
+    endPosition = "center",
+    resolution = "1920x1080",
+    messageText = "Check out this animation!",
+  } = options;
+
+  try {
+    const baseId = path.basename(imagePath, path.extname(imagePath));
+    const outputFolderPath = `downloads/${baseId}`;
+    fs.mkdirSync(outputFolderPath, { recursive: true });
+
+    const animatedVideoPath = path.join(
+      outputFolderPath,
+      `${baseId}_animated.mp4`,
+    );
+
+    const tasks = [
+      {
+        description: "Create animated video from image",
+        filePath: animatedVideoPath,
+        operation: async () =>
+          AnimateImage({
+            imagePath,
+            outputPath: animatedVideoPath,
+            duration,
+            frameRate,
+            zoomLevel,
+            panDirection,
+            startPosition,
+            endPosition,
+            resolution,
+          }),
+      },
+      {
+        description: "Send animated video over WhatsApp",
+        dependencies: ["animatedVideo"],
+        operation: async () => {
+          const sock = await connectToWhatsApp({ keepAlive: true });
+          await sendWhatsAppMessage(
+            sock,
+            [{ video: fs.readFileSync(animatedVideoPath), text: messageText }],
+            settings.ADMIN_PHONE_NUMBER,
+          );
+        },
+      },
+    ];
+
+    await executeTasks({ tasks, prompt: true, deps });
+  } catch (error) {
+    console.error(`Error creating video from image: ${error.message}`, {
+      error,
+    });
+  }
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/tasks/instagram.js`:
+
+```````js
+import { exec } from "child_process";
+import fs from "fs";
+import path from "path";
+
+import { downloadMedia } from "../services/drive.js";
+import {
+  embedCaptionToImage,
+  generateCaptionImage,
+} from "../services/image.js";
+import { fetchInstagramData } from "../services/instagram.js";
+import { generatePrompt, LLM, loadTemplate } from "../services/llm/index.js";
+import { createGridVideo, embedCaptionToVideo } from "../services/video.js";
+import {
+  connectToWhatsApp,
+  sendWhatsAppMessage,
+} from "../services/whatsapp/index.js";
+import settings from "../settings.js";
+import { executeTasks } from "../utils.js";
+
+const deps = {};
+export async function createTopVideos(options) {
+  const {
+    url,
+    duration = 3,
+    captions = [],
+    videos = [],
+    captionStyle,
+    contentStyle,
+  } = options;
+
+  try {
+    const baseId = new URL(url).pathname.split("/")[2];
+    const outputFolderPath = `downloads/${baseId}/top_videos`;
+    fs.mkdirSync(outputFolderPath, { recursive: true });
+
+    const introVideoPath = path.join(outputFolderPath, "intro.mp4");
+    const gridVideoPath = path.join(outputFolderPath, "grid.mp4");
+    const finalVideoPath = path.join(outputFolderPath, "final.mp4");
+
+    const tasks = [
+      {
+        description: "Download and prepare intro video",
+        filePath: introVideoPath,
+        operation: async () => downloadMedia(url, introVideoPath),
+      },
+      {
+        description: "Create grid video from multiple sources",
+        filePath: gridVideoPath,
+        operation: async () =>
+          createGridVideo({
+            videos,
+            captions,
+            outputPath: gridVideoPath,
+            duration,
+            style: captionStyle,
+          }),
+      },
+      {
+        description: "Combine intro and grid videos",
+        filePath: finalVideoPath,
+        dependencies: ["introVideo", "gridVideo"],
+        operation: async () => {
+          const command = `ffmpeg -f concat -safe 0 -i <(printf "file '%s'\nfile '%s'" ${introVideoPath} ${gridVideoPath}) -c copy ${finalVideoPath}`;
+          await exec(command);
+          return finalVideoPath;
+        },
+      },
+      {
+        description: "Send final video over WhatsApp",
+        operation: async () => {
+          const sock = await connectToWhatsApp({ keepAlive: true });
+          await sendWhatsAppMessage(
+            sock,
+            {
+              video: fs.readFileSync(finalVideoPath),
+              text: "Check out the top places to visit!",
+            },
+            settings.ADMIN_PHONE_NUMBER,
+          );
+        },
+      },
+    ];
+
+    await executeTasks({ tasks, prompt: true, deps });
+  } catch (error) {
+    console.error(`Error creating top videos: ${error.message}`, { error });
+  }
+}
+
+export async function createReelRipOff(options) {
+  const {
+    url,
+    invert = true,
+    pointSize = 26,
+    textColor = "white",
+    strokeWidth = 2,
+    captionBackground = "none",
+    hashtags = true,
+    captionDuration,
+    contentStyle,
+    captionStyle,
+    captionPadding,
+    caption,
+    captionPosition = "top",
+    captionWidth = 600,
+    secondaryCaption,
+  } = options;
+
+  try {
+    const reelId = new URL(url).pathname.split("/")[2];
+    const outputFolderPath = `downloads/${reelId}`;
+    fs.mkdirSync(outputFolderPath, { recursive: true });
+
+    let captionConfig, captionPath;
+    captionPath = path.join(outputFolderPath, "caption.png");
+    captionConfig = {
+      captionPosition,
+      width: captionWidth,
+      pointsize: pointSize,
+      backgroundColor: captionBackground,
+      textColor: textColor,
+      strokeWidth: strokeWidth,
+      padding: captionPadding,
+      gravity: "center",
+      font: "Rubik Mono One",
+      outputPath: captionPath,
+    };
+
+    const instagramJSONPath = path.join(outputFolderPath, "instagram.json");
+    const postPath = path.join(outputFolderPath, "llm.json");
+    const videoPath = path.join(outputFolderPath, "video.mp4");
+    const imagePath = path.join(outputFolderPath, "image.jpg");
+    const finalImagePath = path.join(outputFolderPath, "cover.png");
+    const finalVideoPath = path.join(outputFolderPath, "final.mp4");
+
+    const tasks = [
+      {
+        description: "Instagram data download",
+        filePath: instagramJSONPath,
+        key: "instagram",
+        operation: async () => {
+          const instagram = await fetchInstagramData(url);
+          fs.writeFileSync(instagramJSONPath, JSON.stringify(instagram));
+          return instagram;
+        },
+      },
+      {
+        description: "Video download",
+        filePath: videoPath,
+        dependencies: ["instagram"],
+        operation: async () =>
+          await downloadMedia(deps.instagram.video, reelId, "video"),
+      },
+      {
+        description: "Image download",
+        filePath: imagePath,
+        dependencies: ["instagram"],
+        operation: async () =>
+          await downloadMedia(deps.instagram.image, reelId, "image"),
+      },
+      {
+        description: "LLM post generation",
+        filePath: postPath,
+        key: "llm",
+        dependencies: ["instagram"],
+        operation: async () => {
+          const generalTemplate = loadTemplate(
+            "instagram/socialMediaPost.json",
+          );
+          const specificTemplate = loadTemplate("templates.json");
+
+          const prompt = generatePrompt(
+            {
+              postDescription: deps.instagram.description,
+              contentStyle,
+              captionStyle,
+              persona: "AllForTraveler",
+              hashtags,
+            },
+            generalTemplate,
+            specificTemplate.socialMediaPost,
+          );
+
+          const post = await LLM.execute("bedrock", prompt);
+          fs.writeFileSync(postPath, JSON.stringify(post));
+          return post;
+        },
+      },
+      {
+        description: "Caption image generation",
+        filePath: captionPath,
+        dependencies: ["llm"],
+        operation: async () => {
+          return await generateCaptionImage(
+            caption || deps.llm.caption,
+            captionConfig,
+          );
+        },
+      },
+      {
+        description: "Image caption embedding",
+        filePath: finalImagePath,
+        operation: () =>
+          embedCaptionToImage({
+            imagePath,
+            captionPath,
+            invert,
+            outputPath: finalImagePath,
+            secondaryCaption,
+            captionPosition,
+          }),
+      },
+      {
+        description: "Video caption embedding",
+        filePath: finalVideoPath,
+        operation: async () =>
+          await embedCaptionToVideo({
+            videoPath,
+            captionPath,
+            invert,
+            outputPath: finalVideoPath,
+            captionDuration,
+            captionPosition,
+          }),
+      },
+      {
+        description: "Send WhatsApp messages",
+        dependencies: ["llm"],
+        operation: async () => {
+          const sock = await connectToWhatsApp({ keepAlive: true });
+          const messages = [
+            { image: fs.readFileSync(imagePath) },
+            { image: fs.readFileSync(finalImagePath) },
+            { video: fs.readFileSync(videoPath) },
+            { video: fs.readFileSync(finalVideoPath) },
+            { text: deps.llm.description },
+            { text: url },
+          ];
+          await sendWhatsAppMessage({
+            sock,
+            messages,
+            phoneNumber: settings.ADMIN_PHONE_NUMBER,
+          });
+        },
+      },
+    ];
+
+    await executeTasks({ tasks, prompt: true, deps });
+  } catch (error) {
+    console.error(`Error processing reel: ${error.message}`, { error });
+  }
+}
+
+//todo
+export async function createMapImageWithEventPins(options) {}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/tasks/import.js`:
+
+```````js
+import fs from "fs";
+import path from "path";
+
+import { parseXML } from "../utils.js";
+import { applyPatch, parsePatch } from "../utils/patch.js";
+
+export const importXmlFiles = async (input) => {
+  try {
+    const xmlContent = await fs.promises.readFile(input, "utf8");
+    const parsedXml = parseXML(xmlContent);
+    for (const file of parsedXml) {
+      const { filepath, content } = file;
+      const outputPath = path.join(process.cwd(), filepath);
+
+      await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+      await fs.promises.writeFile(outputPath, content, "utf8");
+      console.log(`File imported: ${outputPath}`);
+    }
+  } catch (error) {
+    console.error("Error importing XML files:", error);
+    throw error;
+  }
+};
+
+/**
+ * Imports patch files by reading the patch file, applying the patches, and writing the updated content.
+ * @param {string} input - The path to the patch file.
+ */
+export const importPatchFile = async (input) => {
+  try {
+    const patchContent = await fs.promises.readFile(input, "utf8");
+    return await importPatchContent(patchContent);
+  } catch (error) {
+    console.error("Error importing patch files:", error);
+    throw error;
+  }
+};
+
+/**
+ * Imports patch content by applying the patches and writing the updated content.
+ * @param {string} patchContent - The content of the patch file.
+ * @returns {Promise<string[]>} - An array of file paths of the files that were modified.
+ */
+export const importPatchContent = async (patchContent) => {
+  try {
+    const filePatches = parsePatch(patchContent);
+    const modifiedFiles = [];
+
+    for (const [filepath, patchLines] of Object.entries(filePatches)) {
+      const fullPath = path.join(process.cwd(), filepath);
+      let originalContent = "";
+
+      try {
+        originalContent = await fs.promises.readFile(fullPath, "utf8");
+      } catch (err) {
+        console.warn(`File not found: ${fullPath}. Creating a new file.`);
+      }
+
+      const newContent = applyPatch(originalContent, patchLines);
+      const outputPath = path.join(process.cwd(), filepath);
+
+      await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+      await fs.promises.writeFile(outputPath, newContent, "utf8");
+      console.log(`File imported: ${outputPath}`);
+      modifiedFiles.push(outputPath);
+    }
+
+    return modifiedFiles;
+  } catch (error) {
+    console.error("Error importing patch content:", error);
+    throw error;
+  }
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/tasks/index.js`:
+
+```````js
+import fs from "fs";
+import path from "path";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+
+import { GetTrends } from "../services/instagram.js";
+import settings from "../settings.js";
+import { importPatchFile, importXmlFiles } from "./import.js";
+import { createReelRipOff } from "./instagram.js";
+import { createMapVideo, createZoomInVideo } from "./maps.js";
+import { refactorFolder } from "./refactor.js";
+import { CreateVideoFromImage } from "./video.js";
+
+// Helper function to determine if input is a file and read JSON or JS asynchronously
+const readFile = async (filePath) => {
+  const fullFilePath = path.resolve(settings.__dirname, "../", filePath);
+  if (filePath.endsWith(".json")) {
+    try {
+      const data = fs.readFileSync(fullFilePath, "utf8");
+      return JSON.parse(data);
+    } catch (error) {
+      console.error("Failed to read or parse JSON file:", error);
+      throw error;
+    }
+  } else if (filePath.endsWith(".js")) {
+    try {
+      const module = await import(`file://${fullFilePath}`);
+      return module.default;
+    } catch (error) {
+      console.error("Failed to import JS module:", error);
+      throw error;
+    }
+  } else {
+    throw new Error("Unsupported file type");
+  }
+};
+
+// Helper function to parse input as JSON/JS or return as URL
+const parseInput = (input) => {
+  try {
+    if (input.endsWith(".json") || input.endsWith(".js")) {
+      return readFile(input);
+    }
+    return { url: input }; // Assuming input is a URL or a direct path
+  } catch (error) {
+    console.error("Failed to parse input:", error);
+    return { url: input };
+  }
+};
+
+const yarg = yargs(hideBin(process.argv))
+  .command(
+    "reel <input>",
+    "Create an Instagram reel",
+    (yargs) => {
+      yargs.positional("input", {
+        describe: "Path to a JSON or JS configuration file or JSON string",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const config = await parseInput(argv.input);
+      await createReelRipOff(config);
+    },
+  )
+  .command(
+    "animate <input>",
+    "Create an animated video from an image",
+    (yargs) => {
+      yargs.positional("input", {
+        describe: "Path to a JSON or JS configuration file or JSON string",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const config = await parseInput(argv.input);
+      await CreateVideoFromImage(config);
+    },
+  )
+  .command(
+    "map-route <input>",
+    "Generate a video animation of a map route",
+    (yargs) => {
+      yargs.positional("input", {
+        describe:
+          "Path to a JSON or JS configuration file or JSON string with route details",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const config = await parseInput(argv.input);
+      await createMapVideo(config);
+    },
+  )
+  .command(
+    "map-zoom <input>",
+    "Generate a video animation of a map zoom",
+    (yargs) => {
+      yargs.positional("input", {
+        describe:
+          "Path to a JSON or JS configuration file or JSON string with route details",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const config = await parseInput(argv.input);
+      await createZoomInVideo(config);
+    },
+  )
+  .command(
+    "refactor <input>",
+    "Refactor JavaScript files in a directory",
+    (yargs) => {
+      yargs.positional("input", {
+        describe:
+          "Path to a JSON or JS configuration file or JSON string with refactoring details",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const config = await parseInput(argv.input);
+      await refactorFolder(config);
+    },
+  )
+  .command(
+    "applyPatch <input>",
+    "Apply the patch file",
+    (yargs) => {
+      yargs.positional("input", {
+        describe: "Path to an git patch file with files changes",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      await importPatchFile(argv.input);
+    },
+  )
+  .command(
+    "importXml <input>",
+    "Import files from an XML file",
+    (yargs) => {
+      yargs.positional("input", {
+        describe: "Path to an XML file with file import details",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const xmlFilePath = argv.input;
+      await importXmlFiles(xmlFilePath);
+    },
+  )
+  .command(
+    "get-trends <type>",
+    "Fetch trending data from Instagram",
+    (yargs) => {
+      yargs.positional("type", {
+        describe: "Type of trends to fetch (hashtags, reels, creators)",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const { type } = argv;
+      console.log(`Fetching trends for ${type}...`);
+      return await GetTrends(type);
+    },
+  )
+  .command(
+    "get-media <type> <url>",
+    "Fetch specific media from Instagram",
+    (yargs) => {
+      yargs
+        .positional("type", {
+          describe: "Type of media to fetch (reel, story, post)",
+          type: "string",
+        })
+        .positional("url", {
+          describe: "URL of the media to fetch",
+          type: "string",
+        });
+    },
+    async (argv) => {
+      const { type, url } = argv;
+      console.log(`Fetching media type: ${type} from ${url}...`);
+    },
+  );
+
+yarg
+  .demandCommand(
+    1,
+    "You must specify a command (reel, animate, map-route, map-zoom, refactor, importXml, get-trends, or get-media) and provide necessary input.",
+  )
+  .help()
+  .parse();
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/constants.js`:
+
+```````js
+export const MAP_TYPES = {
+  satellite: { google: "satellite", mapbox: "satellite-streets-v12" },
+  roadmap: { google: "roadmap", mapbox: "streets-v11" },
+  terrain: { google: "terrain", mapbox: "outdoors-v11" },
+  hybrid: { google: "hybrid", mapbox: "satellite-streets-v12" },
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/import-groups-txt.js`:
+
+```````js
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const normalizeTag = (tag) =>
+  tag
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+fs.readFile(path.join(__dirname, "./data/input.txt"), "utf8", (err, data) => {
+  if (err) {
+    console.error("Error reading the file:", err);
+    return;
+  }
+
+  const groups = data
+    .split(/\r?\n/)
+    .filter((line) => line.trim())
+    .map((line) => {
+      const [name, url, tagsPart] = line.split("||").map((part) => part.trim());
+      const tags = tagsPart
+        .split(";")[0]
+        .split(",")
+        .map((tag) => normalizeTag(tag.trim()));
+      return { name, url, tags };
+    });
+
+  console.log(JSON.stringify(groups, null, 2));
+});
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/personas.json`:
+
+```````json
+{
+  "AllForTraveler": {
+    "name": "AllForTraveler",
+    "tone": "Inspirational and informative, but also personal. Don't sound like a robot or marketing person",
+    "description": "A social media influencer sharing travel tips."
+  },
+  "CodeRefactorer": {
+    "name": "CodeRefactorer",
+    "tone": "Professional and helpful, adhering to coding best practices.",
+    "description": "A code review assistant ensuring the use of best practices, existing conventions, and libraries. "
+  }
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/llm/personas.js`:
+
+```````js
+import fs from "fs/promises";
+import path from "path";
+
+const personasPath = path.join(__dirname, "src/personas.json");
+
+export const loadPersonas = async () => {
+  const data = await fs.readFile(personasPath, "utf8");
+  return JSON.parse(data);
+};
+
+export const getPersonaDetails = async (persona) => {
+  const personas = await loadPersonas();
+  return personas[persona] || personas["AllForTraveler"];
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/llm/engines/bedrock.js`:
+
+```````js
+import {
+  BedrockRuntimeClient,
+  InvokeModelCommand,
+} from "@aws-sdk/client-bedrock-runtime";
+
+const bedrockStrategy =
+  ({
+    BEDROCK_MODEL_ID,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_REGION,
+  }) =>
+    async (prompt, options = {}) => {
+      const {
+        modelId = BEDROCK_MODEL_ID,
+        contentType = "application/json",
+        responseFormat = "json",
+        accept = "application/json",
+        anthropicVersion = "bedrock-2023-05-31",
+        maxTokens = 8096,
+        temperature = 0.2,
+        topK = 100,
+        topP = 0.9,
+        stopSequences = ["\\n\\nHuman:"],
+      } = options;
+
+      const client = new BedrockRuntimeClient({
+        credentials: {
+          accessKeyId: AWS_ACCESS_KEY_ID,
+          secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        },
+        region: AWS_REGION,
+      });
+
+      let prefillMessage = "";
+      if (responseFormat === "xml") {
+        prefillMessage =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+      } else if (responseFormat === "json") {
+        prefillMessage = "{";
+      }
+
+      const body = {
+        anthropic_version: anthropicVersion,
+        messages: [
+          {
+            role: "user",
+            content: [{ type: "text", text: prompt }],
+          },
+          {
+            role: "assistant",
+            content: [{ type: "text", text: prefillMessage }],
+          },
+        ],
+        max_tokens: maxTokens,
+        temperature,
+        top_k: topK,
+        top_p: topP,
+        stop_sequences: stopSequences,
+      };
+      const params = {
+        modelId,
+        contentType,
+        accept,
+        body: JSON.stringify(body),
+      };
+
+      let data;
+      try {
+        data = await client.send(new InvokeModelCommand(params));
+        if (!data) {
+          throw new Error("AWS Bedrock Runtime Error");
+        }
+        const decodedBody = new TextDecoder("utf-8").decode(data.body);
+        const response = JSON.parse(decodedBody);
+        if (!response?.content[0].text) {
+          throw new Error("Invalid response from LLM");
+        }
+        return response.content[0].text;
+      } catch (error) {
+        console.error("Error in bedrockStrategy:", { error });
+        throw error;
+      }
+    };
+
+export default bedrockStrategy;
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/llm/engines/openai.js`:
+
+```````js
+import OpenAIApi from "openai";
+
+const openaiStrategy =
+  (config) =>
+    async (prompt, options = {}) => {
+      const {
+        model = "gpt-4",
+        temperature = 0.2,
+        maxTokens = 2048,
+        responseFormat = "json",
+        stopSequences = ["\n\nHuman:"],
+      } = options;
+
+      const openai = new OpenAIApi({ apiKey: config.OPENAI_API_KEY });
+
+      const body = {
+        model,
+        prompt: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature,
+        max_tokens: maxTokens,
+        stop: stopSequences,
+      };
+
+      try {
+        const response = await openai.createChatCompletion(body);
+        if (!response) {
+          throw new Error("OpenAI API Error");
+        }
+        return response.data.choices[0].message.content.trim();
+      } catch (error) {
+        console.error("Error in openaiStrategy:", { error });
+        throw error;
+      }
+    };
+
+export default openaiStrategy;
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/llm/index.js`:
+
+```````js
+import fs from "fs";
+import path from "path";
+
+import settings from "../../settings.js";
+import { generateXMLFormat, parseXML } from "../../utils.js";
+import bedrock from "./engines/bedrock.js";
+import openai from "./engines/openai.js";
+const LLM = (() => {
+  const {
+    BEDROCK_MODEL_ID,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_REGION,
+    OPENAI_API_KEY,
+  } = settings;
+  const client = {
+    bedrock: bedrock({
+      BEDROCK_MODEL_ID,
+      AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY,
+      AWS_REGION,
+    }),
+    openai: openai({ OPENAI_API_KEY }),
+  };
+  return {
+    execute: async (provider, prompt, options = {}) => {
+      const { responseFormat = "json" } = options;
+      const llmClient = client[provider];
+      if (!llmClient) {
+        throw new Error(`Unsupported LLM provider: ${provider}`);
+      }
+      try {
+        let response = await llmClient(prompt, options);
+        response = cleanLLMResponse(response, responseFormat);
+        console.log({ response });
+        return response;
+      } catch (error) {
+        console.error("Error executing LLM request:", error);
+        throw error;
+      }
+    },
+  };
+})();
+const loadTemplate = (templateFile) => {
+  const filePath = path.join(settings.__dirname, "prompts", templateFile);
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+};
+const generatePrompt = (config, templateFile, responseFormat) => {
+  const templateData = loadTemplate(templateFile);
+  let prompt = templateData.prompt;
+  const inputParameters = Object.keys(templateData.inputParams);
+  const allParameters = inputParameters.concat([
+    "exampleInput",
+    "exampleOutput",
+  ]);
+  console.log({ allParameters });
+  allParameters.forEach((param) => {
+    let value;
+    if (param === "exampleInput") {
+      value = generateExample(templateData.exampleInput);
+    } else if (param === "exampleOutput") {
+      value = generateExample(templateData.exampleOutput, responseFormat);
+    } else {
+      value = JSON.stringify(config[param], null, 2) || "";
+    }
+    const placeholder = `{${param}}`;
+
+    prompt = prompt.replace(placeholder, value);
+  });
+  return prompt;
+};
+const generateExample = (exampleData, responseFormat = "json", rootElement) => {
+  if (responseFormat === "json") {
+    return JSON.stringify(exampleData, null, 2);
+  } else if (responseFormat === "xml") {
+    return generateXMLFormat(exampleData, rootElement);
+  }
+  return "";
+};
+const cleanLLMResponse = (response, format) => {
+  try {
+    if (format === "json") {
+      const firstBraceIndex = response.indexOf("{");
+      const lastBraceIndex = response.lastIndexOf("}");
+      if (firstBraceIndex !== -1 && lastBraceIndex !== -1) {
+        response = response.slice(firstBraceIndex, lastBraceIndex + 1);
+      }
+      return JSON.parse(response);
+    } else if (format === "xml") {
+      const firstTagIndex = response.indexOf("<");
+      const lastTagIndex = response.lastIndexOf(">");
+      if (firstTagIndex !== -1 && lastTagIndex !== -1) {
+        response = response.slice(firstTagIndex, lastTagIndex + 1);
+      }
+      return parseXML(response);
+    } else {
+      return response.trim();
+    }
+  } catch (error) {
+    return response;
+  }
+};
+export { cleanLLMResponse, generatePrompt, LLM, loadTemplate };
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/maps/google.js`:
+
+```````js
+// Dependencies
+import polyline from "@mapbox/polyline";
+const { decode: polylineDecode } = polyline;
+
+import { MAP_TYPES } from "../../constants.js";
+import { fetchMapImage } from "../../utils.js";
+
+export default {
+  fetchMapImage: async ({
+    lat,
+    lng,
+    zoom,
+    size,
+    pathColor,
+    pathWeight,
+    apiKey,
+    mapType,
+  }) => {
+    const googleMapType = MAP_TYPES[mapType]?.google || "roadmap";
+    const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${size}&maptype=${googleMapType}&path=color:${pathColor}|weight:${pathWeight}&key=${apiKey}`;
+    return fetchMapImage(mapUrl);
+  },
+  fetchRouteCoordinates: async (start, end, apiKey) => {
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start}&destination=${end}&key=${apiKey}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    const points = data.routes[0].overview_polyline.points;
+    return polylineDecode(points);
+  },
+  fetchSingleCoordinate: async (location, apiKey) => {
+    const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      location,
+    )}&key=${apiKey}`;
+    const response = await fetch(geocodeUrl);
+    const data = await response.json();
+    return data.results[0].geometry.location;
+  },
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/maps/mapbox.js`:
+
+```````js
+// Dependencies
+import polyline from "@mapbox/polyline";
+const { decode: polylineDecode } = polyline;
+import { MAP_TYPES } from "../../constants.js";
+import { fetchMapImage } from "../../utils.js";
+
+export default {
+  fetchMapImage: async ({ lat, lng, zoom, size, apiKey, mapType }) => {
+    const mapboxMapType = MAP_TYPES[mapType]?.mapbox || "streets-v11";
+    const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/${mapboxMapType}/static/${lng},${lat},${zoom}/${size}?access_token=${apiKey}`;
+    return fetchMapImage(mapUrl);
+  },
+  fetchRouteCoordinates: async (start, end, apiKey) => {
+    const startEncoded = encodeURIComponent(start);
+    const endEncoded = encodeURIComponent(end);
+    const directionsUrl = `https://api.mapbox.com/directions/v5/mapbox/driving/${startEncoded};${endEncoded}?access_token=${apiKey}&geometries=polyline`;
+    const response = await fetch(directionsUrl);
+    const data = await response.json();
+    if (data.routes && data.routes.length > 0) {
+      const polyline = data.routes[0].geometry;
+      return polylineDecode(polyline);
+    }
+    return [];
+  },
+  fetchSingleCoordinate: async (location, apiKey) => {
+    const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+      location,
+    )}.json?access_token=${apiKey}`;
+    const response = await fetch(geocodeUrl);
+    const data = await response.json();
+    if (data.features && data.features.length > 0) {
+      const { center } = data.features[0];
+      return { lat: center[1], lng: center[0] };
+    }
+    return null;
+  },
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/maps/index.js`:
+
+```````js
+import google from "./google.js";
+import mapbox from "./mapbox.js";
+export const mapServices = {
+  google,
+  mapbox,
+};
+
+export default mapServices;
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/audio.js`:
+
+```````js
+import AWS from "aws-sdk";
+import ffmpeg from "fluent-ffmpeg";
+
+// Function to extract audio from video
+export async function extractAudio(videoPath) {
+  const audioPath = `downloads/audio-${Date.now()}.wav`;
+  return new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .output(audioPath)
+      .audioCodec("pcm_s16le")
+      .toFormat("wav")
+      .on("end", () => resolve(audioPath))
+      .on("error", (err) => reject(err))
+      .run();
+  });
+}
+
+export async function transcribeAudio(audioPath) {
+  const transcribeService = new AWS.TranscribeService();
+
+  const jobName = `TranscriptionJob-${Date.now()}`;
+  const audioUri = `file://${audioPath}`;
+
+  const params = {
+    LanguageCode: "en-US",
+    Media: { MediaFileUri: audioUri },
+    MediaFormat: "wav",
+    TranscriptionJobName: jobName,
+    OutputBucketName: process.env.AWS_S3_BUCKET,
+  };
+
+  // Start the transcription job
+  await transcribeService.startTranscriptionJob(params).promise();
+
+  // Poll the transcription job status
+  return new Promise((resolve, reject) => {
+    const checkJobDone = setInterval(async () => {
+      try {
+        const job = await transcribeService
+          .getTranscriptionJob({ TranscriptionJobName: jobName })
+          .promise();
+        if (job.TranscriptionJob.TranscriptionJobStatus === "COMPLETED") {
+          clearInterval(checkJobDone);
+          // Fetch the transcription from the specified S3 bucket or from the URI provided in the job
+          resolve(job.TranscriptionJob.Transcript.TranscriptFileUri);
+        } else if (job.TranscriptionJob.TranscriptionJobStatus === "FAILED") {
+          clearInterval(checkJobDone);
+          reject(new Error("Transcription failed"));
+        }
+      } catch (error) {
+        clearInterval(checkJobDone);
+        reject(error);
+      }
+    }, 5000); // Check every 5 seconds
+  });
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/video.js`:
+
+```````js
+import { exec } from "child_process";
+import ffmpeg from "fluent-ffmpeg";
+import util from "util";
+
+const execAsync = util.promisify(exec);
+
+export async function embedCaptionToVideo({
+  videoPath,
+  captionPath,
+  outputPath,
+  captionDuration,
+  captionPosition,
+  invert,
+}) {
+  const flipFilter = invert ? "hflip," : "";
+
+  // Get dimensions of the caption image
+  const captionHeightCommand = `identify -format "%h" ${captionPath}`;
+  const captionHeight = parseInt(
+    await execAsync(captionHeightCommand).then((output) =>
+      output.stdout.trim(),
+    ),
+  );
+
+  // Determine the height of the video
+  const getVideoHeight = async () => {
+    const command = `ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 ${videoPath}`;
+    const height = await execAsync(command).then((output) =>
+      output.stdout.trim(),
+    );
+    return parseInt(height);
+  };
+
+  const videoHeight = await getVideoHeight();
+  let overlayYPosition = captionPosition;
+  if (captionPosition === "top") {
+    overlayYPosition = videoHeight * 0.1; // 10% from the top
+  } else if (captionPosition === "bottom") {
+    overlayYPosition = videoHeight - (videoHeight * 0.1 + captionHeight); // 10% from the bottom plus caption height
+  } else if (captionPosition === "center") {
+    overlayYPosition = videoHeight / 2 - captionHeight / 2; // Centered vertically
+  }
+
+  const overlayOptions = captionDuration
+    ? `overlay=x=(main_w-overlay_w)/2:y=${overlayYPosition}:enable='between(t,0,${captionDuration})'`
+    : `overlay=x=(main_w-overlay_w)/2:y=${overlayYPosition}`;
+
+  return new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .noAudio()
+      .input(captionPath)
+      .complexFilter([`${flipFilter}${overlayOptions}`])
+      .output(outputPath)
+      .on("end", () => resolve(outputPath))
+      .on("error", (err) => reject(err))
+      .run();
+  });
+}
+export async function createGridVideo({
+  videoPath,
+  captionPath,
+  outputPath,
+  captionDuration,
+  captionPositon,
+  invert,
+}) {
+  const flipFilter = invert ? "hflip," : "";
+  const overlayOptions = captionDuration
+    ? `overlay=x=(main_w-overlay_w)/2:y=${captionPositon}:enable='between(t,0,${captionDuration})'`
+    : `overlay=x=(main_w-overlay_w)/2:y=${captionPositon}`;
+  1;
+  return new Promise((resolve, reject) => {
+    const command = ffmpeg(videoPath).noAudio().input(captionPath);
+    command.complexFilter([`${flipFilter}${overlayOptions}`]);
+    command
+      .output(outputPath)
+      .on("end", () => resolve(outputPath))
+      .on("error", (err) => reject(err))
+      .run();
+  });
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/whatsapp/index.js`:
+
+```````js
+import {
+  Browsers,
+  DisconnectReason,
+  makeInMemoryStore,
+  makeWASocket,
+  useMultiFileAuthState,
+} from "@whiskeysockets/baileys";
+
+import { sleep } from "../../utils.js";
+
+const store = makeInMemoryStore({});
+store.readFromFile(".baileys/store.json");
+setInterval(() => {
+  store.writeToFile(".baileys/store.json");
+}, 10000);
+export let sock;
+const admins = ["553197882008@s.whatsapp.net"]; // Admin WhatsApp IDs
+
+export function isAdmin(user) {
+  return admins.includes(user);
+}
+
+export async function handleRemoveMessage({ remoteJid, messageId }, sock) {
+  try {
+    await sock.sendMessage(remoteJid, { delete: messageId });
+
+    console.log("Message removed.");
+  } catch (error) {
+    console.error("Failed to remove message:", error);
+  }
+}
+
+export async function handleRemoveMessageAndUser(
+  { remoteJid, user, messageId },
+  sock,
+) {
+  try {
+    // Remove the message
+    await sock.sendMessage(remoteJid, { delete: messageId });
+    console.log("Message removed.");
+
+    await sock.groupParticipantsUpdate(remoteJid, [user], "remove");
+
+    console.log("User removed from the group.");
+  } catch (error) {
+    console.error("Failed to remove message or user:", error);
+  }
+}
+
+export async function connectToWhatsApp(config = {}) {
+  const { keepAlive = false, credential = "default" } = config;
+  const { state, saveCreds } = await useMultiFileAuthState(
+    `.baileys/${credential}`,
+  );
+
+  if (sock && sock.status === "OPEN") return sock;
+
+  sock = makeWASocket({
+    printQRInTerminal: true,
+    auth: state,
+    browser: Browsers.macOS("Desktop"),
+    syncFullHistory: false,
+    defaultQueryTimeoutMs: undefined,
+  });
+  store.bind(sock.ev);
+  sock.status = "CLOSED";
+
+  sock.ev.on("creds.update", saveCreds);
+
+  sock.ev.on("messages.upsert", async (event) => {
+    console.log(JSON.stringify(event, null, 2));
+    if (!event?.messages?.[0]?.message?.reactionMessage) return;
+
+    const participant = event.messages[0].key.participant;
+    const remoteJid = event.messages[0].message.reactionMessage.key.remoteJid;
+    const messageId = event.messages[0].message.reactionMessage.key;
+    const user = event.messages[0].message.reactionMessage.key.participant;
+    const emoji = event.messages[0].message.reactionMessage.text;
+
+    if (!isAdmin(participant)) {
+      console.log("Unauthorized action attempted by non-admin.");
+      return;
+    }
+
+    if (["👎", "😮"].includes(emoji)) {
+      console.log({ remoteJid, messageId });
+      await handleRemoveMessage({ remoteJid, messageId }, sock);
+    } else if (emoji === "🚫") {
+      await handleRemoveMessageAndUser({ remoteJid, user, messageId }, sock);
+    }
+  });
+  return new Promise((resolve, reject) => {
+    sock.ev.on("connection.update", async (update) => {
+      const { connection, lastDisconnect } = update;
+      if (connection === "close") {
+        sock.status = "CLOSE";
+        if (
+          lastDisconnect.error?.output?.statusCode ===
+            DisconnectReason.unauthorized ||
+          lastDisconnect.error?.output?.statusCode === 401
+        ) {
+          connectToWhatsApp({ keepAlive });
+        } else {
+          const shouldReconnect =
+            lastDisconnect.error?.output?.statusCode !==
+            DisconnectReason.loggedOut;
+          console.log(
+            "Connection closed due to ",
+            lastDisconnect.error,
+            ", reconnecting ",
+            shouldReconnect,
+          );
+          if (shouldReconnect) {
+            connectToWhatsApp({ keepAlive });
+          }
+        }
+      }
+      if (connection === "open") {
+        sock.status = "OPEN";
+        console.log("Connection opened!");
+        if (!keepAlive) {
+          await sleep(3000);
+          await sock.end("keepAlive false");
+        }
+        resolve(sock);
+      }
+
+      sock.ev.on("close", () => {
+        reject(new Error("Connection closed before it could be established."));
+      });
+    });
+  });
+}
+
+export async function sendWhatsAppMessage({
+  sock,
+  messages = [],
+  phoneNumber,
+}) {
+  async function sendMessage() {
+    try {
+      if (sock.status !== "OPEN") {
+        throw new Error("Socket is not open");
+      } else {
+        console.log("CONNECTION OPEN");
+      }
+
+      messages.forEach(async (message) => {
+        await sock.sendMessage(phoneNumber, message);
+      });
+      console.log("Messages sent.");
+    } catch (error) {
+      if (error.message === "Socket is not open") {
+        console.log("Socket is not open, waiting to retry...");
+        await sleep(1000);
+        await sendMessage();
+      } else {
+        console.log("CLOSE CONNECTION");
+        sock.end();
+      }
+    }
+  }
+  await sendMessage();
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/instagram.js`:
+
+```````js
+import fs from "fs";
+import { IgApiClient } from "instagram-private-api";
+
+import settings from "../settings.js";
+
+export async function fetchInstagramData(url) {
+  const options = {
+    method: "GET",
+    headers: {
+      "X-RapidAPI-Key": settings.RAPIDAPI_KEY,
+      "X-RapidAPI-Host": settings.RAPIDAPI_API,
+    },
+  };
+  const endpoint =
+    "https://instagram-media-downloader.p.rapidapi.com/rapid/post.php";
+  const response = await fetch(
+    `${endpoint}?url=${encodeURIComponent(url)}`,
+    options,
+  );
+  const data = await response.json();
+  if (!response.ok)
+    throw new Error(
+      `Failed to fetch data from Instagram: ${response.statusText}`,
+    );
+
+  return {
+    video: data.video,
+    image: data.image,
+    description: data.caption,
+  };
+}
+
+const { IG_USERNAME, IG_PASSWORD } = settings;
+
+const createApiQueue = (delay) => {
+  let queue = [];
+  let busy = false;
+
+  const processQueue = async () => {
+    if (queue.length > 0 && !busy) {
+      busy = true;
+      const { task, resolve } = queue.shift();
+      try {
+        const result = await task(); // Capture the result of the task
+        resolve(result); // Resolve the promise with the result
+      } catch (error) {
+        console.error("Task failed:", error);
+        resolve(undefined); // Resolve with undefined on error
+      }
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      busy = false;
+      processQueue();
+    }
+  };
+
+  const enqueue = (task) => {
+    return new Promise((resolve) => {
+      queue.push({ task, resolve });
+      processQueue();
+    });
+  };
+
+  return { enqueue };
+};
+
+export async function GetTrends(type) {
+  const ig = new IgApiClient();
+
+  const statePath = ".instagram-private-api";
+  let userId;
+
+  if (fs.existsSync(statePath)) {
+    const state = fs.readFileSync(statePath).toString();
+    await ig.state.deserialize(state);
+    userId = ig.state.extractUserId();
+  } else {
+    ig.state.generateDevice(IG_USERNAME);
+    await ig.simulate.preLoginFlow();
+    const loggedInUser = await ig.account.login(IG_USERNAME, IG_PASSWORD);
+    process.nextTick(async () => await ig.simulate.postLoginFlow());
+    userId = loggedInUser.pk.toString();
+
+    const state = await ig.state.serialize();
+    fs.writeFileSync(statePath, JSON.stringify(state));
+  }
+
+  const userInfo = await ig.user.info(userId);
+  const follower_count = userInfo.follower_count;
+
+  console.log(`User id: ${userId}`);
+  console.log(`Follower count: ${follower_count}`);
+  const apiQueue = createApiQueue(200); // 200 ms delay
+
+  const fetchMedia = async (userId) => {
+    const userMedia = await ig.feed.user(userId).items();
+    return userMedia;
+  };
+
+  apiQueue
+    .enqueue(() => {
+      //fetchMedia(userId);
+      ig.search.tags("travel").then((search) => {
+        search.forEach((entry) => {
+          console.log({ entry });
+        });
+      });
+    })
+    .then((media) => console.log({ media }))
+    .catch((error) => console.error("Failed to fetch media:", error));
+  console.log({ userId });
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/image.js`:
+
+```````js
+import { exec } from "child_process";
+import fs from "fs";
+import util from "util";
+
+export async function generateCaptionImage(caption, config) {
+  const {
+    width = 900,
+    height,
+    pointsize = 38,
+    borderColor = "",
+    backgroundColor = "none", // Use 'none' for transparent background
+    textColor = "white", // White text
+    strokeColor = "black", // Black border
+    strokeWidth = 0, // Default to no stroke, apply only if > 0
+    padding = 0,
+    font = "Arial",
+    outputPath,
+  } = config;
+  // Step 1: Create base text image with Pango
+  const baseTextCommand =
+    `convert -size ${width}${height ? `x${height}` : ""} ` +
+    ` -background ${backgroundColor}` +
+    `${
+      padding
+        ? ` -bordercolor '${
+          borderColor || backgroundColor
+        }' -border ${padding} `
+        : " "
+    }` +
+    ` -fill '${textColor}' ` +
+    ` -font '${font}' ` +
+    " -gravity center " +
+    ` -pointsize ${pointsize} ` +
+    ` pango:'${caption.replace(/'/g, "'\\''")}' ` +
+    ` PNG32:${outputPath}-base.png`;
+
+  // Step 2: Create stroke image
+  const strokeTextCommand =
+    `convert ${outputPath}-base.png ` +
+    " -bordercolor 'none' -border 3 " +
+    ` -alpha set -channel RGBA -morphology EdgeOut 'Diamond:${strokeWidth}' ` +
+    ` PNG32:${outputPath}-stroke.png`;
+
+  // Step 3: Colorize stroke
+  const colorizeStrokeCommand =
+    `convert ${outputPath}-stroke.png ` +
+    `-fill '${strokeColor}' -colorize 100 ` +
+    `PNG32:${outputPath}-stroke.png`;
+
+  // Step 4: Composite the base text over the stroke
+  const compositeCommand =
+    `convert ${outputPath}-stroke.png ` +
+    ` ${outputPath}-base.png ` +
+    " -gravity center -composite " +
+    ` -bordercolor 'none' -border ${padding} ` +
+    ` ${outputPath}`;
+
+  // Execute commands
+  try {
+    await execAsync(baseTextCommand);
+    await execAsync(strokeTextCommand);
+    await execAsync(colorizeStrokeCommand);
+    await execAsync(compositeCommand);
+    console.log("Caption image created successfully:", outputPath);
+    // Clean up intermediate images
+    await execAsync(`rm -f ${outputPath}-base.png`);
+    await execAsync(`rm -f ${outputPath}-stroke.png`);
+    return outputPath;
+  } catch (error) {
+    console.error("Error generating caption image with border:", error);
+    throw error; // Ensure the error can be caught by the calling function
+  }
+}
+
+const execAsync = util.promisify(exec);
+export async function embedCaptionToImage({
+  imagePath,
+  flip,
+  captionPath,
+  outputPath,
+  captionPosition,
+}) {
+  // First, check if flipping is needed and handle it
+  const tempImagePath = flip ? `${outputPath}-temp.png` : imagePath;
+  const flipCommand = flip ? `convert ${imagePath} -flop ${tempImagePath}` : "";
+
+  if (flip) {
+    await execAsync(flipCommand);
+  }
+
+  // Get dimensions of the caption image
+  const captionHeightCommand = `identify -format "%h" ${captionPath}`;
+  const captionHeight = parseInt(
+    await execAsync(captionHeightCommand).then((output) =>
+      output.stdout.trim(),
+    ),
+  );
+
+  // Calculate the overlay position based on the caption height and video/image height
+  const imageHeightCommand = `identify -format "%h" ${tempImagePath}`;
+  const imageHeight = parseInt(
+    await execAsync(imageHeightCommand).then((output) => output.stdout.trim()),
+  );
+  let overlayYPosition = captionPosition;
+  if (captionPosition === "top") {
+    overlayYPosition = imageHeight * 0.1; // 10% from the top
+  } else if (captionPosition === "bottom") {
+    overlayYPosition = imageHeight - (imageHeight * 0.1 + captionHeight); // 10% from the bottom plus caption height
+  } else if (captionPosition === "center") {
+    overlayYPosition = imageHeight / 2 - captionHeight / 2; // Centered vertically
+  }
+
+  const command = `convert ${tempImagePath} ${captionPath} -gravity north -geometry +0+${overlayYPosition} -composite ${outputPath}`;
+  console.log({ captionPosition, command });
+  try {
+    await execAsync(command);
+    console.log("Final image created successfully:", outputPath);
+    if (flip) {
+      fs.unlinkSync(tempImagePath);
+    }
+    return outputPath;
+  } catch (error) {
+    console.error("Error creating final image with caption:", error);
+    fs.unlinkSync(imagePath);
+    throw new Error(`Failed to create image with caption: ${error.message}`);
+  }
+}
+
+export async function AnimateImage({
+  imagePath,
+  outputPath,
+  duration = 10,
+  frameRate = 24,
+  zoomLevel = 1.2,
+  panDirection = "bottom-to-top",
+  startPosition = "center",
+  endPosition = "center",
+  resolution = "1920x1080",
+}) {
+  const { width, height } = await getImageDimensions(imagePath);
+  let cropWidth = Math.floor(width / zoomLevel);
+  let cropHeight = Math.floor(height / zoomLevel);
+
+  // Ensure crop dimensions do not exceed original dimensions
+  cropWidth = Math.min(cropWidth, width);
+  cropHeight = Math.min(cropHeight, height);
+
+  const { x: startX, y: startY } = calculatePosition(
+    startPosition,
+    width,
+    height,
+    cropWidth,
+    cropHeight,
+  );
+  const { x: endX, y: endY } = calculatePosition(
+    endPosition,
+    width,
+    height,
+    cropWidth,
+    cropHeight,
+  );
+
+  const panDirections = {
+    "left-to-right": {
+      x: `'min(linear(t,0,${duration},${startX},${endX}),iw-${cropWidth})'`,
+      y: startY,
+    },
+    "top-to-bottom": {
+      x: startX,
+      y: `'min(linear(t,0,${duration},${startY},${endY}),ih-${cropHeight})'`,
+    },
+    "right-to-left": {
+      x: `'max(linear(t,0,${duration},${startX},${endX}),0)'`,
+      y: startY,
+    },
+    "bottom-to-top": {
+      x: startX,
+      y: `'max(linear(t,0,${duration},${startY},${endY}),0)'`,
+    },
+  };
+
+  const position = panDirections[panDirection];
+
+  const ffmpegCommand = `ffmpeg -loop 1 -i "${imagePath}" -vf "crop=${cropWidth}:${cropHeight},zoompan=z='min(pzoom+0.0015,${zoomLevel})':d=1:x=${position.x}:y=${position.y}" -t ${duration} -r ${frameRate} -s ${resolution} "${outputPath}"`;
+
+  try {
+    await execAsync(ffmpegCommand);
+    console.log("Animation created successfully:", outputPath);
+    return outputPath;
+  } catch (error) {
+    console.error("Error creating animation:", error);
+    throw error;
+  }
+}
+
+async function getImageDimensions(filePath) {
+  const command = `identify -format "%wx%h" "${filePath}"`;
+  const output = await execAsync(command);
+  const [width, height] = output.stdout.trim().split("x").map(Number);
+  return { width, height };
+}
+
+function calculatePosition(
+  position,
+  imgWidth,
+  imgHeight,
+  cropWidth,
+  cropHeight,
+) {
+  // Calculate positions based on descriptors or numbers
+  switch (position) {
+  case "center":
+    return { x: (imgWidth - cropWidth) / 2, y: (imgHeight - cropHeight) / 2 };
+  case "top-left":
+    return { x: 0, y: 0 };
+  case "bottom-right":
+    return { x: imgWidth - cropWidth, y: imgHeight - cropHeight };
+  default:
+    return { x: (imgWidth - cropWidth) / 2, y: (imgHeight - cropHeight) / 2 }; // Default to center
+  }
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/services/drive.js`:
+
+```````js
+import fs from "fs";
+import { createWriteStream } from "fs";
+import path from "path";
+
+export const downloadMedia = async (url, postId, mediaType) => {
+  const response = await fetch(url);
+  if (!response.ok)
+    throw new Error(`Failed to fetch media: ${response.statusText}`);
+
+  const urlPath = new URL(url).pathname.split("?")[0];
+  const extension = path.extname(urlPath);
+
+  const mediaDir = path.join("downloads", postId);
+  fs.mkdirSync(mediaDir, { recursive: true });
+  const filename =
+    mediaType === "video" ? `video${extension}` : `image${extension}`;
+  const mediaPath = path.join(mediaDir, filename);
+
+  await new Promise((resolve, reject) => {
+    const fileStream = createWriteStream(mediaPath);
+    response.body.pipe(fileStream);
+    response.body.on("error", reject);
+    fileStream.on("finish", resolve);
+  });
+
+  return mediaPath;
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/settings.js`:
+
+```````js
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const env = process.env || {};
+env.__dirname = __dirname;
+export default env;
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/utils.js`:
+
+```````js
+import { readDirectory } from "./utils/files.js";
+import { fetchMapImage } from "./utils/maps.js";
+import { applyPatch } from "./utils/patch.js";
+import { sleep } from "./utils/sleep.js";
+import { checkAndExecute, executeTasks } from "./utils/tasks.js";
+import { generateXMLFormat, parseXML } from "./utils/xml.js";
+
+export {
+  applyPatch,
+  checkAndExecute,
+  executeTasks,
+  fetchMapImage,
+  generateXMLFormat,
+  parseXML,
+  readDirectory,
+  sleep,
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/utils/tasks.js`:
+
+```````js
+import fs from "fs";
+import readline from "readline";
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const promptUser = (question) =>
+  new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(["yes", "y", "1"].includes(answer.trim().toLowerCase()));
+    });
+  });
+
+export const checkAndExecute = async ({
+  description,
+  filePath,
+  operation,
+  prompt,
+  condition,
+}) => {
+  let attempt = 0;
+  while (true) {
+    if (condition !== undefined) {
+      const conditionResult =
+        typeof condition === "function" ? await condition() : condition;
+      if (!conditionResult) {
+        console.log(`Condition not met for ${description}, skipping...`);
+        return;
+      }
+    }
+    if (prompt && !filePath) {
+      const confirm = await promptUser(
+        `Proceed with ${description}? (yes/no): `,
+      );
+      if (!confirm) {
+        console.log(`Operation ${description} was skipped by the user.`);
+        return;
+      }
+    }
+    if (filePath && fs.existsSync(filePath)) {
+      if (
+        prompt &&
+        !(await promptUser(
+          `File ${filePath} exists. Redo ${description}? (yes/no): `,
+        ))
+      ) {
+        return filePath.endsWith(".json")
+          ? JSON.parse(fs.readFileSync(filePath, "utf8"))
+          : filePath;
+      }
+    }
+    try {
+      console.log("Running operation:", description);
+      return await operation();
+    } catch (error) {
+      console.error(`Error during ${description}:`, error);
+      attempt++;
+      if (
+        prompt &&
+        !(await promptUser(
+          `Attempt ${attempt} failed. Retry ${description}? (yes/no): `,
+        ))
+      ) {
+        throw new Error(
+          `User decided not to retry ${description} after failure.`,
+        );
+      }
+    }
+  }
+};
+
+export const executeTasks = async ({ tasks, prompt, deps = {} }) => {
+  try {
+    for (const task of tasks) {
+      if (task.dependencies) {
+        await Promise.all(task.dependencies.map((dep) => deps[dep]));
+      }
+
+      const result = await checkAndExecute({
+        ...task,
+        prompt,
+        operation: async () => {
+          const { filePath } = task;
+          let files;
+          if (Array.isArray(filePath)) {
+            files = filePath;
+          } else if (typeof filePath === "function") {
+            files = filePath();
+          }
+          if (files)
+            return await Promise.all(
+              files.map((filepath, index) =>
+                task.operation({ filepath, index }),
+              ),
+            );
+          else {
+            return await task.operation({ filepath: task.filePath });
+          }
+        },
+      });
+
+      if (task.key) {
+        deps[task.key] = result;
+      }
+    }
+  } catch (error) {
+    console.error({ error });
+  } finally {
+    process.exit(0);
+  }
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/utils/maps.js`:
+
+```````js
+export const fetchMapImage = async (mapUrl) => {
+  const response = await fetch(mapUrl);
+  return response.arrayBuffer();
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/utils/sleep.js`:
+
+```````js
+export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/utils/xml.js`:
+
+```````js
+import { parseString } from "xml2js";
+
+export const parseXML = (xml) => {
+  let result;
+  parseString(
+    xml,
+    { explicitArray: false, mergeAttrs: true, explicitRoot: false },
+    (err, parsedResult) => {
+      if (err) {
+        console.log({ err });
+        throw new Error("Failed to parse XML");
+      }
+
+      // Transform <item> arrays back into proper arrays
+      const transform = (obj) => {
+        if (typeof obj !== "object" || obj === null) return obj;
+        if (Array.isArray(obj)) return obj.map(transform);
+        return Object.entries(obj).reduce((acc, [key, value]) => {
+          if (key === "item" && Array.isArray(value)) {
+            acc[key] = value.map(transform);
+          } else if (typeof value === "object" && value.item) {
+            acc[key] = Array.isArray(value.item)
+              ? value.item.map(transform)
+              : [transform(value.item)];
+          } else {
+            acc[key] = transform(value);
+          }
+          return acc;
+        }, {});
+      };
+
+      result = transform(parsedResult);
+    },
+  );
+  return result;
+};
+
+export const generateXMLFormat = (exampleOutput, rootElement = "root") => {
+  const needsCDATA = (str) => {
+    const pattern = /[^\\w\\s.,-]/; // Regex to check for non-alphanumeric characters and some allowed symbols
+    return pattern.test(str);
+  };
+
+  const escapeXML = (str) => {
+    if (typeof str === "string" && needsCDATA(str)) {
+      return `<![CDATA[${str}]]>`;
+    }
+    return str;
+  };
+
+  const convertToXML = (obj) => {
+    if (typeof obj !== "object" || obj === null) {
+      return escapeXML(obj);
+    }
+
+    return Object.entries(obj)
+      .map(([key, value]) => {
+        if (Array.isArray(value)) {
+          return `<${key}>${value
+            .map((item) => `<item>${convertToXML(item)}</item>`)
+            .join("")}</${key}>`;
+        } else if (typeof value === "object") {
+          return `<${key}>${convertToXML(value)}</${key}>`;
+        } else {
+          return `<${key}>${escapeXML(value)}</${key}>`;
+        }
+      })
+      .join("");
+  };
+
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<${rootElement}>
+  ${convertToXML(exampleOutput)}
+</${rootElement}>
+`;
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/utils/files.js`:
+
+```````js
+import fs from "fs";
+import path from "path";
+
+function readDirectory(sources, extensions = [".js"]) {
+  const files = {};
+
+  function traverseDirectory(directory) {
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        traverseDirectory(fullPath);
+      } else if (
+        entry.isFile() &&
+        extensions.includes(path.extname(entry.name))
+      ) {
+        files[fullPath] = fs.readFileSync(fullPath, "utf8");
+      }
+    }
+  }
+
+  // Handle multiple source directories
+  if (Array.isArray(sources)) {
+    sources.forEach((source) => traverseDirectory(source));
+  } else {
+    traverseDirectory(sources);
+  }
+
+  return files;
+}
+
+export { readDirectory };
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/utils/patch.js`:
+
+```````js
+/**
+ * Parses the patch content and returns an object with file paths and their respective patch lines.
+ * @param {string} patchContent - The GitHub diff patch content.
+ * @returns {Object} - An object where keys are file paths and values are arrays of patch lines.
+ */
+export function parsePatch(patchContent) {
+  const patchLines = patchContent.split("\n");
+  const filePatches = {};
+  let currentFile = null;
+  let patchSection = [];
+
+  for (const line of patchLines) {
+    if (line.startsWith("diff --git")) {
+      if (currentFile) {
+        filePatches[currentFile] = patchSection;
+        patchSection = [];
+      }
+      const fileMatch = line.match(/a\/(.+?) b\/(.+)/);
+      if (fileMatch) {
+        currentFile = fileMatch[2];
+      }
+    } else if (line.startsWith("---") || line.startsWith("+++")) {
+      // Ignore these lines
+    } else if (currentFile) {
+      patchSection.push(line);
+    }
+  }
+  if (currentFile) {
+    filePatches[currentFile] = patchSection;
+  }
+  return filePatches;
+}
+
+/**
+ * Applies a unified diff patch to the original content.
+ * @param {string} originalContent - The original content of the file.
+ * @param {Array<string>} patchLines - The unified diff patch lines for the file.
+ * @returns {string} - The new content with the patch applied.
+ */
+export function applyPatch(originalContent, patchLines) {
+  const originalLines = originalContent.split("\n");
+  let newContent = [...originalLines];
+  let offset = 0;
+
+  for (const line of patchLines) {
+    if (line.startsWith("@@")) {
+      const lineNumMatch = line.match(/-(\d+),\d+ \+/);
+      if (lineNumMatch && lineNumMatch.length > 1) {
+        offset = parseInt(lineNumMatch[1], 10) - 1; // Adjust for zero-based index
+      }
+    } else if (line.startsWith("-")) {
+      newContent.splice(offset, 1); // Remove line at current offset
+    } else if (line.startsWith("+")) {
+      newContent.splice(offset, 0, line.substring(1)); // Add new line at current offset
+      offset++;
+    } else if (line.startsWith(" ")) {
+      offset++; // Unchanged line, move to next
+    }
+  }
+
+  return newContent.join("\n");
+}
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/index.js`:
+
+```````js
+import express from "express";
+
+import { fetchGroup, importGroups } from "./models/group.js";
+import { importTags } from "./models/tag.js";
+import { connectToWhatsApp } from "./services/whatsapp/index.js";
+
+async function main() {
+  const app = express();
+  const port = 3000;
+  const importDelay = 1000;
+  const maxGroups = 5;
+  await connectToWhatsApp({ keepAlive: true, credential: "default" });
+
+  app.use(express.json());
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept",
+    );
+    next();
+  });
+
+  app.get("/import-tags", async (req, res) => {
+    try {
+      const tags = await importTags();
+      res.status(200).send(tags);
+    } catch (error) {
+      res.status(500).send({ error: "Error importing tags" });
+    }
+  });
+  app.get("/import-groups", async (req, res) => {
+    try {
+      const datetime = req.query.datetime
+        ? decodeURIComponent(req.query.datetime)
+        : undefined;
+      const delay = req.query.delay || importDelay;
+      const max = req.query.max || maxGroups;
+      const groups = await importGroups({ delay, max, datetime });
+      res.status(200).send(groups);
+    } catch (error) {
+      console.error("Error importing groups:", error);
+      res.status(500).send({ error: "Error importing groups" });
+    }
+  });
+
+  app.get("/fetch-group", async (req, res) => {
+    const url = decodeURIComponent(req.query.url);
+    if (!url) {
+      return res.status(400).send({ error: "URL is required" });
+    }
+
+    try {
+      const response = await fetchGroup(url);
+      res.send(response);
+    } catch (error) {
+      console.error("Error processing request:", error);
+      res.status(500).send({ error: "Error processing request" });
+    }
+  });
+
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+}
+
+main().catch((err) => console.error(err));
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/models/group.js`:
+
+```````js
+import { mkdir, readFile, writeFile } from "fs/promises";
+import ogs from "open-graph-scraper";
+import path from "path";
+
+import LLM from "../services/llm/index.js";
+import { processGroupInfo } from "../services/llm/tasks/whatsapp.js";
+import { connectToWhatsApp } from "../services/whatsapp/index.js";
+import { executeTasks } from "../utils.js";
+
+const DATA_FOLDER = "./app/apps/allfortraveler/data/";
+
+const getInviteCode = (url) => url.split("chat.whatsapp.com/")[1];
+
+const fetchOGData = async (url) => (await ogs({ url })).result;
+
+const processGroup = async (inviteUrl, sock) => {
+  const inviteCode = getInviteCode(inviteUrl);
+  let groupData = { status: "BAD_REQUEST" };
+
+  try {
+    groupData = await sock.groupGetInviteInfo(inviteCode);
+    const groupId = groupData?.id || groupData;
+
+    if (groupData?.size === 1 && groupId) {
+      groupData = await sock.groupAcceptInvite(inviteCode);
+      groupData = await sock.groupMetadata(groupId);
+    }
+  } catch (error) {
+    if (error.message !== "bad-request") {
+      try {
+        groupData = await sock.groupGetInviteInfo(inviteCode);
+        groupData =
+          error.message === "conflict"
+            ? await sock.groupMetadata(groupData.id)
+            : { ...groupData, status: "NOT_AUTHORIZED" };
+      } catch (innerError) {
+        console.log({ innerError });
+      }
+    }
+    console.error({ error });
+  } finally {
+    groupData.status =
+      groupData.size === 1
+        ? "REQUEST"
+        : groupData.size > 1
+          ? "JOINED"
+          : groupData.status;
+  }
+
+  return groupData;
+};
+
+const processGroupInvite = async (url) => {
+  const sock = await connectToWhatsApp({ keepAlive: true });
+  const outputPath = path.join(DATA_FOLDER, "groupData.json");
+  const llmPath = path.join(DATA_FOLDER, "llm.json");
+  const deps = {};
+
+  const tasks = [
+    {
+      description: "Fetch Group Data",
+      operation: () => fetchOGData(url),
+      key: "ogData",
+    },
+    {
+      description: "Connect and Process Group",
+      operation: () => processGroup(url, sock),
+      filePath: outputPath,
+      dependencies: ["ogData"],
+      key: "groupData",
+    },
+    {
+      description: "LLM post generation",
+      filePath: llmPath,
+      key: "llm",
+      dependencies: ["instagram"],
+      operation: async () => {
+        const llm = LLM("bedrock");
+        const groupInfo = await processGroupInfo(llm, deps);
+        writeFile(llmPath, JSON.stringify(groupInfo));
+        return groupInfo;
+      },
+    },
+    {
+      description: "Create Group",
+      operation: async () => {
+        const { groupData } = deps;
+        if (
+          groupData?.id &&
+          !["BAD_REQUEST", "NOT_AUTHORIZED"].includes(groupData.status)
+        ) {
+          return createGroup({ ...groupData, url });
+        }
+      },
+      filePath: outputPath,
+      dependencies: ["groupData"],
+    },
+  ];
+
+  try {
+    await executeTasks({ tasks, deps });
+    console.log("Group processing completed:", deps);
+    return deps.groupData;
+  } catch (error) {
+    console.error("Error processing group:", error);
+    throw error;
+  }
+};
+
+const createGroup = async (groupData) => {
+  const { id } = groupData;
+  const date = new Date().toISOString().slice(0, 10);
+
+  const currentGroupFolder = path.join(DATA_FOLDER, date, "groups");
+  const latestGroupFolder = path.join(DATA_FOLDER, "latest", "groups");
+  const filename = `${id}.json`;
+  const currentFilePath = path.join(currentGroupFolder, filename);
+  const latestFilePath = path.join(latestGroupFolder, filename);
+
+  try {
+    await Promise.all([
+      mkdir(currentGroupFolder, { recursive: true }),
+      mkdir(latestGroupFolder, { recursive: true }),
+    ]);
+
+    const dataString = JSON.stringify({ ...groupData, date }, null, 2);
+
+    await Promise.all([
+      writeFile(currentFilePath, dataString),
+      writeFile(latestFilePath, dataString),
+    ]);
+  } catch (error) {
+    console.error("Error saving group data:", error);
+    throw new Error("Failed to save group data");
+  }
+};
+
+export const fetchGroup = async (url) => {
+  try {
+    const [ogResult, groupData] = await Promise.all([
+      fetchOGData(url),
+      processGroupInvite(url),
+    ]);
+
+    return groupData
+      ? {
+          ...groupData,
+          name: ogResult.ogTitle,
+          image: ogResult?.ogImage?.[0]?.url,
+          url,
+        }
+      : {};
+  } catch (error) {
+    console.error("Error fetching group data:", error);
+    throw new Error("Error processing request");
+  }
+};
+
+export const importGroups = async ({ delay, max, datetime = null }) => {
+  const groupsPath = datetime
+    ? path.join(DATA_FOLDER, datetime, "groups")
+    : path.join(DATA_FOLDER, "groups.json");
+
+  const groups = datetime
+    ? await Promise.all(
+        (await fs.readdir(groupsPath))
+          .slice(0, max)
+          .map((file) =>
+            readFile(path.join(groupsPath, file), "utf8").then(JSON.parse),
+        ),
+      )
+    : JSON.parse(await readFile(groupsPath, "utf8")).slice(0, max);
+
+  const importedGroups = [];
+
+  for (const group of groups) {
+    const response = await fetchGroup(group.url);
+
+    if (response?.status !== "BAD_REQUEST") {
+      console.log(`Creating group for URL: ${group.url}`);
+      if (response?.groupInfo.id) {
+        await createGroup({ ...group, ...response.groupInfo });
+        console.log(`Group created for URL: ${group.url}`);
+        importedGroups.push({ ...group, ...response.groupInfo });
+      } else {
+        console.error({ response });
+      }
+    }
+  }
+
+  return importedGroups;
+};
+
+```````
+
+`/home/alanleal/Projects/bootstrapp/server/models/tag.js`:
+
+```````js
+import { readFile } from "fs/promises";
+
+const DATA_FOLDER = "./app/apps/allfortraveler/data/";
+const TAGS_PATHS = {
+  cities: DATA_FOLDER + "tags/cities.json",
+  countries: DATA_FOLDER + "tags/countries.json",
+  tags: DATA_FOLDER + "tags/tags.json",
+};
+
+export async function importTags() {
+  try {
+    const allTags = (
+      await Promise.all(
+        Object.entries(TAGS_PATHS).map(async ([key, path]) =>
+          JSON.parse(await readFile(path, "utf8")).map((tag) => ({
+            id: tag,
+            [key]: true,
+          })),
+        ),
+      )
+    ).flat();
+
+    return allTags;
+  } catch (error) {
+    console.error("Error importing tags:", error);
+    throw error;
+  }
+}
+
+```````

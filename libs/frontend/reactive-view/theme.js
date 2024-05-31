@@ -24,6 +24,21 @@ baseTheme.commonColors = [
 
 baseTheme.greyColors = ["gray", "zinc", "true-gray", "warm-gray", "blue-gray"];
 
+const LoadingTypes = {
+  spinner: "loading loading-spinner",
+  dots: "loading loading-dots",
+  ring: "loading loading-ring",
+  ball: "loading loading-ball",
+  bars: "loading loading-bars",
+  infinity: "loading loading-infinity",
+};
+const LoadingSize = {
+  lg: "loading-lg",
+  md: "loading-md",
+  sm: "loading-sm",
+  xs: "loading-xs",
+};
+
 const baseVariants = {
   thin: "thin",
   extralight: "extralight",
@@ -252,6 +267,8 @@ const createProps = (userTheme) => {
     DimensionSizes: createMapping("w", baseDimensionSizes),
     BaseVariants,
     ReverseVariants,
+    LoadingTypes,
+    LoadingSize,
     TrackingSizes: createMapping("tracking", baseTrackingSizes),
     ClipRoundedClasses,
     ButtonSizes: baseButtonSizes,

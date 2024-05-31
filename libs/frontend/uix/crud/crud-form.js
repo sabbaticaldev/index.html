@@ -8,13 +8,9 @@ const CrudForm = {
     saveItem: T.function(),
     cancelEdit: T.function(),
   },
-  theme: {
-    "uix-crud-form": "",
-  },
   render() {
     return html`
       <uix-form
-        class=${this.theme("uix-crud-form")}
         .fields=${this.fields.map((field) => ({
           name: field,
           value: this.item[field],

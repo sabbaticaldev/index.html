@@ -25,35 +25,33 @@ const MockupPhone = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-mockup-phone")}>
-        <div class=${this.theme("uix-mockup-phone__top")}></div>
-        <div
-          class=${this.theme("uix-mockup-phone__side", {
-            position: "left",
-            index: 0,
-          })}
-        ></div>
-        <div
-          class=${this.theme("uix-mockup-phone__side", {
-            position: "left",
-            index: 1,
-          })}
-        ></div>
-        <div
-          class=${this.theme("uix-mockup-phone__side", {
-            position: "left",
-            index: 2,
-          })}
-        ></div>
-        <div
-          class=${this.theme("uix-mockup-phone__side", {
-            position: "right",
-            index: 1,
-          })}
-        ></div>
-        <div class=${this.theme("uix-mockup-phone__content")}>
-          <slot></slot>
-        </div>
+      <div class=${this.theme("uix-mockup-phone__top")}></div>
+      <div
+        class=${this.theme("uix-mockup-phone__side", {
+    position: "left",
+          index: 0,
+  })}
+      ></div>
+      <div
+        class=${this.theme("uix-mockup-phone__side", {
+          position: "left",
+    index: 1,
+        })}
+      ></div>
+      <div
+        class=${this.theme("uix-mockup-phone__side", {
+          position: "left",
+          index: 2,
+  })}
+      ></div>
+      <div
+        class=${this.theme("uix-mockup-phone__side", {
+          position: "right",
+          index: 1,
+        })}
+      ></div>
+      <div class=${this.theme("uix-mockup-phone__content")}>
+        <slot></slot>
       </div>
     `;
   },

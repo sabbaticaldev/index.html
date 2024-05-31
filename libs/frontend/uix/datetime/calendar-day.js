@@ -10,7 +10,12 @@ export default {
     day: T.number(),
   },
   theme: {
-    "uix-calendar-day": ({ previous, next, currentDay, selected }) => ({
+    "uix-calendar-day__element": ({
+      previous,
+      next,
+      currentDay,
+      selected,
+    }) => ({
       _base: `focus:z-10 w-full p-1.5 ${
         (!next && !previous) || currentDay || selected ? "bg-white" : ""
       } ${currentDay ? "text-indigo-600 font-semibold" : ""}`,
@@ -24,7 +29,7 @@ export default {
   render() {
     return html` <button
       type="button"
-      class=${this.theme("uix-calendar-day", {
+      class=${this.theme("uix-calendar-day__element", {
         previous: this.previous,
         next: this.next,
         currentDay: this.currentDay,

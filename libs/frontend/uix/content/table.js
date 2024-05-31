@@ -13,7 +13,8 @@ const Table = {
     return this.rows.slice(startIndex, startIndex + this.resultsPerPage);
   },
   theme: {
-    "uix-table": "w-full text-sm text-left text-gray-500 dark:text-gray-400",
+    "uix-table__table":
+      "w-full text-sm text-left text-gray-500 dark:text-gray-400",
     "uix-table__header":
       "p-3 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400",
     "uix-table__cell": "px-3 py-2 text-xs",
@@ -38,24 +39,22 @@ const Table = {
     );
 
     return html`
-      <div>
-        <table class=${this.theme("uix-table")}>
-          <thead>
-            <tr>
-              ${headerElements}
-            </tr>
-          </thead>
-          <tbody>
-            ${rowElements}
-          </tbody>
-        </table>
-        <uix-pagination
-          totalResults=${this.rows.length}
-          currentPage=${this.currentPage}
-          resultsPerPage=${this.resultsPerPage}
-          .onPageChange=${this.setCurrentPage}
-        ></uix-pagination>
-      </div>
+      <table class=${this.theme("uix-table__table")}>
+        <thead>
+          <tr>
+            ${headerElements}
+          </tr>
+        </thead>
+        <tbody>
+          ${rowElements}
+        </tbody>
+      </table>
+      <uix-pagination
+        totalResults=${this.rows.length}
+        currentPage=${this.currentPage}
+        resultsPerPage=${this.resultsPerPage}
+        .onPageChange=${this.setCurrentPage}
+      ></uix-pagination>
     `;
   },
 };

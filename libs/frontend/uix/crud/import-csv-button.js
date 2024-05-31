@@ -10,9 +10,6 @@ const ImportCsvButton = {
     CSVRows: T.array(),
     CSVFields: T.array(),
   },
-  theme: {
-    "app-import-csv-button": "",
-  },
   handleFileChange: async function (e) {
     try {
       const file = e.target.files[0];
@@ -33,7 +30,6 @@ const ImportCsvButton = {
         @click=${() => this.q("#ImportCSVFileInput").click()}
         size="xs"
         variant="secondary"
-        class=${this.theme("app-import-csv-button")}
       >
         Import CSV
       </uix-button>

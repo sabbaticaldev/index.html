@@ -5,6 +5,19 @@ import settings from "../../settings.js";
 import { generateXMLFormat, parseXML } from "../../utils.js";
 import bedrock from "./engines/bedrock.js";
 import openai from "./engines/openai.js";
+
+const personasPath = path.join(settings.__dirname, "./personas.json");
+
+export const loadPersonas = () => {
+  const data = fs.readFileSync(personasPath, "utf8");
+  return JSON.parse(data);
+};
+
+export const getPersonaDetails = (persona) => {
+  const personas = loadPersonas();
+  return personas[persona] || null;
+};
+
 const LLM = (() => {
   const {
     BEDROCK_MODEL_ID,
@@ -51,13 +64,15 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   const inputParameters = Object.keys(templateData.inputParams);
   const allParameters = inputParameters.concat([
     "exampleInput",
+    "persona",
     "exampleOutput",
   ]);
-  console.log({ allParameters });
-  allParameters.forEach((param) => {
+  allParameters.forEach(async (param) => {
     let value;
     if (param === "exampleInput") {
       value = generateExample(templateData.exampleInput);
+    } else if (param === "persona") {
+      value = JSON.stringify(await getPersonaDetails(config.persona), null, 2);
     } else if (param === "exampleOutput") {
       value = generateExample(templateData.exampleOutput, responseFormat);
     } else {

@@ -50,7 +50,7 @@ const Input = {
           type="text"
           id="filled"
           aria-describedby="filled_success_help"
-          class=${this.theme("uix-input")}
+          class=${this.theme("uix-input__element")}
           .value=${value || ""}
           ?autofocus=${autofocus}
           ?disabled=${disabled}
@@ -69,7 +69,7 @@ const Input = {
     `;
   },
   theme: ({ cls, baseTheme }) => ({
-    "uix-input": {
+    "uix-input__element": {
       _base: cls([
         "block w-full appearance-none focus:outline-none focus:ring-0",
         baseTheme.defaultTextColor,
