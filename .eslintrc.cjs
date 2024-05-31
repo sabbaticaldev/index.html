@@ -1,10 +1,23 @@
 module.exports = {
   env: {
-    browser: true,
     es2021: true,
+    browser: true,
   },
   extends: ["eslint:recommended", "plugin:prettier/recommended"],
   overrides: [
+    {
+      files: ["*.test.js"],
+      env: {
+        jest: true,
+      },
+    },
+    {
+      files: ["server/**/*.js", "services/**/*.js"],
+      env: {
+        node: true,
+        browser: false,
+      },
+    },
     {
       env: {
         node: true,
@@ -21,7 +34,6 @@ module.exports = {
   },
   plugins: ["simple-import-sort", "prettier"],
   rules: {
-    indent: ["error", 2],
     "linebreak-style": ["error", "unix"],
     quotes: ["error", "double"],
     semi: ["error", "always"],

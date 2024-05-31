@@ -18,11 +18,11 @@ const Hero = {
       <uix-block class=${this.theme("uix-hero__block")}>
         <uix-text class=${this.theme("uix-hero__title")} size="4xl"
           >${this.title}</uix-text
-        >
-        <uix-text class=${this.theme("uix-hero__subtitle")}
+      <uix-block data-theme="uix-hero__block">
+        <uix-text data-theme="uix-hero__title" size="4xl"
           >${this.subtitle}</uix-text
         >
-        <uix-button variant="primary" @click=${this.buttonClick}
+        <uix-text data-theme="uix-hero__subtitle"
           >${this.buttonText}</uix-button
         >
       </uix-block>

@@ -20,17 +20,15 @@ const Header = {
   },
   render() {
     return html`
-      <uix-block class=${this.theme("uix-header__block")}>
-        <uix-logo class=${this.theme("uix-header__logo")}>
-          ${this.logo}
-        </uix-logo>
-        <uix-list class=${this.theme("uix-header__nav")}>
+      <uix-block data-theme="uix-header__block">
+        <uix-logo data-theme="uix-header__logo"> ${this.logo} </uix-logo>
+        <uix-list data-theme="uix-header__nav">
           ${this.navItems.map(
             (item) =>
               html`<uix-nav-item href=${item.href}>
                 ${item.text}
               </uix-nav-item>`,
-  )}
+          )}
         </uix-list>
       </uix-block>
     `;

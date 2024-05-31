@@ -22,12 +22,12 @@ const Rating = {
 
     return html`
       ${Array.from(
-    { length: max },
-    (_, index) => html`
+        { length: max },
+        (_, index) => html`
           <svg
             class=${this.theme("uix-rating__star", {
               filled: index < value,
-  })}
+            })}
             viewBox="0 0 20 20"
             @click=${() => !readonly && change(index + 1)}
           >
@@ -36,7 +36,7 @@ const Rating = {
             />
           </svg>
         `,
-  )}
+      )}
     `;
   },
 };
