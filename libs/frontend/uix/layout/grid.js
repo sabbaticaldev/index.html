@@ -13,7 +13,7 @@ const Grid = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-grid")}>
+      <div data-theme="uix-grid">
         <slot></slot>
       </div>
     `;

@@ -62,7 +62,7 @@ const Input = {
           type=${type}
           placeholder=" "
         />
-        <label for="filled" class=${this.theme("uix-input__label")}>
+        <label for="filled" data-theme="uix-input__label">
           ${placeholder}
         </label>
       </div>

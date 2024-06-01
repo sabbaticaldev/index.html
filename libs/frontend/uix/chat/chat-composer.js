@@ -16,19 +16,14 @@ const ChatComposer = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-chat-composer")}>
-        <input
-          type="text"
-          placeholder=${this.placeholder}
-          class=${this.theme("uix-chat-composer__input")}
-        />
-        <button
-          @click=${this.send}
-          class=${this.theme("uix-chat-composer__button")}
-        >
-          Send
-        </button>
-      </div>
+      <input
+        type="text"
+        placeholder=${this.placeholder}
+        data-theme="uix-chat-composer__input"
+      />
+      <button @click=${this.send} data-theme="uix-chat-composer__button">
+        Send
+      </button>
     `;
   },
 };

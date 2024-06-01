@@ -19,9 +19,9 @@ export default {
   }),
   render() {
     return html`
-      <button alt=${this.alt} class=${this.theme("uix-icon-button__element")}>
+      <button alt=${this.alt} data-theme="uix-icon-button__element">
         <uix-icon
-          class=${this.theme("uix-icon-button__icon")}
+          data-theme="uix-icon-button__icon"
           name=${this.icon}
         ></uix-icon>
       </button>

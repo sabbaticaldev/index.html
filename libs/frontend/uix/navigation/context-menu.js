@@ -38,10 +38,7 @@ const ContextMenu = {
   },
   render() {
     return html`
-      <div
-        class=${this.theme("uix-context-menu__element")}
-        ?hidden=${!this.open}
-      >
+      <div data-theme="uix-context-menu__element" ?hidden=${!this.open}>
         <slot name="menu"></slot>
       </div>
       <slot

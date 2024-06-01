@@ -31,18 +31,18 @@ const Button = {
     },
   }),
   render() {
-    const btnClass = this.theme("uix-button__element");
+    const btnTheme = "uix-button__element";
 
     if (this.dropdown) {
       return html`
         <details class="text-left" ?open=${this.dropdown === "open"}>
           ${this.href
             ? html`
-                <summary class=${btnClass}>
+                <summary data-theme=${btnTheme}>
                   <a href=${this.href}><slot></slot></a>
                 </summary>
               `
-            : html` <summary class=${btnClass}><slot></slot></summary> `}
+            : html` <summary data-theme=${btnTheme}><slot></slot></summary> `}
           <slot name="dropdown"></slot>
         </details>
       `;
@@ -50,14 +50,14 @@ const Button = {
 
     return this.href
       ? html`
-          <a class=${btnClass} href=${this.href}>
+          <a data-theme=${btnTheme} href=${this.href}>
             <slot></slot>
           </a>
         `
       : html`
           <button
             type=${this.type || "button"}
-            class=${btnClass}
+            data-theme=${btnTheme}
             @click=${(event) => this.click?.({ event, props: this })}
           >
             <slot></slot>

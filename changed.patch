@@ -14,19 +14,19 @@ index 38cf92c..a0d93a6 100644
 -      content = html`<img
 +      content = html`<img 
          src=${src}
--        class=${this.theme("uix-avatar__img")}
+-        data-theme="uix-avatar__img"
 +        data-theme="uix-avatar__img"
          alt=${alt}
        />`;
      } else if (placeholder) {
--      content = html`<span class=${this.theme("uix-avatar__img")}
+-      content = html`<span data-theme="uix-avatar__img"
 +      content = html`<span data-theme="uix-avatar__img"
          >${placeholder}</span
        >`;
      }
 +    }
  
-     return html` <div class=${this.theme("uix-avatar")}>${content}</div> `;
+     return html` <div data-theme="uix-avatar">${content}</div> `;
    },
 diff --git a/libs/frontend/uix/content/icon.js b/libs/frontend/uix/content/icon.js
 index e5f7eb8..e0e5c9f 100644
@@ -74,11 +74,11 @@ index 9511c42..f34aa61 100644
        ></uix-crud-new-modal>
        <uix-button
          dropdown="hide"
--        class=${this.theme("uix-crud-actions__button")}
+-        data-theme="uix-crud-actions__button"
 +        data-theme="uix-crud-actions__button"
        >
          <uix-icon name="chevron-down"></uix-icon> Actions
-         <ul slot="dropdown" class=${this.theme("uix-crud-actions__dropdown")}>
+         <ul slot="dropdown" data-theme="uix-crud-actions__dropdown">
 diff --git a/libs/frontend/uix/crud/crud-detail.js b/libs/frontend/uix/crud/crud-detail.js
 index 18fda52..303d033 100644
 --- a/libs/frontend/uix/crud/crud-detail.js
@@ -87,7 +87,7 @@ index 18fda52..303d033 100644
            </div>
          `,
    )}
--      <div class=${this.theme("uix-crud-detail__actions")}>
+-      <div data-theme="uix-crud-detail__actions">
 +      <div data-theme="uix-crud-detail__actions">
          <uix-button @click=${() => this.editItem(this.item)}> Edit </uix-button>
          <uix-button variant="error" @click=${() => this.deleteItem(this.item)}>
@@ -104,13 +104,13 @@ index 49dd209..c5f5d01 100644
 +            <uix-icon-button
                slot="button"
                icon=${icon}
--              class=${this.theme("uix-crud-new-modal__icon")}
+-              data-theme="uix-crud-new-modal__icon"
 +              data-theme="uix-crud-new-modal__icon"
              ></uix-icon-button>`
            : html`<uix-button
                slot="button"
                variant="primary"
--              class=${this.theme("uix-crud-new-modal__button")}
+-              data-theme="uix-crud-new-modal__button"
 +              data-theme="uix-crud-new-modal__button"
                >+ new</uix-button
              >`}
@@ -127,11 +127,11 @@ index 450befa..45b10d7 100644
    },
    render() {
      return html`
--      <form class=${this.theme("uix-crud-search__form")}>
+-      <form data-theme="uix-crud-search__form">
 +      <form data-theme="uix-crud-search__form">
          <label for="simple-search" class="sr-only">Search</label>
--        <div class=${this.theme("uix-crud-search__input-container")}>
--          <div class=${this.theme("uix-crud-search__input-icon")}>
+-        <div data-theme="uix-crud-search__input-container">
+-          <div data-theme="uix-crud-search__input-icon">
 +        <div data-theme="uix-crud-search__input-container">
 +          <div data-theme="uix-crud-search__input-icon">
              <uix-icon name="search"></uix-icon>
@@ -139,7 +139,7 @@ index 450befa..45b10d7 100644
            <input
              type="text"
              id="simple-search"
--            class=${this.theme("uix-crud-search__input")}
+-            data-theme="uix-crud-search__input"
 +            data-theme="uix-crud-search__input"
              placeholder="Search"
              required=""
@@ -161,7 +161,7 @@ index cfbed7d..6fdcda5 100644
    },
    render() {
      return html`
--      <div class=${this.theme("uix-crud__actions")}>
+-      <div data-theme="uix-crud__actions">
 +      <div data-theme="uix-crud__actions">
          <uix-crud-search
            .model=${this.model}
@@ -176,7 +176,7 @@ index cfbed7d..6fdcda5 100644
            .ModelClass=${this.ModelClass}
          ></uix-crud-actions>
        </div>
--      <div class=${this.theme("uix-crud__table")}>
+-      <div data-theme="uix-crud__table">
 +      <div data-theme="uix-crud__table">
          <uix-crud-table
            .rows=${this.rows}

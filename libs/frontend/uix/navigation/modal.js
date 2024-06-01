@@ -33,7 +33,7 @@ const Modal = {
     return html`
       <slot name="button" @click=${this.show.bind(this)}></slot>
       <dialog id="modal" ?open=${this.open} data-theme="uix-modal__element">
-        <div class=${this.theme("uix-modal__box")}>
+        <div data-theme="uix-modal__box">
           <uix-button
             @click=${this.hide.bind(this)}
             variant=""

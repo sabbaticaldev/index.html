@@ -23,18 +23,14 @@ const Timeline = {
   },
   render() {
     return html`
-      <ol class=${this.theme("uix-timeline__list")}>
+      <ol data-theme="uix-timeline__list">
         ${this.items.map(
           (item) => html`
-            <li class=${this.theme("uix-timeline__item")}>
-              <div class=${this.theme("uix-timeline__item-marker")}></div>
+            <li data-theme="uix-timeline__item">
+              <div data-theme="uix-timeline__item-marker"></div>
               <h3 class="text-lg font-semibold text-gray-900">${item.title}</h3>
-              <time class=${this.theme("uix-timeline__item-time")}>
-                ${item.time}
-              </time>
-              <p class=${this.theme("uix-timeline_item-content")}>
-                ${item.content}
-              </p>
+              <time data-theme="uix-timeline__item-time"> ${item.time} </time>
+              <p data-theme="uix-timeline_item-content">${item.content}</p>
             </li>
           `,
         )}

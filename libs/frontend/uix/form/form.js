@@ -162,7 +162,7 @@ export default {
                 <uix-list
                   responsive
                   gap="md"
-                  class=${this.theme("uix-form-actions")}
+                  data-theme="uix-form-actions"
                 >
                   ${actions.map(
                     (action) => html`

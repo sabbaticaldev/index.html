@@ -25,9 +25,7 @@ const Rating = {
         { length: max },
         (_, index) => html`
           <svg
-            class=${this.theme("uix-rating__star", {
-              filled: index < value,
-            })}
+            data-theme="uix-rating__star"
             viewBox="0 0 20 20"
             @click=${() => !readonly && change(index + 1)}
           >

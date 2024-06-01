@@ -8,12 +8,12 @@
 -      content = html`<img
 +      content = html`<img 
          src=${src}
--        class=${this.theme("uix-avatar__img")}
+-        data-theme="uix-avatar__img"
 +        data-theme="uix-avatar__img"
          alt=${alt}
        />`;
      } else if (placeholder) {
--      content = html`<span class=${this.theme("uix-avatar__img")}
+-      content = html`<span data-theme="uix-avatar__img"
 +      content = html`<span data-theme="uix-avatar__img"
          >${placeholder}</span
        >`;
@@ -46,18 +46,18 @@
        ></uix-crud-new-modal>
        <uix-button
          dropdown="hide"
--        class=${this.theme("uix-crud-actions__button")}
+-        data-theme="uix-crud-actions__button"
 +        data-theme="uix-crud-actions__button"
        >
          <uix-icon name="chevron-down"></uix-icon> Actions
-         <ul slot="dropdown" class=${this.theme("uix-crud-actions__dropdown")}>
+         <ul slot="dropdown" data-theme="uix-crud-actions__dropdown">
 --- libs/frontend/uix/crud/crud-detail.js
 +++ libs/frontend/uix/crud/crud-detail.js
 @@ -22,7 +22,7 @@
            </div>
          `,
    )}
--      <div class=${this.theme("uix-crud-detail__actions")}>
+-      <div data-theme="uix-crud-detail__actions">
 +      <div data-theme="uix-crud-detail__actions">
          <uix-button @click=${() => this.editItem(this.item)}> Edit </uix-button>
          <uix-button variant="error" @click=${() => this.deleteItem(this.item)}>
@@ -68,13 +68,13 @@
              <uix-icon-button
                slot="button"
                icon=${icon}
--              class=${this.theme("uix-crud-new-modal__icon")}
+-              data-theme="uix-crud-new-modal__icon"
 +              data-theme="uix-crud-new-modal__icon"
              ></uix-icon-button>`
            : html`<uix-button
                slot="button"
                variant="primary"
--              class=${this.theme("uix-crud-new-modal__button")}
+-              data-theme="uix-crud-new-modal__button"
 +              data-theme="uix-crud-new-modal__button"
                >+ new</uix-button
              >`}
@@ -85,11 +85,11 @@
    },
    render() {
      return html`
--      <form class=${this.theme("uix-crud-search__form")}>
+-      <form data-theme="uix-crud-search__form">
 +      <form data-theme="uix-crud-search__form">
          <label for="simple-search" class="sr-only">Search</label>
--        <div class=${this.theme("uix-crud-search__input-container")}>
--          <div class=${this.theme("uix-crud-search__input-icon")}>
+-        <div data-theme="uix-crud-search__input-container">
+-          <div data-theme="uix-crud-search__input-icon">
 +        <div data-theme="uix-crud-search__input-container">
 +          <div data-theme="uix-crud-search__input-icon">
              <uix-icon name="search"></uix-icon>
@@ -97,7 +97,7 @@
            <input
              type="text"
              id="simple-search"
--            class=${this.theme("uix-crud-search__input")}
+-            data-theme="uix-crud-search__input"
 +            data-theme="uix-crud-search__input"
              placeholder="Search"
              required=""
@@ -109,7 +109,7 @@
    },
    render() {
      return html`
--      <div class=${this.theme("uix-crud__actions")}>
+-      <div data-theme="uix-crud__actions">
 +      <div data-theme="uix-crud__actions">
          <uix-crud-search
            .model=${this.model}
@@ -118,7 +118,7 @@
            .ModelClass=${this.ModelClass}
          ></uix-crud-actions>
        </div>
--      <div class=${this.theme("uix-crud__table")}>
+-      <div data-theme="uix-crud__table">
 +      <div data-theme="uix-crud__table">
          <uix-crud-table
            .rows=${this.rows}

@@ -16,16 +16,16 @@ const CrudSearch = {
   },
   render() {
     return html`
-      <form class=${this.theme("uix-crud-search__form")}>
+      <form data-theme="uix-crud-search__form">
         <label for="simple-search" class="sr-only">Search</label>
-        <div class=${this.theme("uix-crud-search__input-container")}>
-          <div class=${this.theme("uix-crud-search__input-icon")}>
+        <div data-theme="uix-crud-search__input-container">
+          <div data-theme="uix-crud-search__input-icon">
             <uix-icon name="search"></uix-icon>
           </div>
           <input
             type="text"
             id="simple-search"
-            class=${this.theme("uix-crud-search__input")}
+            data-theme="uix-crud-search__input"
             placeholder="Search"
             required=""
           />

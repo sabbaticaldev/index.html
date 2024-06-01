@@ -32,8 +32,13 @@ export default {
       ${this.items.map(
         (item, index) =>
           html`
+            <div
+              data-theme="uix-accordion-item"
+                open: Boolean(item.open),
+              })}
+            >
               <div
-                data-theme="uix-accordion-item__header"
+                class=${this.theme("uix-accordion-item__header")}
                 @click=${() => this.setItemOpen(index, !item.open)}
               >
                 ${item.label}
@@ -48,6 +53,7 @@ export default {
                 })}
               >
               </div>
+            </div>
           `,
       )}
     `;

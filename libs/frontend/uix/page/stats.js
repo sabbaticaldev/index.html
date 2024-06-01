@@ -19,14 +19,14 @@ const Stats = {
   },
   render() {
     return html`
-      <uix-list class=${this.theme("uix-stats__element")}>
+      <uix-list data-theme="uix-stats__element">
         ${this.items.map(
           (item) => html`
-            <uix-block class=${this.theme("uix-stat")}>
-              <uix-text class=${this.theme("uix-stat__value")} size="2xl"
+            <uix-block data-theme="uix-stat">
+              <uix-text data-theme="uix-stat__value" size="2xl"
                 >${item.value}</uix-text
               >
-              <uix-text class=${this.theme("uix-stat__label")}
+              <uix-text data-theme="uix-stat__label"
                 >${item.label}</uix-text
               >
             </uix-block>

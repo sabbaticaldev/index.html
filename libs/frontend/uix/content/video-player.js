@@ -18,7 +18,7 @@ const VideoPlayer = {
 
     return html`
       <video
-        class=${this.theme("uix-video-player__element")}
+        data-theme="uix-video-player__element"
         src=${src}
         ?autoplay=${autoplay}
         ?controls=${controls}

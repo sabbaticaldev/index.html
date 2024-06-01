@@ -18,18 +18,14 @@ export default {
     const { message, timestamp, sender } = this;
     const currentUser = sender?.name === "user" || !sender;
     return html`
-      <uix-list class=${this.theme("uix-chat-message-container")}>
+      <uix-list data-theme="uix-chat-message-container">
         ${!currentUser
           ? html`<uix-avatar size="xs" src=${sender.avatar}></uix-avatar>`
           : ""}
-        <uix-list
-          vertical
-          containerClass=${this.theme("uix-chat-message")}
-          spacing="md"
-        >
+        <uix-list vertical data-theme="uix-chat-message" spacing="md">
           <uix-text font="mono" weight="light" size="xs">${message}</uix-text>
           <uix-time
-            class=${this.theme("uix-chat-timestamp")}
+            data-theme="uix-chat-timestamp"
             timestamp=${timestamp}
           ></uix-time>
         </uix-list>

@@ -24,12 +24,15 @@ const Pagination = {
   },
   renderPageLink(page, label) {
     const isActive = page === this.currentPage;
-    const linkClass = this.theme(
-      isActive ? "uix-pagination__link-active" : "uix-pagination__link",
-    );
     return html`
-      <li class=${this.theme("uix-pagination__item")}>
-        <a href="#" class=${linkClass} @click=${() => this.onPageChange(page)}>
+      <li data-theme="uix-pagination__item">
+        <a
+          href="#"
+          data-theme=${isActive
+            ? "uix-pagination__link-active"
+            : "uix-pagination__link"}
+          @click=${() => this.onPageChange(page)}
+        >
           ${label || page}
         </a>
       </li>
@@ -77,21 +80,18 @@ const Pagination = {
     }
 
     return html`
-      <nav
-        class=${this.theme("uix-pagination__nav")}
-        aria-label="Table navigation"
-      >
-        <span class=${this.theme("uix-pagination__info")}>
+      <nav data-theme="uix-pagination__nav" aria-label="Table navigation">
+        <span data-theme="uix-pagination__info">
           Showing
-          <span class=${this.theme("uix-pagination__info-highlight")}
+          <span data-theme="uix-pagination__info-highlight"
             >${startItem}-${endItem}</span
           >
           of
-          <span class=${this.theme("uix-pagination-info-highlight")}
+          <span data-theme="uix-pagination-info-highlight"
             >${this.totalResults}</span
           >
         </span>
-        <ul class=${this.theme("uix-pagination__list")}>
+        <ul data-theme="uix-pagination__list">
           ${pageLinks}
         </ul>
       </nav>

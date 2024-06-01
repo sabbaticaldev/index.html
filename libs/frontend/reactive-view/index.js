@@ -80,14 +80,20 @@ class ReactiveView extends LitElement {
   }
   updated() {
     super.updated();
-
+    const props =
+      this.component.props &&
+      Object.fromEntries(
+        Object.keys(this.component.props).map((prop) => [prop, this[prop]]),
+      );
     const themedElements = this.shadowRoot.querySelectorAll("[data-theme]");
 
     themedElements.forEach((el) => {
       const themeClassKey = el.getAttribute("data-theme");
-      const elementTheme = getElementTheme(themeClassKey, this, this.props);
+      console.log({ props });
+      const elementTheme = getElementTheme(themeClassKey, props);
 
-      if (elementTheme) {
+      if (elementTheme && elementTheme.split) {
+        console.log({ elementTheme });
         const classes = elementTheme.split(" ").filter((v) => !!v);
         el.classList.add(...classes);
       }
@@ -149,10 +155,8 @@ export function defineView({ key, component, style }) {
 
 export const definePackage = ({ pkg, style }) => {
   const views = Object.fromEntries(
-    Object.keys(pkg.views).map(
-      (key) =>
-        !console.log({ key }) &&
-        defineView({ key, component: pkg.views[key], style }),
+    Object.keys(pkg.views).map((key) =>
+      defineView({ key, component: pkg.views[key], style }),
     ),
   );
   return { ...pkg, views };

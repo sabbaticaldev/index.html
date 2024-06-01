@@ -11,8 +11,8 @@ const FormControl = {
     return html`
       ${label
         ? html`
-            <label class=${this.theme("uix-form-control__label")}>
-              <span class=${this.theme("uix-form-control__label-text")}>
+            <label data-theme="uix-form-control__label">
+              <span data-theme="uix-form-control__label-text">
                 ${label}
               </span>
             </label>
@@ -21,8 +21,8 @@ const FormControl = {
       <slot></slot>
       ${labelAlt?.length
         ? html`
-            <label class=${this.theme("uix-form-control__label")}>
-              <span class=${this.theme("uix-form-control__label-alt")}>
+            <label data-theme="uix-form-control__label">
+              <span data-theme="uix-form-control__label-alt">
                 ${labelAlt}
               </span>
             </label>

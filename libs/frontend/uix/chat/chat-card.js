@@ -28,17 +28,14 @@ export default {
               ? html`<uix-avatar src=${avatar} rounded=${rounded}></uix-avatar>`
               : ""}
             <uix-list vertical justify="center" class="flex-grow">
-              <uix-text
-                size="sm"
-                weight="bold"
-                class=${this.theme("uix-chat__sender")}
+              <uix-text size="sm" weight="bold" data-theme="uix-chat__sender"
                 >${sender}</uix-text
               >
               <uix-text
                 weight="medium"
                 size="xs"
                 font="mono"
-                containerClass=${this.theme("uix-chat__message-preview")}
+                data-theme="uix-chat__message-preview"
               >
                 ${message}
               </uix-text>
@@ -46,10 +43,10 @@ export default {
             <uix-list
               vertical
               justify="evenly"
-              containerClass=${this.theme("uix-chat__timestamp-container")}
+              data-theme="uix-chat__timestamp-container"
             >
               <uix-time
-                class=${this.theme("uix-chat__timestamp")}
+                data-theme="uix-chat__timestamp"
                 timestamp=${timestamp}
               ></uix-time>
               ${unread

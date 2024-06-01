@@ -20,7 +20,7 @@ export default {
       ${this.label &&
       html`
         <div data-theme="uix-divider__label">${this.label}</div>
-        <div class=${this.theme("uix-divider__border")}></div>
+        <div data-theme="uix-divider__border"></div>
       `}
     `;
   },

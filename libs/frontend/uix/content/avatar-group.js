@@ -27,7 +27,7 @@ const AvatarGroup = {
       "inline-block rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600",
   },
   render() {
-    const { avatars, size, max } = this;
+    const { avatars, max } = this;
     const displayedAvatars = avatars.slice(0, max);
     const extraAvatars = avatars.length - max;
 
@@ -35,7 +35,7 @@ const AvatarGroup = {
       ${displayedAvatars.map(
         (avatar) => html`
           <img
-            class=${this.theme("uix-avatar-group__avatar", { size })}
+            data-theme="uix-avatar-group__avatar"
             src=${avatar.src}
             alt=${avatar.alt}
           />
@@ -43,9 +43,7 @@ const AvatarGroup = {
       )}
       ${extraAvatars > 0 &&
       html`
-        <span class=${this.theme("uix-avatar-group__extra")}>
-          +${extraAvatars}
-        </span>
+        <span data-theme="uix-avatar-group__extra"> +${extraAvatars} </span>
       `}
     `;
   },

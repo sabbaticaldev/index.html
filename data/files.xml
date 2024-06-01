@@ -24,7 +24,7 @@ export default {
         return html`
           <uix-list justify="between">
             <app-design
-              class=${this.theme("app-design__container")}
+              data-theme="app-design__container"
             ></app-design>
             <app-design-menu></app-design-menu>
           </uix-list>
@@ -130,7 +130,7 @@ export default {
           <uix-list
             vertical
             gap="md"
-            class=${this.theme("app-design-menu__container")}
+            data-theme="app-design-menu__container"
           >
             <uix-text weight="medium" size="3xl"> Theme </uix-text>
             <section>

@@ -28,13 +28,10 @@ const Link = {
   }),
   render() {
     return this.href
-      ? html`<a href=${this.href} class=${this.theme("uix-link__element")}
+      ? html`<a href=${this.href} data-theme="uix-link__element"
           ><slot></slot
         ></a>`
-      : html`<button
-          @click=${this.onclick}
-          class=${this.theme("uix-link__element")}
-        >
+      : html`<button @click=${this.onclick} data-theme="uix-link__element">
           <slot></slot>
         </button>`;
   },

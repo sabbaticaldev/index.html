@@ -25,7 +25,7 @@ const Avatar = {
       content = html`<span data-theme="uix-avatar__img">${placeholder}</span>`;
     }
 
-    return html` <div class=${this.theme("uix-avatar")}>${content}</div> `;
+    return html` <div data-theme="uix-avatar">${content}</div> `;
   },
 };
 

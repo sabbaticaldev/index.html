@@ -18,12 +18,12 @@ const DatePicker = {
       <uix-input
         type="text"
         .value=${this.value}
-        class=${this.theme("uix-date-picker__input")}
+        data-theme="uix-date-picker__input"
         @focus=${() => this.setOpen(true)}
       ></uix-input>
       ${this.open &&
       html`
-        <div class=${this.theme("uix-date-picker__calendar")}>
+        <div data-theme="uix-date-picker__calendar">
           <uix-calendar
             .value=${this.value}
             .min=${this.min}

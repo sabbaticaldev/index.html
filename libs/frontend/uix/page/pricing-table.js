@@ -25,10 +25,10 @@ const PricingTable = {
         ${this.plans.map(
           (plan) => html`
             <uix-card>
-              <uix-text class=${this.theme("uix-pricing-plan__name")} size="xl"
+              <uix-text data-theme="uix-pricing-plan__name" size="xl"
                 >${plan.name}</uix-text
               >
-              <uix-text class=${this.theme("uix-pricing-plan__price")}
+              <uix-text data-theme="uix-pricing-plan__price"
                 >${plan.price}</uix-text
               >
               <uix-button @click=${plan.buttonClick}

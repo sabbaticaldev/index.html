@@ -15,8 +15,8 @@ const Hero = {
   },
   render() {
     return html`
-      <uix-block class=${this.theme("uix-hero__block")}>
-        <uix-text class=${this.theme("uix-hero__title")} size="4xl"
+      <uix-block data-theme="uix-hero__block">
+        <uix-text data-theme="uix-hero__title" size="4xl"
           >${this.title}</uix-text
       <uix-block data-theme="uix-hero__block">
         <uix-text data-theme="uix-hero__title" size="4xl"

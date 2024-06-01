@@ -22,9 +22,7 @@ const Table = {
   render() {
     const headerElements = this.headers.map(
       (header) =>
-        html`<th scope="col" class=${this.theme("uix-table__header")}>
-          ${header}
-        </th>`,
+        html`<th scope="col" data-theme="uix-table__header">${header}</th>`,
     );
     const rowElements = this.paginatedRows().map(
       (row) =>
@@ -32,14 +30,13 @@ const Table = {
           ${Array.isArray(row)
             ? row
             : Object.values(row).map(
-                (cell) =>
-                  html`<td class=${this.theme("uix-table__cell")}>${cell}</td>`,
+                (cell) => html`<td data-theme="uix-table__cell">${cell}</td>`,
               )}
         </tr>`,
     );
 
     return html`
-      <table class=${this.theme("uix-table__table")}>
+      <table data-theme="uix-table__table">
         <thead>
           <tr>
             ${headerElements}

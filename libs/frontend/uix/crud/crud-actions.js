@@ -23,7 +23,7 @@ const CrudActions = {
       ></uix-crud-new-modal>
       <uix-button dropdown="hide" data-theme="uix-crud-actions__button">
         <uix-icon name="chevron-down"></uix-icon> Actions
-        <ul slot="dropdown" class=${this.theme("uix-crud-actions__dropdown")}>
+        <ul slot="dropdown" data-theme="uix-crud-actions__dropdown">
           <li>
             <app-import-csv-button
               .setRows=${this.setRows}

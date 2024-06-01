@@ -20,9 +20,9 @@ const TreeView = {
   },
   render() {
     const renderTreeItem = (item) => html`
-      <li class=${this.theme("uix-treeview__item")}>
+      <li data-theme="uix-treeview__item">
         <svg
-          class=${this.theme("uix-treeview__item-icon")}
+          data-theme="uix-treeview__item-icon"
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -32,12 +32,10 @@ const TreeView = {
             clip-rule="evenodd"
           ></path>
         </svg>
-        <span class=${this.theme("uix-treeview__item-label")}>
-          ${item.label}
-        </span>
+        <span data-theme="uix-treeview__item-label"> ${item.label} </span>
         ${item.children &&
         html`
-          <ul class=${this.theme("uix-treeview__list")}>
+          <ul data-theme="uix-treeview__list">
             ${item.children.map(renderTreeItem)}
           </ul>
         `}
@@ -45,7 +43,7 @@ const TreeView = {
     `;
 
     return html`
-      <ul class=${this.theme("uix-treeview__list")}>
+      <ul data-theme="uix-treeview__list">
         ${this.items.map(renderTreeItem)}
       </ul>
     `;
