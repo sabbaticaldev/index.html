@@ -30,12 +30,12 @@ export default {
   render() {
     return html`
       ${this.items.map(
-    (item, index) =>
+        (item, index) =>
           html`
             <div
               class=${this.theme("uix-accordion-item", {
                 open: Boolean(item.open),
-  })}
+              })}
             >
               <div
                 class=${this.theme("uix-accordion-item__header")}
@@ -49,13 +49,13 @@ export default {
               <div
                 class=${this.theme("uix-accordion-item__content", {
                   open: Boolean(item.open),
-  })}
+                })}
               >
                 ${item.content}
               </div>
             </div>
           `,
-  )}
+      )}
     `;
   },
   setItemOpen(index, open) {

@@ -59,7 +59,7 @@ export default {
         gap=${this.gap}
       >
         ${this.tabs.map(
-    (tab) => html`
+          (tab) => html`
             <button
               role="tab"
               ?active=${tab.active}
@@ -69,7 +69,7 @@ export default {
               ${tab.label}
             </button>
           `,
-  )}
+        )}
       </uix-list>
       ${this.tabs.map((tab) => tab.active && html` <div>${tab.content}</div> `)}
     `;

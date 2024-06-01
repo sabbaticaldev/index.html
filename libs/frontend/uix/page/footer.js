@@ -24,7 +24,7 @@ const Footer = {
         <uix-list data-theme="uix-footer__links">
           ${this.links.map(
             (link) => html`<uix-link href=${link.href}>${link.text}</uix-link>`,
-  )}
+          )}
         </uix-list>
       </uix-block>
     `;

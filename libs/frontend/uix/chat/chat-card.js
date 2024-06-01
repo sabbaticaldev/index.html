@@ -53,8 +53,8 @@ export default {
                 timestamp=${timestamp}
               ></uix-time>
               ${unread
-    ? html`<uix-badge>${unread}</uix-badge>`
-    : html`<div></div>`}
+                ? html`<uix-badge>${unread}</uix-badge>`
+                : html`<div></div>`}
             </uix-list>
           </uix-list>
         </uix-block>

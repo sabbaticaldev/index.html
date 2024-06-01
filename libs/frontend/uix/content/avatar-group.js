@@ -33,14 +33,14 @@ const AvatarGroup = {
 
     return html`
       ${displayedAvatars.map(
-    (avatar) => html`
+        (avatar) => html`
           <img
             class=${this.theme("uix-avatar-group__avatar", { size })}
             src=${avatar.src}
             alt=${avatar.alt}
           />
         `,
-  )}
+      )}
       ${extraAvatars > 0 &&
       html`
         <span class=${this.theme("uix-avatar-group__extra")}>

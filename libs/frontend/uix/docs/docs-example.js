@@ -12,9 +12,9 @@ const DocsExample = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-docs-example__demo")}>${this.demo()}</div>
+      <div data-theme="uix-docs-example__demo">${this.demo()}</div>
       <uix-code
-        class=${this.theme("uix-docs-example__code")}
+        data-theme="uix-docs-example__code"
         .code=${this.code}
         language="html"
       ></uix-code>

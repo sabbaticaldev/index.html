@@ -21,7 +21,7 @@ const renderContents = (examples) => html`
     <li><a href="#properties">Properties</a></li>
     <li><a href="#examples">Examples</a></li>
     ${examples.map(
-    (example) =>
+      (example) =>
         html`<li>
           <a href="#${formattedTitle(example.title)}">${example.title}</a>
         </li>`,
@@ -45,7 +45,7 @@ export default {
   render() {
     return html`
       <uix-list vertical layout="responsive">
-        <uix-block class=${this.theme("uix-docs-page__element")}>
+        <uix-block data-theme="uix-docs-page__element">
           <uix-block>
             <uix-text size="2">${this.title}</uix-text>
             <p>${this.description}</p>
@@ -59,7 +59,7 @@ export default {
           <uix-divider></uix-divider>
           ${renderExamples(this.examples)}
         </uix-block>
-        <uix-block class=${this.theme("uix-docs-page__contents")}>
+        <uix-block data-theme="uix-docs-page__contents">
           <uix-text size="4">Contents</uix-text>
           ${renderContents(this.examples)}
         </uix-block>

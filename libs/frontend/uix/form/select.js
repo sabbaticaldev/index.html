@@ -30,7 +30,7 @@ const Select = {
       <select
         name=${name}
         @change=${this.change}
-        class=${this.theme("uix-select__element")}
+        data-theme="uix-select__element"
       >
         ${options?.map((option) => html` <option>${option}</option> `) || ""}
         <slot></slot>

@@ -28,21 +28,21 @@ const MockupPhone = {
       <div class=${this.theme("uix-mockup-phone__top")}></div>
       <div
         class=${this.theme("uix-mockup-phone__side", {
-    position: "left",
+          position: "left",
           index: 0,
-  })}
+        })}
       ></div>
       <div
         class=${this.theme("uix-mockup-phone__side", {
           position: "left",
-    index: 1,
+          index: 1,
         })}
       ></div>
       <div
         class=${this.theme("uix-mockup-phone__side", {
           position: "left",
           index: 2,
-  })}
+        })}
       ></div>
       <div
         class=${this.theme("uix-mockup-phone__side", {

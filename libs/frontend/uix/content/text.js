@@ -30,7 +30,7 @@ const Text = {
     TrackingSizes,
     TextSizes,
   }) => ({
-    "uix-text__element": {
+    "uix-text": {
       _base: "",
       variant: TextColors,
       weight: FontWeight,
@@ -44,7 +44,7 @@ const Text = {
     const tag = TAG_MAP[size] || "p";
 
     return staticHtml`
-      <${unsafeStatic(tag)} data-theme="uix-text__element">
+      <${unsafeStatic(tag)}>
         <slot></slot>
       </${unsafeStatic(tag)}>
     `;

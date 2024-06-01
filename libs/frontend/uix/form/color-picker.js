@@ -28,7 +28,7 @@ const ColorPicker = {
   render() {
     return html`
       ${this.colors.map(
-    (color) => html`
+        (color) => html`
           <div
             class=${this.theme("uix-color-picker__color-block", {
               selectedColor: this.selectedColor === color,
@@ -36,13 +36,13 @@ const ColorPicker = {
           >
             <span
               @click=${() =>
-    this.updateTheme({
+                this.updateTheme({
                   ...this.userTheme,
-      colors: {
-        ...this.baseTheme.colors,
-        [this.colorKey]: color,
-      },
-    })}
+                  colors: {
+                    ...this.baseTheme.colors,
+                    [this.colorKey]: color,
+                  },
+                })}
               class=${this.theme("uix-color-picker__color", { color })}
             ></span>
             <div class=${this.theme("uix-color-picker__shades-container")}>
@@ -50,24 +50,24 @@ const ColorPicker = {
                 (shade) => html`
                   <span
                     @click=${() =>
-    this.updateTheme({
-      ...this.userTheme,
-      colors: {
-        ...this.baseTheme.colors,
-        [this.colorKey]: color,
-      },
+                      this.updateTheme({
+                        ...this.userTheme,
+                        colors: {
+                          ...this.baseTheme.colors,
+                          [this.colorKey]: color,
+                        },
                       })}
                     class=${this.theme("uix-color-picker__shade", {
                       color,
-    shade,
+                      shade,
                     })}
                   ></span>
                 `,
-  )}
+              )}
             </div>
           </div>
         `,
-  )}
+      )}
     `;
   },
 };

@@ -21,7 +21,7 @@ const Stats = {
     return html`
       <uix-list class=${this.theme("uix-stats__element")}>
         ${this.items.map(
-    (item) => html`
+          (item) => html`
             <uix-block class=${this.theme("uix-stat")}>
               <uix-text class=${this.theme("uix-stat__value")} size="2xl"
                 >${item.value}</uix-text
@@ -31,7 +31,7 @@ const Stats = {
               >
             </uix-block>
           `,
-  )}
+        )}
       </uix-list>
     `;
   },

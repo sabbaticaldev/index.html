@@ -15,13 +15,13 @@ const CrudDetail = {
   render() {
     return html`
       ${this.fields.map(
-    (field) => html`
+        (field) => html`
           <div>
             <strong>${field}: </strong>
             <span>${this.item[field]}</span>
           </div>
         `,
-  )}
+      )}
       <div data-theme="uix-crud-detail__actions">
         <uix-button @click=${() => this.editItem(this.item)}> Edit </uix-button>
         <uix-button variant="error" @click=${() => this.deleteItem(this.item)}>

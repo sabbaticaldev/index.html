@@ -31,7 +31,7 @@ const Textarea = {
     } = this;
     return html`
       <textarea
-        class=${this.theme("uix-textarea__element")}
+        data-theme="uix-textarea__element"
         placeholder=${placeholder}
         ?disabled=${disabled}
         name=${name}

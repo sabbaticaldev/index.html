@@ -10,24 +10,24 @@ const FormControl = {
     const { label, labelAlt } = this;
     return html`
       ${label
-    ? html`
+        ? html`
             <label class=${this.theme("uix-form-control__label")}>
               <span class=${this.theme("uix-form-control__label-text")}>
                 ${label}
               </span>
             </label>
           `
-    : ""}
+        : ""}
       <slot></slot>
       ${labelAlt?.length
-    ? html`
+        ? html`
             <label class=${this.theme("uix-form-control__label")}>
               <span class=${this.theme("uix-form-control__label-alt")}>
                 ${labelAlt}
               </span>
             </label>
           `
-    : ""}
+        : ""}
     `;
   },
   theme: {

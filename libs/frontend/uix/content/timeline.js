@@ -37,7 +37,7 @@ const Timeline = {
               </p>
             </li>
           `,
-  )}
+        )}
       </ol>
     `;
   },

@@ -43,14 +43,14 @@ const renderField = (field, host) => {
       <uix-form-control
         .label=${field.label || ""}
         .labelAlt=${llm
-    ? [
-      html`<uix-icon
+          ? [
+              html`<uix-icon
                 class="cursor-pointer"
                 name="brush-outline"
                 @click=${() => host.wizardForm(field.name)}
               ></uix-icon>`,
-    ]
-    : field.labelAlt || []}
+            ]
+          : field.labelAlt || []}
       >
         ${fieldComponent}
       </uix-form-control>
@@ -144,7 +144,7 @@ export default {
                   ${renderField(field, this)}
                 </uix-block>
               `,
-  )}
+            )}
           </uix-list>
         `
       : renderField(row, this);
@@ -173,7 +173,7 @@ export default {
                         value=${action.value}
                       ></uix-input>
                     `,
-  )}
+                  )}
                 </uix-list>
               `
             : ""}

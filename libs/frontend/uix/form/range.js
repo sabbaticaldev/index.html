@@ -15,7 +15,7 @@ const Range = {
     const { theme, min, max, value } = this;
     return html`
       <input
-        class=${theme("uix-range__input")}
+        data-theme="uix-range__input"
         type="range"
         @input=${this.change}
         min=${min}

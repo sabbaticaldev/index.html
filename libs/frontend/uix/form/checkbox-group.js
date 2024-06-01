@@ -12,7 +12,7 @@ const CheckboxGroup = {
     const { name, options, value, change } = this;
     return html`
       ${options.map(
-    (option) => html`
+        (option) => html`
           <label>
             <input
               type="checkbox"
@@ -24,7 +24,7 @@ const CheckboxGroup = {
             ${option.label}
           </label>
         `,
-  )}
+      )}
     `;
   },
 };

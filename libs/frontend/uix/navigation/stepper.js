@@ -33,20 +33,20 @@ const Stepper = {
   render() {
     return html`
       ${this.steps.map(
-    (step, index) => html`
+        (step, index) => html`
           <div
             class=${this.theme("uix-stepper__step", { active: step.active })}
           >
             <span
               class=${this.theme("uix-stepper__marker", {
-    active: step.active,
+                active: step.active,
               })}
               >${index + 1}</span
             >
             <span class=${this.theme("uix-stepper__label")}>${step.label}</span>
           </div>
         `,
-  )}
+      )}
     `;
   },
 };

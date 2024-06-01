@@ -27,20 +27,8 @@ export default {
     }),
   },
   render() {
-    return html` <button
-      type="button"
-      class=${this.theme("uix-calendar-day__element", {
-        previous: this.previous,
-        next: this.next,
-        currentDay: this.currentDay,
-        selected: this.selected,
-      })}
-    >
-      <time
-        datetime="2022-01-01"
-        class=${this.theme("uix-calendar-day__time", {
-          selected: this.selected,
-        })}
+    return html` <button type="button" data-theme="uix-calendar-day__element">
+      <time datetime="2022-01-01" data-theme="uix-calendar-day__time"
         >${this.day}</time
       >
     </button>`;

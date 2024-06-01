@@ -26,7 +26,7 @@ const Loading = {
       ${message ? html`<span>${message}</span>` : ""}
       ${message && type === "spinner"
         ? html`<uix-icon name="spinner"></uix-icon>`
-    : ""}
+        : ""}
     `;
   },
 };

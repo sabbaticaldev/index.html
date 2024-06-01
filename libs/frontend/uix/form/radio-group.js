@@ -25,7 +25,7 @@ const RadioGroup = {
               ${option.label}
             </label>
           `,
-  )}
+        )}
       </div>
     `;
   },

@@ -57,7 +57,7 @@ export default {
 
     return html`
       <uix-list vertical>
-        <div class=${this.theme("uix-calendar-month__header")}>
+        <div data-theme="uix-calendar-month__header">
           <div>M</div>
           <div>T</div>
           <div>W</div>
@@ -66,20 +66,20 @@ export default {
           <div>S</div>
           <div>S</div>
         </div>
-        <div class=${this.theme("uix-calendar-month__grid")}>
+        <div data-theme="uix-calendar-month__grid">
           ${renderCalendarDays(
             [...Array(daysToPrepend)].map(
               (_, i) => previousMonthDays - daysToPrepend + i + 1,
-    ),
+            ),
             { month: this.month - 1, attributes: "previous=true" },
-  )}
+          )}
           ${renderCurrentMonthDays(this.month, this.year, this.selectedDay)}
           ${renderCalendarDays(
             [...Array(7 - getLastDayOfMonth(this.month, this.year))].map(
               (_, i) => i + 1,
-    ),
+            ),
             { month: this.month + 1, attributes: "next=true" },
-  )}
+          )}
         </div>
       </uix-list>
     `;

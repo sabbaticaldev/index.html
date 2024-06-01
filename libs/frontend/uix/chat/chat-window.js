@@ -14,14 +14,14 @@ const ChatWindow = {
       <div class=${this.theme("uix-chat-window")}>
         <div class=${this.theme("uix-chat-window__messages")}>
           ${this.messages.map(
-    (message) => html`
+            (message) => html`
               <uix-chat-message
                 .message=${message.text}
                 .timestamp=${message.timestamp}
                 .sender=${message.sender}
               ></uix-chat-message>
             `,
-  )}
+          )}
         </div>
         <uix-chat-composer
           placeholder="Type a message..."

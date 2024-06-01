@@ -19,7 +19,7 @@ const FeatureList = {
     return html`
       <uix-list data-theme="uix-feature-list__element">
         ${this.items.map(
-    (item) => html`
+          (item) => html`
             <uix-list data-theme="uix-feature-list__item">
               <uix-icon
                 data-theme="uix-feature-list__icon"
@@ -28,7 +28,7 @@ const FeatureList = {
               <uix-text>${item.text}</uix-text>
             </uix-list>
           `,
-  )}
+        )}
       </uix-list>
     `;
   },

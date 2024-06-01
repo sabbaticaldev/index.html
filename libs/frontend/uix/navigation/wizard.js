@@ -32,7 +32,7 @@ const Wizard = {
     return html`
       <div class=${this.theme("uix-wizard__steps")}>
         ${steps.map(
-    (step, index) => html`
+          (step, index) => html`
             <div
               class=${this.theme("uix-wizard__step", {
                 active: index === activeStep,
@@ -41,7 +41,7 @@ const Wizard = {
               ${step.label}
             </div>
           `,
-  )}
+        )}
       </div>
       <div class=${this.theme("uix-wizard__content")}>${activeStepContent}</div>
       <div class=${this.theme("uix-wizard__buttons")}>

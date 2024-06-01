@@ -23,7 +23,7 @@ const PricingTable = {
     return html`
       <uix-list>
         ${this.plans.map(
-    (plan) => html`
+          (plan) => html`
             <uix-card>
               <uix-text class=${this.theme("uix-pricing-plan__name")} size="xl"
                 >${plan.name}</uix-text
@@ -36,7 +36,7 @@ const PricingTable = {
               >
             </uix-card>
           `,
-  )}
+        )}
       </uix-list>
     `;
   },
