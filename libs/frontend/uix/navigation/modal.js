@@ -32,18 +32,14 @@ const Modal = {
   render() {
     return html`
       <slot name="button" @click=${this.show.bind(this)}></slot>
-      <dialog
-        id="modal"
-        ?open=${this.open}
-        class=${this.theme("uix-modal__element")}
-      >
+      <dialog id="modal" ?open=${this.open} data-theme="uix-modal__element">
         <div class=${this.theme("uix-modal__box")}>
           <uix-button
             @click=${this.hide.bind(this)}
             variant=""
             shape="circle"
             size="sm"
-            class=${this.theme("uix-modal__close-button")}
+            data-theme="uix-modal__close-button"
             >✕</uix-button
           >
           <uix-list vertical>

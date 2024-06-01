@@ -18,19 +18,14 @@ const Breadcrumb = {
   },
   render() {
     return html`
-      <nav
-        class=${this.theme("uix-breadcrumb__element")}
-        aria-label="Breadcrumb"
-      >
+      <nav data-theme="uix-breadcrumb__element" aria-label="Breadcrumb">
         ${this.items.map(
           (item, index) => html`
-            <a href=${item.href} class=${this.theme("uix-breadcrumb__item")}
+            <a href=${item.href} data-theme="uix-breadcrumb__item"
               >${item.label}</a
             >
             ${index < this.items.length - 1
-              ? html`<span class=${this.theme("uix-breadcrumb__separator")}
-                  >/</span
-                >`
+              ? html`<span data-theme="uix-breadcrumb__separator">/</span>`
               : ""}
           `,
         )}

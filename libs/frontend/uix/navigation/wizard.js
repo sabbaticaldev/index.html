@@ -15,13 +15,13 @@ const Wizard = {
   theme: {
     "uix-wizard": "space-y-4",
     "uix-wizard__steps": "flex justify-between",
-    "uix-wizard__step": ({ active }) => ({
+    "uix-wizard__step": {
       _base: "flex-1 text-center",
       active: {
         true: "text-blue-600 font-bold",
         false: "text-gray-500",
       },
-    }),
+    },
     "uix-wizard__content": "mt-4",
     "uix-wizard__buttons": "mt-4 flex justify-between",
   },
@@ -30,21 +30,15 @@ const Wizard = {
     const activeStepContent = steps[activeStep]?.content;
 
     return html`
-      <div class=${this.theme("uix-wizard__steps")}>
+      <div data-theme="uix-wizard__steps">
         ${steps.map(
-          (step, index) => html`
-            <div
-              class=${this.theme("uix-wizard__step", {
-                active: index === activeStep,
-              })}
-            >
-              ${step.label}
-            </div>
+          (step) => html`
+            <div data-theme="uix-wizard__step">${step.label}</div>
           `,
         )}
       </div>
-      <div class=${this.theme("uix-wizard__content")}>${activeStepContent}</div>
-      <div class=${this.theme("uix-wizard__buttons")}>
+      <div data-theme="uix-wizard__content">${activeStepContent}</div>
+      <div data-theme="uix-wizard__buttons">
         <button
           ?disabled=${activeStep === 0}
           @click=${() => this.setActiveStep(activeStep - 1)}

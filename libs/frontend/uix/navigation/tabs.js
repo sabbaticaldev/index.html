@@ -56,6 +56,7 @@ export default {
         ?vertical=${this.vertical}
         spacing=${this.spacing}
         ?full=${this.full}
+        data-theme="uix-tabs"
         gap=${this.gap}
       >
         ${this.tabs.map(
@@ -64,7 +65,7 @@ export default {
               role="tab"
               ?active=${tab.active}
               @click=${() => this.selectTab(tab)}
-              class=${this.theme("uix-tab")}
+              data-theme="uix-tab"
             >
               ${tab.label}
             </button>

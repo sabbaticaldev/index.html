@@ -3,7 +3,7 @@
 export default {
   contextSrc: ["libs/frontend"],
   refactoringFiles:
-    "uix/form, datetime, docs frontend files affected by the change",
+    "uix/layout, navigation frontend files affected by the change",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
     

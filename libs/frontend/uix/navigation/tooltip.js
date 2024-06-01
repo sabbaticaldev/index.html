@@ -26,14 +26,13 @@ const Tooltip = {
   },
   render() {
     return html`
-      <button class=${this.theme("uix-tooltip__button")}>
+      <button data-theme="uix-tooltip__button">
         <slot name="button"></slot>
       </button>
-      <span class=${this.theme("uix-tooltip__content")}>
+      <span data-theme="uix-tooltip__content">
         <slot></slot>
       </span>
     `;
   },
 };
-
 export default Tooltip;

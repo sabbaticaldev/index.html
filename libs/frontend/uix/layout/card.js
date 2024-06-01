@@ -22,14 +22,14 @@ export default {
   render() {
     return html`
       ${this.header &&
-      html` <div class=${this.theme("uix-card__header")}>${this.header}</div> `}
+      html` <div data-theme="uix-card__header">${this.header}</div> `}
       ${this.body &&
-      html` <div class=${this.theme("uix-card__body")}>${this.body}</div> `}
+      html` <div data-theme="uix-card__body">${this.body}</div> `}
 
       <slot></slot>
 
       ${this.footer &&
-      html` <div class=${this.theme("uix-card__footer")}>${this.footer}</div> `}
+      html` <div data-theme="uix-card__footer">${this.footer}</div> `}
     `;
   },
 };

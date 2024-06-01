@@ -32,13 +32,8 @@ export default {
       ${this.items.map(
         (item, index) =>
           html`
-            <div
-              class=${this.theme("uix-accordion-item", {
-                open: Boolean(item.open),
-              })}
-            >
               <div
-                class=${this.theme("uix-accordion-item__header")}
+                data-theme="uix-accordion-item__header"
                 @click=${() => this.setItemOpen(index, !item.open)}
               >
                 ${item.label}
@@ -46,14 +41,13 @@ export default {
                   name=${item.open ? "chevron-up" : "chevron-down"}
                 ></uix-icon>
               </div>
+              </div>
               <div
-                class=${this.theme("uix-accordion-item__content", {
+                data-theme="uix-accordion-item__content"
                   open: Boolean(item.open),
                 })}
               >
-                ${item.content}
               </div>
-            </div>
           `,
       )}
     `;

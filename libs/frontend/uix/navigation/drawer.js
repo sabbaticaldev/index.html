@@ -19,17 +19,12 @@ const Drawer = {
   },
   render() {
     return html`
-      <div
-        class=${this.theme("uix-drawer__element", {
-          open: this.open,
-          position: this.position,
-        })}
-      >
+      <div data-theme="uix-drawer__element">
         <slot></slot>
       </div>
       ${this.open
         ? html`<div
-            class=${this.theme("uix-drawer__overlay")}
+            data-theme="uix-drawer__overlay"
             @click=${() => this.setOpen(false)}
           ></div>`
         : ""}

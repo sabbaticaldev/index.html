@@ -13,11 +13,7 @@ const Media = {
   },
   render() {
     return html`
-      <img
-        class=${this.theme("uix-media__image")}
-        src=${this.src}
-        alt=${this.alt}
-      />
+      <img data-theme="uix-media__image" src=${this.src} alt=${this.alt} />
     `;
   },
 };
