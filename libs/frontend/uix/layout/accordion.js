@@ -15,59 +15,58 @@ export default {
   },
 
   theme: {
-    "uix-accordion": "divide-y divide-gray-200",
-    "uix-accordion-item": {
-      _base: "py-4",
-      open: { true: "bg-gray-50" },
-    },
+    "uix-accordion": "divide-y divide-gray-200 block",
+    "uix-accordion-item": "p-4",
     "uix-accordion-item__header":
-      "flex justify-between items-center cursor-pointer px-4",
-    "uix-accordion-item__content": {
-      _base: "px-4 pt-4",
-      open: { true: "block", false: "hidden" },
-    },
+      "flex justify-between items-center cursor-pointer",
+    "uix-accordion-item__content": "p-4",
+  },
+  handleToggle(event, index) {
+    const open = event.target.open;
+    if (!this.allowMultiple && open) {
+      this.items = this.items.map((item) => ({
+        ...item,
+        open: false,
+      }));
+      const themedElements = this.shadowRoot.querySelectorAll("details");
+      themedElements.forEach((el, idx) => {
+        if (idx !== index && !this.allowMultiple && open) {
+          el.open = false;
+        }
+      });
+    }
+    this.items[index].open = open;
+  },
+  shouldUpdate() {
+    if (this.stopUpdate) return false;
+    else {
+      this.stopUpdate = true;
+      return true;
+    }
   },
   render() {
+    console.log("RUNNING");
     return html`
       ${this.items.map(
         (item, index) =>
           html`
-            <div
+            <details
               data-theme="uix-accordion-item"
-                open: Boolean(item.open),
-              })}
+              ?open=${item.open}
+              @toggle=${(e) => this.handleToggle(e, index)}
             >
-              <div
-                class=${this.theme("uix-accordion-item__header")}
-                @click=${() => this.setItemOpen(index, !item.open)}
-              >
+              <summary data-theme="uix-accordion-item__header">
                 ${item.label}
                 <uix-icon
                   name=${item.open ? "chevron-up" : "chevron-down"}
                 ></uix-icon>
+              </summary>
+              <div data-theme="uix-accordion-item__content">
+                ${item.content}
               </div>
-              </div>
-              <div
-                data-theme="uix-accordion-item__content"
-                  open: Boolean(item.open),
-                })}
-              >
-              </div>
-            </div>
+            </details>
           `,
       )}
     `;
-  },
-  setItemOpen(index, open) {
-    const item = this.items[index];
-    if (!this.allowMultiple) {
-      this.items = this.items.map((i) => ({
-        ...i,
-        open: i === item ? open : false,
-      }));
-    } else {
-      this.items[index].open = open;
-      this.requestUpdate();
-    }
   },
 };

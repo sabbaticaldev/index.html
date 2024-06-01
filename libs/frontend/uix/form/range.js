@@ -22,13 +22,13 @@ const Range = {
         max=${max}
         value=${value}
       />
-      <div class=${theme("uix-range__labels")}>
+      <div data-theme="uix-range__labels">
         <span class="text-sm text-gray-600">Squared</span>
         <span class="text-sm text-gray-600">Rounded</span>
       </div>
     `;
   },
-  theme: ({ cls, BaseVariants, TextSizes, SpacingSizes }) => ({
+  theme: ({ BaseVariants, TextSizes, SpacingSizes }) => ({
     "uix-range": {
       _base: "w-full",
       variant: BaseVariants,

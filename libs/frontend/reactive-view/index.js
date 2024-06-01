@@ -80,23 +80,30 @@ class ReactiveView extends LitElement {
   }
   updated() {
     super.updated();
-    const props =
-      this.component.props &&
-      Object.fromEntries(
-        Object.keys(this.component.props).map((prop) => [prop, this[prop]]),
-      );
+
+    const baseProps = this.component.props
+      ? Object.fromEntries(
+          Object.keys(this.component.props).map((prop) => [prop, this[prop]]),
+        )
+      : {};
+
     const themedElements = this.shadowRoot.querySelectorAll("[data-theme]");
 
     themedElements.forEach((el) => {
+      el.className = "";
       const themeClassKey = el.getAttribute("data-theme");
-      console.log({ props });
-      const elementTheme = getElementTheme(themeClassKey, props);
+      const dataProps = Object.fromEntries(
+        Array.from(el.attributes)
+          .filter(
+            (attr) =>
+              attr.name.startsWith("data-") && attr.name !== "data-theme",
+          )
+          .map((attr) => [attr.name.replace("data-", ""), attr.value]),
+      );
+      const elementTheme = getElementTheme(themeClassKey, dataProps, baseProps);
 
-      if (elementTheme && elementTheme.split) {
-        console.log({ elementTheme });
-        const classes = elementTheme.split(" ").filter((v) => !!v);
-        el.classList.add(...classes);
-      }
+      if (elementTheme?.split)
+        el.classList.add(...elementTheme.split(" ").filter((v) => !!v));
     });
 
     const elementTheme = this.theme(this.component.tag);
@@ -105,7 +112,6 @@ class ReactiveView extends LitElement {
       if (classes?.length) this.classList.add(...classes);
     }
   }
-
   disconnectedCallback() {
     this.component.disconnectedCallback?.bind(this)();
     ReactiveView._instancesUsingSync.forEach((instances) =>

@@ -5,24 +5,7 @@ const createMapping = (prefix, mapping) =>
     Object.entries(mapping).map(([key, value]) => [key, `${prefix}-${value}`]),
   );
 
-baseTheme.commonColors = [
-  "red",
-  "orange",
-  "yellow",
-  "lime",
-  "green",
-  "teal",
-  "cyan",
-  "blue",
-  "indigo",
-  "violet",
-  "purple",
-  "pink",
-  "rose",
-  "blue-gray",
-];
-
-baseTheme.greyColors = ["gray", "zinc", "true-gray", "warm-gray", "blue-gray"];
+const baseElement = "_base";
 
 const LoadingTypes = {
   spinner: "loading loading-spinner",
@@ -237,14 +220,14 @@ const createProps = (userTheme) => {
     userTheme.colors,
   );
   const commonStyles = {
-    _base: cls([userTheme.flexCenter, userTheme.borderStyles, borderRadius]),
+    [baseElement]: cls([
+      userTheme.flexCenter,
+      userTheme.borderStyles,
+      borderRadius,
+    ]),
     variant: BaseVariants,
     size: [baseSpacingSizes, baseTextSizes],
   };
-  // TODO: refactor this, greyColors and commonColors shouldn\'t be in baseTheme
-  const ColorPickerClasses = baseTheme.commonColors
-    .map(generateAllColorClasses)
-    .concat(baseTheme.greyColors.map(generateAllColorClasses));
 
   return {
     cls,
@@ -278,10 +261,7 @@ const createProps = (userTheme) => {
     FontWeight: createMapping("font", baseVariants),
     TextColors,
     borderRadius,
-    ColorPickerClasses,
     commonStyles,
-    commonColors: baseTheme.commonColors,
-    greyColors: baseTheme.greyColors,
     baseTheme,
     generateAllColorClasses,
     generateColorClass,
@@ -343,8 +323,7 @@ const resolveThemeValue = ({ theme = {}, props = {}, key = "" }) => {
 };
 export const getElementTheme = (element, extraProps = {}, instance = {}) => {
   const props = { ...extraProps, ...instance };
-  const { containerClass } = instance.component || {};
-  const elementTheme = Theme[element] || containerClass || "";
+  const elementTheme = Theme[element] || "";
   if (typeof elementTheme === "string") {
     return elementTheme;
   }
@@ -355,7 +334,7 @@ export const getElementTheme = (element, extraProps = {}, instance = {}) => {
     });
   }
   const classes = Object.entries(elementTheme).reduce((acc, [attr, theme]) => {
-    if (attr === "_base") return acc;
+    if (attr === baseElement) return acc;
     const key = instance[attr] || props[attr];
     const themeValue = resolveThemeValue({
       theme,
@@ -367,15 +346,11 @@ export const getElementTheme = (element, extraProps = {}, instance = {}) => {
     }
     return acc;
   }, []);
-  if (elementTheme._base) {
+  const baseTheme = elementTheme[baseElement];
+  if (baseTheme)
     classes.push(
-      typeof elementTheme._base === "function"
-        ? elementTheme._base(props)
-        : elementTheme._base,
+      typeof baseTheme === "function" ? baseTheme(props) : baseTheme,
     );
-  }
-  if (containerClass) {
-    classes.push(containerClass);
-  }
+
   return classes.join(" ") || "";
 };

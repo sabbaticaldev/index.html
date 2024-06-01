@@ -9,9 +9,9 @@ const ColorPicker = {
     updateTheme: T.function(),
     userTheme: T.object(),
   },
-  theme: ({ generateColorClass, ColorPickerClasses = [] }) => ({
+
+  theme: ({ generateColorClass }) => ({
     "uix-color-picker": "grid grid-cols-14",
-    "uix-color-picker__colors": ColorPickerClasses.flat().join(" "),
     "uix-color-picker__color-block": ({ selectedColor }) =>
       `group relative w-6 h-6 cursor-pointer ${
         selectedColor
@@ -35,11 +35,12 @@ const ColorPicker = {
                 this.updateTheme({
                   ...this.userTheme,
                   colors: {
-                    ...this.baseTheme.colors,
+                    ...this.userTheme.colors,
                     [this.colorKey]: color,
                   },
                 })}
               data-theme="uix-color-picker__color"
+              data-color=${color}
             ></span>
             <div data-theme="uix-color-picker__shades-container">
               ${Array.from({ length: 9 }, (_, i) => i + 1).map(
@@ -49,11 +50,13 @@ const ColorPicker = {
                       this.updateTheme({
                         ...this.userTheme,
                         colors: {
-                          ...this.baseTheme.colors,
+                          ...this.userTheme.colors,
                           [this.colorKey]: color,
                         },
                       })}
                     data-theme="uix-color-picker__shade"
+                    data-shade=${shade}
+                    data-color=${color}
                   >
                   </span>
                 `,

@@ -19,7 +19,6 @@ export default {
     wrap: T.string({ defaultValue: "nowrap" }),
     align: T.string({ defaultValue: "stretch" }),
     rounded: T.boolean(),
-    containerClass: T.string(),
   },
   theme: ({ JustifyContent, SpacingSizes, Gaps }) => ({
     "uix-list": {

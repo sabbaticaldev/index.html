@@ -16,7 +16,6 @@ const createFormControl = (tagName) => {
       size=${ifDefined(props.size)}
       label=${ifDefined(props.label)}
       labelAlt=${ifDefined(props.labelAlt)}
-      containerClass="w-full"
     ></${tagName}>
   `;
 };
@@ -159,11 +158,7 @@ export default {
         <uix-list>
           ${actions
             ? html`
-                <uix-list
-                  responsive
-                  gap="md"
-                  data-theme="uix-form-actions"
-                >
+                <uix-list responsive gap="md" data-theme="uix-form-actions">
                   ${actions.map(
                     (action) => html`
                       <uix-input
