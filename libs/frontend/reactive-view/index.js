@@ -88,10 +88,11 @@ class ReactiveView extends LitElement {
       : {};
 
     const themedElements = this.shadowRoot.querySelectorAll("[data-theme]");
-
+    let mainStyleApplied = false;
     themedElements.forEach((el) => {
       el.className = "";
       const themeClassKey = el.getAttribute("data-theme");
+      if (themeClassKey === this.component.tag) mainStyleApplied = true;
       const dataProps = Object.fromEntries(
         Array.from(el.attributes)
           .filter(
@@ -100,9 +101,10 @@ class ReactiveView extends LitElement {
           )
           .map((attr) => [attr.name.replace("data-", ""), attr.value]),
       );
+
       const elementTheme = getElementTheme(themeClassKey, dataProps, baseProps);
 
-      if (elementTheme?.split)
+      if (!mainStyleApplied && elementTheme?.split)
         el.classList.add(...elementTheme.split(" ").filter((v) => !!v));
     });
 

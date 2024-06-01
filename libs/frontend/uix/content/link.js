@@ -17,7 +17,7 @@ const Link = {
     TrackingSizes,
     TextSizes,
   }) => ({
-    "uix-link__element": {
+    "uix-link": {
       _base: "",
       variant: TextColors,
       weight: FontWeight,
@@ -28,10 +28,8 @@ const Link = {
   }),
   render() {
     return this.href
-      ? html`<a href=${this.href} data-theme="uix-link__element"
-          ><slot></slot
-        ></a>`
-      : html`<button @click=${this.onclick} data-theme="uix-link__element">
+      ? html`<a href=${this.href} data-theme="uix-link"><slot></slot></a>`
+      : html`<button @click=${this.onclick} data-theme="uix-link">
           <slot></slot>
         </button>`;
   },

@@ -12,13 +12,13 @@ const Breadcrumb = {
     }),
   },
   theme: {
-    "uix-breadcrumb__element": "flex items-center space-x-2",
+    "uix-breadcrumb": "flex items-center space-x-2",
     "uix-breadcrumb__item": "text-gray-500 hover:text-gray-700",
     "uix-breadcrumb__separator": "text-gray-400",
   },
   render() {
     return html`
-      <nav data-theme="uix-breadcrumb__element" aria-label="Breadcrumb">
+      <nav data-theme="uix-breadcrumb" aria-label="Breadcrumb">
         ${this.items.map(
           (item, index) => html`
             <a href=${item.href} data-theme="uix-breadcrumb__item"

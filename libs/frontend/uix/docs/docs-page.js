@@ -39,13 +39,13 @@ export default {
     examples: T.array(),
   },
   theme: {
-    "uix-docs-page__element": "flex-grow",
+    "uix-docs-page": "flex-grow",
     "uix-docs-page__contents": "w-1/4 lg:w-1/3 xl:w-1/3",
   },
   render() {
     return html`
       <uix-list vertical layout="responsive">
-        <uix-block data-theme="uix-docs-page__element">
+        <uix-block data-theme="uix-docs-page">
           <uix-block>
             <uix-text size="2">${this.title}</uix-text>
             <p>${this.description}</p>

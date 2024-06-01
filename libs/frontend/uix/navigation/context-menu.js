@@ -1,7 +1,7 @@
 import { html, T } from "helpers";
 
 const ContextMenu = {
-  tag: "uix-context-menu__element",
+  tag: "uix-context-menu",
   props: { open: T.boolean(), contextmenu: T.function() },
   theme: {
     "uix-context-menu":
@@ -38,7 +38,7 @@ const ContextMenu = {
   },
   render() {
     return html`
-      <div data-theme="uix-context-menu__element" ?hidden=${!this.open}>
+      <div data-theme="uix-context-menu" ?hidden=${!this.open}>
         <slot name="menu"></slot>
       </div>
       <slot

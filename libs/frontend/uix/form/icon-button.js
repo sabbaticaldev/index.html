@@ -8,7 +8,7 @@ export default {
     alt: T.string(),
   },
   theme: ({ cls, borderRadius, BaseVariants, TextSizes }) => ({
-    "uix-icon-button__element": {
+    "uix-icon-button": {
       _base: cls(["transition ease-in-out duration-200 mx-auto", borderRadius]),
       variant: BaseVariants,
     },
@@ -19,7 +19,7 @@ export default {
   }),
   render() {
     return html`
-      <button alt=${this.alt} data-theme="uix-icon-button__element">
+      <button alt=${this.alt} data-theme="uix-icon-button">
         <uix-icon
           data-theme="uix-icon-button__icon"
           name=${this.icon}

@@ -25,7 +25,7 @@ const Checkbox = {
     const { checked, change, disabled, name } = this;
     return html`
       <input
-        data-theme="uix-checkbox__element"
+        data-theme="uix-checkbox"
         type="checkbox"
         name=${name}
         @change=${function (e) {

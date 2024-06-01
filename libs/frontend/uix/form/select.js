@@ -27,18 +27,14 @@ const Select = {
   render() {
     const { name, options } = this;
     return html`
-      <select
-        name=${name}
-        @change=${this.change}
-        data-theme="uix-select__element"
-      >
+      <select name=${name} @change=${this.change} data-theme="uix-select">
         ${options?.map((option) => html` <option>${option}</option> `) || ""}
         <slot></slot>
       </select>
     `;
   },
   theme: ({ cls, baseTheme }) => ({
-    "uix-select__element": {
+    "uix-select": {
       _base: cls([
         "block w-full appearance-none focus:outline-none focus:ring-0",
         baseTheme.defaultTextColor,

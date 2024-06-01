@@ -31,7 +31,7 @@ const Textarea = {
     } = this;
     return html`
       <textarea
-        data-theme="uix-textarea__element"
+        data-theme="uix-textarea"
         placeholder=${placeholder}
         ?disabled=${disabled}
         name=${name}
@@ -46,7 +46,7 @@ ${value}</textarea
     `;
   },
   theme: ({ cls, baseTheme }) => ({
-    "uix-textarea__element": {
+    "uix-textarea": {
       _base: cls([
         "block w-full appearance-none focus:outline-none focus:ring-0",
         baseTheme.defaultTextColor,

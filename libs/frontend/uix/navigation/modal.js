@@ -9,7 +9,7 @@ const Modal = {
     open: T.boolean(),
   },
   theme: ({ cls, SpacingSizes, borderRadius }) => ({
-    "uix-modal__element": {
+    "uix-modal": {
       _base: cls([
         "rounded-lg bg-white p-8 shadow-2xl min-w-[768px] min-h-[400px]",
         borderRadius,
@@ -32,7 +32,7 @@ const Modal = {
   render() {
     return html`
       <slot name="button" @click=${this.show.bind(this)}></slot>
-      <dialog id="modal" ?open=${this.open} data-theme="uix-modal__element">
+      <dialog id="modal" ?open=${this.open} data-theme="uix-modal">
         <div data-theme="uix-modal__box">
           <uix-button
             @click=${this.hide.bind(this)}

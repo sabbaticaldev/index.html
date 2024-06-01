@@ -18,7 +18,7 @@ const Button = {
     ButtonSizes,
     TextSizes,
   }) => ({
-    "uix-button__element": {
+    "uix-button": {
       _base: cls([
         "cursor-pointer transition ease-in-out duration-200 gap-2 w-full",
         baseTheme.flexCenter,
@@ -31,7 +31,7 @@ const Button = {
     },
   }),
   render() {
-    const btnTheme = "uix-button__element";
+    const btnTheme = "uix-button";
 
     if (this.dropdown) {
       return html`

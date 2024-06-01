@@ -10,12 +10,7 @@ export default {
     day: T.number(),
   },
   theme: {
-    "uix-calendar-day__element": ({
-      previous,
-      next,
-      currentDay,
-      selected,
-    }) => ({
+    "uix-calendar-day": ({ previous, next, currentDay, selected }) => ({
       _base: `focus:z-10 w-full p-1.5 ${
         (!next && !previous) || currentDay || selected ? "bg-white" : ""
       } ${currentDay ? "text-indigo-600 font-semibold" : ""}`,
@@ -27,7 +22,7 @@ export default {
     }),
   },
   render() {
-    return html` <button type="button" data-theme="uix-calendar-day__element">
+    return html` <button type="button" data-theme="uix-calendar-day">
       <time datetime="2022-01-01" data-theme="uix-calendar-day__time"
         >${this.day}</time
       >

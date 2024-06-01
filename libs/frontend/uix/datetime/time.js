@@ -4,10 +4,10 @@ export default {
   tag: "uix-time",
   props: { timestamp: T.number() },
   theme: {
-    "uix-time__element": "whitespace-nowrap",
+    "uix-time": "whitespace-nowrap",
   },
   render() {
-    return html`<time data-theme="uix-time__element"
+    return html`<time data-theme="uix-time"
       >${datetime.formatTime(this.timestamp)}</time
     >`;
   },
