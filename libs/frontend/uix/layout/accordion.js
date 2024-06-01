@@ -3,7 +3,10 @@ import { html, T } from "helpers";
 export default {
   tag: "uix-accordion",
   props: {
-    allowMultiple: T.boolean(),
+    multiple: T.boolean(),
+    icons: T.object({
+      defaultValue: { open: "chevron-up", closed: "chevron-down" },
+    }),
     items: T.array({
       defaultValue: [],
       type: {
@@ -23,29 +26,23 @@ export default {
   },
   handleToggle(event, index) {
     const open = event.target.open;
-    if (!this.allowMultiple && open) {
+    if (!this.multiple && open) {
       this.items = this.items.map((item) => ({
         ...item,
         open: false,
       }));
       const themedElements = this.shadowRoot.querySelectorAll("details");
       themedElements.forEach((el, idx) => {
-        if (idx !== index && !this.allowMultiple && open) {
+        if (idx !== index && !this.multiple && open) {
           el.open = false;
         }
       });
     }
     this.items[index].open = open;
-  },
-  shouldUpdate() {
-    if (this.stopUpdate) return false;
-    else {
-      this.stopUpdate = true;
-      return true;
-    }
+    this.requestUpdate();
   },
   render() {
-    console.log("RUNNING");
+    const { icons } = this;
     return html`
       ${this.items.map(
         (item, index) =>
@@ -58,7 +55,7 @@ export default {
               <summary data-theme="uix-accordion-item__header">
                 ${item.label}
                 <uix-icon
-                  name=${item.open ? "chevron-up" : "chevron-down"}
+                  name=${item.open ? icons.open : icons.closed}
                 ></uix-icon>
               </summary>
               <div data-theme="uix-accordion-item__content">

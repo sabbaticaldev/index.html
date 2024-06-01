@@ -113,14 +113,20 @@ const baseButtonSizes = {
 
 const baseDimensionSizes = {
   "": "",
-  xs: "6 h-6",
-  sm: "8 h-8",
-  md: "12 h-12",
-  lg: "16 h-16",
-  xl: "24 h-24",
-  "2xl": "32 h-32",
-  "3xl": "48 h-48",
-  "4xl": "64 h-64",
+  xs: "24",
+  sm: "36",
+  md: "48",
+  lg: "60",
+  xl: "64",
+  "2xl": "72",
+  "3xl": "80",
+  "4xl": "96",
+  full: "full",
+  screen: "screen",
+  auto: "auto",
+  half: "1/2",
+  third: "1/3",
+  quarter: "1/4",
 };
 
 const baseTrackingSizes = {
@@ -231,7 +237,7 @@ const createProps = (userTheme) => {
 
   return {
     cls,
-    Sizes: ["lg", "md", "sm", "xs", "xl", "2xl", "3xl", "4xl"],
+    Sizes: ["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl"],
     Variants: [
       "default",
       "primary",
@@ -247,6 +253,8 @@ const createProps = (userTheme) => {
     SpacingSizes: createMapping("p", baseSpacingSizes),
     TextSizes: createMapping("text", baseTextSizes),
     LeadingSizes: createMapping("leading", baseLeadingSizes),
+    WidthSizes: createMapping("w", baseDimensionSizes),
+    HeightSizes: createMapping("h", baseDimensionSizes),
     DimensionSizes: createMapping("w", baseDimensionSizes),
     BaseVariants,
     ReverseVariants,

@@ -9,9 +9,9 @@ export default {
     body: T.string(),
     footer: T.string(),
   },
-  theme: ({ BaseVariants, SpacingSizes }) => ({
+  theme: ({ BaseVariants, SpacingSizes, baseTheme }) => ({
     "uix-card": {
-      _base: "block shadow rounded-md overflow-hidden",
+      _base: `block shadow rounded-md overflow-hidden ${baseTheme.cardBackgroundColor}`,
       variant: BaseVariants,
       spacing: SpacingSizes,
     },
