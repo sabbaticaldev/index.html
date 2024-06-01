@@ -16,13 +16,13 @@ const Avatar = {
     const { src, alt, placeholder } = this;
     let content;
     if (src) {
-      content = html`<img
+      content = html`<img 
         src=${src}
-        class=${this.theme("uix-avatar__img")}
+        data-theme="uix-avatar__img"
         alt=${alt}
       />`;
     } else if (placeholder) {
-      content = html`<span class=${this.theme("uix-avatar__img")}
+      content = html`<span data-theme="uix-avatar__img"
         >${placeholder}</span
       >`;
     }

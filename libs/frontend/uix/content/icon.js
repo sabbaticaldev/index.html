@@ -7,7 +7,7 @@ const Icon = {
     size: T.string({ defaultValue: "" }),
     containerClass: T.string(),
   },
-  render() {
+  render() { 
     const { name } = this;
     return html`<ion-icon name=${name} role="img"></ion-icon>`;
   },

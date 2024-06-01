@@ -22,7 +22,7 @@ const CrudDetail = {
           </div>
         `,
   )}
-      <div class=${this.theme("uix-crud-detail__actions")}>
+      <div data-theme="uix-crud-detail__actions">
         <uix-button @click=${() => this.editItem(this.item)}> Edit </uix-button>
         <uix-button variant="error" @click=${() => this.deleteItem(this.item)}>
           Delete

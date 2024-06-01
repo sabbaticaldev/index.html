@@ -20,12 +20,12 @@ const CrudNewModal = {
           ? html`<uix-icon-button
               slot="button"
               icon=${icon}
-              class=${this.theme("uix-crud-new-modal__icon")}
+              data-theme="uix-crud-new-modal__icon"
             ></uix-icon-button>`
           : html`<uix-button
               slot="button"
               variant="primary"
-              class=${this.theme("uix-crud-new-modal__button")}
+              data-theme="uix-crud-new-modal__button"
               >+ new</uix-button
             >`}
         <uix-form

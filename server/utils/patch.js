@@ -1,75 +1,111 @@
-/**
- * Applies the parsed patches to the given files.
- * @param {Object} filesContent - An object where keys are file paths and values are file contents.
- * @param {Object} patches - An object where keys are file paths and values are objects containing the new file path and patch lines.
- * @returns {Object} - An object where keys are new file paths and values are the updated file contents.
- */
-export function applyParsedPatches(filesContent, patches) {
-  const updatedFiles = {};
-  for (const [oldFilePath, { newFilePath, patchSection }] of Object.entries(
-    patches,
-  )) {
-    const originalContent = filesContent[oldFilePath] || "";
-    const updatedContent = applyPatch(originalContent, patchSection);
-    const targetPath = newFilePath || oldFilePath;
-    updatedFiles[targetPath] = updatedContent;
-  }
-  return updatedFiles;
-}
-
 export function parsePatch(diff) {
   const lines = diff.split("\n");
-  const operations = [];
-  let currentOperation = { type: "", lines: [] };
+  const patches = {};
+  let currentFile = null;
 
-  for (const line of lines) {
-    if (line.startsWith("+")) {
-      if (currentOperation.type !== "add") {
-        if (currentOperation.type) operations.push(currentOperation);
-        currentOperation = { type: "add", lines: [] };
-      }
-      currentOperation.lines.push(line.substring(1));
-    } else if (line.startsWith("-")) {
-      if (currentOperation.type !== "remove") {
-        if (currentOperation.type) operations.push(currentOperation);
-        currentOperation = { type: "remove", lines: [] };
-      }
-      currentOperation.lines.push(line.substring(1));
-    } else {
-      if (currentOperation.type) {
-        operations.push(currentOperation);
-        currentOperation = { type: "unchanged", lines: [] };
-      }
+  lines.forEach((line) => {
+    if (line.startsWith("---")) {
+      currentFile = null;
+    } else if (line.startsWith("+++")) {
+      currentFile = line.slice(4); // Ensure this captures the correct file path
+      patches[currentFile] = { hunks: [] };
+    } else if (currentFile && line.startsWith("@@")) {
+      const hunk = parseHunk(line);
+      patches[currentFile].hunks.push(hunk);
+    } else if (currentFile && patches[currentFile]) {
+      patches[currentFile].hunks[
+        patches[currentFile].hunks.length - 1
+      ].changes.push(line);
     }
-  }
-  if (currentOperation.type) operations.push(currentOperation);
-  return operations;
+  });
+
+  return patches;
 }
 
-export function applyPatch(content, operations) {
-  const contentLines = content.split("\n");
-  const newContent = [];
-  let i = 0;
+function parseHunk(header) {
+  const match = header.match(/@@ -(\d+),\d+ \+(\d+),\d+ @@/);
+  return {
+    oldStart: parseInt(match[1], 10),
+    newStart: parseInt(match[2], 10),
+    changes: [],
+  };
+}
 
-  for (const operation of operations) {
-    switch (operation.type) {
-      case "add":
-        newContent.push(...operation.lines);
-        break;
-      case "remove":
-        i += operation.lines.length;
-        break;
-      case "unchanged":
-        while (
-        i < contentLines.length &&
-          operation.lines.includes(contentLines[i])
-      ) {
-          newContent.push(contentLines[i]);
-          i++;
-        }
-        break;
+export function applyPatch(originalContent, patchInfo) {
+  const contentLines = originalContent.split("\n");
+  let result = [...contentLines];
+  let indexOffset = 0;
+
+  for (const hunk of patchInfo.hunks) {
+    // Find the best context match for the hunk in the original file
+    const contextStartIndex = findContextStartIndex(
+      contentLines,
+      hunk.changes,
+      hunk.oldStart,
+    );
+    const start = contextStartIndex + indexOffset; // Adjust start position by current offset if necessary
+    const hunkLines = applyHunk(
+      hunk.changes,
+      contentLines.slice(contextStartIndex),
+    );
+
+    // Replace the lines in the result array
+    result.splice(start, hunkLines.oldLength, ...hunkLines.newLines);
+    indexOffset += hunkLines.newLines.length - hunkLines.oldLength;
+  }
+
+  return result.join("\n");
+}
+
+function findContextStartIndex(contentLines, changes, oldStart) {
+  const context = changes
+    .filter((line) => line.startsWith(" "))
+    .map((line) => line.substring(1));
+  const contextLength = context.length;
+  let bestMatchIndex = oldStart - 1; // Default to oldStart if no better match found
+  let maxMatchCount = 0;
+
+  // Use a sliding window to find the best match for the context lines
+  for (let i = 0; i <= contentLines.length - contextLength; i++) {
+    let matchCount = 0;
+    for (let j = 0; j < contextLength; j++) {
+      if (contentLines[i + j] === context[j]) {
+        matchCount++;
+      }
+    }
+    // Update the best match if the current window has more matching lines
+    if (matchCount > maxMatchCount) {
+      maxMatchCount = matchCount;
+      bestMatchIndex = i;
     }
   }
 
-  return newContent.join("\n");
+  return bestMatchIndex;
+}
+
+function applyHunk(changes, contextLines) {
+  const newLines = [];
+  let oldLength = 0;
+
+  changes.forEach((line) => {
+    if (line.startsWith("+")) {
+      newLines.push(line.substring(1));
+    } else if (line.startsWith("-")) {
+      oldLength++;
+    } else if (line.startsWith(" ")) {
+      newLines.push(line.substring(1)); // Include unchanged lines to maintain context
+      oldLength++;
+    }
+  });
+
+  return { newLines, oldLength };
+}
+
+export function applyParsedPatches(filesContent, patches) {
+  const updatedFiles = {};
+  Object.entries(patches).forEach(([filePath, patchInfo]) => {
+    const originalContent = filesContent[filePath] || "";
+    updatedFiles[filePath] = applyPatch(originalContent, patchInfo);
+  });
+  return updatedFiles;
 }

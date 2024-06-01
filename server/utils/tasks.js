@@ -1,12 +1,7 @@
 import fs from "fs";
 import keypress from "keypress";
-import readline from "readline";
 
 keypress(process.stdin);
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
 
 const promptUser = (question) => {
   return new Promise((resolve) => {

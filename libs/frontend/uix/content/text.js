@@ -1,4 +1,4 @@
-import { html, staticHtml, T, unsafeStatic } from "helpers";
+import { staticHtml, T, unsafeStatic } from "helpers";
 
 const TAG_MAP = {
   "4xl": "h1",
@@ -44,9 +44,7 @@ const Text = {
     const tag = TAG_MAP[size] || "p";
 
     return staticHtml`
-      <${unsafeStatic(tag)} class="${unsafeStatic(
-      `${this.theme("uix-text__element")}`,
-)}">
+      <${unsafeStatic(tag)} data-theme="uix-text__element">
         <slot></slot>
       </${unsafeStatic(tag)}>
     `;

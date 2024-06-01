@@ -16,7 +16,7 @@ const Crud = {
   },
   render() {
     return html`
-      <div class=${this.theme("uix-crud__actions")}>
+      <div data-theme="uix-crud__actions">
         <uix-crud-search
           .model=${this.model}
           .setRows=${this.setRows}
@@ -29,7 +29,7 @@ const Crud = {
           .ModelClass=${this.ModelClass}
         ></uix-crud-actions>
       </div>
-      <div class=${this.theme("uix-crud__table")}>
+      <div data-theme="uix-crud__table">
         <uix-crud-table
           .rows=${this.rows}
           .fields=${this.fields}
