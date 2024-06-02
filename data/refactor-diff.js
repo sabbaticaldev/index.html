@@ -5,12 +5,7 @@ export default {
   refactoringFiles: "frontend files affected",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
-    
-    lets update app-shell to include a uix-navbar and accept a property with the navbar items
-    the navbar could be left or right
-    let's also create a uix-topbar and uix-logo. A uix-logo can be a icon + a name, a icon image and a name, a icon image and a name image, or just one image with the whole icon and then the property name would also be the alt
-    uix-topbar would receive props for logo, a linkNavbar property that would add a navbar of links and a AppNavbar that would receive a navbar with things like settings, account, etc. it can have both at the same time. 
-    It can also have a search input of component uix-search (lets create the comopnent)
+    lets refactor the code to add missing uix components that are used but doesnt exist in the code base yet
   `,
 
   responseFormat: "diff",

@@ -56,7 +56,6 @@ export const importPatchContent = async (patchContent) => {
         originalContents[filePath] = "";
       }
     }
-    console.log({ originalContents });
     const updatedFiles = applyParsedPatches(originalContents, filePatches);
     for (const filePath in updatedFiles) {
       const fullPath = path.join(process.cwd(), filePath);
@@ -66,6 +65,7 @@ export const importPatchContent = async (patchContent) => {
       modifiedFiles.push(fullPath);
     }
 
+    console.log({ modifiedFiles });
     return modifiedFiles;
   } catch (error) {
     console.error("Error importing patch content:", error);

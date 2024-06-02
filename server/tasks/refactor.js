@@ -125,7 +125,7 @@ export async function refactorFolder(options) {
           console.log(`Commit message saved at ${commitMessageFilePath}`);
         }
 
-        return isDiff ? response.diffPatch : response.files;
+        return isDiff ? response : response.files;
       },
     },
     {
@@ -152,6 +152,7 @@ export async function refactorFolder(options) {
       key: "savedFilePaths",
       dependencies: ["llmResponse"],
       operation: async () => {
+        console.log({ response: deps.llmReponse, isDiff });
         if (deps.llmResponse) {
           const files = await importPatchContent(deps.llmResponse);
           return files;
