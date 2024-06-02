@@ -16,7 +16,32 @@ import {
   pageKit,
   reset,
 } from "frontend";
-import { getUrlBlob, injectStyle, isValidApp } from "helpers";
+
+export const isValidApp = (app) => {
+  if (!app) {
+    throw new Error("App is not defined");
+  }
+
+  if (!app.views) {
+    throw new Error("App views object is not defined");
+  }
+  if (!app.views["app-index"] && !app.views["page-index"]) {
+    throw new Error(
+      "No valid bootstrap page found in app views (app-index or page-index required)",
+    );
+  }
+
+  return true;
+};
+
+export const getUrlBlob = () => {
+  const extractedContent = decodeURIComponent(
+    window.location.hash.substring(1),
+  );
+  if (!extractedContent) return null;
+  const blob = new Blob([extractedContent], { type: "application/javascript" });
+  return blob;
+};
 
 //TODO: change the gathering of the theme components to here from reactive-view
 export const loadFrontendFiles = (app) => {
@@ -110,26 +135,17 @@ const loadApp = async ({ app, style }) => {
   }
 };
 
-// Function to get the current style
-const getStyle = () =>
-  [reset, decodeURIComponent(window.location.search.substring(1))].join(" ");
-
-// Strategies for different environments
 const environmentStrategies = {
   production: async () => {
     const app = getUrlBlob();
-    const style = getStyle();
-    if (style) injectStyle(style);
-    if (app) await loadAppFromBlob({ app, style });
+    if (app) await loadAppFromBlob({ app });
   },
   staging: async () => {
-    await import("unocss");
     const app = getUrlBlob();
     if (app) await loadAppFromBlob({ app });
     window.addEventListener("hashchange", () => window.location.reload());
   },
   preview: async () => {
-    await import("unocss");
     const app = getUrlBlob();
     if (app) await loadAppFromBlob({ app }, true);
     window.addEventListener("hashchange", () => window.location.reload());

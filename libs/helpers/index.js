@@ -33,38 +33,3 @@ export function event(type, ...attrs) {
   });
   navigator.serviceWorker.controller.postMessage(message);
 }
-
-export const injectStyle = (style) => {
-  const blob = new Blob([style], { type: "text/css" });
-  const blobURL = URL.createObjectURL(blob);
-  const linkElem = document.createElement("link");
-  linkElem.rel = "stylesheet";
-  linkElem.href = blobURL;
-  document.head.appendChild(linkElem);
-};
-
-export const isValidApp = (app) => {
-  if (!app) {
-    throw new Error("App is not defined");
-  }
-
-  if (!app.views) {
-    throw new Error("App views object is not defined");
-  }
-  if (!app.views["app-index"] && !app.views["page-index"]) {
-    throw new Error(
-      "No valid bootstrap page found in app views (app-index or page-index required)",
-    );
-  }
-
-  return true;
-};
-
-export const getUrlBlob = () => {
-  const extractedContent = decodeURIComponent(
-    window.location.hash.substring(1),
-  );
-  if (!extractedContent) return null;
-  const blob = new Blob([extractedContent], { type: "application/javascript" });
-  return blob;
-};

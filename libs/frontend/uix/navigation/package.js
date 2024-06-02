@@ -2,7 +2,6 @@ import Breadcrumb from "./breadcrumb.js";
 import ContextMenu from "./context-menu.js";
 import Drawer from "./drawer.js";
 import Modal from "./modal.js";
-import Navbar from "./navbar.js";
 import Pagination from "./pagination.js";
 import Stepper from "./stepper.js";
 import Tabs from "./tabs.js";
@@ -14,7 +13,6 @@ export default {
     Modal,
     Tooltip,
     Tabs,
-    Navbar,
     Pagination,
     ContextMenu,
     Breadcrumb,
