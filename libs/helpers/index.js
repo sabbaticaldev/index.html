@@ -4,9 +4,9 @@ export { draggable, droparea } from "./droparea.js";
 export * as File from "./file.js";
 export { default as i18n } from "./i18n.js";
 export { get, patch, post, remove } from "./rest.js";
+export { event, getState, setState, subscribe, unsubscribe } from "./state.js";
 export { stringToType, T, TYPE_MAP } from "./types.js";
 export { default as url } from "./url.js";
-
 // Exporting lit functions and directives to be used in the *.package.js and components using the frontend framework.
 // If you need any Lit function from helpers, add and export it here
 export { css, html, LitElement } from "lit";
@@ -24,12 +24,4 @@ export function debounce(func, wait) {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(context, args), wait);
   };
-}
-
-export function event(type, ...attrs) {
-  const message = { type };
-  attrs.forEach((attr) => {
-    Object.assign(message, attr);
-  });
-  navigator.serviceWorker.controller.postMessage(message);
 }

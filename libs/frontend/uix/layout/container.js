@@ -5,34 +5,47 @@ const Container = {
   props: {
     width: T.string({ defaultValue: "full" }),
     height: T.string({ defaultValue: "auto" }),
-    align: T.string({ defaultValue: "center" }),
-    justify: T.string({ defaultValue: "center" }),
+    align: T.string({ defaultValue: "stretch" }),
+    flex: T.boolean({ defaultValue: true }),
+    justify: T.string(),
     padding: T.string({ defaultValue: "4" }),
-    responsive: T.boolean({ defaultValue: false }),
     secondary: T.boolean({ defaultValue: false }),
+    vertical: T.boolean({ defaultValue: true }),
+    responsive: T.boolean(),
+    reverse: T.boolean(),
+    droparea: T.boolean(),
+    spacing: T.string({ defaultValue: "sm" }),
+    gap: T.string({ defaultValue: "sm" }),
+    wrap: T.string({ defaultValue: "nowrap" }),
+    rounded: T.boolean(),
   },
-  theme: ({ baseTheme, WidthSizes }) =>
-    !console.log({ WidthSizes }) && {
-      "uix-container": {
-        _base: ({ secondary }) =>
-          `block h-auto min-h-screen ${
-            secondary
-              ? baseTheme.backgroundSecondaryColor
-              : baseTheme.backgroundColor
-          }`,
-
-        width: WidthSizes,
-        responsive: {
-          true: "sm:w-full md:w-4/5 lg:w-3/4 xl:w-2/3",
-        },
+  theme: ({ baseTheme, SpacingSizes, JustifyContent, Gaps, WidthSizes }) => ({
+    "uix-container": {
+      _base: ({ secondary }) =>
+        `block h-auto min-h-screen ${
+          secondary
+            ? baseTheme.backgroundSecondaryColor
+            : baseTheme.backgroundColor
+        }`,
+      flex: { true: "flex" },
+      spacing: SpacingSizes,
+      gap: Gaps,
+      justify: JustifyContent,
+      vertical: { true: "flex-col" },
+      responsive: {
+        true: "lg:flex-col sm:flex-row",
+        false: "sm:flex-col lg:flex-row",
       },
+      reverse: {
+        true: "flex-col-reverse",
+        false: "flex-row-reverse",
+      },
+
+      width: WidthSizes,
     },
+  }),
   render() {
-    return html`
-      <div data-theme="uix-container">
-        <slot></slot>
-      </div>
-    `;
+    return html`<slot></slot> `;
   },
 };
 

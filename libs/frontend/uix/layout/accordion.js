@@ -58,9 +58,9 @@ export default {
                   name=${item.open ? icons.open : icons.closed}
                 ></uix-icon>
               </summary>
-              <div data-theme="uix-accordion-item__content">
+              <uix-container data-theme="uix-accordion-item__content">
                 ${item.content}
-              </div>
+              </uix-container>
             </details>
           `,
       )}

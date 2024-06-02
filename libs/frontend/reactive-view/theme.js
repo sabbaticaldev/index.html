@@ -287,7 +287,7 @@ export const extractSafelistFromTheme = () => {
     else if (Array.isArray(obj)) obj.forEach(traverseTheme);
     else if (typeof obj === "object" && obj !== null) {
       Object.values(obj)
-        .filter((v) => v)
+        .filter(Boolean)
         .forEach((value) => {
           if (typeof value === "function") {
             traverseTheme(value({}, themeProps));
@@ -302,63 +302,56 @@ export const extractSafelistFromTheme = () => {
   return Array.from(safelist);
 };
 
-export const Theme = {};
-export let themeProps = createProps(baseTheme);
+const Theme = {};
+const themeProps = createProps(baseTheme);
 export default baseTheme;
 
-export const loadTheme = (views) => {
-  Object.keys(views).forEach((key) => {
-    const component = views[key];
-    const { theme, tag } = component;
+export const loadTheme = (views) =>
+  Object.entries(views).forEach(([, { theme, tag }]) => {
     const elementTheme =
-      theme && typeof theme === "function" ? theme(themeProps) : theme;
-    if (typeof elementTheme === "string") Theme[tag] = elementTheme;
-    else if (typeof elementTheme === "object")
-      Object.keys(elementTheme).forEach(
-        (entry) => (Theme[entry] = elementTheme[entry]),
-      );
+      typeof theme === "function" ? theme(themeProps) : theme;
+    if (typeof elementTheme === "string") {
+      Theme[tag] = elementTheme;
+    } else if (typeof elementTheme === "object") {
+      Object.assign(Theme, elementTheme);
+    }
   });
-};
 
 const resolveThemeValue = ({ theme = {}, props = {}, key = "" }) => {
   if (Array.isArray(theme)) {
-    return theme.map((entry) => entry && entry[key]).join(" ");
+    return theme
+      .map((entry) => entry && entry[key])
+      .filter(Boolean)
+      .join(" ");
   }
-  if (typeof theme === "function") {
-    return theme(props);
-  }
-  return theme[key];
+  return typeof theme === "function" ? theme(props) : theme[key];
 };
+
 export const getElementTheme = (element, extraProps = {}, instance = {}) => {
   const props = { ...extraProps, ...instance };
   const elementTheme = Theme[element] || "";
-  if (typeof elementTheme === "string") {
-    return elementTheme;
-  }
+  if (typeof elementTheme === "string") return elementTheme;
+
   if (typeof elementTheme === "function") {
-    return resolveThemeValue({
-      theme: elementTheme,
-      props,
-    });
+    return resolveThemeValue({ theme: elementTheme, props });
   }
+
   const classes = Object.entries(elementTheme).reduce((acc, [attr, theme]) => {
     if (attr === baseElement) return acc;
     const key = instance[attr] || props[attr];
-    const themeValue = resolveThemeValue({
-      theme,
-      props,
-      key,
-    });
+    const themeValue = resolveThemeValue({ theme, props, key });
     if (themeValue) {
       acc.push(typeof themeValue === "object" ? themeValue[key] : themeValue);
     }
     return acc;
   }, []);
+
   const baseTheme = elementTheme[baseElement];
-  if (baseTheme)
+  if (baseTheme) {
     classes.push(
       typeof baseTheme === "function" ? baseTheme(props) : baseTheme,
     );
+  }
 
   return classes.join(" ") || "";
 };

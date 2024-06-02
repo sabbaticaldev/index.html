@@ -4,6 +4,17 @@ import ReactiveRecord from "./reactive-record.js";
 let models = {};
 
 export const events = {
+  stateChange: async (data, { source }) => {
+    const clients = await self.clients.matchAll({
+      includeUncontrolled: true,
+      type: "window",
+    });
+    clients.forEach((client) => {
+      if (client !== source) {
+        client.postMessage(data);
+      }
+    });
+  },
   INIT_BACKEND: async (data, { source }) => {
     source.postMessage({
       type: "BACKEND_INITIALIZED",
@@ -125,27 +136,36 @@ export const startBackend = async (app, isSW = false) => {
   }
   ReactiveRecord.appId = app.timestamp;
 };
+self.addEventListener("message", (event) => {
+  const message = event.data;
+  // Broadcast the message to all clients
+  self.clients
+    .matchAll({ includeUncontrolled: true, type: "window" })
+    .then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage(message);
+      });
+    });
+});
 
 export const messageHandler =
   ({ requestUpdate, P2P }) =>
-    async (event) => {
-      const handler = events[event.data.type];
-      if (handler) {
-        console.log("DEBUG - frontend event: ", {
-          event,
-        });
-        try {
-          const messageHandlerContext = {
-            source: event.source,
-            requestUpdate,
-            P2P,
-          };
-          await handler(event.data, messageHandlerContext);
-        } catch (error) {
-          console.error(`Error handling ${event.data.type}:`, error);
-        }
+  async (event) => {
+    const handler = events[event.data.type];
+    if (handler) {
+      console.log("DEBUG - service worker event: ", { event });
+      try {
+        const messageHandlerContext = {
+          source: event.source,
+          requestUpdate,
+          P2P,
+        };
+        await handler(event.data, messageHandlerContext);
+      } catch (error) {
+        console.error(`Error handling ${event.data.type}:`, error);
       }
-    };
+    }
+  };
 
 export const requestUpdate = () =>
   self.clients
