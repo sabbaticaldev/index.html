@@ -1,4 +1,4 @@
-import fs from "fs/promises";
+import * as fs from "fs";
 import path from "path";
 
 import { applyParsedPatches, parsePatch } from "../utils/patch.js";
@@ -28,7 +28,7 @@ export const importXmlFiles = async (input) => {
  */
 export const importPatchFile = async (input) => {
   try {
-    const patchContent = await fs.readFile(input, "utf8");
+    const patchContent = await fs.promises.readFile(input, "utf8");
     return await importPatchContent(patchContent);
   } catch (error) {
     console.error("Error importing patch files:", error);
@@ -41,24 +41,27 @@ export const importPatchContent = async (patchContent) => {
     const filePatches = parsePatch(patchContent);
     const originalContents = {};
     const modifiedFiles = [];
-
     for (const filePath of Object.keys(filePatches)) {
       const fullPath = path.join(process.cwd(), filePath);
+
+      // Asynchronously check if file exists
       try {
-        // Correctly using the Promise-based API to read file contents
-        originalContents[filePath] = await fs.readFile(fullPath, "utf8");
+        await fs.promises.access(fullPath);
+        originalContents[filePath] = await fs.promises.readFile(
+          fullPath,
+          "utf8",
+        );
       } catch (err) {
         console.warn(`File not found: ${fullPath}. Creating a new file.`);
         originalContents[filePath] = "";
       }
     }
-
+    console.log({ originalContents });
     const updatedFiles = applyParsedPatches(originalContents, filePatches);
-
     for (const filePath in updatedFiles) {
       const fullPath = path.join(process.cwd(), filePath);
-      await fs.mkdir(path.dirname(fullPath), { recursive: true });
-      await fs.writeFile(fullPath, updatedFiles[filePath], "utf8");
+      await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+      await fs.promises.writeFile(fullPath, updatedFiles[filePath], "utf8");
       console.log(`File imported: ${fullPath}`);
       modifiedFiles.push(fullPath);
     }

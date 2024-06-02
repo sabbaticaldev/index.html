@@ -12,7 +12,9 @@ const data = {
     return `
 Refactor the target refactoring files code using the context files as reference. Refactor code in blocks, not just lines for better diff patch applying. Dont change unnecessary things, only add to the response things that are useful to the applying of the diff patch.
 
-Ensure each diff starts with --- and +++ lines specifying the old and new file paths.
+Ensure each diff starts with --- and +++ lines specifying the old and new file paths. be sure to never add an extra + on those lines.
+for new files, use /dev/null as the oldName.
+
 Make sure the @@ lines are correctly formatted and indicate the start of each hunk.
 Ensure the diffs include enough surrounding lines to provide context for the changes.
 Preserve the original files indentation and spacing to avoid formatting issues. Avoid partial or broken diff fragments.

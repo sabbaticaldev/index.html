@@ -48,6 +48,7 @@
     "@unocss/runtime": "^0.60.3",
     "@whiskeysockets/baileys": "github:w3nder/Baileys#patch-1",
     "aws-sdk": "^2.1602.0",
+    "diff": "^5.2.0",
     "express": "^4.19.2",
     "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "^2.1.2",
