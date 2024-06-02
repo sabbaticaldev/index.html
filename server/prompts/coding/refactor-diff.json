@@ -14,15 +14,12 @@
   },
   "exampleInput": {
     "contextSrc": {
-      "src/utils.js": "function oldFunction() { console.log('old'); }",
+      "src/utils.js": "function oldFunction(){\n  console.log('old');\n }",
       "src/constants.js": "const MAX_SIZE = 100;"
     },
     "refactoringFiles": "src/utils.js and src/constants.js",
     "taskPrompt": "Refactor to include new coding standards and consider renaming 'constants.js' to 'config.js'.",
     "strategy": "diff"
   },
-  "exampleOutput": {
-    "commitMessage": "Refactored src/utils.js and src/constants.js, fixed X, Y, added Z",
-    "diffPatch": "--- src/utils.js\n+++ src/utils.js\n@@ ... @@\n-function oldFunction() {\n-  console.log('old');\n+const newFunction = () => console.log('new');\n }\n--- src/constants.js\n+++ src/config.js\n@@ ... @@\n-const MAX_SIZE = 100;\n+const MAX_ITEMS = 100;"
-  }
+  "exampleOutput": "--- src/utils.js\n+++ src/utils.js\n@@ ... @@\n-function oldFunction() {\n-  console.log('old');\n+const newFunction = () => console.log('new');\n }\n--- src/constants.js\n+++ src/config.js\n@@ ... @@\n-const MAX_SIZE = 100;\n+const MAX_ITEMS = 100;"
 }

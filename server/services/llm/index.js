@@ -69,11 +69,11 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   allParameters.forEach(async (param) => {
     let value;
     if (param === "exampleInput") {
-      value = generateExample(templateData.exampleInput);
+      value = formatResponse(templateData.exampleInput);
     } else if (param === "persona") {
       value = JSON.stringify(await getPersonaDetails(config.persona), null, 2);
     } else if (param === "exampleOutput") {
-      value = generateExample(templateData.exampleOutput, responseFormat);
+      value = formatResponse(templateData.exampleOutput, responseFormat);
     } else {
       value = JSON.stringify(config[param], null, 2) || "";
     }
@@ -83,14 +83,16 @@ const generatePrompt = (config, templateFile, responseFormat) => {
   });
   return prompt;
 };
-const generateExample = (exampleData, responseFormat = "json", rootElement) => {
-  if (responseFormat === "json") {
-    return JSON.stringify(exampleData, null, 2);
-  } else if (responseFormat === "xml") {
-    return generateXMLFormat(exampleData, rootElement);
-  }
-  return "";
+const formatResponse = (responseFormat, exampleData, rootElement) => {
+  const formatters = {
+    json: () => JSON.stringify(exampleData, null, 2),
+    xml: () => generateXMLFormat(exampleData, rootElement),
+    diff: () => exampleData,
+  };
+
+  return formatters[responseFormat] ? formatters[responseFormat]() : "";
 };
+
 const cleanLLMResponse = (response, format) => {
   try {
     if (format === "json") {

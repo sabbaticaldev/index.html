@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import ogs from "open-graph-scraper";
 import path from "path";
 
-import LLM from "../services/llm/index.js";
+import { LLM } from "../services/llm/index.js";
 import { processGroupInfo } from "../services/llm/tasks/whatsapp.js";
 import { connectToWhatsApp } from "../services/whatsapp/index.js";
 import { executeTasks } from "../utils.js";
@@ -43,8 +43,8 @@ const processGroup = async (inviteUrl, sock) => {
       groupData.size === 1
         ? "REQUEST"
         : groupData.size > 1
-          ? "JOINED"
-          : groupData.status;
+        ? "JOINED"
+        : groupData.status;
   }
 
   return groupData;
@@ -167,7 +167,7 @@ export const importGroups = async ({ delay, max, datetime = null }) => {
           .slice(0, max)
           .map((file) =>
             readFile(path.join(groupsPath, file), "utf8").then(JSON.parse),
-        ),
+          ),
       )
     : JSON.parse(await readFile(groupsPath, "utf8")).slice(0, max);
 
