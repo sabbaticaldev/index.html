@@ -1,3 +1,4 @@
+import { response } from "express";
 import fs from "fs";
 import path from "path";
 
@@ -53,67 +54,66 @@ const LLM = (() => {
     },
   };
 })();
-const loadTemplate = (templateFile) => {
+const loadTemplate = async (templateFile) => {
   const filePath = path.join(settings.__dirname, "prompts", templateFile);
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const templateData = await import(filePath);
+  return templateData.default;
 };
-const generatePrompt = (config, templateFile, responseFormat) => {
-  const templateData = loadTemplate(templateFile);
-  let prompt = templateData.prompt;
-  const inputParameters = Object.keys(templateData.inputParams);
-  const allParameters = inputParameters.concat([
-    "exampleInput",
-    "persona",
-    "exampleOutput",
-  ]);
-  allParameters.forEach(async (param) => {
-    let value;
-    if (param === "exampleInput") {
-      value = formatResponse(templateData.exampleInput);
-    } else if (param === "persona") {
-      value = JSON.stringify(await getPersonaDetails(config.persona), null, 2);
-    } else if (param === "exampleOutput") {
-      value = formatResponse(templateData.exampleOutput, responseFormat);
-    } else {
-      value = JSON.stringify(config[param], null, 2) || "";
-    }
-    const placeholder = `{${param}}`;
+const generatePrompt = async (config, templateFile, responseFormat) => {
+  const templateData = await loadTemplate(templateFile);
+  const inputParameters = await prepareInputParameters(
+    config,
+    templateData,
+    responseFormat,
+  );
+  return templateData.prompt(inputParameters);
+};
 
-    prompt = prompt.replace(placeholder, value);
-  });
-  return prompt;
+const prepareInputParameters = async (config, templateData, responseFormat) => {
+  const params = { ...config };
+  for (const param in templateData.inputParams) {
+    params[param] = JSON.stringify(config[param], null, 2) || "";
+  }
+  params.exampleInput = formatResponse(templateData.exampleInput);
+  params.persona = JSON.stringify(
+    await getPersonaDetails(config.persona),
+    null,
+    2,
+  );
+  params.exampleOutput = formatResponse(
+    templateData.exampleOutput,
+    responseFormat,
+  );
+
+  return params;
 };
-const formatResponse = (responseFormat, exampleData, rootElement) => {
+
+const formatResponse = (exampleData, responseFormat = "json", rootElement) => {
   const formatters = {
     json: () => JSON.stringify(exampleData, null, 2),
     xml: () => generateXMLFormat(exampleData, rootElement),
-    diff: () => exampleData,
   };
 
-  return formatters[responseFormat] ? formatters[responseFormat]() : "";
+  return formatters[responseFormat]
+    ? formatters[responseFormat]()
+    : exampleData;
 };
-
+const test = "\"";
 const cleanLLMResponse = (response, format) => {
   try {
-    if (format === "json") {
-      const firstBraceIndex = response.indexOf("{");
-      const lastBraceIndex = response.lastIndexOf("}");
-      if (firstBraceIndex !== -1 && lastBraceIndex !== -1) {
-        response = response.slice(firstBraceIndex, lastBraceIndex + 1);
-      }
-      return JSON.parse(response);
-    } else if (format === "xml") {
-      const firstTagIndex = response.indexOf("<");
-      const lastTagIndex = response.lastIndexOf(">");
-      if (firstTagIndex !== -1 && lastTagIndex !== -1) {
-        response = response.slice(firstTagIndex, lastTagIndex + 1);
-      }
-      return parseXML(response);
-    } else {
-      return response.trim();
-    }
+    const formatHandlers = {
+      json: (res) => JSON.parse(res),
+      xml: (res) => parseXML(res),
+      diff: (res) => "---  " + res.trim(),
+      default: (res) => res.trim(),
+    };
+
+    return formatHandlers[format]
+      ? formatHandlers[format](response)
+      : formatHandlers.default(response);
   } catch (error) {
     return response;
   }
 };
+
 export { cleanLLMResponse, generatePrompt, LLM, loadTemplate };

@@ -2,8 +2,7 @@
 
 export default {
   contextSrc: ["libs/frontend"],
-  refactoringFiles:
-    "uix/layout, navigation frontend files affected by the change",
+  refactoringFiles: "frontend files affected",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
     

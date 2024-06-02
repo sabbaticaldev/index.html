@@ -169,7 +169,7 @@ export async function createReelRipOff(options) {
           );
           const specificTemplate = loadTemplate("templates.json");
 
-          const prompt = generatePrompt(
+          const prompt = await generatePrompt(
             {
               postDescription: deps.instagram.description,
               contentStyle,

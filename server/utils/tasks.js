@@ -2,22 +2,28 @@ import fs from "fs";
 import keypress from "keypress";
 
 keypress(process.stdin);
-
 const promptUser = (question) => {
   return new Promise((resolve) => {
     console.log(question);
+
     const handleKeyPress = (ch, key) => {
-      if (key) {
+      if (key && key.ctrl && key.name === "c") {
+        console.log("\nProcess terminated by user.");
+        process.exit();
+      } else {
         const answer = key.name.trim().toLowerCase();
         if (["y", "yes", "1"].includes(answer)) {
           process.stdin.removeListener("keypress", handleKeyPress);
+          process.stdin.setRawMode(false);
           resolve(true);
         } else if (["n", "no", "0"].includes(answer)) {
           process.stdin.removeListener("keypress", handleKeyPress);
+          process.stdin.setRawMode(false);
           resolve(false);
         }
       }
     };
+
     process.stdin.on("keypress", handleKeyPress);
     process.stdin.setRawMode(true);
     process.stdin.resume();

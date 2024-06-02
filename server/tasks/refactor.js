@@ -56,7 +56,7 @@ export async function refactorFolder(options) {
   const commitMessageFilePath = path.join(".git", "COMMIT_EDITMSG");
   const isDiff = strategy === "diff";
   const template = isDiff ? "refactor-diff" : "refactor";
-  const templateFile = `coding/${template}.json`;
+  const templateFile = `coding/${template}.js`;
   fs.mkdirSync(outputDirectory, { recursive: true });
   const tasks = [
     {
@@ -92,7 +92,7 @@ export async function refactorFolder(options) {
       dependencies: ["template", "contextFileMap", "refactoringFileMap"],
       filePath: promptFilePath,
       operation: async () => {
-        const generatedPrompt = generatePrompt(
+        const generatedPrompt = await generatePrompt(
           {
             contextSrc: JSON.stringify(deps.contextFileMap, null, 2),
             refactoringFiles,
