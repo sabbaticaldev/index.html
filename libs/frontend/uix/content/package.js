@@ -1,6 +1,7 @@
 import Avatar from "./avatar.js";
 import AvatarGroup from "./avatar-group.js";
 import Badge from "./badge.js";
+import Code from "./code.js";
 import Icon from "./icon.js";
 import Link from "./link.js";
 import Loading from "./loading.js";
@@ -27,6 +28,7 @@ export default {
     Timeline,
     TreeView,
     VideoPlayer,
+    Code,
     Loading,
   },
 };

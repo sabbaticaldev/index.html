@@ -119,7 +119,6 @@ export async function refactorFolder(options) {
       key: "savedFilePaths",
       dependencies: ["llmResponse"],
       operation: async () => {
-        console.log({ response: deps.llmReponse, isDiff });
         if (deps.llmResponse) {
           const files = await importPatchContent(deps.llmResponse);
           return files;

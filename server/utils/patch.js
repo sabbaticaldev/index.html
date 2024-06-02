@@ -45,6 +45,7 @@ export const applyParsedPatches = (originalContents, filePatches) => {
       // If the file is considered new (or no content could be loaded), parse the entire patch as new content
       updatedContent = patchContent
         .split("\n")
+        .slice(1)
         .map((line) => line.substring(1))
         .join("\n");
     } else {
