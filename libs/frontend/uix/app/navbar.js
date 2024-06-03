@@ -2,7 +2,7 @@ import { html, T } from "helpers";
 const Navbar = {
   tag: "uix-navbar",
   props: {
-    variant: T.string({ defaultValue: "fixed" }),
+    variant: T.string({ defaultValue: "fixed", enum: ["fixed", "accordion"] }),
     multiple: T.boolean(),
     onclick: T.function(),
     open: T.boolean(),

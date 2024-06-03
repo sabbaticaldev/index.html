@@ -1,11 +1,15 @@
 //TODO: Refactor to use unified DIFF
 
 export default {
-  contextSrc: ["app/apps/design/sections"],
-  refactoringFiles: "frontend files affected",
+  contextSrc: ["libs/frontend/"],
+  refactoringFiles: "navbar.js uix component",
   taskPrompt: `  
-    We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
-    we have a docs sections files, lets refactor all the sections to export the object as default
+    We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
+    let's refactor navbar.js component to accept multiple levels of links, currently it only have one level but we should be able to nest multiple. we are also changing the 
+
+    variant: T.string({ defaultValue: "fixed" }),
+    attribute to inside the items, so each item can be of the type fixed or accordion
+    
   `,
 
   responseFormat: "diff",
