@@ -8,7 +8,7 @@ export default {
   },
   theme: ({ SpacingSizes }) => ({
     "uix-divider": {
-      _base: "w-full block flex items-center my-2",
+      _base: "w-full block flex items-center",
       spacing: SpacingSizes,
     },
     "uix-divider__border": "border-t border-gray-400 flex-grow",

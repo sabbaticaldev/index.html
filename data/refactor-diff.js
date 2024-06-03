@@ -1,11 +1,11 @@
 //TODO: Refactor to use unified DIFF
 
 export default {
-  contextSrc: ["libs/frontend"],
+  contextSrc: ["app/apps/design/sections"],
   refactoringFiles: "frontend files affected",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
-    lets refactor the code to add missing uix components that are used but doesnt exist in the code base yet
+    we have a docs sections files, lets refactor all the sections to export the object as default
   `,
 
   responseFormat: "diff",

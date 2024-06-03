@@ -2,7 +2,9 @@ import baseTheme from "../theme.base.js";
 
 const createMapping = (prefix, mapping) =>
   Object.fromEntries(
-    Object.entries(mapping).map(([key, value]) => [key, `${prefix}-${value}`]),
+    Object.entries(mapping)
+      .map(([key, value]) => value && [key, `${prefix}-${value}`])
+      .filter(Boolean),
   );
 
 const baseElement = "_base";

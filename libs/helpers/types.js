@@ -5,6 +5,7 @@ export const TYPE_MAP = {
   object: Object,
   date: Date,
   array: Array,
+  function: Function,
 };
 
 const typeHandlers = {

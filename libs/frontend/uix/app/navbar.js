@@ -24,18 +24,15 @@ const Navbar = {
     }),
   },
   theme: {
-    "uix-navbar":
-      "flex items-center justify-between px-4 py-3 bg-white shadow-md",
-    "uix-navbar__list": "flex space-x-4",
     "uix-navbar__link": {
       _base: "text-gray-600 hover:text-gray-800",
       active: {
         true: "font-bold text-blue-600",
       },
     },
-    "uix-navbar__section": "flex flex-col space-y-2",
+    "uix-navbar__section": "border-b",
     "uix-navbar__section-link": {
-      _base: "text-gray-600 hover:text-gray-800",
+      _base: "text-gray-900 hover:text-gray-500 hover:font-bold",
       active: {
         true: "font-bold text-blue-600",
       },
@@ -47,6 +44,7 @@ const Navbar = {
         ${this.variant === "accordion"
           ? html`
               <uix-accordion
+                border
                 ?multiple=${this.multiple}
                 .items=${this.items.map((item) => ({
                   label: item.label,
@@ -69,24 +67,22 @@ const Navbar = {
               ></uix-accordion>
             `
           : html`
-              <uix-list data-theme="uix-navbar__list">
+              <uix-list vertical spacing="" gap="">
                 ${this.items.map((item) =>
                   item.links.length
                     ? html`
-                        <div data-theme="uix-navbar__section">
-                          <span>${item.label}</span>
-                          ${item.links.map(
-                            (link) => html`
-                              <uix-link
-                                href=${link.href}
-                                data-theme="uix-navbar__section-link"
-                                ?active=${link.active}
-                              >
-                                ${link.label}
-                              </uix-link>
-                            `,
-                          )}
-                        </div>
+                        <span>${item.label}</span>
+                        ${item.links.map(
+                          (link) => html`
+                            <uix-link
+                              href=${link.href}
+                              data-theme="uix-navbar__section-link"
+                              ?active=${link.active}
+                            >
+                              ${link.label}
+                            </uix-link>
+                          `,
+                        )}
                       `
                     : html`
                         <uix-link

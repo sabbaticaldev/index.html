@@ -4,6 +4,7 @@ export default {
   tag: "uix-accordion",
   props: {
     multiple: T.boolean(),
+    border: T.boolean(),
     icons: T.object({
       defaultValue: { open: "chevron-up", closed: "chevron-down" },
     }),
@@ -18,11 +19,10 @@ export default {
   },
 
   theme: {
-    "uix-accordion": "divide-y divide-gray-200 block",
-    "uix-accordion-item": "p-4",
+    "uix-accordion": "divide-y divide-gray-800 block text-left",
+    "uix-accordion-item": { _base: "p-4", border: { true: "border-b" } },
     "uix-accordion-item__header":
       "flex justify-between items-center cursor-pointer",
-    "uix-accordion-item__content": "p-4",
   },
   handleToggle(event, index) {
     const open = event.target.open;
@@ -43,7 +43,7 @@ export default {
   },
   render() {
     const { icons } = this;
-    return html`
+    return html`<uix-list vertical gap="" spacing="">
       ${this.items.map(
         (item, index) =>
           html`
@@ -58,12 +58,10 @@ export default {
                   name=${item.open ? icons.open : icons.closed}
                 ></uix-icon>
               </summary>
-              <uix-container data-theme="uix-accordion-item__content">
-                ${item.content}
-              </uix-container>
+              <uix-list vertical gap="" spacing="">${item.content}</uix-list>
             </details>
           `,
       )}
-    `;
+    </uix-list> `;
   },
 };
