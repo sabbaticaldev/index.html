@@ -17,7 +17,7 @@ export default {
 
   theme: {
     "uix-accordion": "divide-y divide-gray-800 block text-left",
-    "uix-accordion-item": { _base: "p-4", border: { true: "border-b" } },
+    "uix-accordion-item": { _base: "px-4 pt-2", border: { true: "border-b" } },
     "uix-accordion-item__header":
       "flex justify-between items-center cursor-pointer",
   },
@@ -49,7 +49,7 @@ export default {
               @toggle=${(e) => this.handleToggle(e, index)}
             >
               <summary data-theme="uix-accordion-item__header">
-                ${item.label}
+                <uix-text size="sm">${item.label}</uix-text>
                 <uix-icon
                   name=${item.open ? "chevron-up" : "chevron-down"}
                 ></uix-icon>

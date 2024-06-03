@@ -4,7 +4,6 @@ import Badge from "./badge.js";
 import Code from "./code.js";
 import Icon from "./icon.js";
 import Link from "./link.js";
-import Loading from "./loading.js";
 import MockupPhone from "./mockup-phone.js";
 import Rating from "./rating.js";
 import Table from "./table.js";
@@ -29,6 +28,5 @@ export default {
     TreeView,
     VideoPlayer,
     Code,
-    Loading,
   },
 };

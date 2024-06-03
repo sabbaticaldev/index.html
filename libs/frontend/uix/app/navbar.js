@@ -5,6 +5,7 @@ const linkRender = (item) => html`
     href=${item.href}
     .onclick=${item.onclick}
     data-theme="uix-navbar__link"
+    size="xs"
     ?active=${item.active}
   >
     ${item.label}
@@ -14,7 +15,13 @@ const subNavbarRender = (item) =>
   item.variant === "accordion"
     ? accordionRender(item)
     : html`
-        <span>${item.label}</span>
+        <uix-text
+          data-theme="uix-navbar__header"
+          size="xs"
+          transform="uppercase"
+        >
+          ${item.label}
+        </uix-text>
         <uix-navbar .items=${item.items}></uix-navbar>
       `;
 
@@ -58,18 +65,13 @@ export default {
   },
   theme: {
     "uix-navbar__link": {
-      _base: "text-gray-600 hover:text-gray-800",
+      _base: "block px-2 text-gray-600 hover:bg-gray-500 hover:text-white",
       active: {
         true: "font-bold text-blue-600",
       },
     },
+    "uix-navbar__header": "px-4 pt-2",
     "uix-navbar__section": "border-b",
-    "uix-navbar__section-link": {
-      _base: "text-gray-900 hover:text-gray-500 hover:font-bold",
-      active: {
-        true: "font-bold text-blue-600",
-      },
-    },
   },
   render() {
     return html`<nav>

@@ -1,19 +1,23 @@
 // sync.js
-import { stringToType, url } from "helpers";
+import { hash, querystring, stringToType, url } from "helpers";
 
 export const instances = [];
 const isServer = typeof localStorage === "undefined";
-const syncAdapters = isServer ? { url } : { url, localStorage, sessionStorage };
+const syncAdapters = isServer
+  ? {}
+  : { url, localStorage, sessionStorage, hash, querystring };
 export const syncKeyMap = new Map();
 
-const getSyncKey = (key, sync) => ({ key, sync });
+const getSyncKey = (key, sync) => `${key}-${sync}`;
 
 const getValueFromSync = (prop, key) => {
+  if (!syncAdapters[prop.sync]) return;
   const value = syncAdapters[prop.sync].getItem(prop.key || key);
   return value ? stringToType(value, prop) : prop.defaultValue;
 };
 
 const setValueInSync = (instance, key, newValue, prop) => {
+  if (!syncAdapters[prop.sync]) return;
   if (!prop.readonly) {
     const value = newValue
       ? typeof newValue === "string"
@@ -23,12 +27,11 @@ const setValueInSync = (instance, key, newValue, prop) => {
     const currentValue = instance[key];
     if (currentValue !== value) {
       syncAdapters[prop.sync].setItem(prop.key || key, value);
-      instance[key] = value;
-      instance.requestUpdate();
-      const instances = syncKeyMap.get(getSyncKey(key, prop.sync));
+      const syncKey = getSyncKey(key, prop.sync);
+      const instances = syncKeyMap.get(syncKey);
       if (instances)
         instances.forEach((syncInstance) => {
-          if (syncInstance === instance) return;
+          syncInstance[key] = value;
           syncInstance.requestUpdate();
         });
     }
@@ -53,8 +56,11 @@ export const defineSyncProperty = (instance, key, prop) => {
 };
 
 export const requestUpdateOnUrlChange = () => {
-  syncKeyMap.forEach((instances, syncKey) => {
-    if (syncKey.sync === "url") {
+  syncKeyMap.forEach((instances, syncProp) => {
+    if (
+      syncProp.sync &&
+      ["url", "hash", "querystring"].includes(syncProp.sync)
+    ) {
       instances.forEach((instance) => {
         instance.requestUpdate();
       });

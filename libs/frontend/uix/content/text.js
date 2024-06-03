@@ -18,6 +18,7 @@ const Text = {
     variant: T.string({ defaultValue: "default" }),
     weight: T.string({ defaultValue: "" }),
     font: T.string({ defaultValue: "sans" }),
+    transform: T.string(),
     href: T.string(),
     onclick: T.function(),
     leading: T.string({}),
@@ -33,6 +34,12 @@ const Text = {
     "uix-text": {
       _base: "",
       variant: TextColors,
+      transform: {
+        uppercase: "uppercase",
+        lowercase: "lowercase",
+        capitalize: "capitalize",
+      },
+
       weight: FontWeight,
       font: FontType,
       leading: LeadingSizes,

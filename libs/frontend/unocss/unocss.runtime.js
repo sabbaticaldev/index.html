@@ -21,15 +21,10 @@ const getUnoGenerator = (safelist) => {
         }),
         presetAttributify(),
         presetWebFonts({
-          provider: "google", // google, bunny default provider
+          provider: "google",
           fonts: {
-            // these will extend the default theme
-            mono: ["Fira Code", "Fira Mono:400,700"],
-            // custom ones
-            "primary-font":
-              window.__custom && window.__custom.fonts.primary
-                ? window.__custom.fonts.primary
-                : "Roboto",
+            "primary-font": "Roboto",
+            sans: "Roboto",
             "secondary-font":
               window.__custom && window.__custom.fonts.secondary
                 ? window.__custom.fonts.secondary

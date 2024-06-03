@@ -27,11 +27,11 @@ const state = {
   Theme: null,
 };
 
-const getState = (key) => {
+export const getState = (key) => {
   return key ? state[key] : state;
 };
 
-const setState = (newState) => {
+export const setState = (newState) => {
   Object.keys(newState).forEach((key) => {
     state[key] = newState[key];
     eventEmitter.emit(`stateChange:${key}`, state[key]);
@@ -39,11 +39,11 @@ const setState = (newState) => {
   });
 };
 
-const subscribe = (key, listener) => {
+export const subscribe = (key, listener) => {
   eventEmitter.on(`stateChange:${key}`, listener);
 };
 
-const unsubscribe = (key, listener) => {
+export const unsubscribe = (key, listener) => {
   eventEmitter.off(`stateChange:${key}`, listener);
 };
 
@@ -64,5 +64,11 @@ navigator.serviceWorker.addEventListener("message", (event) => {
     eventEmitter.emit(`stateChange:${key}`, value);
   }
 });
-
-export { getState, setState, subscribe, unsubscribe };
+export function debounce(func, wait) {
+  let timeout;
+  return function (...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}

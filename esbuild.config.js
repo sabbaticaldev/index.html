@@ -58,7 +58,7 @@ if (isWatchMode) {
     console.log("Client connected");
   });
 
-  await esbuild.context({
+  const ctx = await esbuild.context({
     entryPoints: ["./index.js"],
     outdir: "./app/dist/",
     bundle: false,
@@ -71,11 +71,30 @@ if (isWatchMode) {
   });
 
   const server = http.createServer((req, res) => {
-    const filePath = path.join(
+    let filePath = path.join(
       __dirname,
       "app",
-      req.url === "/" ? "index.html" : req.url,
+      decodeURIComponent(req.url === "/" ? "index.html" : req.url),
     );
+    const ext = path.extname(filePath).toLowerCase();
+    const mimeTypes = {
+      ".html": "text/html",
+      ".js": "application/javascript",
+      ".css": "text/css",
+      ".json": "application/json",
+      ".png": "image/png",
+      ".jpg": "image/jpg",
+      ".gif": "image/gif",
+      ".svg": "image/svg+xml",
+      ".wav": "audio/wav",
+      ".mp4": "video/mp4",
+      ".woff": "application/font-woff",
+      ".ttf": "application/font-ttf",
+      ".eot": "application/vnd.ms-fontobject",
+      ".otf": "application/font-otf",
+      ".wasm": "application/wasm",
+    };
+
     fs.readFile(filePath, (err, data) => {
       if (err) {
         fs.readFile(path.join(__dirname, "app", "index.html"), (err, data) => {
@@ -88,24 +107,6 @@ if (isWatchMode) {
           }
         });
       } else {
-        const ext = path.extname(filePath).toLowerCase();
-        const mimeTypes = {
-          ".html": "text/html",
-          ".js": "application/javascript",
-          ".css": "text/css",
-          ".json": "application/json",
-          ".png": "image/png",
-          ".jpg": "image/jpg",
-          ".gif": "image/gif",
-          ".svg": "image/svg+xml",
-          ".wav": "audio/wav",
-          ".mp4": "video/mp4",
-          ".woff": "application/font-woff",
-          ".ttf": "application/font-ttf",
-          ".eot": "application/vnd.ms-fontobject",
-          ".otf": "application/font-otf",
-          ".wasm": "application/wasm",
-        };
         res.writeHead(200, {
           "Content-Type": mimeTypes[ext] || "application/octet-stream",
         });
