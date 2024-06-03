@@ -5,7 +5,7 @@ export default {
   props: {
     variant: T.string(),
     spacing: T.string({ defaultValue: "md" }),
-    containerClass: T.string(),
+    
     full: T.boolean(),
   },
   theme: ({ SpacingSizes, BaseVariants }) => ({

@@ -329,8 +329,7 @@ const resolveThemeValue = ({ theme = {}, props = {}, key = "" }) => {
   return typeof theme === "function" ? theme(props) : theme[key];
 };
 
-export const getElementTheme = (element, extraProps = {}, instance = {}) => {
-  const props = { ...extraProps, ...instance };
+export const getElementTheme = (element, props) => {
   const elementTheme = Theme[element] || "";
   if (typeof elementTheme === "string") return elementTheme;
 
@@ -340,7 +339,7 @@ export const getElementTheme = (element, extraProps = {}, instance = {}) => {
 
   const classes = Object.entries(elementTheme).reduce((acc, [attr, theme]) => {
     if (attr === baseElement) return acc;
-    const key = instance[attr] || props[attr];
+    const key = props[attr];
     const themeValue = resolveThemeValue({ theme, props, key });
     if (themeValue) {
       acc.push(typeof themeValue === "object" ? themeValue[key] : themeValue);

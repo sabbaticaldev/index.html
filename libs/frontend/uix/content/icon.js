@@ -1,16 +1,20 @@
 import { html, T } from "helpers";
 
-const Icon = {
+export default {
   tag: "uix-icon",
   props: {
+    iconSet: T.string({ defaultValue: "lucide" }),
     name: T.string(),
     size: T.string({ defaultValue: "" }),
-    containerClass: T.string(),
+  },
+  theme: {
+    "uix-icon": {
+      _base: ({ name, iconSet }) => `i-${iconSet}-${name}`,
+      "uix-icon__chevron-up": "i-lucide-chevron-up",
+      "uix-icon__chevron-down": "i-lucide-chevron-down",
+    },
   },
   render() {
-    const { name } = this;
-    return html`<ion-icon name=${name} role="img"></ion-icon>`;
+    return html``;
   },
 };
-
-export default Icon;

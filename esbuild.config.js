@@ -1,12 +1,13 @@
 import chokidar from "chokidar";
 import * as esbuild from "esbuild";
 import alias from "esbuild-plugin-alias";
+import fs from "fs";
+import http from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import WebSocket, { WebSocketServer } from "ws";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 
 const isWatchMode = process.argv.includes("--watch");
 const watch = [];
@@ -57,18 +58,11 @@ if (isWatchMode) {
     console.log("Client connected");
   });
 
-  const ctx = await esbuild.context({
+  await esbuild.context({
     entryPoints: ["./index.js"],
     outdir: "./app/dist/",
     bundle: false,
   });
-
-  const server = await ctx.serve({
-    servedir: "./app/",
-    port: 4000,
-  });
-
-  console.log(`Server running at http://${server.host}:${server.port}`);
 
   buildTasks.forEach(async (task) => {
     const ctx = await esbuild.context(task);
@@ -76,8 +70,65 @@ if (isWatchMode) {
     watch.push(ctx);
   });
 
+  const server = http.createServer((req, res) => {
+    const filePath = path.join(
+      __dirname,
+      "app",
+      req.url === "/" ? "index.html" : req.url,
+    );
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        fs.readFile(path.join(__dirname, "app", "index.html"), (err, data) => {
+          if (err) {
+            res.writeHead(404);
+            res.end("404 Not Found");
+          } else {
+            res.writeHead(200, { "Content-Type": "text/html" });
+            res.end(data);
+          }
+        });
+      } else {
+        const ext = path.extname(filePath).toLowerCase();
+        const mimeTypes = {
+          ".html": "text/html",
+          ".js": "application/javascript",
+          ".css": "text/css",
+          ".json": "application/json",
+          ".png": "image/png",
+          ".jpg": "image/jpg",
+          ".gif": "image/gif",
+          ".svg": "image/svg+xml",
+          ".wav": "audio/wav",
+          ".mp4": "video/mp4",
+          ".woff": "application/font-woff",
+          ".ttf": "application/font-ttf",
+          ".eot": "application/vnd.ms-fontobject",
+          ".otf": "application/font-otf",
+          ".wasm": "application/wasm",
+        };
+        res.writeHead(200, {
+          "Content-Type": mimeTypes[ext] || "application/octet-stream",
+        });
+        res.end(data);
+      }
+    });
+  });
+
+  server.listen(4000, () => {
+    console.log("Server running at http://localhost:4000");
+  });
+
   const watcher = chokidar.watch("./", {
-    ignored: [/.baileys/,/node_modules/, /.git/, /\.map$/, /\.db$/, /app\/apps\/allfortraveler\/data/,/\.db-journal$/, /baileys_store\.json$/]
+    ignored: [
+      /.baileys/,
+      /node_modules/,
+      /.git/,
+      /\.map$/,
+      /\.db$/,
+      /app\/apps\/allfortraveler\/data/,
+      /\.db-journal$/,
+      /baileys_store\.json$/,
+    ],
   });
 
   watcher.on("change", (path) => {
@@ -91,7 +142,6 @@ if (isWatchMode) {
 
   console.log("Watching...");
 } else {
-  copyThemeFile();
   buildTasks.forEach(async (task) => {
     await esbuild.build(task).catch(() => {
       process.exit(1);

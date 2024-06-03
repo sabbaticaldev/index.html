@@ -5,9 +5,6 @@ export default {
   props: {
     multiple: T.boolean(),
     border: T.boolean(),
-    icons: T.object({
-      defaultValue: { open: "chevron-up", closed: "chevron-down" },
-    }),
     items: T.array({
       defaultValue: [],
       type: {
@@ -42,7 +39,6 @@ export default {
     this.requestUpdate();
   },
   render() {
-    const { icons } = this;
     return html`<uix-list vertical gap="" spacing="">
       ${this.items.map(
         (item, index) =>
@@ -55,7 +51,7 @@ export default {
               <summary data-theme="uix-accordion-item__header">
                 ${item.label}
                 <uix-icon
-                  name=${item.open ? icons.open : icons.closed}
+                  name=${item.open ? "chevron-up" : "chevron-down"}
                 ></uix-icon>
               </summary>
               <uix-list vertical gap="" spacing="">${item.content}</uix-list>

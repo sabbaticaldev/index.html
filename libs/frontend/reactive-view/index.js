@@ -34,22 +34,18 @@ class ReactiveView extends LitElement {
       this.requestUpdate();
     }
   }
+  getProps(_props) {
+    const props = _props || this.component.props;
+    if (!props) return;
+    return Object.fromEntries(
+      Object.keys(props).map((prop) => [prop, this[prop]]),
+    );
+  }
   initializeComponent(component) {
-    const { init: componentInit, props, ...litPropsAndEvents } = component;
+    const { init: componentInit, ...litPropsAndEvents } = component;
     componentInit?.(this);
     Object.assign(this, litPropsAndEvents);
-
-    this.theme = (element, userProps) =>
-      getElementTheme(
-        element,
-        userProps,
-        props &&
-          Object.fromEntries(
-            Object.keys(props).map((prop) => [prop, this[prop]]),
-          ),
-      );
   }
-
   setupProperties(props) {
     Object.entries(props || {}).forEach(([key, prop]) => {
       if (prop.defaultValue) {
@@ -64,56 +60,65 @@ class ReactiveView extends LitElement {
       if (prop.sync) defineSyncProperty(this, key, prop);
     });
   }
-
   q(element) {
     return (this._queryCache[element] ??=
       this.shadowRoot.querySelector(element));
   }
-
   qa(element) {
     return this.shadowRoot.querySelectorAll(element);
   }
-
   connectedCallback() {
     super.connectedCallback();
     this.component.connectedCallback?.bind(this)();
   }
+  // TODO: cache default theme so same elements dont need to create same theme
   updated() {
     super.updated();
 
-    const baseProps = this.component.props
-      ? Object.fromEntries(
-          Object.keys(this.component.props).map((prop) => [prop, this[prop]]),
-        )
-      : {};
-
     const themedElements = this.shadowRoot.querySelectorAll("[data-theme]");
     let mainStyleApplied = false;
-    themedElements.forEach((el) => {
-      el.className = "";
-      const themeClassKey = el.getAttribute("data-theme");
-      if (themeClassKey === this.component.tag) mainStyleApplied = true;
+    const props = this.getProps();
+
+    const applyClasses = (elementTheme, el) => {
+      if (elementTheme && typeof elementTheme === "string") {
+        const classes = elementTheme.split(" ").filter(Boolean);
+        if (classes?.length) el.classList.add(...classes);
+      }
+    };
+
+    const applyTheme = (el, themeClassKey) => {
       const dataProps = Object.fromEntries(
         Array.from(el.attributes)
           .filter(
             (attr) =>
               attr.name.startsWith("data-") && attr.name !== "data-theme",
           )
-          .map((attr) => [attr.name.replace("data-", ""), attr.value]),
+          .map((attr) => [attr.name.replace("data-", ""), attr.value || true]),
       );
+      const elementTheme = getElementTheme(themeClassKey, {
+        ...dataProps,
+        ...props,
+      });
 
-      const elementTheme = getElementTheme(themeClassKey, dataProps, baseProps);
+      applyClasses(elementTheme, el);
 
-      if (!mainStyleApplied && elementTheme?.split)
-        el.classList.add(...elementTheme.split(" ").filter((v) => !!v));
+      if (themeClassKey === this.component.tag) {
+        mainStyleApplied = true;
+      }
+    };
+
+    themedElements.forEach((el) => {
+      el.className = "";
+      const themeClassKey = el.getAttribute("data-theme");
+      applyTheme(el, themeClassKey);
     });
 
-    const elementTheme = this.theme(this.component.tag);
-    if (elementTheme && elementTheme.split) {
-      const classes = elementTheme.split(" ").filter((v) => !!v);
-      if (classes?.length) this.classList.add(...classes);
+    if (!mainStyleApplied) {
+      const mainElementTheme = getElementTheme(this.component.tag, props);
+      applyClasses(mainElementTheme, this);
     }
   }
+
   disconnectedCallback() {
     this.component.disconnectedCallback?.bind(this)();
     ReactiveView._instancesUsingSync.forEach((instances) =>

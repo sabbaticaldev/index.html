@@ -1,18 +1,51 @@
 import { html, T } from "helpers";
-const Navbar = {
+
+const linkRender = (item) => html`
+  <uix-link
+    href=${item.href}
+    .onclick=${item.onclick}
+    data-theme="uix-navbar__link"
+    ?active=${item.active}
+  >
+    ${item.label}
+  </uix-link>
+`;
+const subNavbarRender = (item) =>
+  item.variant === "accordion"
+    ? accordionRender(item)
+    : html`
+        <span>${item.label}</span>
+        <uix-navbar .items=${item.items}></uix-navbar>
+      `;
+
+const accordionRender = (item) => html`
+  <uix-accordion
+    ?border=${item.border}
+    ?multiple=${item.multiple}
+    .items=${[
+      {
+        ...item,
+        content: item.items.map((item) => linkRender(item)),
+      },
+    ]}
+  ></uix-accordion>
+`;
+export default {
   tag: "uix-navbar",
   props: {
-    variant: T.string({ defaultValue: "fixed", enum: ["fixed", "accordion"] }),
-    multiple: T.boolean(),
-    onclick: T.function(),
-    open: T.boolean(),
     items: T.array({
       defaultValue: [],
       type: {
         label: T.string(),
         href: T.string({ nullable: true }),
+        onclick: T.function(),
+        open: T.boolean(),
         active: T.boolean({ defaultValue: false }),
-        links: T.array({
+        variant: T.string({
+          defaultValue: "fixed",
+          enum: ["fixed", "accordion"],
+        }),
+        items: T.array({
           defaultValue: [],
           type: {
             label: T.string(),
@@ -39,66 +72,13 @@ const Navbar = {
     },
   },
   render() {
-    return html`
-      <nav data-theme="uix-navbar">
-        ${this.variant === "accordion"
-          ? html`
-              <uix-accordion
-                border
-                ?multiple=${this.multiple}
-                .items=${this.items.map((item) => ({
-                  label: item.label,
-                  content: html`
-                    ${item.links.map(
-                      (link) => html`
-                        <uix-link
-                          href=${link.href}
-                          data-theme="uix-navbar__section-link"
-                          ?active=${link.active}
-                          .onclick=${link.onclick}
-                        >
-                          ${link.label}
-                        </uix-link>
-                      `,
-                    )}
-                  `,
-                  open: this.open ? this.open : item.open,
-                }))}
-              ></uix-accordion>
-            `
-          : html`
-              <uix-list vertical spacing="" gap="">
-                ${this.items.map((item) =>
-                  item.links.length
-                    ? html`
-                        <span>${item.label}</span>
-                        ${item.links.map(
-                          (link) => html`
-                            <uix-link
-                              href=${link.href}
-                              data-theme="uix-navbar__section-link"
-                              ?active=${link.active}
-                            >
-                              ${link.label}
-                            </uix-link>
-                          `,
-                        )}
-                      `
-                    : html`
-                        <uix-link
-                          href=${item.href}
-                          data-theme="uix-navbar__link"
-                          ?active=${item.active}
-                        >
-                          ${item.label}
-                        </uix-link>
-                      `,
-                )}
-              </uix-list>
-            `}
-      </nav>
-    `;
+    return html`<nav>
+      <uix-list vertical spacing="" gap="">
+        ${this.items.map((item) => {
+          if (item.items?.length) return subNavbarRender(item);
+          if (item.href || item.onclick) return linkRender(item);
+        })}
+      </uix-list>
+    </nav> `;
   },
 };
-
-export default Navbar;

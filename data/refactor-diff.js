@@ -5,10 +5,7 @@ export default {
   refactoringFiles: "navbar.js uix component",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
-    let's refactor navbar.js component to accept multiple levels of links, currently it only have one level but we should be able to nest multiple. we are also changing the 
-
-    variant: T.string({ defaultValue: "fixed" }),
-    attribute to inside the items, so each item can be of the type fixed or accordion
+    let's refactor navbar.js component to accept multiple levels of links, currently it only have one level but we should be able to nest multiple.
     
   `,
 
