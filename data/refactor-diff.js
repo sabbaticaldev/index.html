@@ -30,7 +30,7 @@ export default {
 
 
 as you can see in the example, to be able to use chevron-up icon we added a "uix-icon__chevron-up": "i-lucide-chevron-up", entry in theme, the same for chevron-down
-now we need to add all the missing icons used in the project
+now we need to add all the missing icons used in the project, check all missing sections components, packages.js
     
   `,
 

@@ -1,16 +1,21 @@
 import { html, T } from "helpers";
 
-const linkRender = (item) => html`
-  <uix-link
-    href=${item.href}
-    .onclick=${item.onclick}
-    data-theme="uix-navbar__link"
-    size="xs"
-    ?active=${item.active}
-  >
-    ${item.label}
-  </uix-link>
-`;
+const linkRender = (item) =>
+  html`
+    <uix-link
+      href=${item.href}
+      .onclick=${item.onclick}
+      data-theme="uix-navbar__link"
+      size="xs"
+      ?active=${item.active}
+    >
+      ${renderLabel(item)}
+    </uix-link>
+  `;
+const renderLabel = (item) => html` <uix-list>
+  ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
+  ${item.label}
+</uix-list>`;
 const subNavbarRender = (item) =>
   item.variant === "accordion"
     ? accordionRender(item)
@@ -20,7 +25,7 @@ const subNavbarRender = (item) =>
           size="xs"
           transform="uppercase"
         >
-          ${item.label}
+          ${renderLabel(item)}
         </uix-text>
         <uix-navbar .items=${item.items}></uix-navbar>
       `;
@@ -44,6 +49,7 @@ export default {
       defaultValue: [],
       type: {
         label: T.string(),
+        icon: T.string(),
         href: T.string({ nullable: true }),
         onclick: T.function(),
         open: T.boolean(),

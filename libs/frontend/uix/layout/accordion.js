@@ -49,7 +49,14 @@ export default {
               @toggle=${(e) => this.handleToggle(e, index)}
             >
               <summary data-theme="uix-accordion-item__header">
-                <uix-text size="sm">${item.label}</uix-text>
+                <uix-text size="sm">
+                  <uix-list>
+                    ${item.icon
+                      ? html`<uix-icon name=${item.icon}></uix-icon>`
+                      : ""}
+                    ${item.label}
+                  </uix-list>
+                </uix-text>
                 <uix-icon
                   name=${item.open ? "chevron-up" : "chevron-down"}
                 ></uix-icon>
