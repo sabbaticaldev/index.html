@@ -1,6 +1,5 @@
 import Breadcrumb from "./breadcrumb.js";
 import ContextMenu from "./context-menu.js";
-import Drawer from "./drawer.js";
 import Dropdown from "./dropdown.js";
 import Modal from "./modal.js";
 import Pagination from "./pagination.js";
@@ -18,7 +17,6 @@ export default {
     Pagination,
     ContextMenu,
     Breadcrumb,
-    Drawer,
     Stepper,
     StepperItem,
     Wizard,
