@@ -1,15 +1,16 @@
-import { html, T } from "helpers";
+import { css, html, T } from "helpers";
 
 const Stepper = {
   tag: "uix-stepper",
   props: {
-    steps: T.array({
+    items: T.array({
       defaultValue: [],
       type: {
         label: T.string(),
         active: T.boolean({ defaultValue: false }),
       },
     }),
+    activeStep: T.number({ defaultValue: 0 }),
   },
   theme: {
     "uix-stepper": "flex space-x-4",
@@ -28,19 +29,28 @@ const Stepper = {
         false: "",
       },
     },
-    "uix-stepper__label": "ml-2",
+    "uix-stepper__label": "ml-2 text-sm",
   },
+  style: css`
+    uix-stepper {
+      counter-reset: step;
+    }
+    .uix-stepper__marker::before {
+      counter-increment: step;
+      content: counter(step);
+    }
+  `,
   render() {
-    return html`
-      ${this.steps.map(
-        (step, index) => html`
-          <div data-theme="uix-stepper__step">
-            <span data-theme="uix-stepper__marker">${index + 1}</span>
-            <span data-theme="uix-stepper__label">${step.label}</span>
-          </div>
-        `,
-      )}
-    `;
+    return this.items.map((step, index) => {
+      const isActive = index === this.activeStep;
+      return html` <div data-theme="uix-stepper__step">
+        <span
+          data-theme=${`uix-stepper__marker ${
+            isActive ? "uix-stepper__marker--active" : ""
+          }`}
+        ></span>
+      </div>`;
+    });
   },
 };
 
