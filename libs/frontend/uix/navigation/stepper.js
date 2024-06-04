@@ -3,73 +3,70 @@ import { html, T } from "helpers";
 const Stepper = {
   tag: "uix-stepper",
   props: {
-    items: T.array({
-      defaultValue: [],
-      type: {
-        label: T.string(),
-        icon: T.string(),
-        link: T.string(),
-        active: T.boolean({ defaultValue: false }),
-      },
-    }),
     activeStep: T.number({ defaultValue: 0 }),
+    vertical: T.boolean({ defaultValue: false }),
   },
   theme: {
-    "uix-stepper": "flex space-x-4",
-    "uix-stepper__item": {
-      _base: "flex items-center",
-      active: {
-        true: "text-blue-600",
-        false: "text-gray-500",
+    "uix-stepper": {
+      _base: "flex",
+      vertical: {
+        true: "flex-col space-y-4",
+        false: "space-x-4",
       },
     },
-    "uix-stepper__marker": {
-      _base:
-        "flex items-center justify-center w-8 h-8 rounded-full border-2 border-gray-300",
+    "uix-stepper-item": "flex items-center",
+    "uix-stepper-item__marker": {
+      _base: "flex items-center justify-center w-8 h-8 rounded-full border-2",
       active: {
         true: "bg-blue-600 text-white border-blue-600",
-        false: "",
+        false: "border-gray-300",
       },
     },
-    "uix-stepper__label": "ml-2 text-sm",
-    "uix-stepper__icon": "mr-1",
+    "uix-stepper-item__label": "ml-2 text-sm",
+    "uix-stepper-item__icon": "mr-1",
   },
   render() {
-    const renderStep = (step, index) => {
-      const isActive = index === this.activeStep;
-      const isEditable = step.link && index < this.activeStep;
-
-      return html`
-        <li data-theme="uix-stepper__item">
-          ${step.icon
-            ? html`<uix-icon
-                name=${step.icon}
-                data-theme="uix-stepper__icon"
-              ></uix-icon>`
-            : ""}
-          <span
-            data-theme=${`uix-stepper__marker ${
-              isActive ? "uix-stepper__marker--active" : ""
-            }`}
-            >${index + 1}</span
-          >
-          ${isEditable
-            ? html`
-                <uix-link href=${step.link} data-theme="uix-stepper__label"
-                  >${step.label}</uix-link
-                >
-              `
-            : html`
-                <span data-theme="uix-stepper__label">${step.label}</span>
-              `}
-        </li>
-      `;
-    };
-
     return html`
-      <uix-list vertical> ${this.items.map(renderStep)} </uix-list>
+      <div data-theme="uix-stepper">
+        <slot></slot>
+      </div>
+    `;
+  },
+};
+
+const StepperItem = {
+  tag: "uix-stepper-item",
+  props: {
+    label: T.string(),
+    icon: T.string(),
+    href: T.string(),
+    active: T.boolean({ defaultValue: false }),
+  },
+  render() {
+    return html`
+      <div data-theme="uix-stepper-item">
+        ${this.icon
+          ? html`
+              <uix-icon
+                name=${this.icon}
+                data-theme="uix-stepper-item__icon"
+              ></uix-icon>
+            `
+          : ""}
+        <span data-theme="uix-stepper-item__marker"></span>
+        ${this.href
+          ? html`
+              <uix-link href=${this.href} data-theme="uix-stepper-item__label"
+                >${this.label}</uix-link
+              >
+            `
+          : html`
+              <span data-theme="uix-stepper-item__label">${this.label}</span>
+            `}
+      </div>
     `;
   },
 };
 
 export default Stepper;
+export { StepperItem };

@@ -5,31 +5,24 @@ const Tooltip = {
   props: {
     spacing: T.string({ defaultValue: "md" }),
   },
-  theme: ({ cls, SpacingSizes, borderRadius, BaseVariants }) => ({
-    "uix-tooltip": {
-      _base: cls(["relative group relative m-12", borderRadius]),
-      spacing: SpacingSizes,
-    },
-    "uix-tooltip__button": {
-      _base: cls([
-        "bg-gray-500 px-4 py-2 text-sm shadow-sm text-white",
-        borderRadius,
-      ]),
-      variant: BaseVariants,
-      spacing: SpacingSizes,
-    },
+  theme: {
+    "uix-tooltip": "group relative inline-block",
     "uix-tooltip__content":
-      "absolute top-10 scale-0 transition-all rounded bg-gray-800 p-2 text-white text-xs group-hover:scale-100 nowrap",
-  }),
+      "absolute top-full left-1/2 transform -translate-x-1/2 mt-2 scale-0 transition-all duration-200 rounded bg-gray-800 p-2 text-white text-xs group-hover:scale-100",
+  },
   render() {
     return html`
-      <button data-theme="uix-tooltip__button">
+      <div data-theme="uix-tooltip" class="">
         <slot name="button"></slot>
-      </button>
-      <span data-theme="uix-tooltip__content">
-        <slot></slot>
-      </span>
+        <span
+          data-theme="uix-tooltip__content"
+          class="hidden group-hover:block"
+        >
+          <slot></slot>
+        </span>
+      </div>
     `;
   },
 };
+
 export default Tooltip;

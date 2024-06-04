@@ -9,6 +9,7 @@ const iconNames = [
   "star",
   "calendar",
   "app-window",
+  "circle-help",
   "clapperboard",
   "users",
   "table",

@@ -8,11 +8,11 @@ export default {
   `,
   tag: "uix-list",
   props: {
+    droparea: T.boolean(),
     vertical: T.boolean(),
     responsive: T.boolean(),
     tag: T.string({ defaultValue: "div" }),
     reverse: T.boolean(),
-    droparea: T.boolean(),
     justify: T.string(),
     spacing: T.string({ defaultValue: "sm" }),
     gap: T.string({ defaultValue: "sm" }),

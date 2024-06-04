@@ -4,7 +4,7 @@ import Drawer from "./drawer.js";
 import Dropdown from "./dropdown.js";
 import Modal from "./modal.js";
 import Pagination from "./pagination.js";
-import Stepper from "./stepper.js";
+import Stepper, { StepperItem } from "./stepper.js";
 import Tabs from "./tabs.js";
 import Tooltip from "./tooltip.js";
 import Wizard from "./wizard.js";
@@ -20,6 +20,7 @@ export default {
     Breadcrumb,
     Drawer,
     Stepper,
+    StepperItem,
     Wizard,
   },
 };

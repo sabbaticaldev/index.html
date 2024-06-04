@@ -40,16 +40,15 @@ export default {
             (item) =>
               html`
                 <uix-list align="center">
+                  ${item.icon
+                    ? html` <uix-icon name=${item.icon}></uix-icon> `
+                    : ""}
                   <uix-link
                     href=${item.href}
                     .onclick=${item.onclick}
                     data-theme="uix-dropdown__item"
                     >${item.label}
                   </uix-link>
-
-                  ${item.icon
-                    ? html` <uix-icon name=${item.icon}></uix-icon> `
-                    : ""}
                 </uix-list>
               `,
           )}
