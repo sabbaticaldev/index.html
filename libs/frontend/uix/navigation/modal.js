@@ -9,14 +9,13 @@ const Modal = {
     open: T.boolean(),
   },
   theme: ({ cls, SpacingSizes, borderRadius }) => ({
-    "uix-modal": {
+    "uix-modal__box": {
       _base: cls([
         "rounded-lg bg-white p-8 shadow-2xl min-w-[768px] min-h-[400px]",
         borderRadius,
       ]),
       size: SpacingSizes,
     },
-    "uix-modal__box": "modal-box",
     "uix-modal__close-button": cls(["absolute right-1 top-0", borderRadius]),
   }),
   firstUpdated() {

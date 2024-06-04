@@ -12,7 +12,11 @@ const linkRender = (item) =>
       ${renderLabel(item)}
     </uix-link>
   `;
-const renderLabel = (item) => html` <uix-list>
+const renderLabel = (item) => html` <uix-list
+  align="center"
+  spacing="0"
+  data-theme=${item.items ? "uix-navbar__header" : ""}
+>
   ${item.icon ? html`<uix-icon name=${item.icon}></uix-icon>` : ""}
   ${item.label}
 </uix-list>`;
@@ -20,11 +24,7 @@ const subNavbarRender = (item) =>
   item.variant === "accordion"
     ? accordionRender(item)
     : html`
-        <uix-text
-          data-theme="uix-navbar__header"
-          size="xs"
-          transform="uppercase"
-        >
+        <uix-text size="xs" transform="uppercase">
           ${renderLabel(item)}
         </uix-text>
         <uix-navbar .items=${item.items}></uix-navbar>
@@ -71,12 +71,12 @@ export default {
   },
   theme: {
     "uix-navbar__link": {
-      _base: "block px-2 text-gray-600 hover:bg-gray-500 hover:text-white",
+      _base: "block text-gray-600 hover:bg-gray-500 hover:text-white",
       active: {
         true: "font-bold text-blue-600",
       },
     },
-    "uix-navbar__header": "px-4 pt-2",
+    "uix-navbar__header": "px-2 pt-2",
     "uix-navbar__section": "border-b",
   },
   render() {

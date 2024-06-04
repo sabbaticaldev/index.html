@@ -17,14 +17,15 @@ export default {
     spacing: T.string({ defaultValue: "sm" }),
     gap: T.string({ defaultValue: "sm" }),
     wrap: T.string({ defaultValue: "nowrap" }),
-    align: T.string({ defaultValue: "center" }),
+    align: T.string(),
     rounded: T.boolean(),
   },
-  theme: ({ JustifyContent, SpacingSizes, Gaps }) => ({
+  theme: ({ JustifyContent, SpacingSizes, AlignItems, Gaps }) => ({
     "uix-list": {
       _base: "flex",
       spacing: SpacingSizes,
       gap: Gaps,
+      align: AlignItems,
       justify: JustifyContent,
       vertical: { true: "flex-col w-full", false: "h-full" },
       responsive: {

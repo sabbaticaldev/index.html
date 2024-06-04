@@ -50,7 +50,7 @@ export default {
             >
               <summary data-theme="uix-accordion-item__header">
                 <uix-text size="sm">
-                  <uix-list>
+                  <uix-list spacing="" align="center">
                     ${item.icon
                       ? html`<uix-icon name=${item.icon}></uix-icon>`
                       : ""}

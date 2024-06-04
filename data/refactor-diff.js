@@ -1,84 +1,25 @@
 //TODO: Refactor to use unified DIFF
 
 export default {
-  contextSrc: ["app/apps/design/sections/", "libs/frontend/uix/content/"],
-  refactoringFiles: "uix/content/icon.js file",
+  contextSrc: ["app/apps/design/sections/layout/", "libs/frontend/"],
+  refactoringFiles:
+    "layout/modal.js and libs/frontend/uix/layout/modal.js and icon.js",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
-    we added a icon property to all sections and packages, now we want to add all icons to the uix-icon component
+    we are now refactoring the uix-modal component
 
-    import { html, T } from "helpers";
-    const iconNames = [
-      "chevron-up",
-      "chevron-down",
-      "navigation",
-      "monitor",
-      "star",
-      "users",
-      "user",
-      "tag",
-      "home",
-      "heart",
-      "spinner",
-      "smartphone",
-      "layout",
-      "git-branch",
-      "type",
-      "clock",
-      "git-commit",
-      "git-merge",
-      "alert-triangle",
-      "loader",
-      "bell",
-      "message-circle",
-      "bar-chart",
-      "mouse-pointer",
-      "edit",
-    ];
-    
-    export default {
-      tag: "uix-icon",
-      props: {
-        iconSet: T.string({ defaultValue: "lucide" }),
-        name: T.string(),
-        size: T.string({ defaultValue: "" }),
-      },
-      theme: {
-        "uix-icon": {
-          _base: ({ name, iconSet }) => \`i-\${iconSet}-\${name} block\`,
-        },
-        "uix-icon__icons": iconNames.map((name) => "i-lucide-" + name).join(" "),
-      },
-      render() {
-        return html\`\`;
-      },
-    };
-    
-    as you can see we have a big list of icons but still many of the icons in the package.js and sections components are not in the list, please gather all missing and update
-    
+    lets create multiple new sscenarios in the sections/layout/modal.js and create those functionsties in the uix/layout/modal.js that matches those features.
+    We want:
+    a configurable close button in the right top that shows by default
+    a configurable dropdown that could be in the same place as the close button with those 3 vertical dots (we are using lucide fonts) 
+    a label and a icon that shows in the top left if available
+    a main content
+    a footer
+    it should also have a width and height prop that accept string like lg, md, full, etc
+      we should create examples using uix-form, uix-buttons, content in the sections/layout/modal.js
+
   `,
 
   responseFormat: "diff",
   strategy: "diff",
 };
-
-/* IGNORE THIS COMMENT BLOCK:
-Always use best practices when coding.
-Respect and use existing conventions, libraries, etc that are already present in the code base.
-
-Take requests for changes to the supplied code.
-If the request is ambiguous, ask questions.
-
-  We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
-
-  we have a boilerplate code of a spacer element for the UI kit but no implementation, go ahead and implement it for us
-
-  ========================
-
-  We created a task runner/CLI that interacts with LLMs to refactor code. For now the system is based on a full file refactoring.
-
-  to apply the changes from the LLM we implemented a git diff logic. Let's refactor it to just use simple unified diff for it
-
-  in the response remove extra spaces and indentation, we will run eslint after so removing th spaces can save us some tokens which is very important but most important, DONT MAKE UNNECESSARY CHANGES!
-
-  */

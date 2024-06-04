@@ -76,14 +76,13 @@ class ReactiveView extends LitElement {
     super.updated();
 
     const themedElements = this.shadowRoot.querySelectorAll("[data-theme]");
-    let mainStyleApplied = false;
     const props = this.getProps();
 
-    const applyClasses = (elementTheme, el) => {
+    const applyClasses = (elementTheme, el, keepOldClasses) => {
       if (elementTheme && typeof elementTheme === "string") {
         const classes = elementTheme.split(" ").filter(Boolean);
         if (classes?.length) {
-          el.className = "";
+          if (!keepOldClasses) el.className = "";
           el.classList.add(...classes);
         }
       }
@@ -103,11 +102,7 @@ class ReactiveView extends LitElement {
         ...props,
       });
 
-      applyClasses(elementTheme, el);
-
-      if (themeClassKey === this.component.tag) {
-        mainStyleApplied = true;
-      }
+      if (elementTheme) applyClasses(elementTheme, el);
     };
 
     themedElements.forEach((el) => {
@@ -115,10 +110,8 @@ class ReactiveView extends LitElement {
       applyTheme(el, themeClassKey);
     });
 
-    if (!mainStyleApplied) {
-      const mainElementTheme = getElementTheme(this.component.tag, props);
-      applyClasses(mainElementTheme, this);
-    }
+    const mainElementTheme = getElementTheme(this.component.tag, props);
+    if (mainElementTheme) applyClasses(mainElementTheme, this, true);
   }
 
   disconnectedCallback() {
