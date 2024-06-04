@@ -92,7 +92,7 @@ export async function refactorFolder(options) {
           fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
           console.log(`Commit message saved at ${commitMessageFilePath}`);
         }
-
+        isDiff && console.log({ response });
         return isDiff ? response : response.files;
       },
     },

@@ -1,4 +1,4 @@
-import { css, html, T } from "helpers";
+import { html, T } from "helpers";
 
 const Stepper = {
   tag: "uix-stepper",
@@ -7,6 +7,8 @@ const Stepper = {
       defaultValue: [],
       type: {
         label: T.string(),
+        icon: T.string(),
+        link: T.string(),
         active: T.boolean({ defaultValue: false }),
       },
     }),
@@ -14,7 +16,7 @@ const Stepper = {
   },
   theme: {
     "uix-stepper": "flex space-x-4",
-    "uix-stepper__step": {
+    "uix-stepper__item": {
       _base: "flex items-center",
       active: {
         true: "text-blue-600",
@@ -30,27 +32,43 @@ const Stepper = {
       },
     },
     "uix-stepper__label": "ml-2 text-sm",
+    "uix-stepper__icon": "mr-1",
   },
-  style: css`
-    uix-stepper {
-      counter-reset: step;
-    }
-    .uix-stepper__marker::before {
-      counter-increment: step;
-      content: counter(step);
-    }
-  `,
   render() {
-    return this.items.map((step, index) => {
+    const renderStep = (step, index) => {
       const isActive = index === this.activeStep;
-      return html` <div data-theme="uix-stepper__step">
-        <span
-          data-theme=${`uix-stepper__marker ${
-            isActive ? "uix-stepper__marker--active" : ""
-          }`}
-        ></span>
-      </div>`;
-    });
+      const isEditable = step.link && index < this.activeStep;
+
+      return html`
+        <li data-theme="uix-stepper__item">
+          ${step.icon
+            ? html`<uix-icon
+                name=${step.icon}
+                data-theme="uix-stepper__icon"
+              ></uix-icon>`
+            : ""}
+          <span
+            data-theme=${`uix-stepper__marker ${
+              isActive ? "uix-stepper__marker--active" : ""
+            }`}
+            >${index + 1}</span
+          >
+          ${isEditable
+            ? html`
+                <uix-link href=${step.link} data-theme="uix-stepper__label"
+                  >${step.label}</uix-link
+                >
+              `
+            : html`
+                <span data-theme="uix-stepper__label">${step.label}</span>
+              `}
+        </li>
+      `;
+    };
+
+    return html`
+      <uix-list vertical> ${this.items.map(renderStep)} </uix-list>
+    `;
   },
 };
 
