@@ -2,8 +2,7 @@
 
 export default {
   contextSrc: ["app/apps/design/sections/layout/", "libs/frontend/"],
-  refactoringFiles:
-    "layout/modal.js and libs/frontend/uix/layout/modal.js and icon.js",
+  refactoringFiles: "sections/layout/ and affected files",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
     we are now refactoring the uix-modal component
