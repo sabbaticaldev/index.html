@@ -1,23 +1,36 @@
 //TODO: Refactor to use unified DIFF
 
 export default {
-  contextSrc: ["app/apps/design/sections"],
+  contextSrc: ["app/apps/design/sections", "libs/frontend/uix/content/"],
   refactoringFiles: "affected files",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
-    lets refactor the section files, lets add a icon property to the exported classes that matches their content. We are using the lucide icon set.
-    We already added to most of the components and packages but I want you to review the ones missing, including package.js files
+    we added a icon property to all sections and packages, now we want to add all icons to the uix-icon component
 
-    example:
-    import { html } from "helpers";
+    import { html, T } from "helpers";
 
 export default {
-  label: "Form",
-  icon: "keyboard",
-  components: [
-    {
-      label: "Buttons",
-      render: function () {....
+  tag: "uix-icon",
+  props: {
+    iconSet: T.string({ defaultValue: "lucide" }),
+    name: T.string(),
+    size: T.string({ defaultValue: "" }),
+  },
+  theme: {
+    "uix-icon": {
+      _base: ({ name, iconSet }) => \`i-\${iconSet}-\${name}\`,
+      "uix-icon__chevron-up": "i-lucide-chevron-up",
+      "uix-icon__chevron-down": "i-lucide-chevron-down",
+    },
+  },
+  render() {
+    return html\`\`;
+  },
+};
+
+
+as you can see in the example, to be able to use chevron-up icon we added a "uix-icon__chevron-up": "i-lucide-chevron-up", entry in theme, the same for chevron-down
+now we need to add all the missing icons used in the project
     
   `,
 
