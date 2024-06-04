@@ -245,6 +245,7 @@ const createProps = (userTheme) => {
     DimensionSizes: createMapping("w", baseDimensionSizes),
     BaseVariants,
     ReverseVariants,
+    AlignItems: createMapping("items", baseJustifyContent),
     TrackingSizes: createMapping("tracking", baseTrackingSizes),
     ClipRoundedClasses,
     ButtonSizes: baseButtonSizes,

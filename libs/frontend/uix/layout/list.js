@@ -17,7 +17,7 @@ export default {
     spacing: T.string({ defaultValue: "sm" }),
     gap: T.string({ defaultValue: "sm" }),
     wrap: T.string({ defaultValue: "nowrap" }),
-    align: T.string({ defaultValue: "stretch" }),
+    align: T.string({ defaultValue: "center" }),
     rounded: T.boolean(),
   },
   theme: ({ JustifyContent, SpacingSizes, Gaps }) => ({

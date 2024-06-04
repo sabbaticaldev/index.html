@@ -17,16 +17,16 @@ export default {
       },
     }),
   },
-  theme: {
-    "uix-tabs": (_, { cls, baseTheme, SpacingSizes }) => ({
+  theme: ({ cls, baseTheme, SpacingSizes, BaseVariants }) => ({
+    "uix-tabs": {
       _base: cls([
         "flex w-full overflow-x-auto overflow-y-hidden border-gray-200",
       ]),
       variant: baseTheme.BaseVariants,
       spacing: SpacingSizes,
       full: { true: "w-full h-full" },
-    }),
-    "uix-tab": (_, { cls, baseTheme, BaseVariants, SpacingSizes }) => ({
+    },
+    "uix-tab": {
       _base: cls([
         "relative group",
         baseTheme.flexCenter,
@@ -40,8 +40,8 @@ export default {
       },
       variant: BaseVariants,
       size: SpacingSizes,
-    }),
-  },
+    },
+  }),
   unselectTab() {
     this.tabs = this.tabs.map((tab) => ({ ...tab, active: false }));
   },

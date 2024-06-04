@@ -82,7 +82,10 @@ class ReactiveView extends LitElement {
     const applyClasses = (elementTheme, el) => {
       if (elementTheme && typeof elementTheme === "string") {
         const classes = elementTheme.split(" ").filter(Boolean);
-        if (classes?.length) el.classList.add(...classes);
+        if (classes?.length) {
+          el.className = "";
+          el.classList.add(...classes);
+        }
       }
     };
 
@@ -108,7 +111,6 @@ class ReactiveView extends LitElement {
     };
 
     themedElements.forEach((el) => {
-      el.className = "";
       const themeClassKey = el.getAttribute("data-theme");
       applyTheme(el, themeClassKey);
     });

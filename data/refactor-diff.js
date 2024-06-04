@@ -1,36 +1,60 @@
 //TODO: Refactor to use unified DIFF
 
 export default {
-  contextSrc: ["app/apps/design/sections", "libs/frontend/uix/content/"],
-  refactoringFiles: "affected files",
+  contextSrc: ["app/apps/design/sections/", "libs/frontend/uix/content/"],
+  refactoringFiles: "uix/content/icon.js file",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
     we added a icon property to all sections and packages, now we want to add all icons to the uix-icon component
 
     import { html, T } from "helpers";
-
-export default {
-  tag: "uix-icon",
-  props: {
-    iconSet: T.string({ defaultValue: "lucide" }),
-    name: T.string(),
-    size: T.string({ defaultValue: "" }),
-  },
-  theme: {
-    "uix-icon": {
-      _base: ({ name, iconSet }) => \`i-\${iconSet}-\${name}\`,
-      "uix-icon__chevron-up": "i-lucide-chevron-up",
-      "uix-icon__chevron-down": "i-lucide-chevron-down",
-    },
-  },
-  render() {
-    return html\`\`;
-  },
-};
-
-
-as you can see in the example, to be able to use chevron-up icon we added a "uix-icon__chevron-up": "i-lucide-chevron-up", entry in theme, the same for chevron-down
-now we need to add all the missing icons used in the project, check all missing sections components, packages.js
+    const iconNames = [
+      "chevron-up",
+      "chevron-down",
+      "navigation",
+      "monitor",
+      "star",
+      "users",
+      "user",
+      "tag",
+      "home",
+      "heart",
+      "spinner",
+      "smartphone",
+      "layout",
+      "git-branch",
+      "type",
+      "clock",
+      "git-commit",
+      "git-merge",
+      "alert-triangle",
+      "loader",
+      "bell",
+      "message-circle",
+      "bar-chart",
+      "mouse-pointer",
+      "edit",
+    ];
+    
+    export default {
+      tag: "uix-icon",
+      props: {
+        iconSet: T.string({ defaultValue: "lucide" }),
+        name: T.string(),
+        size: T.string({ defaultValue: "" }),
+      },
+      theme: {
+        "uix-icon": {
+          _base: ({ name, iconSet }) => \`i-\${iconSet}-\${name} block\`,
+        },
+        "uix-icon__icons": iconNames.map((name) => "i-lucide-" + name).join(" "),
+      },
+      render() {
+        return html\`\`;
+      },
+    };
+    
+    as you can see we have a big list of icons but still many of the icons in the package.js and sections components are not in the list, please gather all missing and update
     
   `,
 
