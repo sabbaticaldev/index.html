@@ -1,5 +1,4 @@
-import { html, ifDefined, T } from "helpers";
-
+import { css, html, ifDefined, T } from "helpers";
 const Modal = {
   tag: "uix-modal",
   props: {
@@ -13,18 +12,24 @@ const Modal = {
     width: T.string(),
     height: T.string(),
   },
-  theme: ({ cls, SpacingSizes, borderRadius }) => ({
+  theme: ({ cls, SpacingSizes, borderRadius, WidthSizes }) => ({
     "uix-modal__box": {
       _base: cls([
         "rounded-lg bg-white p-8 shadow-2xl min-w-[768px] min-h-[400px]",
         borderRadius,
       ]),
       size: SpacingSizes,
+      width: WidthSizes,
     },
     "uix-modal__header": "flex justify-between mb-4",
-    "uix-modal__title": "flex items-center",
+    "uix-modal__title": "flex items-center grow",
     "uix-modal__close-button": cls(["absolute right-1 top-0", borderRadius]),
   }),
+  style: css`
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+  `,
   firstUpdated() {
     this.$modal = this.shadowRoot.querySelector("#modal");
     if (this.parent) this.parent.hide = this.hide.bind(this);
@@ -49,39 +54,40 @@ const Modal = {
         )}
       >
         <div data-theme="uix-modal__box">
-          <div data-theme="uix-modal__header">
-            <div data-theme="uix-modal__title">
-              ${this.icon ? html`<uix-icon name=${this.icon}></uix-icon>` : ""}
-              ${this.label}
-            </div>
-            <div>
+          <uix-list vertical justify="between" full>
+            <uix-list justify="between" align="center" full>
+              <div data-theme="uix-modal__title">
+                ${this.icon
+                  ? html`<uix-icon name=${this.icon}></uix-icon>`
+                  : ""}
+                ${this.label}
+              </div>
               ${this.dropdown?.length
                 ? html`
-                    <uix-button dropdown="open">
+                    <uix-icon-button dropdown="open">
                       <uix-icon name="more-vertical"></uix-icon>
                       <ul slot="dropdown">
                         ${this.dropdown.map(
                           (item) => html`
                             <li>
-                              <uix-button size="xs" @click=${item.click}
-                                >${item.label}</uix-button
+                              <uix-icon-button
+                                size="xs"
+                                .onclick=${item.onclick}
                               >
+                                ${item.label}
+                              </uix-icon-button>
                             </li>
                           `,
                         )}
                       </ul>
-                    </uix-button>
+                    </uix-icon-button>
                   `
-                : ""}
-              <uix-button
-                @click=${this.hide.bind(this)}
-                size="sm"
-                data-theme="uix-modal__close-button"
-                >✕</uix-button
-              >
-            </div>
-          </div>
-          <uix-list vertical>
+                : html`<uix-icon-button
+                    @click=${this.hide.bind(this)}
+                    size="sm"
+                    name="x"
+                  ></uix-icon-button>`}
+            </uix-list>
             <slot></slot>
             <uix-list data-theme="uix-modal__footer">
               ${this.actions?.({ host: this }) || ""}

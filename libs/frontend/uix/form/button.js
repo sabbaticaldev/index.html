@@ -8,7 +8,6 @@ const Button = {
     type: T.string({ defaultValue: "button" }),
     href: T.string(),
     click: T.function(),
-    dropdown: T.string(),
   },
   theme: ({
     cls,
@@ -17,36 +16,22 @@ const Button = {
     ReverseVariants,
     ButtonSizes,
     TextSizes,
+    WidthSizes,
   }) => ({
     "uix-button": {
       _base: cls([
-        "cursor-pointer transition ease-in-out duration-200 gap-2 w-full",
+        "cursor-pointer transition ease-in-out duration-200 gap-2",
         baseTheme.flexCenter,
         baseTheme.fontStyles,
         borderRadius,
         "text-" + baseTheme.colors.button,
       ]),
       variant: ReverseVariants,
-      size: [ButtonSizes, TextSizes],
+      size: [ButtonSizes, TextSizes, WidthSizes],
     },
   }),
   render() {
     const btnTheme = "uix-button";
-
-    if (this.dropdown) {
-      return html`
-        <details class="text-left" ?open=${this.dropdown === "open"}>
-          ${this.href
-            ? html`
-                <summary data-theme=${btnTheme}>
-                  <a href=${this.href}><slot></slot></a>
-                </summary>
-              `
-            : html` <summary data-theme=${btnTheme}><slot></slot></summary> `}
-          <slot name="dropdown"></slot>
-        </details>
-      `;
-    }
 
     return this.href
       ? html`

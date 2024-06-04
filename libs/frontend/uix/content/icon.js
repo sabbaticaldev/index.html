@@ -24,6 +24,7 @@ const iconNames = [
   "layout-template",
   "git-branch",
   "type",
+  "x",
   "clock",
   "git-commit",
   "git-merge",
