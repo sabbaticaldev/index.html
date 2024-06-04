@@ -32,7 +32,7 @@ export default {
           <uix-list align="center">
             ${this.icon ? html` <uix-icon name=${this.icon}></uix-icon> ` : ""}
             ${this.label}
-            <uix-icon name="chevron-down"></uix-icon>
+            ${!this.icon ? html`<uix-icon name="chevron-down"></uix-icon>` : ""}
           </uix-list>
         </uix-link>
         <div ?hidden=${!this.open} data-theme="uix-dropdown__panel">

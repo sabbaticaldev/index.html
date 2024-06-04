@@ -52,6 +52,7 @@ const iconNames = [
   "toggle-right",
   "wand",
   "package",
+  "ellipsis-vertical",
   "database",
   "smile",
 ];

@@ -65,7 +65,7 @@ const Modal = {
               ${this.dropdown?.length
                 ? html`
                     <uix-dropdown
-                      label="Dropdown"
+                      icon="ellipsis-vertical"
                       .items=${this.dropdown}
                     ></uix-dropdown>
                   `
