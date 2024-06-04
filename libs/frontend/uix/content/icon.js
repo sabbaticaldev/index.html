@@ -29,6 +29,7 @@ const iconNames = [
   "git-commit",
   "git-merge",
   "alert-triangle",
+  "book",
   "loader",
   "bell",
   "message-circle",
