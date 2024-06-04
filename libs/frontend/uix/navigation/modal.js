@@ -64,23 +64,10 @@ const Modal = {
               </div>
               ${this.dropdown?.length
                 ? html`
-                    <uix-icon-button dropdown="open">
-                      <uix-icon name="more-vertical"></uix-icon>
-                      <ul slot="dropdown">
-                        ${this.dropdown.map(
-                          (item) => html`
-                            <li>
-                              <uix-icon-button
-                                size="xs"
-                                .onclick=${item.onclick}
-                              >
-                                ${item.label}
-                              </uix-icon-button>
-                            </li>
-                          `,
-                        )}
-                      </ul>
-                    </uix-icon-button>
+                    <uix-dropdown
+                      label="Dropdown"
+                      .items=${this.dropdown}
+                    ></uix-dropdown>
                   `
                 : html`<uix-icon-button
                     @click=${this.hide.bind(this)}
