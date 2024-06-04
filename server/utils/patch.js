@@ -53,6 +53,7 @@ export const applyParsedPatches = (originalContents, filePatches) => {
       const patches = diff.parsePatch(patchContent);
       updatedContent = diff.applyPatch(originalContent, patches);
       if (updatedContent === false) {
+        console.log({ [filePath]: patchContent });
         console.error(`Failed to apply patch for ${filePath}`);
       }
     }

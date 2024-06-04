@@ -5,7 +5,6 @@ keypress(process.stdin);
 const promptUser = (question) => {
   return new Promise((resolve) => {
     console.log(question);
-
     const handleKeyPress = (ch, key) => {
       if (key && key.ctrl && key.name === "c") {
         console.log("\nProcess terminated by user.");

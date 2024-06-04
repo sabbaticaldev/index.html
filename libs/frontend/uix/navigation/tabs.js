@@ -7,21 +7,18 @@ export default {
     gap: T.string({ defaultValue: "" }),
     spacing: T.string({ defaultValue: "md" }),
     vertical: T.boolean(),
-    full: T.boolean(),
-    tabs: T.array({
-      defaultValue: [],
+    full: T.boolean({ defaultValue: true }),
+    activeTab: T.string(),
+    items: T.array({
       type: {
         label: T.string(),
         content: T.string(),
-        active: T.boolean(),
       },
     }),
   },
-  theme: ({ cls, baseTheme, SpacingSizes, BaseVariants }) => ({
+  theme: ({ baseTheme, SpacingSizes, BaseVariants, cls }) => ({
     "uix-tabs": {
-      _base: cls([
-        "flex w-full overflow-x-auto overflow-y-hidden border-gray-200",
-      ]),
+      _base: "flex border-b border-gray-200",
       variant: baseTheme.BaseVariants,
       spacing: SpacingSizes,
       full: { true: "w-full h-full" },
@@ -42,37 +39,33 @@ export default {
       size: SpacingSizes,
     },
   }),
-  unselectTab() {
-    this.tabs = this.tabs.map((tab) => ({ ...tab, active: false }));
-  },
-  selectTab(tab) {
-    this.unselectTab();
-    tab.active = true;
-    this.requestUpdate();
-  },
   render() {
     return html`
-      <uix-list
-        ?vertical=${this.vertical}
-        spacing=${this.spacing}
-        ?full=${this.full}
-        data-theme="uix-tabs"
-        gap=${this.gap}
-      >
-        ${this.tabs.map(
-          (tab) => html`
-            <button
-              role="tab"
-              ?active=${tab.active}
-              @click=${() => this.selectTab(tab)}
-              data-theme="uix-tab"
-            >
-              ${tab.label}
-            </button>
-          `,
+      <uix-list ?vertical=${!this.vertical}>
+        <uix-list
+          ?vertical=${this.vertical}
+          spacing=${this.spacing}
+          ?full=${this.full}
+          data-theme="uix-tabs"
+          gap=${this.gap}
+        >
+          ${this.items.map(
+            (tab) => html`
+              <button
+                role="tab"
+                ?active=${tab.active}
+                @click=${() => this.setActiveTab(tab.label)}
+                data-theme="uix-tab"
+              >
+                ${tab.label}
+              </button>
+            `,
+          )}
+        </uix-list>
+        ${this.items.map((tab) =>
+          tab.label === this.activeTab ? html` <div>${tab.content}</div> ` : "",
         )}
       </uix-list>
-      ${this.tabs.map((tab) => tab.active && html` <div>${tab.content}</div> `)}
     `;
   },
 };

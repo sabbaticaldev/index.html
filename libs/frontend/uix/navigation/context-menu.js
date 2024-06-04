@@ -4,8 +4,9 @@ const ContextMenu = {
   tag: "uix-context-menu",
   props: { open: T.boolean(), contextmenu: T.function() },
   theme: {
-    "uix-context-menu":
-      "z-10 absolute top-6 left-10 bg-white border border-gray-300 shadow-lg",
+    "uix-context-menu": "relative",
+    "uix-context-menu__menu":
+      "z-10 absolute top-12 left-10 bg-white border border-gray-300 shadow-lg",
   },
   closeContextMenuHandler() {
     this.setOpen(false);
@@ -38,9 +39,6 @@ const ContextMenu = {
   },
   render() {
     return html`
-      <div data-theme="uix-context-menu" ?hidden=${!this.open}>
-        <slot name="menu"></slot>
-      </div>
       <slot
         @contextmenu=${(e) => {
           e.preventDefault();
@@ -50,6 +48,9 @@ const ContextMenu = {
           }, 0);
         }}
       ></slot>
+      <div data-theme="uix-context-menu__menu" ?hidden=${!this.open}>
+        <uix-list vertical><slot name="menu"></slot></uix-list>
+      </div>
     `;
   },
 };
