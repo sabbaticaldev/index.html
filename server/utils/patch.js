@@ -18,7 +18,7 @@ export const parsePatch = (patchContent) => {
     } else if (line.startsWith("+++")) {
       // Extract the file path from the modified file header, unless it's /dev/null
       if (!line.includes("/dev/null")) {
-        currentFilePath = line.replace("+++", "").trim(); // Assumes standard 'b/' prefix as used in git diffs
+        currentFilePath = line.replace("+++", "").trim();
       }
     } else {
       currentFilePatch.push(line);
@@ -51,7 +51,6 @@ export const applyParsedPatches = (originalContents, filePatches) => {
     } else {
       // Apply the patch normally
       const patches = diff.parsePatch(patchContent);
-      console.log({ patches: JSON.stringify(patches) });
       updatedContent = diff.applyPatch(originalContent, patches);
       if (updatedContent === false) {
         console.error(`Failed to apply patch for ${filePath}`);

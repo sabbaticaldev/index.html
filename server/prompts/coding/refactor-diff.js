@@ -37,6 +37,8 @@ Refactoring Files:
 ${refactoringFiles}
 
 Don't change unnecessary files.
+
+Start by creating a new .git/COMMIT_EDITMSG describing the tasks/changes then go for the first file, and on. 
   `;
   },
   inputParams: {

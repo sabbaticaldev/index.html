@@ -86,6 +86,7 @@ export async function refactorFolder(options) {
         const response = await LLM.execute(llmProvider, deps.prompt, {
           responseFormat,
         });
+        //TODO: refactor diff to add a commit message file
         const commitMessage = response.commitMessage;
         if (commitMessage && fs.existsSync(".git")) {
           fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");

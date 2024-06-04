@@ -1,11 +1,22 @@
 //TODO: Refactor to use unified DIFF
 
 export default {
-  contextSrc: ["libs/frontend/"],
-  refactoringFiles: "navbar.js uix component",
+  contextSrc: ["app/apps/design/sections"],
+  refactoringFiles: "app, feedback, page, ux files",
   taskPrompt: `  
     We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
-    let's refactor navbar.js component to accept multiple levels of links, currently it only have one level but we should be able to nest multiple.
+    lets refactor the section files, lets add a icon property to the exported classes that matches their content. We are using the lucide icon set.
+    Only change the files that dont have a icon property yet
+    you can see an example at  the form section:
+    import { html } from "helpers";
+
+export default {
+  label: "Form",
+  components: [
+    {
+      label: "Buttons",
+      icon: "keyboard",
+      render: function () {....
     
   `,
 
