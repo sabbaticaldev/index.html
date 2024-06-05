@@ -12,7 +12,7 @@ const Range = {
   },
   ...FormControls("range"),
   render() {
-    const { theme, min, max, value } = this;
+    const { min, max, value } = this;
     return html`
       <input
         data-theme="uix-range__input"
