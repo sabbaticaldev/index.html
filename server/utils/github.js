@@ -1,23 +1,19 @@
-import { exec } from "child_process";
-import util from "util";
+import { Octokit } from "@octokit/rest";
 
 import settings from "../settings.js";
-const execAsync = util.promisify(exec);
 
-export async function authenticateGitHub(sshKeyPath) {
-  try {
-    await execAsync(`gh auth login --with-ssh-key ${sshKeyPath}`);
-    console.log("GitHub authentication successful");
-  } catch (error) {
-    console.error("GitHub authentication failed:", error);
-    throw error;
-  }
-}
+const octokit = new Octokit({
+  auth: settings.GITHUB_ACCESS_TOKEN,
+});
 
 export async function createProject(name, description) {
   try {
-    await execAsync(`gh repo create ${name} --description "${description}"`);
-    console.log(`Project "${name}" created successfully`);
+    const response = await octokit.repos.createForAuthenticatedUser({
+      name,
+      description,
+      private: true,
+    });
+    return response.data.clone_url;
   } catch (error) {
     console.error(`Failed to create project "${name}":`, error);
     throw error;
@@ -26,8 +22,8 @@ export async function createProject(name, description) {
 
 export async function connectToProject(url) {
   try {
-    await execAsync(`gh repo clone ${url}`);
-    console.log(`Connected to project at ${url}`);
+    const repoName = url.split("/").pop().split(".")[0];
+    console.log(`Connected to project ${repoName}`);
   } catch (error) {
     console.error(`Failed to connect to project at ${url}:`, error);
     throw error;
@@ -36,12 +32,16 @@ export async function connectToProject(url) {
 
 export async function createIssue(title, description) {
   try {
-    const { stdout } = await execAsync(
-      `gh issue create --title "${title}" --body "${description}" --label "TODO"`,
-    );
-    const issueNumber = parseInt(stdout.match(/#(\d+)/)[1], 10);
+    const response = await octokit.issues.create({
+      owner: settings.GITHUB_OWNER,
+      repo: settings.GITHUB_REPO,
+      title,
+      body: description,
+      labels: ["TODO"],
+    });
+
     console.log(`Issue "${title}" created successfully`);
-    return issueNumber;
+    return response.data.number;
   } catch (error) {
     console.error(`Failed to create issue "${title}":`, error);
     throw error;
@@ -50,7 +50,12 @@ export async function createIssue(title, description) {
 
 export async function closeIssue(issueNumber) {
   try {
-    await execAsync(`gh issue close ${issueNumber}`);
+    await octokit.issues.update({
+      owner: settings.GITHUB_OWNER,
+      repo: settings.GITHUB_REPO,
+      issue_number: issueNumber,
+      state: "closed",
+    });
     console.log(`Issue #${issueNumber} closed successfully`);
   } catch (error) {
     console.error(`Failed to close issue #${issueNumber}:`, error);
@@ -65,12 +70,17 @@ export async function createPullRequest(
   base = "main",
 ) {
   try {
-    const { stdout } = await execAsync(
-      `gh pr create --title "${title}" --body "${description}" --head ${head} --base ${base}`,
-    );
-    const prNumber = parseInt(stdout.match(/#(\d+)/)[1], 10);
+    const response = await octokit.pulls.create({
+      owner: settings.GITHUB_OWNER,
+      repo: settings.GITHUB_REPO,
+      title,
+      body: description,
+      head,
+      base,
+    });
+
     console.log(`Pull request "${title}" created successfully`);
-    return prNumber;
+    return response.data.number;
   } catch (error) {
     console.error(`Failed to create pull request "${title}":`, error);
     throw error;
@@ -79,7 +89,12 @@ export async function createPullRequest(
 
 export async function addComment(issueNumber, body) {
   try {
-    await execAsync(`gh issue comment ${issueNumber} --body "${body}"`);
+    await octokit.issues.createComment({
+      owner: settings.GITHUB_OWNER,
+      repo: settings.GITHUB_REPO,
+      issue_number: issueNumber,
+      body,
+    });
     console.log(`Comment added to issue #${issueNumber} successfully`);
   } catch (error) {
     console.error(`Failed to add comment to issue #${issueNumber}:`, error);
@@ -88,22 +103,28 @@ export async function addComment(issueNumber, body) {
 
 export async function mergePullRequest(prNumber) {
   try {
-    await execAsync(`gh pr merge ${prNumber} --merge`);
+    await octokit.pulls.merge({
+      owner: settings.GITHUB_OWNER,
+      repo: settings.GITHUB_REPO,
+      pull_number: prNumber,
+      merge_method: "merge",
+    });
     console.log(`Pull request #${prNumber} merged successfully`);
   } catch (error) {
     console.error(`Failed to merge pull request #${prNumber}:`, error);
     throw error;
   }
 }
-
 export async function fetchOpenIssues({ labels }) {
   try {
-    const { stdout } = await execAsync(
-      `gh issue list --label "${labels.join(
-        ",",
-      )}" --state open --json number,title,body`,
-    );
-    return JSON.parse(stdout);
+    const response = await octokit.issues.listForRepo({
+      owner: settings.GITHUB_OWNER,
+      repo: settings.GITHUB_REPO,
+      labels: labels.join(","),
+      state: "open",
+    });
+
+    return response.data;
   } catch (error) {
     console.error("Failed to fetch open issues:", error);
     throw error;

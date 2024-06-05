@@ -5,17 +5,13 @@ import { hideBin } from "yargs/helpers";
 
 import { GetTrends } from "../services/instagram.js";
 import settings from "../settings.js";
-import {
-  authenticateGitHub,
-  connectToProject,
-  createProject,
-  sshKeyPath,
-} from "../utils/github.js";
+import { connectToProject, createProject } from "../utils/github.js";
 import { importPatchFile, importXmlFiles } from "./import.js";
 import { createReelRipOff } from "./instagram.js";
 import { createMapVideo, createZoomInVideo } from "./maps.js";
 import { refactorFolder } from "./refactor.js";
-import { createTodoTasks, runTodoTasks } from "./todo.js";
+import { createTodoTasks } from "./todo-create.js";
+import { runTodoTasks } from "./todo-run.js";
 import { CreateVideoFromImage } from "./video.js";
 
 // Helper function to determine if input is a file and read JSON or JS asynchronously
@@ -103,14 +99,6 @@ const yarg = yargs(hideBin(process.argv))
     await runTodoTasks();
   })
   .command(
-    "github-login",
-    "Authenticate with GitHub using SSH key",
-    () => {},
-    async () => {
-      await authenticateGitHub(sshKeyPath);
-    },
-  )
-  .command(
     "github-project <input>",
     "Create or connect to a GitHub project",
     (yargs) => {
@@ -123,11 +111,8 @@ const yarg = yargs(hideBin(process.argv))
     async (argv) => {
       const config = await parseInput(argv.input);
       const { name, description, url } = config;
-      if (url) {
-        await connectToProject(url);
-      } else {
-        await createProject(name, description);
-      }
+      const projectUrl = url ? url : await createProject(name, description);
+      if (projectUrl) await connectToProject(projectUrl);
     },
   )
   .command(

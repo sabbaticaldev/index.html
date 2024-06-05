@@ -14,6 +14,11 @@ Refactor the target refactoring files code using the context files as reference.
 
 Ensure each diff starts with --- and +++ lines specifying the old and new file paths. be sure to never add an extra + on those lines.
 for new files, use /dev/null as the oldName.
+To remove a file, use: 
+  --- file/path.js
+  +++ /dev/null
+
+  only that, no need to give the whole file with the lines removed
 
 Make sure the @@ lines are correctly formatted and indicate the start of each hunk.
 Ensure the diffs include enough surrounding lines to provide context for the changes.

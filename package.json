@@ -45,6 +45,7 @@
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.556.0",
     "@mapbox/polyline": "^1.2.1",
+    "@octokit/rest": "^20.1.1",
     "@unocss/preset-web-fonts": "^0.60.3",
     "@unocss/runtime": "^0.60.3",
     "@whiskeysockets/baileys": "github:w3nder/Baileys#patch-1",
