@@ -36,10 +36,12 @@ export async function connectToProject(url) {
 
 export async function createIssue(title, description) {
   try {
-    await execAsync(
-      `gh issue create --title "${title}" --body "${description}"`,
+    const { stdout } = await execAsync(
+      `gh issue create --title "${title}" --body "${description}" --label "TODO"`,
     );
+    const issueNumber = parseInt(stdout.match(/#(\d+)/)[1], 10);
     console.log(`Issue "${title}" created successfully`);
+    return issueNumber;
   } catch (error) {
     console.error(`Failed to create issue "${title}":`, error);
     throw error;
@@ -63,13 +65,24 @@ export async function createPullRequest(
   base = "main",
 ) {
   try {
-    await execAsync(
+    const { stdout } = await execAsync(
       `gh pr create --title "${title}" --body "${description}" --head ${head} --base ${base}`,
     );
+    const prNumber = parseInt(stdout.match(/#(\d+)/)[1], 10);
     console.log(`Pull request "${title}" created successfully`);
+    return prNumber;
   } catch (error) {
     console.error(`Failed to create pull request "${title}":`, error);
     throw error;
+  }
+}
+
+export async function addComment(issueNumber, body) {
+  try {
+    await execAsync(`gh issue comment ${issueNumber} --body "${body}"`);
+    console.log(`Comment added to issue #${issueNumber} successfully`);
+  } catch (error) {
+    console.error(`Failed to add comment to issue #${issueNumber}:`, error);
   }
 }
 
@@ -79,6 +92,20 @@ export async function mergePullRequest(prNumber) {
     console.log(`Pull request #${prNumber} merged successfully`);
   } catch (error) {
     console.error(`Failed to merge pull request #${prNumber}:`, error);
+    throw error;
+  }
+}
+
+export async function fetchOpenIssues({ labels }) {
+  try {
+    const { stdout } = await execAsync(
+      `gh issue list --label "${labels.join(
+        ",",
+      )}" --state open --json number,title,body`,
+    );
+    return JSON.parse(stdout);
+  } catch (error) {
+    console.error("Failed to fetch open issues:", error);
     throw error;
   }
 }

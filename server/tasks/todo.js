@@ -1,71 +1,140 @@
 import { generatePrompt, LLM } from "../services/llm/index.js";
 import { executeTasks } from "../utils.js";
 import {
+  addComment,
   authenticateGitHub,
   closeIssue,
   createIssue,
   createPullRequest,
+  fetchOpenIssues,
   mergePullRequest,
   sshKeyPath,
 } from "../utils/github.js";
 import { importPatchContent } from "./import.js";
 
-export async function createTODOTasks(config) {
-  const { projectPath } = config;
+const deps = {};
+
+export async function createTodoTasks(config) {
+  const { projectPath, codebaseDescription } = config;
   await authenticateGitHub(sshKeyPath);
 
-  // TODO: Implement logic to create TODO tasks based on project configuration
-  // This could involve analyzing the project structure, files, dependencies, etc.
-  // and generating a list of tasks that need to be completed.
+  const tasks = [
+    {
+      description: "Generate LLM tasks",
+      key: "llmTasks",
+      operation: async () => {
+        const llm = LLM("bedrock");
 
-  // Create GitHub issues for each TODO task
-  for (const task of tasks) {
-    const { title, description } = task;
-    await createIssue(title, description);
+        const prompt = await generatePrompt(
+          { codebaseDescription },
+          "coding/tasks-template.js",
+          "json",
+        );
+
+        const llmResponse = await llm.execute(prompt);
+        return JSON.parse(llmResponse);
+      },
+    },
+    {
+      description: "Create GitHub issues for tasks",
+      dependencies: ["llmTasks"],
+      operation: async () => {
+        for (const task of deps.llmTasks) {
+          const { title, description } = task;
+
+          const issueNumber = await createIssue(title, description);
+          task.issueNumber = issueNumber;
+        }
+
+        return deps.llmTasks;
+      },
+    },
+  ];
+
+  try {
+    await executeTasks({ tasks, deps });
+    console.log(`Todo tasks created for project: ${projectPath}`);
+  } catch (error) {
+    console.error("Error creating Todo tasks:", error);
   }
-
-  console.log(`TODO tasks created for project: ${projectPath}`);
 }
 
-export async function runTODOTasks() {
+export async function runTodoTasks(config) {
   await authenticateGitHub(sshKeyPath);
-  // TODO: Implement logic to fetch TODO tasks from a data source (e.g., file, database)
-  const tasks = []; // Placeholder for fetched tasks
 
-  for (const task of tasks) {
-    const { contextSrc, refactoringFiles, taskPrompt } = task;
-
-    const templateFile = "coding/refactor-diff.js";
-    const prompt = await generatePrompt(
-      {
-        contextSrc,
-        refactoringFiles,
-        taskPrompt,
-        strategy: "diff",
+  const tasks = [
+    {
+      description: "Fetch Todo tasks",
+      key: "todoTasks",
+      operation: async () => {
+        // Fetch open issues labeled as Todo from GitHub using gh CLI
+        const { stdout } = await fetchOpenIssues(config.labels);
+        const openIssues = JSON.parse(stdout);
+        return openIssues.map((issue) => ({
+          issueNumber: issue.number,
+          title: issue.title,
+          description: issue.body,
+          contextSrc: issue.body.contextSrc, // Assuming contextSrc is stored in the issue body or as a label
+          refactoringFiles: issue.body.refactoringFiles, // Assuming refactoringFiles is stored in the issue body or as a label
+          taskPrompt: issue.body.taskPrompt, // Assuming taskPrompt is stored in the issue body or as a label
+        }));
       },
-      templateFile,
-      "diff",
-    );
+    },
+    {
+      description: "Process Todo tasks",
+      dependencies: ["todoTasks"],
+      operation: async () => {
+        for (const task of deps.todoTasks) {
+          const { contextSrc, refactoringFiles, taskPrompt, issueNumber } =
+            task;
 
-    const llmResponse = await LLM.execute("bedrock", prompt, {
-      responseFormat: "diff",
-    });
+          const templateFile = "coding/refactor-diff.js";
+          const prompt = await generatePrompt(
+            {
+              contextSrc,
+              refactoringFiles,
+              taskPrompt,
+              strategy: "diff",
+            },
+            templateFile,
+            "diff",
+          );
 
-    const modifiedFiles = await importPatchContent(llmResponse);
+          const llmResponse = await LLM.execute("bedrock", prompt, {
+            responseFormat: "diff",
+          });
 
-    console.log(`Task completed. Modified files: ${modifiedFiles.join(", ")}`);
+          const modifiedFiles = await importPatchContent(llmResponse);
+          console.log(
+            `Task completed. Modified files: ${modifiedFiles.join(", ")}`,
+          );
 
-    // Close the corresponding GitHub issue
-    await closeIssue(task.issueNumber);
+          // Create a pull request with the changes
+          const prNumber = await createPullRequest(
+            `Fix for issue #${issueNumber}`,
+            "Automated fix by LLM",
+            `fix-issue-${issueNumber}`,
+          );
 
-    // Create a pull request with the changes
-    await createPullRequest(
-      `Fix for issue #${task.issueNumber}`,
-      "Automated fix by LLM",
-      `fix-issue-${task.issueNumber}`,
-    );
+          // Add a comment to the issue linking the pull request
+          await addComment(
+            issueNumber,
+            `Fix submitted in pull request #${prNumber}`,
+          );
 
-    // Merge the pull request
-    await mergePullRequest(task.prNumber);
+          // Merge the pull request
+          await mergePullRequest(prNumber);
+
+          // Close the corresponding GitHub issue
+          await closeIssue(issueNumber);
+        }
+      },
+    },
+  ];
+
+  try {
+    await executeTasks({ tasks, deps });
+  } catch (error) {
+    console.error("Error running Todo tasks:", error);
   }
 }

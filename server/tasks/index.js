@@ -15,7 +15,7 @@ import { importPatchFile, importXmlFiles } from "./import.js";
 import { createReelRipOff } from "./instagram.js";
 import { createMapVideo, createZoomInVideo } from "./maps.js";
 import { refactorFolder } from "./refactor.js";
-import { createTODOTasks, runTODOTasks } from "./todo.js";
+import { createTodoTasks, runTodoTasks } from "./todo.js";
 import { CreateVideoFromImage } from "./video.js";
 
 // Helper function to determine if input is a file and read JSON or JS asynchronously
@@ -96,11 +96,11 @@ const yarg = yargs(hideBin(process.argv))
     },
     async (argv) => {
       const config = await parseInput(argv.input);
-      await createTODOTasks(config);
+      await createTodoTasks(config);
     },
   )
   .command("todo-run", "Run TODO tasks and fix them with LLM", async () => {
-    await runTODOTasks();
+    await runTodoTasks();
   })
   .command(
     "github-login",
