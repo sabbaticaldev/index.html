@@ -6,12 +6,12 @@ import { hideBin } from "yargs/helpers";
 import { GetTrends } from "../services/instagram.js";
 import settings from "../settings.js";
 import { connectToProject, createProject } from "../utils/github.js";
+import { createTodoTasks } from "./github/todo-create.js";
+import { runTodoTasks } from "./github/todo-run.js";
 import { importPatchFile, importXmlFiles } from "./import.js";
 import { createReelRipOff } from "./instagram.js";
 import { createMapVideo, createZoomInVideo } from "./maps.js";
 import { refactorFolder } from "./refactor.js";
-import { createTodoTasks } from "./todo-create.js";
-import { runTodoTasks } from "./todo-run.js";
 import { CreateVideoFromImage } from "./video.js";
 
 // Helper function to determine if input is a file and read JSON or JS asynchronously

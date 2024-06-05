@@ -42,7 +42,6 @@ export const applyParsedPatches = (originalContents, filePatches) => {
     let updatedContent;
 
     if (!originalContent) {
-      // If the file is considered new (or no content could be loaded), parse the entire patch as new content
       updatedContent = patchContent
         .split("\n")
         .slice(1)
@@ -53,7 +52,7 @@ export const applyParsedPatches = (originalContents, filePatches) => {
       const patches = diff.parsePatch(patchContent);
       updatedContent = diff.applyPatch(originalContent, patches);
       if (updatedContent === false) {
-        console.log({ [filePath]: patchContent });
+        console.log({ patches, [filePath]: patchContent });
         console.error(`Failed to apply patch for ${filePath}`);
       }
     }

@@ -1,6 +1,6 @@
-import { generatePrompt, LLM } from "../services/llm/index.js";
-import { executeTasks } from "../utils.js";
-import { createIssue } from "../utils/github.js";
+import { generatePrompt, LLM } from "../../services/llm/index.js";
+import { executeTasks } from "../../utils.js";
+import { createIssue } from "../../utils/github.js";
 
 const deps = {};
 
