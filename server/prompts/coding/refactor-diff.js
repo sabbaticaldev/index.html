@@ -15,10 +15,12 @@ Refactor the target refactoring files code using the context files as reference.
 Ensure each diff starts with --- and +++ lines specifying the old and new file paths. be sure to never add an extra + on those lines.
 for new files, use /dev/null as the oldName.
 To remove a file, use: 
-  --- file/path.js
-  +++ /dev/null
+--- file/path.js
++++ /dev/null
 
-  only that, no need to give the whole file with the lines removed. Don't send a removed file content (the lines to remove) in ANY CIRCUNSTANCE!
+only that, no need to give the whole file with the lines removed. Don't send a removed file content (the lines to remove) in ANY CIRCUNSTANCE! DONT SEND THE REMOVED FILE CONTENT, SKIP IT!
+be careful with trailing space before the lines, never add trailing space before ---, +++ or any of the lines, we need it correct to be able to use the patch. Pay attention to not add double signs too like ++ in place of +
+
 
 Make sure the @@ lines are correctly formatted and indicate the start of each hunk.
 Ensure the diffs include enough surrounding lines to provide context for the changes.
@@ -34,7 +36,7 @@ ${exampleInput}
 
 Example Generated Output:
 ${exampleOutput}
-Use the above format as output for the XML -- ENFORCE IT!
+Use the above format as output for the diff -- ENFORCE IT!
 
 Context Files:
 ${contextSrc}
@@ -43,7 +45,7 @@ ${refactoringFiles}
 
 Don't change unnecessary files.
 
-Start by creating a new .git/COMMIT_EDITMSG (--- /dev/null) describing the tasks/changes then go for the first file, and on. 
+Start by creating a new .git/COMMIT_EDITMSG (with the first line being: --- /dev/null to remove it) describing the tasks/changes then go for the first file, and on. 
   `;
   },
   inputParams: {
@@ -102,33 +104,31 @@ Start by creating a new .git/COMMIT_EDITMSG (--- /dev/null) describing the tasks
     strategy: "diff",
   },
   exampleOutput: `--- libs/frontend/uix/layout/card.js
-  +++ libs/frontend/uix/layout/card.js
-  @@ -1,4 +1,4 @@
-  -import { html, T } from "helpers";
-  +import { css, html, T } from "helpers";
-   
-   export default {
-     tag: "uix-card",
-  @@ -29,7 +29,16 @@ export default {
-         <slot></slot>
-   
-         \${this.footer &&
-  -      html\`<div data-theme="uix-card__footer">\${this.footer}</div> \`}
-  +      html\`
-  +        <div
-  +          data-theme="uix-card__footer"
-  +          style=\${css\`
-  +            background: gray;
-  +          \`}
-  +        >
-  +          \${this.footer}
-  +        </div>
-  +      \`}
-       \`;
-     },
-   };
++++ libs/frontend/uix/layout/card.js
+@@ -1,4 +1,4 @@
+-import { html, T } from "helpers";
++import { css, html, T } from "helpers";
   
-  `,
+ export default {
+   tag: "uix-card",
+@@ -29,7 +29,16 @@ export default {
+       <slot></slot>
+ 
+       \${this.footer &&
+-      html\`<div data-theme="uix-card__footer">\${this.footer}</div> \`}
++      html\`
++        <div
++          data-theme="uix-card__footer"
++          style=\${css\`
++            background: gray;
++          \`}
++        >
++          \${this.footer}
++        </div>
++      \`}
+     \`;
+   },
+ };`,
 };
 
 export default data;

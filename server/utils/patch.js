@@ -1,9 +1,10 @@
 import * as diff from "diff";
 import * as fs from "fs";
+
 export const parsePatch = (patchContent) => {
   const patches = diff.parsePatch(patchContent);
   const filePatches = {};
-
+  console.log({ patches });
   patches.forEach((patch) => {
     const { newFileName, oldFileName, hunks } = patch;
     const content = hunks.map((hunk) => hunk.lines.join("\n")).join("\n");
@@ -16,10 +17,7 @@ export const parsePatch = (patchContent) => {
 
     if (newFileName === "/dev/null") {
       // File deletion
-      filePatches[oldFileName] = {
-        patchContent: patchString,
-        isDeletion: true,
-      };
+      filePatches[oldFileName] = { isDeletion: true };
     } else if (oldFileName === "/dev/null") {
       // File addition
       filePatches[newFileName] = { content, isAddition: true };
@@ -57,12 +55,7 @@ export const applyParsedPatches = (originalContents, filePatches) => {
 
     const originalContent = originalContents[filePath] || "";
     const patches = diff.parsePatch(patchContent);
-    console.log({ patches });
     const updatedContent = diff.applyPatch(originalContent, patches);
-    //const updatedContent = patches.reduce(
-    //  (content, patch) => diff.applyPatch(originalContent, patches),
-    //  originalContent,
-    //);
 
     if (updatedContent === false) {
       console.error(`Failed to apply patch for ${filePath}`);

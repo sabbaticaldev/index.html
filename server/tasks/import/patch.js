@@ -21,7 +21,7 @@ export const importPatchContent = async (patchContent) => {
     const filePatches = parsePatch(patchContent);
     const originalContents = {};
     const modifiedFiles = [];
-
+    console.log({ filePatches });
     for (const filePath of Object.keys(filePatches)) {
       const { isDeletion, isAddition } = filePatches[filePath];
       const fullPath = path.join(process.cwd(), filePath);
