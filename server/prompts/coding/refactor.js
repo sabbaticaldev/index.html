@@ -37,7 +37,7 @@ ${refactoringFiles} -- ATTENTION: the content of the contextFiles shouldn't infl
   outputParams: {
     commitMessage: "Description of what changed for git commit",
     files:
-      "Array of files with refactored code. Each file contains a filepath (full relative path and filename) and content.",
+      "Array of files with refactored code. Each file contains a filePath (full relative path and filename) and content.",
   },
   exampleInput: {
     contextSrc: {
@@ -54,12 +54,12 @@ ${refactoringFiles} -- ATTENTION: the content of the contextFiles shouldn't infl
     commitMessage: "Refactored src/models.js and utils.js, fixed X, Y, added Z",
     files: [
       {
-        filepath: "src/utils.js",
+        filePath: "src/utils.js",
         content:
           "<html>Refactored file content here && without extra spaces and indentation</html>",
       },
       {
-        filepath: "src/models.js",
+        filePath: "src/models.js",
         content:
           "<html>Refactored file content here && without extra spaces and indentation</html>",
       },

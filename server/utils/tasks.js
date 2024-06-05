@@ -69,7 +69,14 @@ export const checkAndExecute = async ({
     }
     try {
       console.log("Running operation:", description);
-      return await operation();
+      const response = await operation();
+      if (filePath)
+        fs.writeFileSync(
+          filePath,
+          typeof response === "string" ? response : JSON.parse(response),
+          "utf-8",
+        );
+      return response;
     } catch (error) {
       console.error(`Error during ${description}:`, error);
       attempt++;
@@ -107,12 +114,12 @@ export const executeTasks = async ({ tasks, prompt, deps = {} }) => {
           }
           if (files)
             return await Promise.all(
-              files.map((filepath, index) =>
-                task.operation({ filepath, index }),
+              files.map((filePath, index) =>
+                task.operation({ filePath, index }),
               ),
             );
           else {
-            return await task.operation({ filepath: task.filePath });
+            return await task.operation({ filePath: task.filePath });
           }
         },
       });

@@ -25,7 +25,6 @@ export async function createTopVideos(options) {
     captions = [],
     videos = [],
     captionStyle,
-    contentStyle,
   } = options;
 
   try {

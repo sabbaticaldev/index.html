@@ -5,7 +5,7 @@ import util from "util";
 
 import { generatePrompt, LLM } from "../services/llm/index.js";
 import { executeTasks, processFiles } from "../utils.js";
-import { importPatchContent } from "./import.js";
+import { importPatchContent } from "./import/patch.js";
 
 const execAsync = util.promisify(exec);
 const deps = {};
@@ -87,12 +87,15 @@ export async function refactorFolder(options) {
           responseFormat,
         });
         //TODO: refactor diff to add a commit message file
+        console.log(response);
         const commitMessage = response.commitMessage;
         if (commitMessage && fs.existsSync(".git")) {
-          fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
-          console.log(`Commit message saved at ${commitMessageFilePath}`);
+          if (fs.existsSync(commitMessageFilePath))
+            fs.unlink(commitMessage, () => {
+              fs.writeFileSync(commitMessageFilePath, commitMessage, "utf-8");
+              console.log(`Commit message saved at ${commitMessageFilePath}`);
+            });
         }
-        isDiff && console.log({ response });
         return isDiff ? response : response.files;
       },
     },
@@ -105,12 +108,10 @@ export async function refactorFolder(options) {
         (Array.isArray(deps.llmResponse)
           ? deps.llmResponse
           : Object.values(deps.llmResponse)
-        ).map((file) => file.filepath),
-      operation: async ({ filepath, index }) => {
+        ).map((file) => file.filePath),
+      operation: async ({ index }) => {
         const file = deps.llmResponse[index];
-        fs.mkdirSync(path.dirname(filepath), { recursive: true });
-        fs.writeFileSync(filepath, file.content, "utf-8");
-        return filepath;
+        return file.content;
       },
     },
     {
@@ -129,10 +130,8 @@ export async function refactorFolder(options) {
     {
       description: "Run ESLint fix on refactored files",
       dependencies: ["savedFilePaths"],
-      filePath: () => deps.savedFilePaths,
-      operation: async ({ filepath }) => {
-        await runESLintFix([filepath]);
-        return filepath;
+      operation: async ({ filePath }) => {
+        await runESLintFix([filePath]);
       },
     },
   ];

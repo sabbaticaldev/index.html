@@ -82,6 +82,7 @@ export default {
     return [...formControls].every((control) => control.reportValidity());
   },
   submit() {
+    // TODO: implement a logic to only submit the form when is a human (the human check could be scrolling, using the mouse, touch content, etc)
     if (this.validate()) {
       this.getForm().submit();
     }

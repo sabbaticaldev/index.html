@@ -18,7 +18,7 @@ To remove a file, use:
   --- file/path.js
   +++ /dev/null
 
-  only that, no need to give the whole file with the lines removed
+  only that, no need to give the whole file with the lines removed. Don't send a removed file content (the lines to remove) in ANY CIRCUNSTANCE!
 
 Make sure the @@ lines are correctly formatted and indicate the start of each hunk.
 Ensure the diffs include enough surrounding lines to provide context for the changes.
@@ -43,7 +43,7 @@ ${refactoringFiles}
 
 Don't change unnecessary files.
 
-Start by creating a new .git/COMMIT_EDITMSG describing the tasks/changes then go for the first file, and on. 
+Start by creating a new .git/COMMIT_EDITMSG (--- /dev/null) describing the tasks/changes then go for the first file, and on. 
   `;
   },
   inputParams: {

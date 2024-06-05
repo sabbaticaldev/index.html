@@ -1,34 +1,36 @@
 import * as diff from "diff";
-
+import * as fs from "fs";
 export const parsePatch = (patchContent) => {
+  const patches = diff.parsePatch(patchContent);
   const filePatches = {};
-  // Split the content by newlines and then process line by line.
-  const lines = patchContent.split("\n");
-  let currentFilePatch = [];
-  let currentFilePath = "";
 
-  lines.forEach((line) => {
-    if (line.startsWith("---")) {
-      // Reset current file patch when we encounter a new file section
-      if (currentFilePath && currentFilePatch.length > 0) {
-        filePatches[currentFilePath] = currentFilePatch.join("\n");
-      }
-      currentFilePatch = [];
-      currentFilePath = ""; // Clear the current file path at the start of a new patch section
-    } else if (line.startsWith("+++")) {
-      // Extract the file path from the modified file header, unless it's /dev/null
-      if (!line.includes("/dev/null")) {
-        currentFilePath = line.replace("+++", "").trim();
-      }
+  patches.forEach((patch) => {
+    const { newFileName, oldFileName, hunks } = patch;
+    const content = hunks.map((hunk) => hunk.lines.join("\n")).join("\n");
+    const patchString = diff.createTwoFilesPatch(
+      oldFileName,
+      newFileName,
+      "",
+      content,
+    );
+
+    if (newFileName === "/dev/null") {
+      // File deletion
+      filePatches[oldFileName] = {
+        patchContent: patchString,
+        isDeletion: true,
+      };
+    } else if (oldFileName === "/dev/null") {
+      // File addition
+      filePatches[newFileName] = { content, isAddition: true };
     } else {
-      currentFilePatch.push(line);
+      // File modification
+      if (!filePatches[newFileName]) {
+        filePatches[newFileName] = { patchContent: "", isModification: true };
+      }
+      filePatches[newFileName].patchContent += patchString;
     }
   });
-
-  // Add the last parsed file patch to the dictionary
-  if (currentFilePath && currentFilePatch.length > 0) {
-    filePatches[currentFilePath] = currentFilePatch.join("\n");
-  }
 
   return filePatches;
 };
@@ -37,27 +39,34 @@ export const applyParsedPatches = (originalContents, filePatches) => {
   const updatedContents = {};
 
   Object.keys(filePatches).forEach((filePath) => {
-    const patchContent = filePatches[filePath];
-    const originalContent = originalContents[filePath] || "";
-    let updatedContent;
+    const { patchContent, content, isDeletion, isAddition } =
+      filePatches[filePath];
 
-    if (!originalContent) {
-      updatedContent = patchContent
-        .split("\n")
-        .slice(1)
-        .map((line) => line.substring(1))
-        .join("\n");
-    } else {
-      // Apply the patch normally
-      const patches = diff.parsePatch(patchContent);
-      updatedContent = diff.applyPatch(originalContent, patches);
-      if (updatedContent === false) {
-        console.log({ patches, [filePath]: patchContent });
-        console.error(`Failed to apply patch for ${filePath}`);
+    if (isDeletion) {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(`File deleted: ${filePath}`);
       }
+      return;
     }
 
-    if (updatedContent) {
+    if (isAddition) {
+      updatedContents[filePath] = content;
+      return;
+    }
+
+    const originalContent = originalContents[filePath] || "";
+    const patches = diff.parsePatch(patchContent);
+    console.log({ patches });
+    const updatedContent = diff.applyPatch(originalContent, patches);
+    //const updatedContent = patches.reduce(
+    //  (content, patch) => diff.applyPatch(originalContent, patches),
+    //  originalContent,
+    //);
+
+    if (updatedContent === false) {
+      console.error(`Failed to apply patch for ${filePath}`);
+    } else {
       updatedContents[filePath] = updatedContent;
     }
   });

@@ -7,7 +7,7 @@ import {
   fetchOpenIssues,
   mergePullRequest,
 } from "../../utils/github.js";
-import { importPatchContent } from "../import.js";
+import { importPatchContent } from "../import/patch.js";
 
 const deps = {};
 
