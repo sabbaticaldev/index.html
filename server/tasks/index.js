@@ -5,6 +5,12 @@ import { hideBin } from "yargs/helpers";
 
 import { GetTrends } from "../services/instagram.js";
 import settings from "../settings.js";
+import {
+  authenticateGitHub,
+  connectToProject,
+  createProject,
+  sshKeyPath,
+} from "../utils/github.js";
 import { importPatchFile, importXmlFiles } from "./import.js";
 import { createReelRipOff } from "./instagram.js";
 import { createMapVideo, createZoomInVideo } from "./maps.js";
@@ -96,6 +102,34 @@ const yarg = yargs(hideBin(process.argv))
   .command("todo-run", "Run TODO tasks and fix them with LLM", async () => {
     await runTODOTasks();
   })
+  .command(
+    "github-login",
+    "Authenticate with GitHub using SSH key",
+    () => {},
+    async () => {
+      await authenticateGitHub(sshKeyPath);
+    },
+  )
+  .command(
+    "github-project <input>",
+    "Create or connect to a GitHub project",
+    (yargs) => {
+      yargs.positional("input", {
+        describe:
+          "Path to a JSON or JS configuration file or JSON string with project details",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const config = await parseInput(argv.input);
+      const { name, description, url } = config;
+      if (url) {
+        await connectToProject(url);
+      } else {
+        await createProject(name, description);
+      }
+    },
+  )
   .command(
     "map-route <input>",
     "Generate a video animation of a map route",

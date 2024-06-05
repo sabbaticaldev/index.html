@@ -10,13 +10,10 @@ export default {
    we should be authenticated using our ssh key
 
    we already started the work so lets continue from it
-   use the same executeTasks over an array of commands logic
-   lets also create a github.js utils file to organize the methods to interact with github
-
-
-   also can the ssh-key default to the current logged user in ssh? 
 
    Our end goal is to create an automate pipeline where you (a LLM) can read the code, create tasks and work on those tasks refactoring the code, commiting the change, commenting and moving the ticket to QA
+
+   we should work now on the tasks/todo.js to create the workflows to support our project using the github.js api
    `,
 
   responseFormat: "diff",

@@ -1,6 +1,7 @@
 import { exec } from "child_process";
 import util from "util";
 
+import settings from "../settings.js";
 const execAsync = util.promisify(exec);
 
 export async function authenticateGitHub(sshKeyPath) {
@@ -33,5 +34,53 @@ export async function connectToProject(url) {
   }
 }
 
-// TODO
-export async function createIssue() {}
+export async function createIssue(title, description) {
+  try {
+    await execAsync(
+      `gh issue create --title "${title}" --body "${description}"`,
+    );
+    console.log(`Issue "${title}" created successfully`);
+  } catch (error) {
+    console.error(`Failed to create issue "${title}":`, error);
+    throw error;
+  }
+}
+
+export async function closeIssue(issueNumber) {
+  try {
+    await execAsync(`gh issue close ${issueNumber}`);
+    console.log(`Issue #${issueNumber} closed successfully`);
+  } catch (error) {
+    console.error(`Failed to close issue #${issueNumber}:`, error);
+    throw error;
+  }
+}
+
+export async function createPullRequest(
+  title,
+  description,
+  head,
+  base = "main",
+) {
+  try {
+    await execAsync(
+      `gh pr create --title "${title}" --body "${description}" --head ${head} --base ${base}`,
+    );
+    console.log(`Pull request "${title}" created successfully`);
+  } catch (error) {
+    console.error(`Failed to create pull request "${title}":`, error);
+    throw error;
+  }
+}
+
+export async function mergePullRequest(prNumber) {
+  try {
+    await execAsync(`gh pr merge ${prNumber} --merge`);
+    console.log(`Pull request #${prNumber} merged successfully`);
+  } catch (error) {
+    console.error(`Failed to merge pull request #${prNumber}:`, error);
+    throw error;
+  }
+}
+
+export const sshKeyPath = `${settings.HOME}/.ssh/id_rsa`;

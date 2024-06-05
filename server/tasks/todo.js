@@ -1,10 +1,18 @@
 import { generatePrompt, LLM } from "../services/llm/index.js";
 import { executeTasks } from "../utils.js";
-import { createIssue } from "../utils/github.js";
+import {
+  authenticateGitHub,
+  closeIssue,
+  createIssue,
+  createPullRequest,
+  mergePullRequest,
+  sshKeyPath,
+} from "../utils/github.js";
 import { importPatchContent } from "./import.js";
 
 export async function createTODOTasks(config) {
   const { projectPath } = config;
+  await authenticateGitHub(sshKeyPath);
 
   // TODO: Implement logic to create TODO tasks based on project configuration
   // This could involve analyzing the project structure, files, dependencies, etc.
@@ -20,6 +28,7 @@ export async function createTODOTasks(config) {
 }
 
 export async function runTODOTasks() {
+  await authenticateGitHub(sshKeyPath);
   // TODO: Implement logic to fetch TODO tasks from a data source (e.g., file, database)
   const tasks = []; // Placeholder for fetched tasks
 
@@ -48,5 +57,15 @@ export async function runTODOTasks() {
 
     // Close the corresponding GitHub issue
     await closeIssue(task.issueNumber);
+
+    // Create a pull request with the changes
+    await createPullRequest(
+      `Fix for issue #${task.issueNumber}`,
+      "Automated fix by LLM",
+      `fix-issue-${task.issueNumber}`,
+    );
+
+    // Merge the pull request
+    await mergePullRequest(task.prNumber);
   }
 }
