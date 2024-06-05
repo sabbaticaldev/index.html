@@ -12,9 +12,13 @@ export default {
    we already started the work so lets continue from it
    use the same executeTasks over an array of commands logic
    lets also create a github.js utils file to organize the methods to interact with github
+
+
+   also can the ssh-key default to the current logged user in ssh? 
+
+   Our end goal is to create an automate pipeline where you (a LLM) can read the code, create tasks and work on those tasks refactoring the code, commiting the change, commenting and moving the ticket to QA
    `,
 
   responseFormat: "diff",
   strategy: "diff",
 };
-` ;
