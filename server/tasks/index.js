@@ -9,6 +9,7 @@ import { importPatchFile, importXmlFiles } from "./import.js";
 import { createReelRipOff } from "./instagram.js";
 import { createMapVideo, createZoomInVideo } from "./maps.js";
 import { refactorFolder } from "./refactor.js";
+import { createTODOTasks, runTODOTasks } from "./todo.js";
 import { CreateVideoFromImage } from "./video.js";
 
 // Helper function to determine if input is a file and read JSON or JS asynchronously
@@ -77,6 +78,24 @@ const yarg = yargs(hideBin(process.argv))
       await CreateVideoFromImage(config);
     },
   )
+  .command(
+    "todo-create <input>",
+    "Create TODO tasks for a project",
+    (yargs) => {
+      yargs.positional("input", {
+        describe:
+          "Path to a JSON or JS configuration file or JSON string with project details",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const config = await parseInput(argv.input);
+      await createTODOTasks(config);
+    },
+  )
+  .command("todo-run", "Run TODO tasks and fix them with LLM", async () => {
+    await runTODOTasks();
+  })
   .command(
     "map-route <input>",
     "Generate a video animation of a map route",
