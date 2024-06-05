@@ -5,8 +5,7 @@ const data = {
     persona,
     tone,
     postDescription,
-    exampleInput,
-    exampleOutput,
+    exampleInputOutput,
     contentStyle,
     captionStyle,
     formattedHashtags,
@@ -16,9 +15,7 @@ Tone: ${tone}
 ------
 Based on this description: "${postDescription}"
 
-${exampleInput}
-
-${exampleOutput}
+${exampleInputOutput}
 
 ${contentStyle}
 ${captionStyle}

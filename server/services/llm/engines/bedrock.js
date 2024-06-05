@@ -3,6 +3,7 @@ import {
   InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
 
+import { PREFILL_DIFF } from "../../../constants.js";
 const bedrockStrategy =
   ({
     BEDROCK_MODEL_ID,
@@ -35,7 +36,7 @@ const bedrockStrategy =
     let prefillMessage = {
       xml: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
       json: "{",
-      diff: "---",
+      diff: PREFILL_DIFF,
     }[responseFormat];
 
     const body = {

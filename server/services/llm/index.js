@@ -1,7 +1,7 @@
-import { response } from "express";
 import fs from "fs";
 import path from "path";
 
+import { PREFILL_DIFF } from "../../constants.js";
 import settings from "../../settings.js";
 import { generateXMLFormat, parseXML } from "../../utils.js";
 import bedrock from "./engines/bedrock.js";
@@ -54,11 +54,13 @@ const LLM = (() => {
     },
   };
 })();
+
 const loadTemplate = async (templateFile) => {
   const filePath = path.join(settings.__dirname, "prompts", templateFile);
   const templateData = await import(filePath);
   return templateData.default;
 };
+
 const generatePrompt = async (config, templateFile, responseFormat) => {
   const templateData = await loadTemplate(templateFile);
   const inputParameters = await prepareInputParameters(
@@ -74,37 +76,62 @@ const prepareInputParameters = async (config, templateData, responseFormat) => {
   for (const param in templateData.inputParams) {
     params[param] = JSON.stringify(config[param], null, 2) || "";
   }
-  params.exampleInput = formatResponse(templateData.exampleInput);
+
+  params.exampleInputOutput = formatExamplePairs(
+    templateData.exampleInput,
+    templateData.exampleOutput,
+    responseFormat,
+  );
   params.persona = JSON.stringify(
     await getPersonaDetails(config.persona),
     null,
     2,
   );
-  params.exampleOutput = formatResponse(
-    templateData.exampleOutput,
-    responseFormat,
-  );
 
   return params;
 };
 
+const formatExamplePairs = (
+  exampleInputs,
+  exampleOutputs,
+  responseFormat = "json",
+) => {
+  const inputs = Array.isArray(exampleInputs) ? exampleInputs : [exampleInputs];
+  const outputs = Array.isArray(exampleOutputs)
+    ? exampleOutputs
+    : [exampleOutputs];
+
+  return inputs
+    .map((input, index) => {
+      const output = outputs[index] || outputs[0];
+      return `Input:\n${formatResponse(
+        input,
+        responseFormat,
+      )}\n\nOutput:\n${formatResponse(output, responseFormat)}`;
+    })
+    .join("\n\n");
+};
+
 const formatResponse = (exampleData, responseFormat = "json", rootElement) => {
+  const defaultFn = () => JSON.stringify(exampleData, null, 2);
   const formatters = {
-    json: () => JSON.stringify(exampleData, null, 2),
+    json: defaultFn,
+    diff: defaultFn,
     xml: () => generateXMLFormat(exampleData, rootElement),
   };
-
+  console.log({ responseFormat });
   return formatters[responseFormat]
     ? formatters[responseFormat]()
     : exampleData;
 };
-const test = "\"";
+
 const cleanLLMResponse = (response, format) => {
   try {
     const formatHandlers = {
       json: (res) => JSON.parse(res),
       xml: (res) => parseXML(res),
-      diff: (res) => "---  " + res.trim(),
+      diff: (res) => `${PREFILL_DIFF}
+${res.trim()}`,
       default: (res) => res.trim(),
     };
 

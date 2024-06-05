@@ -4,8 +4,7 @@ const data = {
   prompt: ({
     taskPrompt,
     strategy,
-    exampleInput,
-    exampleOutput,
+    exampleInputOutput,
     contextSrc,
     refactoringFiles,
   }) => `
@@ -14,11 +13,10 @@ Refactor the target refactoring files code using the context files as reference.
 Refactoring Prompt: ${taskPrompt}
 
 Merge strategy: ${strategy}
-Example Inputs:
-${exampleInput}
+
 
 Example Generated Output:
-${exampleOutput}
+${exampleInputOutput}
 Use the above format as output for the XML -- ENFORCE IT!
 
 Context Files:

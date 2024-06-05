@@ -4,3 +4,6 @@ export const MAP_TYPES = {
   terrain: { google: "terrain", mapbox: "outdoors-v11" },
   hybrid: { google: "hybrid", mapbox: "satellite-streets-v12" },
 };
+
+export const PREFILL_DIFF = `--- /dev/null
++++ .git/COMMIT_EDITMSG`;
