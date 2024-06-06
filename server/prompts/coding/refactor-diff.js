@@ -43,8 +43,12 @@ Use the above format as output for the diff -- ENFORCE IT!
 
 Context Files:
 ${contextSrc}
-Refactoring Files:
-${refactoringFiles}
+${
+  refactoringFiles
+    ? `Refactoring Files:
+${refactoringFiles}`
+    : ""
+}
 
 Don't change unnecessary files.
 

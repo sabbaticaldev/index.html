@@ -137,7 +137,7 @@ const getProperties = (props) =>
     return acc;
   }, {});
 
-export function defineView({ key, component, style }) {
+export function defineView({ key, component, style: globalStyle }) {
   const tag = component.tag;
   if (!tag)
     console.error(`Error: component ${key} doesn't have a tag property`);
@@ -151,7 +151,7 @@ export function defineView({ key, component, style }) {
   }
   if (!_tailwindBase) {
     _tailwindBase = new CSSStyleSheet();
-    _tailwindBase.replaceSync(style);
+    _tailwindBase.replaceSync(globalStyle);
   }
   View.styles = [
     _tailwindBase,

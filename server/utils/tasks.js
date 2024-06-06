@@ -29,6 +29,8 @@ const promptUser = (question) => {
   });
 };
 
+const maxAttempts = 5;
+
 export const checkAndExecute = async ({
   description,
   filePath,
@@ -37,7 +39,7 @@ export const checkAndExecute = async ({
   condition,
 }) => {
   let attempt = 0;
-  while (true) {
+  while (attempt < maxAttempts) {
     if (condition !== undefined) {
       const conditionResult =
         typeof condition === "function" ? await condition() : condition;

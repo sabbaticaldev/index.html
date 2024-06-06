@@ -1,4 +1,4 @@
 {
   "projectPath": "https://github.com/sabbaticaldev/test-project.git",
-  "taskPrompt": "We are starting a TodoList project using Lit and localStorage. Lets create tasks related to creating the components, testing them and creating docs. Each big component should have their own tasks"
+  "taskPrompt": "We are starting a TodoList project using Lit and localStorage. Lets create tasks related to creating the components, testing them and creating docs. Each big component should have their own tasks. It should register the lit web components and start it in the index.html with an app container. - !IMPORTANT! Use Vite for the project/web server in the package.json. List all dev-packages and packages that will be needed and used further - !IMPORTANT! Don't forget to customElements.define the elements and start the app the right way.  - !IMPORTANT! We should import and define all custom elements only ONCE (import all components in index.js but use customElements.define inside each component) - Add the important stuff in the first task so we dont forget"
 }

@@ -2,24 +2,30 @@ import { applyPatch, createTwoFilesPatch, parsePatch } from "diff";
 import fs from "fs";
 import path from "path";
 
-const applyDiffToFileSystem = async (diffContent) => {
+const applyDiffToFileSystem = async (diffContent, config = {}) => {
+  const { dirPath } = config;
   const patches = parsePatch(diffContent);
   const lines = diffContent.split("\n");
   const filesToDelete = [];
+  const modifiedFiles = [];
 
   // Parse lines to find files to delete
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith("+++ /dev/null")) {
       const filePath = lines[i - 1].substring(4).trim();
       filesToDelete.push(filePath);
+      modifiedFiles.push(filePath);
     }
   }
 
   // Process patches
   for (const patch of patches) {
-    const filePath = path.resolve(
-      patch.newFileName === "/dev/null" ? patch.oldFileName : patch.newFileName,
-    );
+    const fileName =
+      patch.newFileName === "/dev/null" ? patch.oldFileName : patch.newFileName;
+
+    const filePath = fileName.startsWith(dirPath)
+      ? fileName
+      : path.join(dirPath, fileName);
 
     if (
       patch.oldFileName === "/dev/null" &&
@@ -34,9 +40,10 @@ const applyDiffToFileSystem = async (diffContent) => {
         )
         .join("\n");
 
-      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
       await fs.promises.writeFile(filePath, newData, "utf8");
       console.log(`File created: ${filePath}`);
+      modifiedFiles.push(filePath);
     } else if (
       patch.newFileName === "/dev/null" &&
       patch.oldFileName !== "/dev/null"
@@ -44,9 +51,32 @@ const applyDiffToFileSystem = async (diffContent) => {
       // File deletion - This part is handled in the separate pass
       continue;
     } else {
-      // File modification
+      // File modification or creation if not exists
       try {
-        const data = await fs.promises.readFile(filePath, "utf8");
+        await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
+
+        let data;
+        try {
+          data = await fs.promises.readFile(filePath, "utf8");
+        } catch (error) {
+          if (error.code === "ENOENT") {
+            // File does not exist, create new file with patch data
+            const newData = patch.hunks
+              .flatMap((hunk) =>
+                hunk.lines
+                  .filter((line) => line.startsWith("+"))
+                  .map((line) => line.slice(1)),
+              )
+              .join("\n");
+            await fs.promises.writeFile(filePath, newData, "utf8");
+            console.log(`File created: ${filePath}`);
+            modifiedFiles.push(filePath);
+            continue;
+          } else {
+            throw error;
+          }
+        }
+
         const updatedData = applyPatch(data, patch, {
           context: 3,
           fuzzFactor: 2,
@@ -66,17 +96,20 @@ const applyDiffToFileSystem = async (diffContent) => {
             patch.newHeader,
             patch.oldHeader,
           );
-          const reverseUpdatedData = applyPatch(data, reversePatch);
+
+          const reverseUpdatedData = applyPatch("", reversePatch);
           if (reverseUpdatedData !== false) {
             await fs.promises.writeFile(filePath, reverseUpdatedData, "utf8");
             console.log(`File updated with reverse patch: ${filePath}`);
+            modifiedFiles.push(filePath);
           }
         } else {
           await fs.promises.writeFile(filePath, updatedData, "utf8");
           console.log(`File updated: ${filePath}`);
+          modifiedFiles.push(filePath);
         }
       } catch (error) {
-        console.error(`Error updating file ${filePath}: ${error}`);
+        console.error(`Error updating file ${filePath}: ${error}`, { error });
       }
     }
   }
@@ -91,6 +124,7 @@ const applyDiffToFileSystem = async (diffContent) => {
       console.error(`Error deleting file ${resolvedFilePath}: ${error}`);
     }
   }
+  return modifiedFiles;
 };
 
 /**
@@ -107,9 +141,9 @@ export const importPatchFile = async (input) => {
   }
 };
 
-export const importPatchContent = async (patchContent) => {
+export const importPatchContent = async (patchContent, config = {}) => {
   try {
-    applyDiffToFileSystem(patchContent);
+    return await applyDiffToFileSystem(patchContent, config);
   } catch (error) {
     console.error("Error importing patch content:", error);
     throw error;

@@ -1,5 +1,5 @@
 import { generatePrompt, LLM } from "../../services/llm/index.js";
-import { executeTasks } from "../../utils.js";
+import { executeTasks, processFiles } from "../../utils.js";
 import { createIssue } from "../../utils/github.js";
 import { getLabels } from "../../utils/github.js";
 
@@ -7,6 +7,7 @@ const deps = {};
 
 export async function createTodoTasks(config) {
   const { projectPath, taskPrompt } = config;
+  const contextSrc = await processFiles(config.contextSrc);
 
   const tasks = [
     {
@@ -15,7 +16,7 @@ export async function createTodoTasks(config) {
       operation: async () => {
         const labels = JSON.stringify(await getLabels());
         const prompt = await generatePrompt(
-          { taskPrompt, labels },
+          { taskPrompt, labels, contextSrc },
           "coding/github/tasks.js",
           "json",
         );
@@ -26,6 +27,7 @@ export async function createTodoTasks(config) {
       description: "Create GitHub issues for tasks",
       dependencies: ["llmTasks"],
       operation: async () => {
+        console.log(deps.llmTasks);
         if (!Array.isArray(deps.llmTasks)) return;
         for (const task of deps.llmTasks) {
           await createIssue(task);

@@ -149,7 +149,7 @@ export async function fetchOpenIssues({ labels }) {
       state: "open",
     });
 
-    return response.data;
+    return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     console.error("Failed to fetch open issues:", error);
     throw error;

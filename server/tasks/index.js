@@ -96,9 +96,21 @@ const yarg = yargs(hideBin(process.argv))
       await createTodoTasks(config);
     },
   )
-  .command("todo-run", "Run TODO tasks and fix them with LLM", async () => {
-    await runTodoTasks();
-  })
+  .command(
+    "todo-run <input>",
+    "Create TODO tasks for a project",
+    (yargs) => {
+      yargs.positional("input", {
+        describe:
+          "Path to a JSON or JS configuration file or JSON string with project details",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      console.log(argv.input);
+      await runTodoTasks(argv.input);
+    },
+  )
   .command(
     "github-project <input>",
     "Create or connect to a GitHub project",

@@ -22,13 +22,14 @@ const data = {
 
     CONSTRAINTS:
     - only create tasks that a LLM can work with (generating code, tests, content, etc)
-    - All tasks shoud take into account the information about each other, mention same file path, use same libraries, code convention, etc
-    - !IMPORTANT! The first added task should be an overall specification of the change including all changed files (treeview) and an overall explanation and step-by-step guide for the change with progressive changes until the final goal
-    - If it is a new project, create a valid package.json with the appropriate tasks to run the project
-    - Use JavaScript, EcmaScript with the most modern features. Same for nodejs
+    - All tasks shoud take into account the information about each other, mention same file path, use same libraries, code convention, etc    
+    - Use JavaScript, EcmaScript imports and the most modern JS features. Same for nodejs
     - Add test files side by side of the file it will be testing
+    - Don't add build steps, we will serve our code as pure JS
     - use "src/components/button-component/button-component.js" convention
-    - Start 
+    - !IMPORTANT! The first added task should be an overall specification of the change including all changed files (treeview) and an overall explanation and step-by-step guide for the change with progressive changes until the final goal and a valid package.json (using Vite for build) file if it is a new file or if there are changes to it
+    - !IMPORTANT! The last task should be a review all to check if it is working and fix the things that are missing (importing components, start main component, etc).
+    - !IMPORTANT! The first task should create only the basic files, let the component files for the subsequent tasks
     ${
       contextSrc
         ? `

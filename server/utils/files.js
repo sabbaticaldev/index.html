@@ -1,10 +1,11 @@
-import { readdir, readFile } from "fs/promises";
+import { mkdir, readdir, readFile } from "fs/promises";
 import path from "path";
 
 const buildTree = async (dirPaths, extensions = [".js", ".json"]) => {
   const tree = [];
 
   for (const dirPath of Array.isArray(dirPaths) ? dirPaths : [dirPaths]) {
+    await mkdir(dirPath, { recursive: true });
     const items = await readdir(dirPath, { withFileTypes: true });
     for (const item of items) {
       const itemPath = path.join(dirPath, item.name);
