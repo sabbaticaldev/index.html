@@ -30,20 +30,46 @@ export async function connectToProject(url) {
   }
 }
 
-export async function createIssue(title, description) {
+export async function createIssue(title, description, labels = []) {
   try {
     const response = await octokit.issues.create({
       owner: settings.GITHUB_OWNER,
       repo: settings.GITHUB_REPO,
       title,
       body: description,
-      labels: ["TODO"],
+      labels: [...labels, "TODO"],
     });
     console.log(`Issue "${title}" created successfully`);
     return response.data.number;
   } catch (error) {
     console.error(`Failed to create issue "${title}":`, error);
     throw error;
+  }
+}
+
+export async function getLabels() {
+  try {
+    const response = await octokit.issues.listLabelsForRepo({
+      owner: settings.GITHUB_OWNER,
+      repo: settings.GITHUB_REPO,
+    });
+    return response.data.map((label) => label.name);
+  } catch (error) {
+    console.error("Failed to fetch labels:", error);
+    throw error;
+  }
+}
+
+export async function addLabelsToIssue(issueNumber, labels) {
+  try {
+    await octokit.issues.addLabels({
+      owner: settings.GITHUB_OWNER,
+      repo: settings.GITHUB_REPO,
+      issue_number: issueNumber,
+      labels: labels,
+    });
+  } catch (error) {
+    console.error(`Failed to add labels to issue #${issueNumber}:`, error);
   }
 }
 

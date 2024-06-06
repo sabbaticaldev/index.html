@@ -11,23 +11,35 @@ import { importPatchContent } from "../import/patch.js";
 
 const deps = {};
 
-export async function runTodoTasks(config) {
+export async function runTodoTasks(config = {}) {
+  const { taskPrompt, contextSrc, labels } = config;
   const tasks = [
     {
       description: "Fetch Todo tasks",
       key: "todoTasks",
       operation: async () => {
         // Fetch open issues labeled as Todo from GitHub using gh CLI
-        const { stdout } = await fetchOpenIssues(config.labels);
-        const openIssues = JSON.parse(stdout);
-        return openIssues.map((issue) => ({
+        const openIssues = await fetchOpenIssues(labels).map((issue) => ({
           issueNumber: issue.number,
           title: issue.title,
           description: issue.body,
-          contextSrc: issue.body.contextSrc, // Assuming contextSrc is stored in the issue body or as a label
-          refactoringFiles: issue.body.refactoringFiles, // Assuming refactoringFiles is stored in the issue body or as a label
-          taskPrompt: issue.body.taskPrompt, // Assuming taskPrompt is stored in the issue body or as a label
         }));
+
+        const templateFile = "coding/github/run.js";
+        const prompt = await generatePrompt(
+          {
+            contextSrc,
+            taskPrompt,
+            strategy: "diff",
+            openIssues,
+          },
+          templateFile,
+        );
+
+        return await LLM.execute("bedrock", prompt, {
+          responseFormat: "json",
+          prefillMessage: "[",
+        });
       },
     },
     {
@@ -35,8 +47,7 @@ export async function runTodoTasks(config) {
       dependencies: ["todoTasks"],
       operation: async () => {
         for (const task of deps.todoTasks) {
-          const { contextSrc, refactoringFiles, taskPrompt, issueNumber } =
-            task;
+          const { refactoringFiles, taskPrompt, issueNumber } = task;
 
           const templateFile = "coding/refactor-diff.js";
           const prompt = await generatePrompt(

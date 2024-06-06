@@ -92,9 +92,6 @@ const generatePrompt = async (config, templateFile, responseFormat) => {
 
 const prepareInputParameters = async (config, templateData, responseFormat) => {
   const params = { ...config };
-  for (const param in templateData.inputParams) {
-    params[param] = JSON.stringify(config[param], null, 2) || "";
-  }
 
   params.exampleInputOutput = formatExamplePairs(
     templateData.exampleInput,

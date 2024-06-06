@@ -1,6 +1,7 @@
 import { generatePrompt, LLM } from "../../services/llm/index.js";
 import { executeTasks } from "../../utils.js";
 import { createIssue } from "../../utils/github.js";
+import { getLabels } from "../../utils/github.js";
 
 const deps = {};
 
@@ -12,8 +13,9 @@ export async function createTodoTasks(config) {
       description: "Generate LLM tasks",
       key: "llmTasks",
       operation: async () => {
+        const labels = JSON.stringify(await getLabels());
         const prompt = await generatePrompt(
-          { taskPrompt },
+          { taskPrompt, labels },
           "coding/github/tasks.js",
           "json",
         );
@@ -26,9 +28,9 @@ export async function createTodoTasks(config) {
       operation: async () => {
         if (!Array.isArray(deps.llmTasks)) return;
         for (const task of deps.llmTasks) {
-          const { title, description } = task;
-
-          const issueNumber = await createIssue(title, description);
+          console.log(JSON.stringify(deps.llmTasks));
+          const { title, description, labels } = task;
+          const issueNumber = await createIssue(title, description, labels);
           task.issueNumber = issueNumber;
         }
         return deps.llmTasks;
