@@ -11,7 +11,8 @@ import { runTodoTasks } from "./github/todo-run.js";
 import { importPatchFile } from "./import/patch.js";
 import { importXmlFiles } from "./import/xml.js";
 import { createReelRipOff } from "./instagram/createReelRipOff.js";
-import { createMapVideo, createZoomInVideo } from "./maps.js";
+import { createMapVideo } from "./maps/createMapVideo.js";
+import { createZoomInVideo } from "./maps/createZoomInVideo.js";
 import { refactorFolder } from "./refactor.js";
 import { CreateVideoFromImage } from "./video.js";
 // Helper function to determine if input is a file and read JSON or JS asynchronously
