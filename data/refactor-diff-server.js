@@ -1,15 +1,8 @@
 export default {
   contextSrc: ["server/"],
-  refactoringFiles: "server/tasks/ affected files related to maps",
+  refactoringFiles: "files affected",
   taskPrompt: ` 
-
-  this is the work to do:
-  - lets refactor the tasks/maps.js code, create a import folder and separate it into one file for each of their operations and then remove tasks/maps.js
-  - we should also update the files that uses those functions
-  - be careful with the changes, only work on the requested things, dont change other things in the code
-
-
-  when updating server/tasks/index.js be careful to only add the correct imports and remove the ones not used
+lets refactor todo-create.js task and related files to include a labels in the LLM response then we should save each task with their respective labels. every github project comes with some defined labels, we should use some of them and create one label of our own too that labels the macrotask
   `,
 
   responseFormat: "diff",

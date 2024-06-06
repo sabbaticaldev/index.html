@@ -1,0 +1,4 @@
+{
+  "projectPath": "https://github.com/sabbaticaldev/test-project.git",
+  "taskPrompt": "We are starting a TodoList project using Lit and localStorage. Lets create tasks related to creating the components, testing them and creating docs. Each big component should have their own tasks"
+}

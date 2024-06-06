@@ -3,7 +3,7 @@ import {
   InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
 
-import { PREFILL_DIFF } from "../../../constants.js";
+import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "../../../constants.js";
 const bedrockStrategy =
   ({
     BEDROCK_MODEL_ID,
@@ -32,12 +32,13 @@ const bedrockStrategy =
       },
       region: AWS_REGION,
     });
-
-    let prefillMessage = {
-      xml: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
-      json: "{",
-      diff: PREFILL_DIFF,
-    }[responseFormat];
+    let prefillMessage =
+      options.prefillMessage ||
+      {
+        xml: PREFILL_XML,
+        json: PREFILL_JSON,
+        diff: PREFILL_DIFF,
+      }[responseFormat];
 
     const body = {
       anthropic_version: anthropicVersion,

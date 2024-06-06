@@ -113,6 +113,7 @@ const yarg = yargs(hideBin(process.argv))
       const config = await parseInput(argv.input);
       const { name, description, url } = config;
       const projectUrl = url ? url : await createProject(name, description);
+      console.log({ projectUrl });
       if (projectUrl) await connectToProject(projectUrl);
     },
   )

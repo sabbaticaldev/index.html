@@ -39,7 +39,6 @@ export async function createIssue(title, description) {
       body: description,
       labels: ["TODO"],
     });
-
     console.log(`Issue "${title}" created successfully`);
     return response.data.number;
   } catch (error) {

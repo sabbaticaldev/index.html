@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-import { PREFILL_DIFF } from "../../constants.js";
+import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "../../constants.js";
 import settings from "../../settings.js";
 import { generateXMLFormat, parseXML } from "../../utils.js";
 import bedrock from "./engines/bedrock.js";
@@ -38,15 +38,13 @@ const LLM = (() => {
   };
   return {
     execute: async (provider, prompt, options = {}) => {
-      const { responseFormat = "json" } = options;
       const llmClient = client[provider];
       if (!llmClient) {
         throw new Error(`Unsupported LLM provider: ${provider}`);
       }
       try {
-        let response = await llmClient(prompt, options);
-        response = cleanLLMResponse(response, responseFormat);
-        return response;
+        const response = await llmClient(prompt, options);
+        return cleanLLMResponse(response, options);
       } catch (error) {
         console.error("Error executing LLM request:", error);
         throw error;
@@ -54,6 +52,27 @@ const LLM = (() => {
     },
   };
 })();
+
+const cleanLLMResponse = (
+  response,
+  { responseFormat = "json", prefillMessage },
+) => {
+  try {
+    const formatHandlers = {
+      json: (res) => JSON.parse((prefillMessage ?? PREFILL_JSON) + res),
+      xml: (res) => parseXML((prefillMessage ?? PREFILL_XML) + res),
+      diff: (res) => `${prefillMessage ?? PREFILL_DIFF}
+${res.trim()}`,
+      default: (res) => res.trim(),
+    };
+    console.log(formatHandlers[responseFormat]);
+    return formatHandlers[responseFormat]
+      ? formatHandlers[responseFormat](response)
+      : formatHandlers.default(response);
+  } catch (error) {
+    return response;
+  }
+};
 
 const loadTemplate = async (templateFile) => {
   const filePath = path.join(settings.__dirname, "prompts", templateFile);
@@ -119,28 +138,9 @@ const formatResponse = (exampleData, responseFormat = "json", rootElement) => {
     diff: defaultFn,
     xml: () => generateXMLFormat(exampleData, rootElement),
   };
-  console.log({ responseFormat });
   return formatters[responseFormat]
     ? formatters[responseFormat]()
     : exampleData;
-};
-
-const cleanLLMResponse = (response, format) => {
-  try {
-    const formatHandlers = {
-      json: (res) => JSON.parse(res),
-      xml: (res) => parseXML(res),
-      diff: (res) => `${PREFILL_DIFF}
-${res.trim()}`,
-      default: (res) => res.trim(),
-    };
-
-    return formatHandlers[format]
-      ? formatHandlers[format](response)
-      : formatHandlers.default(response);
-  } catch (error) {
-    return response;
-  }
 };
 
 export { cleanLLMResponse, generatePrompt, LLM, loadTemplate };
