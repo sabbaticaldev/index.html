@@ -1,4 +1,4 @@
-import { generatePrompt, LLM } from "../../services/llm/index.js";
+import { generatePrompt, LLM, loadTemplate } from "../../services/llm/index.js";
 import { executeTasks } from "../../utils.js";
 import {
   addComment,
@@ -12,34 +12,19 @@ import { importPatchContent } from "../import/patch.js";
 const deps = {};
 
 export async function runTodoTasks(config = {}) {
-  const { taskPrompt, contextSrc, labels } = config;
+  const { contextSrc, label } = config;
   const tasks = [
     {
       description: "Fetch Todo tasks",
       key: "todoTasks",
       operation: async () => {
         // Fetch open issues labeled as Todo from GitHub using gh CLI
-        const openIssues = await fetchOpenIssues(labels).map((issue) => ({
+        const openIssues = await fetchOpenIssues(label).map((issue) => ({
           issueNumber: issue.number,
           title: issue.title,
           description: issue.body,
         }));
-
-        const templateFile = "coding/github/run.js";
-        const prompt = await generatePrompt(
-          {
-            contextSrc,
-            taskPrompt,
-            strategy: "diff",
-            openIssues,
-          },
-          templateFile,
-        );
-
-        return await LLM.execute("bedrock", prompt, {
-          responseFormat: "json",
-          prefillMessage: "[",
-        });
+        return openIssues;
       },
     },
     {
@@ -47,17 +32,17 @@ export async function runTodoTasks(config = {}) {
       dependencies: ["todoTasks"],
       operation: async () => {
         for (const task of deps.todoTasks) {
-          const { refactoringFiles, taskPrompt, issueNumber } = task;
+          const { refactoringFiles, description, issueNumber } = task;
 
-          const templateFile = "coding/refactor-diff.js";
+          const template = loadTemplate("coding/refactor-diff.js");
           const prompt = await generatePrompt(
             {
               contextSrc,
               refactoringFiles,
-              taskPrompt,
+              description,
               strategy: "diff",
             },
-            templateFile,
+            template,
             "diff",
           );
 

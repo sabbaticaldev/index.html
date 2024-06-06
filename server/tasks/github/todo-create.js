@@ -28,10 +28,7 @@ export async function createTodoTasks(config) {
       operation: async () => {
         if (!Array.isArray(deps.llmTasks)) return;
         for (const task of deps.llmTasks) {
-          console.log(JSON.stringify(deps.llmTasks));
-          const { title, description, labels } = task;
-          const issueNumber = await createIssue(title, description, labels);
-          task.issueNumber = issueNumber;
+          await createIssue(task);
         }
         return deps.llmTasks;
       },

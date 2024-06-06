@@ -112,10 +112,9 @@ const formatExamplePairs = (
   exampleOutputs,
   responseFormat = "json",
 ) => {
-  const inputs = Array.isArray(exampleInputs) ? exampleInputs : [exampleInputs];
-  const outputs = Array.isArray(exampleOutputs)
-    ? exampleOutputs
-    : [exampleOutputs];
+  const isPair = Array.isArray(exampleInputs) && Array.isArray(exampleOutputs);
+  const inputs = isPair ? exampleInputs : [exampleInputs];
+  const outputs = isPair ? exampleOutputs : [exampleOutputs];
 
   return inputs
     .map((input, index) => {

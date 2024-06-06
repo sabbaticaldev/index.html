@@ -30,7 +30,7 @@ export async function connectToProject(url) {
   }
 }
 
-export async function createIssue(title, description, labels = []) {
+export async function createIssue({ title, description, labels = [] }) {
   try {
     const response = await octokit.issues.create({
       owner: settings.GITHUB_OWNER,
