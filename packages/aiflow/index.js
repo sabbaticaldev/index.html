@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 
+import { runCLI } from "./utils/cli.js";
+
 import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "./constants.js";
 import bedrock from "./engines/bedrock.js";
 import openai from "./engines/openai.js";
@@ -132,3 +134,5 @@ const formatResponse = (exampleData, responseFormat = "json", rootElement) => {
     : exampleData;
 };
 export { generatePrompt, LLM };
+
+runCLI();

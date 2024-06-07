@@ -4,8 +4,10 @@
   "description": "Workflow and LLM integration package",
   "type": "module",
   "main": "index.js",
-  "module": "index",
-  "private": true,
+  "bin": {
+    "aiflow": "bin/aiflow.js"
+  },
+  "private": false,
   "publishConfig": {
     "access": "public"
   },
@@ -24,7 +26,6 @@
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.556.0",
     "@inquirer/prompts": "^5.0.5",
-    "aiflow": "workspace:*",
     "diff": "^5.2.0",
     "openai": "^4.47.2",
     "xml2js": "^0.6.2"
