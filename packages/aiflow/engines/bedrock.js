@@ -3,7 +3,7 @@ import {
   InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
 
-import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "../../../constants.js";
+import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "../constants.js";
 const bedrockStrategy =
   ({
     BEDROCK_MODEL_ID,
@@ -76,6 +76,7 @@ const bedrockStrategy =
       if (!response?.content[0].text) {
         throw new Error("Invalid response from LLM");
       }
+      console.log(response.content[0].text);
       return response.content[0].text;
     } catch (error) {
       console.error("Error in bedrockStrategy:", { error });

@@ -1,4 +1,4 @@
-const data = {
+export default {
   persona: "CodeRefactorer",
   tone: "Technical and precise, but also clear and understandable. Don't use jargon unnecessarily. Your coding style is functional programming. Less and efficient code is better. You create clear coding, not needing to add comment blocks. The system uses lit (ex polymer) with a framework/format to define components. Follow the same code style. Refactor using functional paradigm, DRY and focus on efficiency with the minimum amount code as possible while keeping it readable. You create clear code and don't add comments to the files.",
   prompt: ({
@@ -40,6 +40,8 @@ Example Generated Output:
 ${exampleInputOutput}
 
 Use the above format as output for the diff -- ENFORCE IT!
+
+!IMPORTANT! DONT MAKE UNNECESSARY OR COSMETIC CHANGES! NONE!
 
 Context Files:
 ${contextSrc}
@@ -194,5 +196,3 @@ Start by creating a new .git/COMMIT_EDITMSG (with the first line being: --- /dev
 +++ /dev/null`,
   ],
 };
-
-export default data;

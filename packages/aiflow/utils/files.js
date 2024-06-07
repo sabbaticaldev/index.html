@@ -1,14 +1,23 @@
-import { mkdir, readdir, readFile } from "fs/promises";
+import fs from "fs/promises";
 import path from "path";
 
 const buildTree = async (dirPaths, extensions = [".js", ".json"]) => {
   const tree = [];
 
   for (const dirPath of Array.isArray(dirPaths) ? dirPaths : [dirPaths]) {
-    await mkdir(dirPath, { recursive: true });
-    const items = await readdir(dirPath, { withFileTypes: true });
+    await fs.mkdir(dirPath, { recursive: true });
+    const items = await fs.readdir(dirPath, { withFileTypes: true });
     for (const item of items) {
       const itemPath = path.join(dirPath, item.name);
+
+      // Skip .git and node_modules directories
+      if (
+        item.isDirectory() &&
+        (item.name === ".git" || item.name === "node_modules")
+      ) {
+        continue;
+      }
+
       if (item.isDirectory()) {
         tree.push({
           type: "directory",
@@ -18,7 +27,7 @@ const buildTree = async (dirPaths, extensions = [".js", ".json"]) => {
         });
       } else {
         if (!extensions || extensions.some((ext) => item.name.endsWith(ext))) {
-          const content = await readFile(itemPath, "utf8");
+          const content = await fs.readFile(itemPath, "utf8");
           tree.push({
             type: "file",
             name: item.name,
@@ -75,4 +84,27 @@ export const processFiles = async (dirPaths, extensions = [".js", ".json"]) => {
 
   output += formatFiles(tree);
   return output;
+};
+
+export const parseInput = async (filePath) => {
+  const fullFilePath = path.resolve(process.cwd(), filePath);
+  if (filePath.endsWith(".json")) {
+    try {
+      const data = await fs.readFile(fullFilePath, "utf8");
+      return JSON.parse(data);
+    } catch (error) {
+      console.error("Failed to read or parse JSON file:", error);
+      throw error;
+    }
+  } else if (filePath.endsWith(".js")) {
+    try {
+      const module = await import(`file://${fullFilePath}`);
+      return module.default;
+    } catch (error) {
+      console.error("Failed to import JS module:", error);
+      throw error;
+    }
+  } else {
+    throw new Error("Unsupported file type");
+  }
 };

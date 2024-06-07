@@ -1,11 +1,11 @@
+import { generatePrompt, LLM } from "aiflow";
+import { importPatchContent } from "aiflow/utils/diff.js";
+import { processFiles } from "aiflow/utils/files.js";
+import { executeTasks } from "aiflow/utils/tasks.js";
 import { exec } from "child_process";
 import fs from "fs";
 import path from "path";
 import util from "util";
-
-import { generatePrompt, LLM } from "../services/llm/index.js";
-import { executeTasks, processFiles } from "../utils.js";
-import { importPatchContent } from "./import/patch.js";
 
 const execAsync = util.promisify(exec);
 const deps = {};
@@ -20,7 +20,7 @@ async function runESLintFix(files) {
     console.error("ESLint failed:", error);
   }
 }
-export async function refactorFolder(options) {
+async function refactorFolder({ config, template }) {
   const {
     contextSrc,
     refactoringFiles,
@@ -28,7 +28,7 @@ export async function refactorFolder(options) {
     responseFormat = "json",
     strategy = "file",
     llmProvider = "bedrock",
-  } = options;
+  } = config;
   const outputDirectory = `code/${refactoringFiles
     .replace(/[^a-z0-9]/gi, "_")
     .toLowerCase()}`;
@@ -41,8 +41,6 @@ export async function refactorFolder(options) {
   const commitMessageFilePath = path.join(".git", "COMMIT_EDITMSG");
   const llmResponsePath = path.join(outputDirectory, "llmResponse.txt");
   const isDiff = strategy === "diff";
-  const template = isDiff ? "refactor-diff" : "refactor";
-  const templateFile = `coding/${template}.js`;
   fs.mkdirSync(outputDirectory, { recursive: true });
   const tasks = [
     {
@@ -73,7 +71,7 @@ export async function refactorFolder(options) {
             taskPrompt,
             strategy,
           },
-          templateFile,
+          template,
           responseFormat,
         ),
     },
@@ -86,8 +84,6 @@ export async function refactorFolder(options) {
         const response = await LLM.execute(llmProvider, deps.prompt, {
           responseFormat,
         });
-        //TODO: refactor diff to add a commit message file
-        console.log(response);
         const commitMessage = response.commitMessage;
         if (commitMessage && fs.existsSync(".git")) {
           if (fs.existsSync(commitMessageFilePath))
@@ -122,7 +118,9 @@ export async function refactorFolder(options) {
       dependencies: ["llmResponse"],
       operation: async () => {
         if (deps.llmResponse) {
-          const files = await importPatchContent(deps.llmResponse);
+          const files = await importPatchContent(deps.llmResponse, {
+            dirPath: Array.isArray(contextSrc) ? contextSrc[0] : contextSrc,
+          });
           return files;
         }
       },
@@ -136,9 +134,11 @@ export async function refactorFolder(options) {
     },
   ];
   try {
-    await executeTasks({ tasks, deps, prompt: true });
+    await executeTasks({ tasks, deps, prompt: true, config });
   } catch (error) {
     console.error("Error refactoring folder:", error);
     throw error;
   }
 }
+
+export default refactorFolder;

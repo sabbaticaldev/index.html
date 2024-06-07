@@ -6,13 +6,15 @@ const octokit = new Octokit({
   auth: settings.GITHUB_ACCESS_TOKEN,
 });
 
-export async function createProject(name, description) {
+export async function createProject(config) {
+  const { name, description } = config;
   try {
     const response = await octokit.repos.createForAuthenticatedUser({
       name,
       description,
       private: true,
     });
+    console.log("Project url: " + response.data.clone_url);
     return response.data.clone_url;
   } catch (error) {
     console.error(`Failed to create project "${name}":`, error);

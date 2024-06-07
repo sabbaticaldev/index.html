@@ -1,8 +1,8 @@
-import { applyPatch, createTwoFilesPatch, parsePatch } from "diff";
+import { applyPatch, formatPatch, parsePatch } from "diff";
 import fs from "fs";
 import path from "path";
 
-const applyDiffToFileSystem = async (diffContent, config = {}) => {
+export const applyDiffToFileSystem = async (diffContent, config = {}) => {
   const { dirPath } = config;
   const patches = parsePatch(diffContent);
   const lines = diffContent.split("\n");
@@ -23,10 +23,10 @@ const applyDiffToFileSystem = async (diffContent, config = {}) => {
     const fileName =
       patch.newFileName === "/dev/null" ? patch.oldFileName : patch.newFileName;
 
-    const filePath = fileName.startsWith(dirPath)
-      ? fileName
-      : path.join(dirPath, fileName);
-
+    const filePath =
+      dirPath && !fileName.startsWith(dirPath)
+        ? path.join(dirPath, fileName)
+        : fileName;
     if (
       patch.oldFileName === "/dev/null" &&
       patch.newFileName !== "/dev/null"
@@ -87,21 +87,22 @@ const applyDiffToFileSystem = async (diffContent, config = {}) => {
           console.error(`Original Data:\n${data}`);
           console.error(`Patch:\n${JSON.stringify(patch, null, 2)}`);
 
-          // Attempt to create and apply a reverse patch
-          const reversePatch = createTwoFilesPatch(
-            patch.newFileName,
-            patch.oldFileName,
-            "",
+          const reversePatch = formatPatch(patch);
+          const reverseUpdatedData = applyPatch(
             data,
-            patch.newHeader,
-            patch.oldHeader,
+            reversePatch.split("\n").slice(2).join("\n"),
+            {
+              context: 3,
+              fuzzFactor: 2,
+              ignoreWhitespace: true,
+            },
           );
-
-          const reverseUpdatedData = applyPatch("", reversePatch);
           if (reverseUpdatedData !== false) {
             await fs.promises.writeFile(filePath, reverseUpdatedData, "utf8");
             console.log(`File updated with reverse patch: ${filePath}`);
             modifiedFiles.push(filePath);
+          } else {
+            console.error(`Failed to apply reverse patch for ${filePath}`);
           }
         } else {
           await fs.promises.writeFile(filePath, updatedData, "utf8");

@@ -1,11 +1,14 @@
-import { generatePrompt, LLM } from "../../services/llm/index.js";
-import { executeTasks, processFiles } from "../../utils.js";
+import { generatePrompt, LLM } from "aiflow/index.js";
+import { processFiles } from "aiflow/utils/files.js";
+import { executeTasks } from "aiflow/utils/tasks.js";
+
 import { createIssue } from "../../utils/github.js";
 import { getLabels } from "../../utils/github.js";
 
 const deps = {};
 
-export async function createTodoTasks(config) {
+export async function createTodoTasks({ config }) {
+  console.log({ config });
   const { projectPath, taskPrompt } = config;
   const contextSrc = await processFiles(config.contextSrc);
 
@@ -17,7 +20,7 @@ export async function createTodoTasks(config) {
         const labels = JSON.stringify(await getLabels());
         const prompt = await generatePrompt(
           { taskPrompt, labels, contextSrc },
-          "coding/github/tasks.js",
+          "coding/github/todo-create.js",
           "json",
         );
         return await LLM.execute("bedrock", prompt, { prefillMessage: "[" });
@@ -38,7 +41,7 @@ export async function createTodoTasks(config) {
   ];
 
   try {
-    await executeTasks({ tasks, deps });
+    await executeTasks({ tasks, deps, config });
     console.log(`Todo tasks created for project: ${projectPath}`);
   } catch (error) {
     console.error("Error creating Todo tasks:", error);

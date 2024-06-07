@@ -63,7 +63,7 @@ const createApiQueue = (delay) => {
   return { enqueue };
 };
 
-export async function GetTrends(type) {
+export async function GetTrends({ type }) {
   const ig = new IgApiClient();
 
   const statePath = ".instagram-private-api";

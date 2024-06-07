@@ -1,3 +1,5 @@
+import { generatePrompt, LLM } from "aiflow/index.js";
+import { executeTasks } from "aiflow/utils/tasks.js";
 import fs from "fs";
 import path from "path";
 
@@ -7,14 +9,12 @@ import {
   generateCaptionImage,
 } from "../../services/image.js";
 import { fetchInstagramData } from "../../services/instagram.js";
-import { generatePrompt, LLM, loadTemplate } from "../../services/llm/index.js";
 import { embedCaptionToVideo } from "../../services/video.js";
 import {
   connectToWhatsApp,
   sendWhatsAppMessage,
 } from "../../services/whatsapp/index.js";
 import settings from "../../settings.js";
-import { executeTasks } from "../../utils.js";
 
 const deps = {};
 
@@ -95,10 +95,8 @@ export async function createReelRipOff(options) {
         key: "llm",
         dependencies: ["instagram"],
         operation: async () => {
-          const generalTemplate = loadTemplate(
-            "instagram/socialMediaPost.json",
-          );
-          const specificTemplate = loadTemplate("templates.json");
+          const generalTemplate = "instagram/socialMediaPost.json";
+          const specificTemplate = "templates.json";
 
           const prompt = await generatePrompt(
             {

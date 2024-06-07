@@ -1,8 +1,9 @@
+import { generatePrompt, LLM } from "aiflow/index.js";
+import { importPatchContent } from "aiflow/utils/diff.js";
+import { processFiles } from "aiflow/utils/files.js";
+import { executeTasks } from "aiflow/utils/tasks.js";
 import inquirer from "inquirer";
 
-import { generatePrompt, LLM, loadTemplate } from "../../services/llm/index.js";
-import { executeTasks } from "../../utils.js";
-import { processFiles } from "../../utils/files.js";
 import {
   addComment,
   closeIssue,
@@ -11,7 +12,6 @@ import {
   getLabels,
   mergePullRequest,
 } from "../../utils/github.js";
-import { importPatchContent } from "../import/patch.js";
 
 const deps = {};
 
@@ -27,10 +27,11 @@ async function promptUserForLabel(labels) {
   return selectedLabel;
 }
 
-export async function runTodoTasks(src = "./") {
+export async function runTodoTasks({ config, template }) {
+  console.log({ config, template });
+  const labels = await getLabels();
+  const selectedLabel = await promptUserForLabel(labels);
   try {
-    const labels = await getLabels();
-    const selectedLabel = await promptUserForLabel(labels);
     const tasks = [
       {
         description: "Fetch Todo tasks",
@@ -53,10 +54,11 @@ export async function runTodoTasks(src = "./") {
       {
         description: "Process Todo tasks",
         dependencies: ["todoTasks"],
-        operation: async () => {
+        operation: async ({ config, template }) => {
+          console.log({ template });
           for (const task of deps.todoTasks) {
             const { refactoringFiles, description, issueNumber } = task;
-            const contextSrc = await processFiles(src);
+            const contextSrc = await processFiles(config.input);
             const templateFile = "coding/refactor-diff.js";
             const prompt = await generatePrompt(
               {
@@ -73,7 +75,7 @@ export async function runTodoTasks(src = "./") {
             });
 
             const modifiedFiles = await importPatchContent(llmResponse, {
-              dirPath: src,
+              dirPath: config.input,
             });
             console.log(
               `Task completed. Modified files: ${modifiedFiles.join(", ")}`,
@@ -103,7 +105,7 @@ export async function runTodoTasks(src = "./") {
       },
     ];
 
-    await executeTasks({ tasks, deps });
+    await executeTasks({ tasks, deps, config });
   } catch (error) {
     console.error(
       `Error running Todo tasks for label ${selectedLabel}:`,

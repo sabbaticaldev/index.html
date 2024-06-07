@@ -1,11 +1,11 @@
 import fs from "fs";
 import path from "path";
 
-import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "../../constants.js";
-import settings from "../../settings.js";
-import { generateXMLFormat, parseXML } from "../../utils.js";
+import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "./constants.js";
 import bedrock from "./engines/bedrock.js";
 import openai from "./engines/openai.js";
+import settings from "./settings.js";
+import { generateXMLFormat, parseXML } from "./utils/xml.js";
 
 const personasPath = path.join(settings.__dirname, "./personas.json");
 
@@ -74,28 +74,21 @@ ${res.trim()}`,
   }
 };
 
-const loadTemplate = async (templateFile) => {
-  const filePath = path.join(settings.__dirname, "prompts", templateFile);
-  const templateData = await import(filePath);
-  return templateData.default;
-};
-
-const generatePrompt = async (config, templateFile, responseFormat) => {
-  const templateData = await loadTemplate(templateFile);
+const generatePrompt = async (config, template, responseFormat) => {
   const inputParameters = await prepareInputParameters(
     config,
-    templateData,
+    template,
     responseFormat,
   );
-  return templateData.prompt(inputParameters);
+  return template.prompt(inputParameters);
 };
 
-const prepareInputParameters = async (config, templateData, responseFormat) => {
+const prepareInputParameters = async (config, template, responseFormat) => {
   const params = { ...config };
 
   params.exampleInputOutput = formatExamplePairs(
-    templateData.exampleInput,
-    templateData.exampleOutput,
+    template.exampleInput,
+    template.exampleOutput,
     responseFormat,
   );
   params.persona = JSON.stringify(
@@ -138,5 +131,4 @@ const formatResponse = (exampleData, responseFormat = "json", rootElement) => {
     ? formatters[responseFormat]()
     : exampleData;
 };
-
-export { cleanLLMResponse, generatePrompt, LLM, loadTemplate };
+export { generatePrompt, LLM };

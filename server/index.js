@@ -1,6 +1,6 @@
 import express from "express";
 
-import { fetchGroup, importGroups } from "./models/group.js";
+import { fetchGroup, importGroups } from "./models/group.js"; 
 import { importTags } from "./models/tag.js";
 import { connectToWhatsApp } from "./services/whatsapp/index.js";
 
@@ -9,6 +9,8 @@ async function main() {
   const port = 3000;
   const importDelay = 1000;
   const maxGroups = 5;
+
+  // Initialize WhatsApp connection
   await connectToWhatsApp({ keepAlive: true, credential: "default" });
 
   app.use(express.json());

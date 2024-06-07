@@ -30,6 +30,7 @@ const data = {
     - !IMPORTANT! The first added task should be an overall specification of the change including all changed files (treeview) and an overall explanation and step-by-step guide for the change with progressive changes until the final goal and a valid package.json (using Vite for build) file if it is a new file or if there are changes to it
     - !IMPORTANT! The last task should be a review all to check if it is working and fix the things that are missing (importing components, start main component, etc).
     - !IMPORTANT! The first task should create only the basic files, let the component files for the subsequent tasks
+    - !IMPORTANT! Include the original taskPrompt in every issue and reference to it as the overall strategy
     ${
       contextSrc
         ? `
