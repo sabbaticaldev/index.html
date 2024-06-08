@@ -2,7 +2,6 @@ import { input, select, Separator } from "@inquirer/prompts";
 
 import { executeSelectedCommand, filesAutocomplete } from "./core.js";
 import settings from "./settings.js";
-import { parseInput } from "./utils/files.js";
 import * as fileUtils from "./utils/files.js";
 import { executeTasks } from "./utils/tasks.js";
 
@@ -69,7 +68,6 @@ export const start = async () => {
       selectedCommand,
       providedInput,
       settings,
-      parseInput,
       executeTasks,
     );
     return;
@@ -83,7 +81,6 @@ export const start = async () => {
       command,
       input,
       settings,
-      parseInput,
       executeTasks,
     );
   } catch (error) {

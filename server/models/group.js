@@ -1,8 +1,8 @@
+import { LLM } from "aiflow/core.js";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import ogs from "open-graph-scraper";
 import path from "path";
 
-import { LLM } from "../services/llm/index.js";
 import { processGroupInfo } from "../services/llm/tasks/whatsapp.js";
 import { connectToWhatsApp } from "../services/whatsapp/index.js";
 import { executeTasks } from "../utils.js";

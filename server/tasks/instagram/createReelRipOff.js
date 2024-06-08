@@ -1,4 +1,4 @@
-import { generatePrompt, LLM } from "aiflow/index.js";
+import { generatePrompt, LLM } from "aiflow/core.js";
 import { executeTasks } from "aiflow/utils/tasks.js";
 import fs from "fs";
 import path from "path";

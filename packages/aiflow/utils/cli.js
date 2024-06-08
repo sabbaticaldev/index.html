@@ -94,7 +94,7 @@ const executeSelectedCommand = async (commands, command, input) => {
 export const start = async () => {
   const promptsDir = path.join(settings.__dirname, "prompts");
   const commands = readdirSync(promptsDir);
-
+  console.log(process.argv);
   const [, , providedCommand, providedInput] = process.argv;
   const selectedCommand = commands.includes(providedCommand)
     ? providedCommand

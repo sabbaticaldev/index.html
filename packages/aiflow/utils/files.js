@@ -14,7 +14,8 @@ export const writeFile = (filePath, data) =>
 export const importFile = async (filePath) => (await import(filePath)).default;
 
 // Path operations
-export const resolvePath = (...args) => path.resolve(...args);
+export const resolvePath = (...args) =>
+  !console.log(args) && path.resolve(...args);
 export const joinPath = (...args) => path.join(...args);
 export const dirname = (filePath) => path.dirname(filePath);
 export const basename = (filePath) => path.basename(filePath);
@@ -105,14 +106,12 @@ export const processFiles = async (dirPaths, extensions = [".js", ".json"]) => {
 };
 
 export const parseInput = async (filePath) => {
-  const fullFilePath = resolvePath(process.cwd(), filePath);
   try {
     if (filePath.endsWith(".json")) {
-      const data = await readFile(fullFilePath);
+      const data = readFile(filePath);
       return JSON.parse(data);
     } else if (filePath.endsWith(".js")) {
-      const module = await importFile(`file://${fullFilePath}`);
-      return module.default;
+      return await importFile(`file://${filePath}`);
     } else {
       throw new Error("Unsupported file type");
     }
