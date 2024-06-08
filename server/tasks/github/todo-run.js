@@ -1,6 +1,6 @@
-import { generatePrompt, LLM } from "aiflow/core.js";
 import { importPatchContent } from "aiflow/utils/diff.js";
 import { processFiles } from "aiflow/utils/files.js";
+import { generatePrompt, LLM } from "aiflow/utils/llm.js";
 import { executeTasks } from "aiflow/utils/tasks.js";
 import inquirer from "inquirer";
 

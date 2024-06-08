@@ -1,78 +1,9 @@
-import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "./constants.js";
-import bedrock from "./engines/bedrock.js";
-import openai from "./engines/openai.js";
-import settings from "./settings.js";
-import * as fileUtils from "./utils/files.js";
-import { generateXMLFormat, parseXML } from "./utils/xml.js";
-
-export const filesAutocomplete = (input) => {
-  const fullPath = fileUtils.resolvePath(input || ".");
-  if (fileUtils.fileExists(fullPath) && fileUtils.isFile(fullPath)) {
-    return [{ name: fileUtils.basename(fullPath), value: fullPath }];
-  }
-  const files = fileUtils.readDir(fullPath).map((file) => ({
-    name: file,
-    value: fileUtils.joinPath(fullPath, file),
-  }));
-  return files;
-};
-
-export const getConfig = async (input) => {
-  const fullPath = fileUtils.resolvePath(input);
-  const file =
-    fileUtils.fileExists(fullPath) && fileUtils.isDirectory(fullPath)
-      ? { input }
-      : await fileUtils.parseInput(fullPath);
-  console.log({ file });
-  return file;
-};
-
-// Load task details using file utilities
-export const loadTaskDetails = async (selectedCommand, settings) => {
-  const promptMetadataPath = fileUtils.resolvePath(
-    settings.__dirname,
-    `prompts/${selectedCommand}/prompt.json`,
-  );
-  const templatePath = fileUtils.resolvePath(
-    settings.__dirname,
-    `prompts/${selectedCommand}/template.js`,
-  );
-  const operationPath = fileUtils.resolvePath(
-    settings.__dirname,
-    `prompts/${selectedCommand}/index.js`,
-  );
-
-  const metadata = JSON.parse(fileUtils.readFile(promptMetadataPath));
-  const template = await fileUtils.importFile(templatePath);
-  const operation = await fileUtils.importFile(operationPath);
-
-  return { metadata, template, operation };
-};
-
-// Execute the selected command
-export const executeSelectedCommand = async (
-  commands,
-  command,
-  input,
-  settings,
-  executeTasks,
-) => {
-  try {
-    const config = await getConfig(input);
-    const selectedCommand = commands.find((c) => c === command);
-    if (selectedCommand) {
-      const task = await loadTaskDetails(selectedCommand, settings);
-      await executeTasks({
-        config,
-        tasks: [task],
-      });
-    } else {
-      console.error(`Unknown command: ${command}`);
-    }
-  } catch (error) {
-    console.error("Error executing command:", error);
-  }
-};
+import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "../constants.js";
+import bedrock from "../engines/bedrock.js";
+import openai from "../engines/openai.js";
+import settings from "../settings.js";
+import * as fileUtils from "./files.js";
+import { generateXMLFormat, parseXML } from "./xml.js";
 
 // Load personas using file utilities
 export const loadPersonas = () => {

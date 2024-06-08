@@ -27,6 +27,7 @@
     "@aws-sdk/client-bedrock-runtime": "^3.556.0",
     "@inquirer/prompts": "^5.0.5",
     "diff": "^5.2.0",
+    "dotenv": "^16.4.5",
     "openai": "^4.47.2",
     "xml2js": "^0.6.2"
   },

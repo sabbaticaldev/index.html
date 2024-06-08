@@ -1,21 +1,48 @@
-import { input, select, Separator } from "@inquirer/prompts";
-import { existsSync, readdirSync, readFileSync, statSync } from "fs";
-import path from "path";
+import { input, select } from "@inquirer/prompts";
 
-import settings from "../settings.js";
-import { parseInput } from "./files.js";
-import { executeTasks } from "./tasks.js";
+import * as fileUtils from "./files.js";
 
-const filesAutocomplete = async (input = "") => {
-  const fullPath = path.resolve(input || ".");
-  if (existsSync(fullPath) && statSync(fullPath).isFile()) {
-    return [{ name: path.basename(fullPath), value: fullPath }];
+export const filesAutocomplete = (input) => {
+  const fullPath = fileUtils.resolvePath(input || ".");
+  if (fileUtils.fileExists(fullPath) && fileUtils.isFile(fullPath)) {
+    return [{ name: fileUtils.basename(fullPath), value: fullPath }];
   }
-  const files = readdirSync(fullPath).map((file) => ({
+  const files = fileUtils.readDir(fullPath).map((file) => ({
     name: file,
-    value: path.join(fullPath, file),
+    value: fileUtils.joinPath(fullPath, file),
   }));
   return files;
+};
+
+export const getConfig = async (input) => {
+  const fullPath = fileUtils.resolvePath(input);
+  const file =
+    fileUtils.fileExists(fullPath) && fileUtils.isDirectory(fullPath)
+      ? { input }
+      : await fileUtils.parseInput(fullPath);
+  return file;
+};
+
+// Load task details using file utilities
+export const loadTaskDetails = async (selectedCommand, settings) => {
+  const promptMetadataPath = fileUtils.resolvePath(
+    settings.__dirname,
+    `prompts/${selectedCommand}/prompt.json`,
+  );
+  const templatePath = fileUtils.resolvePath(
+    settings.__dirname,
+    `prompts/${selectedCommand}/template.js`,
+  );
+  const operationPath = fileUtils.resolvePath(
+    settings.__dirname,
+    `prompts/${selectedCommand}/index.js`,
+  );
+
+  const metadata = JSON.parse(fileUtils.readFile(promptMetadataPath));
+  const template = await fileUtils.importFile(templatePath);
+  const operation = await fileUtils.importFile(operationPath);
+
+  return { metadata, template, operation };
 };
 
 export const askQuestions = async (questions) => {
@@ -33,7 +60,7 @@ export const askQuestions = async (questions) => {
       answers[name] = await input({
         message,
         validate: async (input) => {
-          const files = await filesAutocomplete(input);
+          const files = filesAutocomplete(input);
           if (files.length > 0) {
             return true;
           } else {
@@ -46,39 +73,19 @@ export const askQuestions = async (questions) => {
   return answers;
 };
 
-const getConfig = async (input) => {
-  const fullPath = path.resolve(input);
-  return existsSync(fullPath) && statSync(fullPath).isDirectory()
-    ? { input }
-    : await parseInput(input);
-};
-
-const loadTaskDetails = async (selectedCommand) => {
-  const promptMetadataPath = path.resolve(
-    settings.__dirname,
-    `prompts/${selectedCommand}/prompt.json`,
-  );
-  const templatePath = path.resolve(
-    settings.__dirname,
-    `prompts/${selectedCommand}/template.js`,
-  );
-  const operationPath = path.resolve(
-    settings.__dirname,
-    `prompts/${selectedCommand}/index.js`,
-  );
-
-  const metadata = JSON.parse(readFileSync(promptMetadataPath, "utf-8"));
-  const template = (await import(templatePath)).default;
-  const operation = (await import(operationPath)).default;
-  return { metadata, template, operation };
-};
-const executeSelectedCommand = async (commands, command, input) => {
+// Execute the selected command
+export const executeSelectedCommand = async (
+  commands,
+  command,
+  input,
+  settings,
+  executeTasks,
+) => {
   try {
     const config = await getConfig(input);
     const selectedCommand = commands.find((c) => c === command);
-
     if (selectedCommand) {
-      const task = await loadTaskDetails(selectedCommand);
+      const task = await loadTaskDetails(selectedCommand, settings);
       await executeTasks({
         config,
         tasks: [task],
@@ -86,49 +93,6 @@ const executeSelectedCommand = async (commands, command, input) => {
     } else {
       console.error(`Unknown command: ${command}`);
     }
-  } catch (error) {
-    console.error("Error executing command:", error);
-  }
-};
-
-export const start = async () => {
-  const promptsDir = path.join(settings.__dirname, "prompts");
-  const commands = readdirSync(promptsDir);
-  console.log(process.argv);
-  const [, , providedCommand, providedInput] = process.argv;
-  const selectedCommand = commands.includes(providedCommand)
-    ? providedCommand
-    : null;
-  const questions = [
-    {
-      type: "select",
-      name: "command",
-      message: "Select a command:",
-      source: async () => [
-        ...commands.map((folder) => ({
-          name: folder,
-          value: folder,
-        })),
-        new Separator(),
-      ],
-    },
-    {
-      type: "input",
-      name: "input",
-      message: "Enter the directory path or file name:",
-      when: () => true,
-    },
-  ];
-
-  if (selectedCommand && providedInput) {
-    await executeSelectedCommand(commands, selectedCommand, providedInput);
-    return;
-  }
-
-  try {
-    const answers = await askQuestions(questions);
-    const { command, input } = answers;
-    await executeSelectedCommand(commands, command, input);
   } catch (error) {
     console.error("Error executing command:", error);
   }

@@ -6,7 +6,8 @@ export const fileExists = (filePath) => fs.existsSync(filePath);
 export const isFile = (filePath) => fs.statSync(filePath).isFile();
 export const isDirectory = (filePath) => fs.statSync(filePath).isDirectory();
 export const readFile = (filePath) => fs.readFileSync(filePath, "utf-8");
-export const readDir = (dirPath) => fs.readdirSync(dirPath);
+export const readDir = (dirPath, config = {}) =>
+  fs.readdirSync(dirPath, config);
 export const createDir = (dirPath) =>
   fs.promises.mkdir(dirPath, { recursive: true });
 export const writeFile = (filePath, data) =>
@@ -27,6 +28,7 @@ const buildTree = async (dirPaths, extensions = [".js", ".json"]) => {
   for (const dirPath of Array.isArray(dirPaths) ? dirPaths : [dirPaths]) {
     await createDir(dirPath);
     const items = readDir(dirPath, { withFileTypes: true });
+    console.log({ items });
     for (const item of items) {
       const itemPath = joinPath(dirPath, item.name);
 

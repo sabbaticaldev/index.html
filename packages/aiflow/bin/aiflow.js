@@ -1,3 +1,7 @@
 #!/usr/bin/env node
 
-require('../index.js');
+(async () => {
+  const { start } = await import("../index.js");
+  console.log({ start });
+  start();
+})();

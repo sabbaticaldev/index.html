@@ -1,4 +1,4 @@
-import { LLM } from "aiflow/core.js";
+import { LLM } from "aiflow/utils/llm.js";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import ogs from "open-graph-scraper";
 import path from "path";

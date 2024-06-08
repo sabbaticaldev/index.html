@@ -1,5 +1,5 @@
-import { generatePrompt, LLM } from "aiflow/core.js";
 import { processFiles } from "aiflow/utils/files.js";
+import { generatePrompt, LLM } from "aiflow/utils/llm.js";
 import { executeTasks } from "aiflow/utils/tasks.js";
 
 import { createIssue } from "../../utils/github.js";

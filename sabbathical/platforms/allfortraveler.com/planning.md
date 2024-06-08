@@ -1,2 +1,0 @@
-- Create a website like mxnomads.com to list whatsapp groups
-- use github that was shared in the Rio Techies group as base

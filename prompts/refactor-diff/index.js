@@ -1,6 +1,6 @@
-import { generatePrompt, LLM } from "aiflow/core.js";
 import { importPatchContent } from "aiflow/utils/diff.js";
 import { processFiles } from "aiflow/utils/files.js";
+import { generatePrompt, LLM } from "aiflow/utils/llm.js";
 import { executeTasks } from "aiflow/utils/tasks.js";
 import { exec } from "child_process";
 import fs from "fs";
@@ -29,6 +29,7 @@ async function refactorFolder({ config, template }) {
     strategy = "file",
     llmProvider = "bedrock",
   } = config;
+  console.log({ config });
   const outputDirectory = `code/${refactoringFiles
     .replace(/[^a-z0-9]/gi, "_")
     .toLowerCase()}`;
