@@ -15,9 +15,9 @@ npm install aiflow
 Here's a basic example of how to use aiflow in your project:
 
 ```javascript
-import { LLM, generatePrompt } from 'aiflow';
+import { LLM, prompt } from 'aiflow';
 
-const prompt = generatePrompt({
+const prompt = prompt({
   taskPrompt: 'Translate the following text to French:',
   inputText: 'Hello, how are you?'
 }, 'translation-template.js');
@@ -30,7 +30,7 @@ console.log(translatedText);
 
 aiflow provides several utility functions to help with common tasks:
 
-- `generatePrompt`: Generates a prompt based on a template and input parameters.
+- `prompt`: Generates a prompt based on a template and input parameters.
 - `cleanLLMResponse`: Cleans and formats the response from an LLM.
 - `parseXML`: Parses an XML string into a JavaScript object.
 - `generateXMLFormat`: Generates an XML string from a JavaScript object.
@@ -72,9 +72,9 @@ Here are a few examples of how you can use aiflow for common LLM and workflow ta
 ### Text Summarization
 
 ```javascript
-import { LLM, generatePrompt } from 'aiflow';
+import { LLM, prompt } from 'aiflow';
 
-const prompt = generatePrompt({
+const prompt = prompt({
   taskPrompt: 'Summarize the following text:',
   inputText: 'A long article...'
 }, 'summarization-template.js');
@@ -86,9 +86,9 @@ console.log(summary);
 ### Code Generation
 
 ```javascript
-import { LLM, generatePrompt } from 'aiflow';
+import { LLM, prompt } from 'aiflow';
 
-const prompt = generatePrompt({
+const prompt = prompt({
   taskPrompt: 'Generate a Python function to calculate the factorial of a number:',
 }, 'code-generation-template.js');
 

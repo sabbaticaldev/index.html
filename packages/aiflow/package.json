@@ -23,6 +23,9 @@
       "git add"
     ]
   },
+  "resolutions": {
+    "@types/node": "18.19.33"
+  },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.556.0",
     "@inquirer/prompts": "^5.0.5",
@@ -32,5 +35,9 @@
     "xml2js": "^0.6.2"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+    "jest": "^29.5.0",
+  }
 }

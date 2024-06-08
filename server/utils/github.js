@@ -22,16 +22,6 @@ export async function createProject(config) {
   }
 }
 
-export async function connectToProject(url) {
-  try {
-    const repoName = url.split("/").pop().split(".")[0];
-    console.log(`Connected to project ${repoName}`);
-  } catch (error) {
-    console.error(`Failed to connect to project at ${url}:`, error);
-    throw error;
-  }
-}
-
 export async function createIssue({ title, description, labels = [] }) {
   try {
     const response = await octokit.issues.create({

@@ -1,5 +1,15 @@
+/**
+ * OpenAI strategy for interacting with the OpenAI API.
+ * @module engines/openai
+ */
 import OpenAIApi from "openai";
 
+/**
+ * Creates an OpenAI strategy function for executing LLM requests.
+ * @param {Object} config - Configuration options for the OpenAI strategy.
+ * @param {string} config.OPENAI_API_KEY - The OpenAI API key.
+ * @returns {Function} The OpenAI strategy function.
+ */
 const openaiStrategy =
   (config) =>
   async (prompt, options = {}) => {

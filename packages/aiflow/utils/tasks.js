@@ -1,4 +1,4 @@
-import fs from "fs";
+import * as fileUtils from "../engines/node/fs.js";
 
 const maxAttempts = 5;
 
@@ -21,20 +21,18 @@ export const checkAndExecute = async ({
         return;
       }
     }
-    if (filePath && fs.existsSync(filePath)) {
+    if (filePath && await fileUtils.fileExists(filePath)) {
       console.log(`File ${filePath} exists. Skipping ${description}.`);
-      return filePath.endsWith(".json")
-        ? JSON.parse(fs.readFileSync(filePath, "utf8"))
-        : fs.readFileSync(filePath, "utf8");
+      const file = await fileUtils.readFile(filePath);
+      return filePath.endsWith(".json") ? JSON.parse(file) : file;
     }
     try {
       console.log("Running operation:", description);
       const response = await operation({ config, filePath });
       if (filePath) {
-        fs.writeFileSync(
+        fileUtils.writeFile(
           filePath,
           typeof response === "string" ? response : JSON.stringify(response),
-          "utf-8",
         );
       }
       return response;
@@ -50,10 +48,6 @@ export const checkAndExecute = async ({
 
 export const executeTasks = async ({ tasks, config = {}, deps = {} }) => {
   for (const task of tasks) {
-    if (task.dependencies) {
-      await Promise.all(task.dependencies.map((dep) => deps[dep]));
-    }
-
     const result = await checkAndExecute({
       ...task,
       config,
@@ -72,7 +66,6 @@ export const executeTasks = async ({ tasks, config = {}, deps = {} }) => {
             ),
           );
         } else {
-          console.log({ task });
           return await task.operation({
             ...task,
             ...config,

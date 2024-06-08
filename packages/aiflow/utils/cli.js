@@ -1,13 +1,23 @@
+/**
+ * Utility functions for the aiflow CLI.
+ * @module utils/cli
+ */
 import { input, select } from "@inquirer/prompts";
+import * as fileUtils from "../engines/node/fs.js";
+import { FLOWS_DIR } from "../constants.js";
+import { parseInput } from "./files.js";
 
-import * as fileUtils from "./files.js";
-
-export const filesAutocomplete = (input) => {
+/**
+ * Provides autocomplete suggestions for file paths based on the given input.
+ * @param {string} input - The user input for the file path.
+ * @returns {Array} An array of autocomplete suggestions for file paths.
+ */
+export const filesAutocomplete = async (input) => {
   const fullPath = fileUtils.resolvePath(input || ".");
-  if (fileUtils.fileExists(fullPath) && fileUtils.isFile(fullPath)) {
+  if (await fileUtils.isFile(fullPath)) {
     return [{ name: fileUtils.basename(fullPath), value: fullPath }];
   }
-  const files = fileUtils.readDir(fullPath).map((file) => ({
+  const files = await fileUtils.readDir(fullPath).map((file) => ({
     name: file,
     value: fileUtils.joinPath(fullPath, file),
   }));
@@ -15,36 +25,53 @@ export const filesAutocomplete = (input) => {
 };
 
 export const getConfig = async (input) => {
+/**
+ * Retrieves the configuration object based on the given input.
+ * @param {string} input - The input file path or directory.
+ * @returns {Promise<Object>} A promise that resolves to the configuration object.
+ */
   const fullPath = fileUtils.resolvePath(input);
-  const file =
-    fileUtils.fileExists(fullPath) && fileUtils.isDirectory(fullPath)
+  const file = await fileUtils.isDirectory(fullPath)
       ? { input }
-      : await fileUtils.parseInput(fullPath);
+      : await parseInput(fullPath);
   return file;
 };
 
 // Load task details using file utilities
+/**
+ * Loads the task details based on the selected command.
+ * @param {string} selectedCommand - The selected command.
+ * @param {Object} settings - The application settings.
+ * @returns {Promise<Object>} A promise that resolves to an object containing the task metadata, template, and operation.
+ */
 export const loadTaskDetails = async (selectedCommand, settings) => {
+  const INDEX_FILE = 'index.js';
+  const PROMPT_FILE = 'prompt.json';
+
   const promptMetadataPath = fileUtils.resolvePath(
     settings.__dirname,
-    `prompts/${selectedCommand}/prompt.json`,
-  );
-  const templatePath = fileUtils.resolvePath(
-    settings.__dirname,
-    `prompts/${selectedCommand}/template.js`,
+    FLOWS_DIR,
+    selectedCommand,
+    PROMPT_FILE
   );
   const operationPath = fileUtils.resolvePath(
     settings.__dirname,
-    `prompts/${selectedCommand}/index.js`,
+    FLOWS_DIR, 
+    selectedCommand,
+    INDEX_FILE
   );
-
-  const metadata = JSON.parse(fileUtils.readFile(promptMetadataPath));
-  const template = await fileUtils.importFile(templatePath);
+    
+  const metadata = JSON.parse(await fileUtils.readFile(promptMetadataPath));  
   const operation = await fileUtils.importFile(operationPath);
 
-  return { metadata, template, operation };
+  return { metadata, operation };
 };
 
+/**
+ * Prompts the user with a series of questions and returns their answers.
+ * @param {Array} questions - An array of question objects.
+ * @returns {Promise<Object>} A promise that resolves to an object containing the user's answers.
+ */
 export const askQuestions = async (questions) => {
   const answers = {};
   for (const question of questions) {
@@ -60,7 +87,7 @@ export const askQuestions = async (questions) => {
       answers[name] = await input({
         message,
         validate: async (input) => {
-          const files = filesAutocomplete(input);
+          const files = await filesAutocomplete(input);
           if (files.length > 0) {
             return true;
           } else {
@@ -73,6 +100,15 @@ export const askQuestions = async (questions) => {
   return answers;
 };
 
+/**
+ * Executes the selected command based on the provided input and settings.
+ * @param {Array} commands - An array of available commands.
+ * @param {string} command - The selected command.
+ * @param {string} input - The user input for the command.
+ * @param {Object} settings - The application settings.
+ * @param {Function} executeTasks - The function to execute the tasks.
+ * @returns {Promise<void>} A promise that resolves when the command execution is complete.
+ */
 // Execute the selected command
 export const executeSelectedCommand = async (
   commands,

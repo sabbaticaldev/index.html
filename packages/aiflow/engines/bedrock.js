@@ -1,9 +1,23 @@
+/**
+ * Bedrock strategy for interacting with the AWS Bedrock Runtime API.
+ * @module engines/bedrock
+ */
 import {
   BedrockRuntimeClient,
   InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
 
 import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "../constants.js";
+
+/**
+ * Creates a Bedrock strategy function for executing LLM requests.
+ * @param {Object} config - Configuration options for the Bedrock strategy.
+ * @param {string} config.BEDROCK_MODEL_ID - The ID of the Bedrock model to use.
+ * @param {string} config.AWS_ACCESS_KEY_ID - The AWS access key ID.
+ * @param {string} config.AWS_SECRET_ACCESS_KEY - The AWS secret access key.
+ * @param {string} config.AWS_REGION - The AWS region.
+ * @returns {Function} The Bedrock strategy function.
+ */
 const bedrockStrategy =
   ({
     BEDROCK_MODEL_ID,
@@ -19,12 +33,12 @@ const bedrockStrategy =
       accept = "application/json",
       anthropicVersion = "bedrock-2023-05-31",
       maxTokens = 8096,
-      temperature = 0.2,
+      temperature = 0.1,
       topK = 100,
       topP = 0.9,
       stopSequences = ["\\n\\nHuman:"],
     } = options;
-
+    console.log({prompt});
     const client = new BedrockRuntimeClient({
       credentials: {
         accessKeyId: AWS_ACCESS_KEY_ID,
@@ -76,7 +90,6 @@ const bedrockStrategy =
       if (!response?.content[0].text) {
         throw new Error("Invalid response from LLM");
       }
-      console.log(response.content[0].text);
       return response.content[0].text;
     } catch (error) {
       console.error("Error in bedrockStrategy:", { error });

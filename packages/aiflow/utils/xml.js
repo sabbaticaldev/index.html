@@ -1,5 +1,4 @@
-import * as fs from "fs";
-import path from "path";
+import * as fileUtils from "../engines/node/fs.js";
 import { parseString } from "xml2js";
 export const parseXML = (xml) => {
   let result;
@@ -78,14 +77,14 @@ export const generateXMLFormat = (exampleOutput, rootElement = "root") => {
 
 export const importXmlFiles = async ({ input }) => {
   try {
-    const xmlContent = await fs.readFile(input, "utf8");
+    const xmlContent = await fileUtils.readFile(input);
     const parsedXml = parseXML(xmlContent);
     for (const file of parsedXml) {
       const { filePath, content } = file;
-      const outputPath = path.join(process.cwd(), filePath);
+      const outputPath = fileUtils.joinPath(process.cwd(), filePath);
 
-      await fs.mkdir(path.dirname(outputPath), { recursive: true });
-      await fs.writeFile(outputPath, content, "utf8");
+      await fileUtils.createDir(fileUtils.dirname(outputPath));
+      await fileUtils.writeFile(outputPath, content);
       console.log(`File imported: ${outputPath}`);
     }
   } catch (error) {

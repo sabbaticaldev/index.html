@@ -1,23 +1,21 @@
 import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "../constants.js";
 import bedrock from "../engines/bedrock.js";
+import * as fileUtils from "../engines/node/fs.js";
 import openai from "../engines/openai.js";
 import settings from "../settings.js";
-import * as fileUtils from "./files.js";
 import { generateXMLFormat, parseXML } from "./xml.js";
 
 // Load personas using file utilities
-export const loadPersonas = () => {
+export const loadPersonas = async () => {};
+
+// Get persona details
+export const getPersonaDetails = async (persona) => {
   const personasPath = fileUtils.resolvePath(
     settings.__dirname,
     "./personas.json",
   );
-  const data = fileUtils.readFile(personasPath);
-  return JSON.parse(data);
-};
-
-// Get persona details
-export const getPersonaDetails = (persona) => {
-  const personas = loadPersonas();
+  const data = await fileUtils.readFile(personasPath);
+  const personas = JSON.parse(data);
   return personas[persona] || null;
 };
 
@@ -47,7 +45,7 @@ export const LLM = (() => {
       }
       try {
         const response = await llmClient(prompt, options);
-        return cleanLLMResponse(response, options);
+        return normalizeResponse(response, options);
       } catch (error) {
         console.error("Error executing LLM request:", error);
         throw error;
@@ -56,8 +54,7 @@ export const LLM = (() => {
   };
 })();
 
-// Clean LLM response
-export const cleanLLMResponse = (
+const normalizeResponse = (
   response,
   { responseFormat = "json", prefillMessage },
 ) => {
@@ -78,7 +75,10 @@ ${res.trim()}`,
 };
 
 // Generate prompt
-export const generatePrompt = async (config, template, responseFormat) => {
+export const prompt = async (templateName, config, responseFormat) => {
+  const template = await fileUtils.importFile(
+    fileUtils.resolvePath("templates", templateName + ".js"),
+  );
   const inputParameters = await prepareInputParameters(
     config,
     template,

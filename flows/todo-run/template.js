@@ -1,4 +1,4 @@
-const data = {
+export default {
   persona: "CodeRefactorer",
   prompt: ({ taskPrompt, exampleInputOutput, contextSrc, openIssues }) => {
     return `
@@ -38,5 +38,3 @@ ${contextSrc}
     issuesAffected: [1],
   },
 };
-
-export default data;

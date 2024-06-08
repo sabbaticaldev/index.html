@@ -1,8 +1,18 @@
+/**
+ * Utility functions for working with diffs and patches.
+ * @module utils/diff
+ */
 import { applyPatch, formatPatch, parsePatch } from "diff";
-import fs from "fs";
-import path from "path";
 
-export const applyDiffToFileSystem = async (diffContent, config = {}) => {
+import * as fileUtils from "../engines/node/fs.js";
+
+/**
+ * Applies a diff to the file system by creating, modifying, or deleting files based on the diff content.
+ * @param {string} diffContent - The content of the diff.
+ * @param {Object} [config={}] - Configuration options for applying the diff.
+ * @returns {Promise<Array>} A promise that resolves to an array of modified file paths.
+ */
+export const importPatchContent = async (diffContent, config = {}) => {
   const { dirPath } = config;
   const patches = parsePatch(diffContent);
   const lines = diffContent.split("\n");
@@ -20,13 +30,9 @@ export const applyDiffToFileSystem = async (diffContent, config = {}) => {
 
   // Process patches
   for (const patch of patches) {
-    const fileName =
+    const filePath =
       patch.newFileName === "/dev/null" ? patch.oldFileName : patch.newFileName;
 
-    const filePath =
-      dirPath && !fileName.startsWith(dirPath)
-        ? path.join(dirPath, fileName)
-        : fileName;
     if (
       patch.oldFileName === "/dev/null" &&
       patch.newFileName !== "/dev/null"
@@ -40,8 +46,8 @@ export const applyDiffToFileSystem = async (diffContent, config = {}) => {
         )
         .join("\n");
 
-      await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-      await fs.promises.writeFile(filePath, newData, "utf8");
+      await fileUtils.createDir(fileUtils.dirname(filePath));
+      await fileUtils.writeFile(filePath, newData);
       console.log(`File created: ${filePath}`);
       modifiedFiles.push(filePath);
     } else if (
@@ -53,11 +59,10 @@ export const applyDiffToFileSystem = async (diffContent, config = {}) => {
     } else {
       // File modification or creation if not exists
       try {
-        await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-
+        await fileUtils.createDir(fileUtils.dirname(filePath));
         let data;
         try {
-          data = await fs.promises.readFile(filePath, "utf8");
+          data = await fileUtils.readFile(filePath);
         } catch (error) {
           if (error.code === "ENOENT") {
             // File does not exist, create new file with patch data
@@ -68,7 +73,7 @@ export const applyDiffToFileSystem = async (diffContent, config = {}) => {
                   .map((line) => line.slice(1)),
               )
               .join("\n");
-            await fs.promises.writeFile(filePath, newData, "utf8");
+            await fileUtils.writeFile(filePath, newData);
             console.log(`File created: ${filePath}`);
             modifiedFiles.push(filePath);
             continue;
@@ -76,7 +81,7 @@ export const applyDiffToFileSystem = async (diffContent, config = {}) => {
             throw error;
           }
         }
-
+        console.log({filePath, data, patch});
         const updatedData = applyPatch(data, patch, {
           context: 3,
           fuzzFactor: 2,
@@ -98,14 +103,14 @@ export const applyDiffToFileSystem = async (diffContent, config = {}) => {
             },
           );
           if (reverseUpdatedData !== false) {
-            await fs.promises.writeFile(filePath, reverseUpdatedData, "utf8");
+            await fileUtils.writeFile(filePath, reverseUpdatedData);
             console.log(`File updated with reverse patch: ${filePath}`);
             modifiedFiles.push(filePath);
           } else {
             console.error(`Failed to apply reverse patch for ${filePath}`);
           }
         } else {
-          await fs.promises.writeFile(filePath, updatedData, "utf8");
+          await fileUtils.writeFile(filePath, updatedData);
           console.log(`File updated: ${filePath}`);
           modifiedFiles.push(filePath);
         }
@@ -117,9 +122,9 @@ export const applyDiffToFileSystem = async (diffContent, config = {}) => {
 
   // Handle file deletions
   for (const filePath of filesToDelete) {
-    const resolvedFilePath = path.resolve(filePath);
+    const resolvedFilePath = fileUtils.resolvePath(filePath);
     try {
-      await fs.promises.unlink(resolvedFilePath);
+      await fileUtils.unlink(resolvedFilePath);
       console.log(`File deleted: ${resolvedFilePath}`);
     } catch (error) {
       console.error(`Error deleting file ${resolvedFilePath}: ${error}`);
@@ -131,22 +136,18 @@ export const applyDiffToFileSystem = async (diffContent, config = {}) => {
 /**
  * Imports patch files by reading the patch file, applying the patches, and writing the updated content.
  * @param {string} input - The path to the patch file.
+ * @returns {Promise<Array>} A promise that resolves to an array of modified file paths.
+ */
+/**
+ * Imports patch files by reading the patch file, applying the patches, and writing the updated content.
+ * @param {string} input - The path to the patch file.
  */
 export const importPatchFile = async (input) => {
   try {
-    const patchContent = await fs.promises.readFile(input, "utf8");
-    return await applyDiffToFileSystem(patchContent);
+    const patchContent = await fileUtils.readFile(input);
+    return await importPatchContent(patchContent);
   } catch (error) {
     console.error("Error importing patch files:", error);
-    throw error;
-  }
-};
-
-export const importPatchContent = async (patchContent, config = {}) => {
-  try {
-    return await applyDiffToFileSystem(patchContent, config);
-  } catch (error) {
-    console.error("Error importing patch content:", error);
     throw error;
   }
 };

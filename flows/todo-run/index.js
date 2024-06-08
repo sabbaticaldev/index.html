@@ -1,6 +1,6 @@
 import { importPatchContent } from "aiflow/utils/diff.js";
 import { processFiles } from "aiflow/utils/files.js";
-import { generatePrompt, LLM } from "aiflow/utils/llm.js";
+import { LLM, prompt } from "aiflow/utils/llm.js";
 import { executeTasks } from "aiflow/utils/tasks.js";
 import inquirer from "inquirer";
 
@@ -11,7 +11,7 @@ import {
   fetchOpenIssues,
   getLabels,
   mergePullRequest,
-} from "../../utils/github.js";
+} from "../../server/utils/github.js";
 
 const deps = {};
 
@@ -26,9 +26,7 @@ async function promptUserForLabel(labels) {
   ]);
   return selectedLabel;
 }
-
-export async function runTodoTasks({ config, template }) {
-  console.log({ config, template });
+export default async ({ config }) => {
   const labels = await getLabels();
   const selectedLabel = await promptUserForLabel(labels);
   try {
@@ -54,23 +52,21 @@ export async function runTodoTasks({ config, template }) {
       {
         description: "Process Todo tasks",
         dependencies: ["todoTasks"],
-        operation: async ({ config, template }) => {
-          console.log({ template });
+        operation: async ({ config }) => {
           for (const task of deps.todoTasks) {
             const { refactoringFiles, description, issueNumber } = task;
             const contextSrc = await processFiles(config.input);
-            const templateFile = "coding/refactor-diff.js";
-            const prompt = await generatePrompt(
+            const promptMessage = await prompt(
+              "refactor-diff",
               {
                 contextSrc,
                 refactoringFiles,
                 taskPrompt: description,
                 strategy: "diff",
               },
-              templateFile,
               "diff",
             );
-            const llmResponse = await LLM.execute("bedrock", prompt, {
+            const llmResponse = await LLM.execute("bedrock", promptMessage, {
               responseFormat: "diff",
             });
 
@@ -112,4 +108,4 @@ export async function runTodoTasks({ config, template }) {
       error,
     );
   }
-}
+};

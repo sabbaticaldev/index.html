@@ -2,18 +2,18 @@ import { exec } from "child_process";
 import fs from "fs";
 import path from "path";
 
-import { downloadMedia } from "../../services/drive.js";
-import { createGridVideo } from "../../services/video.js";
+import { downloadMedia } from "../../server/services/drive.js";
+import { createGridVideo } from "../../server/services/video.js";
 import {
   connectToWhatsApp,
   sendWhatsAppMessage,
-} from "../../services/whatsapp/index.js";
-import settings from "../../settings.js";
-import { executeTasks } from "../../utils.js";
+} from "../../server/services/whatsapp/index.js";
+import settings from "../../server/settings.js";
+import { executeTasks } from "../../server/utils.js";
 
 const deps = {};
 
-export async function createTopVideos(options) {
+export default async (options) => {
   const {
     url,
     duration = 3,
@@ -79,4 +79,4 @@ export async function createTopVideos(options) {
   } catch (error) {
     console.error(`Error creating top videos: ${error.message}`, { error });
   }
-}
+};

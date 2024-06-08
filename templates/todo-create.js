@@ -1,4 +1,4 @@
-const data = {
+export default {
   persona: "TaskManager",
   prompt: ({ taskPrompt, contextSrc, exampleInputOutput, labels }) => `
     You are a project manager. Analyze the following codebase and generate a list of tasks that need to be completed. The tasks should focus on improving code quality, refactoring, fixing bugs, and enhancing features. Each task should include a title, description, and necessary context. 
@@ -102,5 +102,3 @@ const data = {
     },
   ],
 };
-
-export default data;

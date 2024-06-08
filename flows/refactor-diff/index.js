@@ -1,6 +1,6 @@
 import { importPatchContent } from "aiflow/utils/diff.js";
 import { processFiles } from "aiflow/utils/files.js";
-import { generatePrompt, LLM } from "aiflow/utils/llm.js";
+import { LLM, prompt } from "aiflow/utils/llm.js";
 import { executeTasks } from "aiflow/utils/tasks.js";
 import { exec } from "child_process";
 import fs from "fs";
@@ -20,7 +20,7 @@ async function runESLintFix(files) {
     console.error("ESLint failed:", error);
   }
 }
-async function refactorFolder({ config, template }) {
+export default async ({ config }) => {
   const {
     contextSrc,
     refactoringFiles,
@@ -29,7 +29,6 @@ async function refactorFolder({ config, template }) {
     strategy = "file",
     llmProvider = "bedrock",
   } = config;
-  console.log({ config });
   const outputDirectory = `code/${refactoringFiles
     .replace(/[^a-z0-9]/gi, "_")
     .toLowerCase()}`;
@@ -65,14 +64,14 @@ async function refactorFolder({ config, template }) {
       dependencies: ["template", "contextSrc", "refactoringFiles"],
       filePath: promptFilePath,
       operation: async () =>
-        await generatePrompt(
+        await prompt(
+          "refactor-diff",
           {
             contextSrc: deps.contextSrc,
             refactoringFiles: deps.refactoringFiles,
             taskPrompt,
             strategy,
           },
-          template,
           responseFormat,
         ),
     },
@@ -140,6 +139,4 @@ async function refactorFolder({ config, template }) {
     console.error("Error refactoring folder:", error);
     throw error;
   }
-}
-
-export default refactorFolder;
+};

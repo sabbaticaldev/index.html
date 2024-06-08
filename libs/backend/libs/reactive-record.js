@@ -286,8 +286,8 @@ const getEntries = async (modelName, key, opts = {}) => {
   return indexOnly
     ? items
     : Promise.all(
-      items.map(({ id }) => getEntry(modelName, id, { props, nested })),
-    );
+        items.map(({ id }) => getEntry(modelName, id, { props, nested })),
+      );
 };
 
 const ReactiveRecord = {

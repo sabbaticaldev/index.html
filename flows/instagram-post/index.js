@@ -1,24 +1,24 @@
-import { generatePrompt, LLM } from "aiflow/utils/llm.js";
+import { LLM, prompt } from "aiflow/utils/llm.js";
 import { executeTasks } from "aiflow/utils/tasks.js";
 import fs from "fs";
 import path from "path";
 
-import { downloadMedia } from "../../services/drive.js";
+import { downloadMedia } from "../../server/services/drive.js";
 import {
   embedCaptionToImage,
   generateCaptionImage,
-} from "../../services/image.js";
-import { fetchInstagramData } from "../../services/instagram.js";
-import { embedCaptionToVideo } from "../../services/video.js";
+} from "../../server/services/image.js";
+import { fetchInstagramData } from "../../server/services/instagram.js";
+import { embedCaptionToVideo } from "../../server/services/video.js";
 import {
   connectToWhatsApp,
   sendWhatsAppMessage,
-} from "../../services/whatsapp/index.js";
-import settings from "../../settings.js";
+} from "../../server/services/whatsapp/index.js";
+import settings from "../../server/settings.js";
 
 const deps = {};
 
-export async function createReelRipOff(options) {
+export default async (options) => {
   const {
     url,
     invert = true,
@@ -95,22 +95,15 @@ export async function createReelRipOff(options) {
         key: "llm",
         dependencies: ["instagram"],
         operation: async () => {
-          const generalTemplate = "instagram/socialMediaPost.json";
-          const specificTemplate = "templates.json";
+          const promptMessage = await prompt("social-media-post", {
+            postDescription: deps.instagram.description,
+            contentStyle,
+            captionStyle,
+            persona: "AllForTraveler",
+            hashtags,
+          });
 
-          const prompt = await generatePrompt(
-            {
-              postDescription: deps.instagram.description,
-              contentStyle,
-              captionStyle,
-              persona: "AllForTraveler",
-              hashtags,
-            },
-            generalTemplate,
-            specificTemplate.socialMediaPost,
-          );
-
-          const post = await LLM.execute("bedrock", prompt);
+          const post = await LLM.execute("bedrock", promptMessage);
           fs.writeFileSync(postPath, JSON.stringify(post));
           return post;
         },
@@ -178,4 +171,4 @@ export async function createReelRipOff(options) {
   } catch (error) {
     console.error(`Error processing reel: ${error.message}`, { error });
   }
-}
+};

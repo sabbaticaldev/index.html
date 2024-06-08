@@ -1,36 +1,35 @@
 import { processFiles } from "aiflow/utils/files.js";
-import { generatePrompt, LLM } from "aiflow/utils/llm.js";
+import { LLM, prompt } from "aiflow/utils/llm.js";
 import { executeTasks } from "aiflow/utils/tasks.js";
 
-import { createIssue } from "../../utils/github.js";
-import { getLabels } from "../../utils/github.js";
+import { createIssue } from "../../server/utils/github.js";
+import { getLabels } from "../../server/utils/github.js";
 
 const deps = {};
 
-export async function createTodoTasks({ config }) {
-  console.log({ config });
+export default async ({ config }) => {
   const { projectPath, taskPrompt } = config;
   const contextSrc = await processFiles(config.contextSrc);
-
   const tasks = [
     {
       description: "Generate LLM tasks",
       key: "llmTasks",
       operation: async () => {
         const labels = JSON.stringify(await getLabels());
-        const prompt = await generatePrompt(
+        const promptMessage = await prompt(
+          "todo-create",
           { taskPrompt, labels, contextSrc },
-          "coding/github/todo-create.js",
           "json",
         );
-        return await LLM.execute("bedrock", prompt, { prefillMessage: "[" });
+        return await LLM.execute("bedrock", promptMessage, {
+          prefillMessage: "[",
+        });
       },
     },
     {
       description: "Create GitHub issues for tasks",
       dependencies: ["llmTasks"],
       operation: async () => {
-        console.log(deps.llmTasks);
         if (!Array.isArray(deps.llmTasks)) return;
         for (const task of deps.llmTasks) {
           await createIssue(task);
@@ -46,4 +45,4 @@ export async function createTodoTasks({ config }) {
   } catch (error) {
     console.error("Error creating Todo tasks:", error);
   }
-}
+};

@@ -107,5 +107,4 @@ export async function GetTrends({ type }) {
     })
     .then((media) => console.log({ media }))
     .catch((error) => console.error("Failed to fetch media:", error));
-  console.log({ userId });
 }

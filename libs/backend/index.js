@@ -38,7 +38,7 @@ export const postMessage = (payload) => {
     self.dispatchEvent(message);
   }
 };
-
+//TODO: Implement UCAN to authorize actions https://ucan.xyz/
 export const P2P = {
   _handleClients: (action) => {
     self.clients.matchAll().then((clients) => {
@@ -86,12 +86,12 @@ export const handleFetch = async ({ event, url }) => {
     const bodyMethods = ["POST", "PATCH"];
     const bodyParams = bodyMethods.includes(method)
       ? await event.request
-        .clone()
-        .json()
-        .catch((err) => {
-          console.error("Failed to parse request body", err);
-          return {};
-        })
+          .clone()
+          .json()
+          .catch((err) => {
+            console.error("Failed to parse request body", err);
+            return {};
+          })
       : {};
 
     const params = { ...queryParams, ...bodyParams };
