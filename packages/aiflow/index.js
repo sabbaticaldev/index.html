@@ -1,138 +1,92 @@
-import fs from "fs";
-import path from "path";
+import { input, select, Separator } from "@inquirer/prompts";
 
-import { runCLI } from "./utils/cli.js";
-
-import { PREFILL_DIFF, PREFILL_JSON, PREFILL_XML } from "./constants.js";
-import bedrock from "./engines/bedrock.js";
-import openai from "./engines/openai.js";
+import { executeSelectedCommand, filesAutocomplete } from "./core.js";
 import settings from "./settings.js";
-import { generateXMLFormat, parseXML } from "./utils/xml.js";
+import { parseInput } from "./utils/files.js";
+import * as fileUtils from "./utils/files.js";
+import { executeTasks } from "./utils/tasks.js";
 
-const personasPath = path.join(settings.__dirname, "./personas.json");
+export const askQuestions = async (questions) => {
+  const answers = {};
+  for (const question of questions) {
+    const { type, name, message, source, when } = question;
+    if (when && !when(answers)) continue;
 
-export const loadPersonas = () => {
-  const data = fs.readFileSync(personasPath, "utf8");
-  return JSON.parse(data);
+    if (["list", "rawlist", "select"].includes(type)) {
+      answers[name] = await select({
+        message,
+        choices: await source(answers),
+      });
+    } else if (type === "input") {
+      answers[name] = await input({
+        message,
+        validate: async (input) => {
+          const files = filesAutocomplete(input);
+          if (files.length > 0) {
+            return true;
+          } else {
+            return `No files found in directory: ${input}`;
+          }
+        },
+      });
+    }
+  }
+  return answers;
 };
 
-export const getPersonaDetails = (persona) => {
-  const personas = loadPersonas();
-  return personas[persona] || null;
-};
+export const start = async () => {
+  const promptsDir = fileUtils.joinPath(settings.__dirname, "prompts");
+  const commands = fileUtils.readDir(promptsDir);
 
-const LLM = (() => {
-  const {
-    BEDROCK_MODEL_ID,
-    AWS_ACCESS_KEY_ID,
-    AWS_SECRET_ACCESS_KEY,
-    AWS_REGION,
-    OPENAI_API_KEY,
-  } = settings;
-  const client = {
-    bedrock: bedrock({
-      BEDROCK_MODEL_ID,
-      AWS_ACCESS_KEY_ID,
-      AWS_SECRET_ACCESS_KEY,
-      AWS_REGION,
-    }),
-    openai: openai({ OPENAI_API_KEY }),
-  };
-  return {
-    execute: async (provider, prompt, options = {}) => {
-      const llmClient = client[provider];
-      if (!llmClient) {
-        throw new Error(`Unsupported LLM provider: ${provider}`);
-      }
-      try {
-        const response = await llmClient(prompt, options);
-        return cleanLLMResponse(response, options);
-      } catch (error) {
-        console.error("Error executing LLM request:", error);
-        throw error;
-      }
+  const [, , providedCommand, providedInput] = process.argv;
+  const selectedCommand = commands.includes(providedCommand)
+    ? providedCommand
+    : null;
+  const questions = [
+    {
+      type: "select",
+      name: "command",
+      message: "Select a command:",
+      source: async () => [
+        ...commands.map((folder) => ({
+          name: folder,
+          value: folder,
+        })),
+        new Separator(),
+      ],
     },
-  };
-})();
+    {
+      type: "input",
+      name: "input",
+      message: "Enter the directory path or file name:",
+      when: () => true,
+    },
+  ];
 
-const cleanLLMResponse = (
-  response,
-  { responseFormat = "json", prefillMessage },
-) => {
+  if (selectedCommand && providedInput) {
+    await executeSelectedCommand(
+      commands,
+      selectedCommand,
+      providedInput,
+      settings,
+      parseInput,
+      executeTasks,
+    );
+    return;
+  }
+
   try {
-    const formatHandlers = {
-      json: (res) => JSON.parse((prefillMessage ?? PREFILL_JSON) + res),
-      xml: (res) => parseXML((prefillMessage ?? PREFILL_XML) + res),
-      diff: (res) => `${prefillMessage ?? PREFILL_DIFF}
-${res.trim()}`,
-      default: (res) => res.trim(),
-    };
-    console.log(formatHandlers[responseFormat]);
-    return formatHandlers[responseFormat]
-      ? formatHandlers[responseFormat](response)
-      : formatHandlers.default(response);
+    const answers = await askQuestions(questions);
+    const { command, input } = answers;
+    await executeSelectedCommand(
+      commands,
+      command,
+      input,
+      settings,
+      parseInput,
+      executeTasks,
+    );
   } catch (error) {
-    return response;
+    console.error("Error executing command:", error);
   }
 };
-
-const generatePrompt = async (config, template, responseFormat) => {
-  const inputParameters = await prepareInputParameters(
-    config,
-    template,
-    responseFormat,
-  );
-  return template.prompt(inputParameters);
-};
-
-const prepareInputParameters = async (config, template, responseFormat) => {
-  const params = { ...config };
-
-  params.exampleInputOutput = formatExamplePairs(
-    template.exampleInput,
-    template.exampleOutput,
-    responseFormat,
-  );
-  params.persona = JSON.stringify(
-    await getPersonaDetails(config.persona),
-    null,
-    2,
-  );
-
-  return params;
-};
-
-const formatExamplePairs = (
-  exampleInputs,
-  exampleOutputs,
-  responseFormat = "json",
-) => {
-  const isPair = Array.isArray(exampleInputs) && Array.isArray(exampleOutputs);
-  const inputs = isPair ? exampleInputs : [exampleInputs];
-  const outputs = isPair ? exampleOutputs : [exampleOutputs];
-
-  return inputs
-    .map((input, index) => {
-      const output = outputs[index] || outputs[0];
-      return `Input:\n${formatResponse(
-        input,
-        responseFormat,
-      )}\n\nOutput:\n${formatResponse(output, responseFormat)}`;
-    })
-    .join("\n\n");
-};
-
-const formatResponse = (exampleData, responseFormat = "json", rootElement) => {
-  const defaultFn = () => JSON.stringify(exampleData, null, 2);
-  const formatters = {
-    json: defaultFn,
-    diff: defaultFn,
-    xml: () => generateXMLFormat(exampleData, rootElement),
-  };
-  return formatters[responseFormat]
-    ? formatters[responseFormat]()
-    : exampleData;
-};
-export { generatePrompt, LLM };
-
-runCLI();

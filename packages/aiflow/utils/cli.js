@@ -70,7 +70,6 @@ const loadTaskDetails = async (selectedCommand) => {
   const metadata = JSON.parse(readFileSync(promptMetadataPath, "utf-8"));
   const template = (await import(templatePath)).default;
   const operation = (await import(operationPath)).default;
-  console.log({ template });
   return { metadata, template, operation };
 };
 const executeSelectedCommand = async (commands, command, input) => {
@@ -92,7 +91,7 @@ const executeSelectedCommand = async (commands, command, input) => {
   }
 };
 
-export const runCLI = async () => {
+export const start = async () => {
   const promptsDir = path.join(settings.__dirname, "prompts");
   const commands = readdirSync(promptsDir);
 

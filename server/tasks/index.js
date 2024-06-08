@@ -1,3 +1,3 @@
-import { runCLI } from "aiflow/utils/cli.js";
+import { start } from "aiflow/utils/cli.js";
 
-runCLI();
+start();

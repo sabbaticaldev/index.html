@@ -1,16 +1,34 @@
-import fs from "fs/promises";
+import fs from "fs";
 import path from "path";
 
+// File operations
+export const fileExists = (filePath) => fs.existsSync(filePath);
+export const isFile = (filePath) => fs.statSync(filePath).isFile();
+export const isDirectory = (filePath) => fs.statSync(filePath).isDirectory();
+export const readFile = (filePath) => fs.readFileSync(filePath, "utf-8");
+export const readDir = (dirPath) => fs.readdirSync(dirPath);
+export const createDir = (dirPath) =>
+  fs.promises.mkdir(dirPath, { recursive: true });
+export const writeFile = (filePath, data) =>
+  fs.promises.writeFile(filePath, data, "utf-8");
+export const importFile = async (filePath) => (await import(filePath)).default;
+
+// Path operations
+export const resolvePath = (...args) => path.resolve(...args);
+export const joinPath = (...args) => path.join(...args);
+export const dirname = (filePath) => path.dirname(filePath);
+export const basename = (filePath) => path.basename(filePath);
+
+// File and directory structure operations
 const buildTree = async (dirPaths, extensions = [".js", ".json"]) => {
   const tree = [];
 
   for (const dirPath of Array.isArray(dirPaths) ? dirPaths : [dirPaths]) {
-    await fs.mkdir(dirPath, { recursive: true });
-    const items = await fs.readdir(dirPath, { withFileTypes: true });
+    await createDir(dirPath);
+    const items = readDir(dirPath, { withFileTypes: true });
     for (const item of items) {
-      const itemPath = path.join(dirPath, item.name);
+      const itemPath = joinPath(dirPath, item.name);
 
-      // Skip .git and node_modules directories
       if (
         item.isDirectory() &&
         (item.name === ".git" || item.name === "node_modules")
@@ -27,7 +45,7 @@ const buildTree = async (dirPaths, extensions = [".js", ".json"]) => {
         });
       } else {
         if (!extensions || extensions.some((ext) => item.name.endsWith(ext))) {
-          const content = await fs.readFile(itemPath, "utf8");
+          const content = readFile(itemPath);
           tree.push({
             type: "file",
             name: item.name,
@@ -87,24 +105,19 @@ export const processFiles = async (dirPaths, extensions = [".js", ".json"]) => {
 };
 
 export const parseInput = async (filePath) => {
-  const fullFilePath = path.resolve(process.cwd(), filePath);
-  if (filePath.endsWith(".json")) {
-    try {
-      const data = await fs.readFile(fullFilePath, "utf8");
+  const fullFilePath = resolvePath(process.cwd(), filePath);
+  try {
+    if (filePath.endsWith(".json")) {
+      const data = await readFile(fullFilePath);
       return JSON.parse(data);
-    } catch (error) {
-      console.error("Failed to read or parse JSON file:", error);
-      throw error;
-    }
-  } else if (filePath.endsWith(".js")) {
-    try {
-      const module = await import(`file://${fullFilePath}`);
+    } else if (filePath.endsWith(".js")) {
+      const module = await importFile(`file://${fullFilePath}`);
       return module.default;
-    } catch (error) {
-      console.error("Failed to import JS module:", error);
-      throw error;
+    } else {
+      throw new Error("Unsupported file type");
     }
-  } else {
-    throw new Error("Unsupported file type");
+  } catch (error) {
+    console.error(`Failed to process file ${filePath}:`, error);
+    throw error;
   }
 };
