@@ -22,6 +22,15 @@ export { css, html, LitElement } from "lit";
 export { ifDefined } from "lit/directives/if-defined.js";
 export { createRef, ref } from "lit/directives/ref.js";
 export { repeat } from "lit/directives/repeat.js";
+export { unsafeHTML } from "lit/directives/unsafe-html.js";
 export { until } from "lit/directives/until.js";
 export { html as staticHtml } from "lit/static-html.js";
 export { unsafeStatic } from "lit/static-html.js";
+export function escapeHTML(html) {
+  return html
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}

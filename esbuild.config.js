@@ -88,6 +88,7 @@ if (isWatchMode) {
       ".svg": "image/svg+xml",
       ".wav": "audio/wav",
       ".mp4": "video/mp4",
+      ".md": "text/markdown",
       ".woff": "application/font-woff",
       ".ttf": "application/font-ttf",
       ".eot": "application/vnd.ms-fontobject",
@@ -96,6 +97,7 @@ if (isWatchMode) {
     };
 
     fs.readFile(filePath, (err, data) => {
+      console.log({ filePath });
       if (err) {
         fs.readFile(path.join(__dirname, "app", "index.html"), (err, data) => {
           if (err) {

@@ -31,7 +31,9 @@ const setValueInSync = (instance, key, newValue, prop) => {
       const instances = syncKeyMap.get(syncKey);
       if (instances)
         instances.forEach((syncInstance) => {
-          syncInstance[key] = value;
+          if (!(syncInstance === instance && syncInstance[key] === value)) {
+            syncInstance[key] = value;
+          }
           syncInstance.requestUpdate();
         });
     }
