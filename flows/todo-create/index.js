@@ -30,6 +30,7 @@ export default async ({ config }) => {
       description: "Create GitHub issues for tasks",
       dependencies: ["llmTasks"],
       operation: async () => {
+        console.log(deps.llmTasks);
         if (!Array.isArray(deps.llmTasks)) return;
         for (const task of deps.llmTasks) {
           await createIssue(task);

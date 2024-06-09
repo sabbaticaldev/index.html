@@ -47,6 +47,7 @@ export default {
     return html`
       <div class="relative">
         <input
+          type="text"
           id="filled"
           aria-describedby="filled_success_help"
           .value=${value || ""}
