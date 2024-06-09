@@ -13,21 +13,32 @@ import * as fileUtils from "../engines/node/fs.js";
  * @returns {Promise<Array>} A promise that resolves to an array of modified file paths.
  */
 export const importPatchContent = async (diffContent, config = {}) => {
-  const { dirPath } = config;
-  const patches = parsePatch(diffContent);
   const lines = diffContent.split("\n");
   const filesToDelete = [];
   const modifiedFiles = [];
 
   // Parse lines to find files to delete
+  const patterns = ["+--- ", "++++ ", "++ ", "+- ", "---- ", "-- "];
+
   for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    for (const pattern of patterns) {
+      if (line.startsWith(pattern)) {
+        console.log(pattern);
+        lines[i] = line.substring(1);
+        break;
+      }
+    }
+  
     if (lines[i].startsWith("+++ /dev/null")) {
       const filePath = lines[i - 1].substring(4).trim();
       filesToDelete.push(filePath);
       modifiedFiles.push(filePath);
     }
   }
-
+  
+  console.log(lines.join("\n"))
+  const patches = parsePatch(lines.join("\n"));
   // Process patches
   for (const patch of patches) {
     const filePath =
@@ -81,7 +92,6 @@ export const importPatchContent = async (diffContent, config = {}) => {
             throw error;
           }
         }
-        console.log({filePath, data, patch});
         const updatedData = applyPatch(data, patch, {
           context: 3,
           fuzzFactor: 2,
@@ -89,8 +99,6 @@ export const importPatchContent = async (diffContent, config = {}) => {
         });
         if (updatedData === false) {
           console.error(`Failed to apply patch for ${filePath}`);
-          console.error(`Original Data:\n${data}`);
-          console.error(`Patch:\n${JSON.stringify(patch, null, 2)}`);
 
           const reversePatch = formatPatch(patch);
           const reverseUpdatedData = applyPatch(

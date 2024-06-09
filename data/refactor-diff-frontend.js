@@ -4,7 +4,7 @@ export default {
   taskPrompt: ` 
   
    We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
-    we are refactoring the design system documentation.
+  we are refactoring the design system documentation. We already refactored the form/ ones now lets move to content, app, chat, page
 
 
     lets refactor this. Example:

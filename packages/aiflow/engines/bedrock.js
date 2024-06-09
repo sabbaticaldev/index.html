@@ -38,7 +38,6 @@ const bedrockStrategy =
       topP = 0.9,
       stopSequences = ["\\n\\nHuman:"],
     } = options;
-    console.log({prompt});
     const client = new BedrockRuntimeClient({
       credentials: {
         accessKeyId: AWS_ACCESS_KEY_ID,
