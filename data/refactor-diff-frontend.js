@@ -4,7 +4,7 @@ export default {
   taskPrompt: ` 
   
    We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
-  we are refactoring the design system documentation. We already refactored the form/ ones now lets move to feedback, ux and chat folders
+  we are refactoring the design system documentation. We are refactoring the components properties to become an object with label: html in place of an array of components. Many were already migrated but a few are not yet, migrate the ones missing.
 
   FOCUS ON THE SECTIONS THAT ARE STILL USING ARRAYS in components, not the ones that were already refactored
 
