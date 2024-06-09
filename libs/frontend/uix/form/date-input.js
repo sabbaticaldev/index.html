@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const DateInput = {
+export default {
   tag: "uix-date-input",
   props: {
     value: T.string(),
@@ -21,5 +20,3 @@ const DateInput = {
     `;
   },
 };
-
-export default DateInput;

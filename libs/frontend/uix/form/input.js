@@ -2,7 +2,7 @@ import { html, ifDefined, T } from "helpers";
 
 import FormControls from "./form-controls.js";
 
-const Input = {
+export default {
   tag: "uix-input",
   props: {
     autofocus: T.boolean(),
@@ -47,10 +47,8 @@ const Input = {
     return html`
       <div class="relative">
         <input
-          type="text"
           id="filled"
           aria-describedby="filled_success_help"
-          data-theme="uix-input"
           .value=${value || ""}
           ?autofocus=${autofocus}
           ?disabled=${disabled}
@@ -69,7 +67,7 @@ const Input = {
     `;
   },
   theme: ({ cls, baseTheme }) => ({
-    "uix-input": {
+    "uix-input  ": {
       _base: cls([
         "block w-full appearance-none focus:outline-none focus:ring-0",
         baseTheme.defaultTextColor,
@@ -93,5 +91,3 @@ const Input = {
     },
   }),
 };
-
-export default Input;

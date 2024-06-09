@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const Calendar = {
+export default {
   tag: "uix-calendar",
   props: {
     value: T.string(),
@@ -26,5 +26,3 @@ const Calendar = {
     `;
   },
 };
-
-export default Calendar;

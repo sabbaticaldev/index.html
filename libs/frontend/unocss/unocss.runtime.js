@@ -1,3 +1,4 @@
+import { presetForms } from "https://esm.sh/@julr/unocss-preset-forms";
 import presetAttributify from "https://esm.sh/@unocss/preset-attributify";
 import presetIcons from "https://esm.sh/@unocss/preset-icons/browser";
 import presetUno from "https://esm.sh/@unocss/preset-uno";
@@ -20,6 +21,7 @@ const getUnoGenerator = (safelist) => {
           cdn: "https://esm.sh/",
         }),
         presetAttributify(),
+        presetForms(),
         presetWebFonts({
           provider: "google",
           fonts: {

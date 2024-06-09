@@ -1,23 +1,9 @@
-import { css, html, T } from "helpers";
+import { html, T } from "helpers";
 
 import FormControls from "./form-controls.js";
 
-const Switch = {
+export default {
   tag: "uix-switch",
-  style: css`
-    .switch {
-      @apply relative inline-flex h-6 w-11 items-center rounded-full;
-    }
-    .switch__input {
-      @apply sr-only;
-    }
-    .switch__toggle {
-      @apply inline-block h-4 w-4 transform rounded-full bg-white transition;
-    }
-    .switch__input:checked + .switch__toggle {
-      @apply translate-x-6;
-    }
-  `,
   props: {
     checked: T.boolean(),
     disabled: T.boolean(),
@@ -25,20 +11,39 @@ const Switch = {
   },
   ...FormControls("input"),
   render() {
-    const { checked, disabled, change } = this;
+    const { checked, disabled } = this;
     return html`
       <button
         type="button"
         role="switch"
-        class="switch"
+        data-theme="uix-switch"
         ?disabled=${disabled}
         @click=${() => this.setChecked(!checked)}
       >
-        <input type="checkbox" class="switch__input" .checked=${checked} />
-        <span class="switch__toggle"></span>
+        <input
+          type="checkbox"
+          data-theme="uix-switch__input"
+          .checked=${checked}
+        />
+        <span
+          data-theme="uix-switch__toggle"
+          class=${checked ? "translate-x-6" : ""}
+        ></span>
       </button>
     `;
   },
+  theme: ({ baseTheme }) => ({
+    "uix-switch": {
+      _base: "focus:outline-none",
+      variant: baseTheme.BaseVariants,
+    },
+    "uix-switch__input": "sr-only",
+    "uix-switch__toggle": {
+      _base:
+        "inline-block w-4 h-4 transform bg-white rounded-full transition ease-in-out duration-200",
+      checked: {
+        true: "translate-x-6",
+      },
+    },
+  }),
 };
-
-export default Switch;

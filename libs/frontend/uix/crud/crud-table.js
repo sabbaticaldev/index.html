@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const CrudTable = {
+export default {
   tag: "uix-crud-table",
   props: {
     rows: T.array(),
@@ -15,5 +15,3 @@ const CrudTable = {
     `;
   },
 };
-
-export default CrudTable;

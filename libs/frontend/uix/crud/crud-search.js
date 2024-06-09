@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const CrudSearch = {
+export default {
   tag: "uix-crud-search",
   props: {
     setRows: T.function(),
@@ -34,5 +34,3 @@ const CrudSearch = {
     `;
   },
 };
-
-export default CrudSearch;

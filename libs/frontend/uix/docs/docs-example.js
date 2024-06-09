@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const DocsExample = {
+export default {
   tag: "uix-docs-example",
   props: {
     code: T.string(),
@@ -21,5 +21,3 @@ const DocsExample = {
     `;
   },
 };
-
-export default DocsExample;

@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const ColorPicker = {
+export default {
   tag: "uix-color-picker",
   props: {
     selectedColor: T.string(),
@@ -68,5 +68,3 @@ const ColorPicker = {
     `;
   },
 };
-
-export default ColorPicker;

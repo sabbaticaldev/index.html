@@ -128,15 +128,11 @@ export default async ({ config }) => {
     {
       description: "Run ESLint fix on refactored files",
       dependencies: ["savedFilePaths"],
+      filePath: deps.savedFilePaths,
       operation: async ({ filePath }) => {
         await runESLintFix([filePath]);
       },
     },
   ];
-  try {
-    await executeTasks({ tasks, deps, prompt: true, config });
-  } catch (error) {
-    console.error("Error refactoring folder:", error);
-    throw error;
-  }
+  await executeTasks({ tasks, deps, prompt: true, config });
 };

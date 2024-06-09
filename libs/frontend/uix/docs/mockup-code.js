@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const MockupCode = {
+export default {
   tag: "uix-mockup-code",
   props: {
     code: T.string(),
@@ -24,5 +24,3 @@ const MockupCode = {
     `;
   },
 };
-
-export default MockupCode;

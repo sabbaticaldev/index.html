@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const FileInput = {
+export default {
   tag: "uix-file-input",
   props: {
     accept: T.string(),
@@ -19,5 +18,3 @@ const FileInput = {
     `;
   },
 };
-
-export default FileInput;

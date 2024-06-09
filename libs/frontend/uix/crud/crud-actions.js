@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const CrudActions = {
+export default {
   tag: "uix-crud-actions",
   props: {
     setRows: T.function(),
@@ -41,5 +41,3 @@ const CrudActions = {
     `;
   },
 };
-
-export default CrudActions;

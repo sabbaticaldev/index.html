@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const Crud = {
+export default {
   tag: "uix-crud",
   props: {
     model: T.string(),
@@ -38,5 +38,3 @@ const Crud = {
     `;
   },
 };
-
-export default Crud;

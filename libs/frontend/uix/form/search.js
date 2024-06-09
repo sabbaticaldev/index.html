@@ -8,11 +8,11 @@ export default {
   },
   render() {
     return html`
-      <uix-input 
+      <uix-input
         type="search"
         placeholder=${this.placeholder}
         @input=${this.search}
       ></uix-input>
     `;
-  }
-}
+  },
+};

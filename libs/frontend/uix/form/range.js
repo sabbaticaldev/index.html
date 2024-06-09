@@ -2,7 +2,7 @@ import { html, T } from "helpers";
 
 import FormControls from "./form-controls.js";
 
-const Range = {
+export default {
   tag: "uix-range",
   props: {
     variant: T.string(),
@@ -34,7 +34,6 @@ const Range = {
           step=${step}
           value=${value[0]}
           data-index="0"
-          class=${isSingleValue ? "" : "pointer-events-none"}
         />
         ${!isSingleValue &&
         html`
@@ -47,6 +46,11 @@ const Range = {
             step=${step}
             value=${value[1]}
             data-index="1"
+            style="background: linear-gradient(to right, #E5E7EB 0%, #E5E7EB ${(value[0] /
+              max) *
+            100}%, #3B82F6 ${(value[0] / max) * 100}%, #3B82F6 ${(value[1] /
+              max) *
+            100}%, #E5E7EB ${(value[1] / max) * 100}%, #E5E7EB 100%);"
           />
         `}
       </div>
@@ -56,16 +60,14 @@ const Range = {
       </div>
     `;
   },
-  theme: ({ BaseVariants, TextSizes, SpacingSizes }) => ({
+  theme: ({ cls, baseTheme }) => ({
     "uix-range": {
-      _base: "w-full",
-      variant: BaseVariants,
-      size: [SpacingSizes, TextSizes],
+      _base: cls(["w-full", baseTheme.borderRadius]),
+      variant: baseTheme.BaseVariants,
     },
-    "uix-range__input":
-      "w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer",
+    "uix-range__input": cls([
+      "w-full h-2 rounded-full appearance-none cursor-pointer",
+    ]),
     "uix-range__labels": "-mt-2 flex w-full justify-between",
   }),
 };
-
-export default Range;

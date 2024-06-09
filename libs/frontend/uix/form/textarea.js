@@ -2,7 +2,7 @@ import { html, T } from "helpers";
 
 import FormControls from "./form-controls.js";
 
-const Textarea = {
+export default {
   tag: "uix-textarea",
   props: {
     value: T.string(),
@@ -63,5 +63,3 @@ ${value}</textarea
     },
   }),
 };
-
-export default Textarea;

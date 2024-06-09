@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const DocsPropsTable = {
+export default {
   tag: "uix-docs-props-table",
   props: {
     props: T.array(),
@@ -41,5 +41,3 @@ const DocsPropsTable = {
     `;
   },
 };
-
-export default DocsPropsTable;

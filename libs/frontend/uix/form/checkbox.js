@@ -1,8 +1,7 @@
 import { css, html, T } from "helpers";
 
 import FormControls from "./form-controls.js";
-
-const Checkbox = {
+export default {
   tag: "uix-checkbox",
   style: [
     css`
@@ -48,5 +47,3 @@ const Checkbox = {
     },
   }),
 };
-
-export default Checkbox;

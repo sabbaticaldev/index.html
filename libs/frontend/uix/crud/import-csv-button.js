@@ -1,5 +1,6 @@
 import { CSV, File, html, post, T } from "helpers";
-const ImportCsvButton = {
+
+export default {
   tag: "app-import-csv-button",
 
   props: {
@@ -80,5 +81,3 @@ const ImportCsvButton = {
     `;
   },
 };
-
-export default ImportCsvButton;

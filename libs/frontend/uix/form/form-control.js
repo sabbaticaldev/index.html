@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const FormControl = {
+export default {
   tag: "uix-form-control",
   props: {
     label: T.string({ type: String, defaultValue: null }),
@@ -12,9 +12,7 @@ const FormControl = {
       ${label
         ? html`
             <label data-theme="uix-form-control__label">
-              <span data-theme="uix-form-control__label-text">
-                ${label}
-              </span>
+              <span data-theme="uix-form-control__label-text"> ${label} </span>
             </label>
           `
         : ""}
@@ -37,5 +35,3 @@ const FormControl = {
     "uix-form-control__label-alt": "label-text-alt",
   },
 };
-
-export default FormControl;

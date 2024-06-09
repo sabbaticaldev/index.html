@@ -11,7 +11,7 @@ import Input from "./input.js";
 import NumberInput from "./number-input.js";
 import RadioGroup from "./radio-group.js";
 import Range from "./range.js";
-import { Select, SelectOption } from "./select.js";
+import Select from "./select.js";
 import Switch from "./switch.js";
 import Textarea from "./textarea.js";
 import TimeInput from "./time-input.js";
@@ -27,7 +27,6 @@ export default {
     Checkbox,
     CheckboxGroup,
     RadioGroup,
-    SelectOption,
     Select,
     IconButton,
     Button,

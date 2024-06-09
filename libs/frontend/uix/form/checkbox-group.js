@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const CheckboxGroup = {
+export default {
   tag: "uix-checkbox-group",
   props: {
     name: T.string(),
@@ -28,5 +27,3 @@ const CheckboxGroup = {
     `;
   },
 };
-
-export default CheckboxGroup;

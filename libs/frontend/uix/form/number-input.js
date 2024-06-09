@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const NumberInput = {
+export default {
   tag: "uix-number-input",
   props: {
     value: T.number(),
@@ -23,5 +22,3 @@ const NumberInput = {
     `;
   },
 };
-
-export default NumberInput;

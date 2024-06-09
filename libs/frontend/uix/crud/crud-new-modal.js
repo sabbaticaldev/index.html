@@ -1,6 +1,6 @@
 import { html, post, T } from "helpers";
 
-const CrudNewModal = {
+export default {
   tag: "uix-crud-new-modal",
   props: {
     fields: T.array(),
@@ -58,5 +58,3 @@ const CrudNewModal = {
     `;
   },
 };
-
-export default CrudNewModal;

@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const CrudForm = {
+export default {
   tag: "uix-crud-form",
   props: {
     item: T.object(),
@@ -32,5 +32,3 @@ const CrudForm = {
     `;
   },
 };
-
-export default CrudForm;

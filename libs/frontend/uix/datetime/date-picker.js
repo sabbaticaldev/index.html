@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const DatePicker = {
+export default {
   tag: "uix-date-picker",
   props: {
     value: T.string(),
@@ -35,5 +35,3 @@ const DatePicker = {
     `;
   },
 };
-
-export default DatePicker;

@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const CrudDetail = {
+export default {
   tag: "uix-crud-detail",
   props: {
     item: T.object(),
@@ -31,5 +31,3 @@ const CrudDetail = {
     `;
   },
 };
-
-export default CrudDetail;

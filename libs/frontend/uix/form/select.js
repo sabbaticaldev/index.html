@@ -2,19 +2,7 @@ import { html, T } from "helpers";
 
 import FormControls from "./form-controls.js";
 
-const SelectOption = {
-  tag: "uix-select-option",
-  props: {
-    value: T.string(),
-    label: T.string(),
-  },
-  render() {
-    const { value, label } = this;
-    return html` <option value=${value}>${label}</option> `;
-  },
-};
-
-const Select = {
+export default {
   tag: "uix-select",
   ...FormControls("select"),
   props: {
@@ -51,5 +39,3 @@ const Select = {
     },
   }),
 };
-
-export { Select, SelectOption };

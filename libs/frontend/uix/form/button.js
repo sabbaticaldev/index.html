@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const Button = {
+export default {
   tag: "uix-button",
   props: {
     size: T.string({ defaultValue: "md" }),
@@ -50,5 +50,3 @@ const Button = {
         `;
   },
 };
-
-export default Button;

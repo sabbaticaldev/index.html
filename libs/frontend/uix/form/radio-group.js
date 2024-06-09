@@ -2,17 +2,17 @@ import { html, T } from "helpers";
 
 import FormControls from "./form-controls.js";
 
-const RadioGroup = {
+export default {
   tag: "uix-radio-group",
   props: {
     name: T.string(),
     options: T.array(),
-    value: T.any(),
+    value: T.object(),
     change: T.function(),
   },
   ...FormControls(""),
   render() {
-    const { name, options, value, change } = this;
+    const { options, value, change } = this;
     return html`
       <div role="radiogroup">
         ${options.map(
@@ -20,7 +20,7 @@ const RadioGroup = {
             <label class="inline-flex items-center">
               <input
                 type="radio"
-                name=${name}
+                data-theme="uix-radio"
                 value=${option.value}
                 ?checked=${value === option.value}
                 @change=${change}
@@ -33,12 +33,16 @@ const RadioGroup = {
       </div>
     `;
   },
-  theme: {
-    "uix-radio-group": "space-y-2",
-    "uix-radio-group__option": "flex items-center",
-    "uix-radio-group__input": "mr-2",
-    "uix-radio-group__label": "",
-  },
+  theme: ({ baseTheme }) => ({
+    "uix-radio": {
+      _base: "form-radio transition duration-150 ease-in-out",
+      variant: baseTheme.BaseVariants,
+      checked: {
+        true: "bg-blue-600 border-transparent",
+      },
+      focus: {
+        true: "outline-none shadow-outline-blue",
+      },
+    },
+  }),
 };
-
-export default RadioGroup;
