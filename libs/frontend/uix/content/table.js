@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const Table = {
+export default {
   tag: "uix-table",
   props: {
     headers: T.array(),
@@ -55,5 +54,3 @@ const Table = {
     `;
   },
 };
-
-export default Table;

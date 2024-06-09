@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const Timeline = {
+export default {
   tag: "uix-timeline",
   props: {
     items: T.array({
@@ -38,5 +38,3 @@ const Timeline = {
     `;
   },
 };
-
-export default Timeline;

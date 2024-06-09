@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const VideoPlayer = {
+export default {
   tag: "uix-video-player",
   props: {
     src: T.string(),
@@ -34,5 +34,3 @@ const VideoPlayer = {
     `;
   },
 };
-
-export default VideoPlayer;

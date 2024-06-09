@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const Rating = {
+export default {
   tag: "uix-rating",
   props: {
     value: T.number({ defaultValue: 0 }),
@@ -18,7 +17,7 @@ const Rating = {
     }),
   },
   render() {
-    const { value, max, readonly, change } = this;
+    const { max, readonly, change } = this;
 
     return html`
       ${Array.from(
@@ -38,5 +37,3 @@ const Rating = {
     `;
   },
 };
-
-export default Rating;

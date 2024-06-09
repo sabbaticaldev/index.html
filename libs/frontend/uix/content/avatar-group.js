@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const AvatarGroup = {
+export default {
   tag: "uix-avatar-group",
   props: {
     avatars: T.array({
@@ -48,5 +48,3 @@ const AvatarGroup = {
     `;
   },
 };
-
-export default AvatarGroup;

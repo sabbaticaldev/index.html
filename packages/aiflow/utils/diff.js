@@ -24,7 +24,6 @@ export const importPatchContent = async (diffContent, config = {}) => {
     let line = lines[i];
     for (const pattern of patterns) {
       if (line.startsWith(pattern)) {
-        console.log(pattern);
         lines[i] = line.substring(1);
         break;
       }
@@ -37,7 +36,6 @@ export const importPatchContent = async (diffContent, config = {}) => {
     }
   }
   
-  console.log(lines.join("\n"))
   const patches = parsePatch(lines.join("\n"));
   // Process patches
   for (const patch of patches) {
@@ -65,10 +63,8 @@ export const importPatchContent = async (diffContent, config = {}) => {
       patch.newFileName === "/dev/null" &&
       patch.oldFileName !== "/dev/null"
     ) {
-      // File deletion - This part is handled in the separate pass
       continue;
     } else {
-      // File modification or creation if not exists
       try {
         await fileUtils.createDir(fileUtils.dirname(filePath));
         let data;
@@ -93,7 +89,6 @@ export const importPatchContent = async (diffContent, config = {}) => {
           }
         }
         const updatedData = applyPatch(data, patch, {
-          context: 3,
           fuzzFactor: 2,
           ignoreWhitespace: true,
         });

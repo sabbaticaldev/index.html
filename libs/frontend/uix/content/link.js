@@ -1,4 +1,5 @@
-const Link = {
+import { html, T } from "helpers";
+export default {
   tag: "uix-link",
   props: {
     href: T.string(),
@@ -39,6 +40,3 @@ const Link = {
         </button>`;
   },
 };
-
-export default Link;
-import { html, T } from "helpers";

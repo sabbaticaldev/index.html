@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const Code = {
+export default {
   tag: "uix-code",
   props: {
     code: T.string(),
@@ -24,5 +24,3 @@ const Code = {
     `;
   },
 };
-
-export default Code;

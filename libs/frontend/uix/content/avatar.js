@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const Avatar = {
+export default {
   tag: "uix-avatar",
   props: {
     src: T.string(),
@@ -28,5 +27,3 @@ const Avatar = {
     return html` <div data-theme="uix-avatar">${content}</div> `;
   },
 };
-
-export default Avatar;

@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const MockupPhone = {
+export default {
   tag: "uix-mockup-phone",
   props: {
     prefix: T.string(),
@@ -36,5 +35,3 @@ const MockupPhone = {
     `;
   },
 };
-
-export default MockupPhone;

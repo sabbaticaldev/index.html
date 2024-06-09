@@ -1,6 +1,5 @@
 import { html, T } from "helpers";
-
-const TreeView = {
+export default {
   tag: "uix-treeview",
   props: {
     items: T.array({
@@ -49,5 +48,3 @@ const TreeView = {
     `;
   },
 };
-
-export default TreeView;

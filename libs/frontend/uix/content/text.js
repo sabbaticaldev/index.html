@@ -11,7 +11,7 @@ const TAG_MAP = {
   xs: "h6",
 };
 
-const Text = {
+export default {
   tag: "uix-text",
   props: {
     size: T.string({}),
@@ -57,5 +57,3 @@ const Text = {
     `;
   },
 };
-
-export default Text;

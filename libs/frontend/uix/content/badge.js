@@ -1,6 +1,6 @@
 import { html, T } from "helpers";
 
-const Badge = {
+export default {
   tag: "uix-badge",
   props: {
     size: T.string({ defaultValue: "xs" }),
@@ -17,5 +17,3 @@ const Badge = {
     return html` <slot></slot>`;
   },
 };
-
-export default Badge;
