@@ -1,11 +1,12 @@
 export default {
   contextSrc: ["app/apps/design/sections/"],
-  refactoringFiles: "section docs affected files",
+  refactoringFiles: "affected files",
   taskPrompt: ` 
   
    We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
-  we are refactoring the design system documentation. We already refactored the form/ ones now lets move to content, app, chat, page
+  we are refactoring the design system documentation. We already refactored the form/ ones now lets move to content, chat, page, ux
 
+  FOCUS ON THE SECTIONS THAT ARE STILL USING ARRAYS in components, not the ones that were already refactored
 
     lets refactor this. Example:
 
