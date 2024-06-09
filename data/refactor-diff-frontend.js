@@ -1,13 +1,14 @@
 export default {
-  contextSrc: ["app/apps/design/sections/form", "app/apps/design/sections/app"],
-  refactoringFiles: "form app sections affected files",
+  contextSrc: [
+    "app/apps/design/sections/navigation",
+    "app/apps/design/sections/app",
+  ],
+  refactoringFiles: " sections affected files",
   taskPrompt: ` 
   
    We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.    
   we are refactoring the design system documentation. We are refactoring the components properties to become an object with label: html in place of an array of components. Many were already migrated but a few are not yet, migrate the ones missing.
-
-  FOCUS ON THE SECTIONS THAT ARE STILL USING ARRAYS in components, not the ones that were already refactored
-
+  
     lets refactor this. Example:
 
     import { html } from "helpers";
@@ -46,7 +47,8 @@ export default {
   ],
 };
 
-
+IMPORTANT! SKIP FILES THAT ARE ALREADY IN THE components: {label: component} format! 
+  
     `,
 
   responseFormat: "diff",
