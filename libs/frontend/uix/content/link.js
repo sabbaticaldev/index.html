@@ -1,4 +1,13 @@
 import { html, T } from "helpers";
+const defaultOnClick = (e) => {
+  const link = e.currentTarget;
+
+  if (link.tagName === "A" && link.origin === window.location.origin) {
+    e.preventDefault();
+    history.pushState(null, "", link.href);
+    window.dispatchEvent(new Event("popstate"));
+  }
+};
 export default {
   tag: "uix-link",
   props: {
@@ -32,7 +41,11 @@ export default {
   }),
   render() {
     return this.href
-      ? html`<a href=${this.href} @click=${this.onclick} data-theme="uix-link">
+      ? html`<a
+          href=${this.href}
+          @click=${this.onclick || defaultOnClick}
+          data-theme="uix-link"
+        >
           <slot></slot>
         </a>`
       : html`<button @click=${this.onclick} data-theme="uix-link">

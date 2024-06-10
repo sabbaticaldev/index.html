@@ -58,12 +58,15 @@ export const defineSyncProperty = (instance, key, prop) => {
 };
 
 export const requestUpdateOnUrlChange = () => {
+  console.log({ syncKeyMap });
   syncKeyMap.forEach((instances, syncProp) => {
+    console.log("REQUEST UPDATE", syncProp);
     if (
       syncProp.sync &&
       ["url", "hash", "querystring"].includes(syncProp.sync)
     ) {
       instances.forEach((instance) => {
+        console.log("REQUEST UPDATE");
         instance.requestUpdate();
       });
     }
