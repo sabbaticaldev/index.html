@@ -11,6 +11,7 @@ import Input from "./input.js";
 import NumberInput from "./number-input.js";
 import RadioGroup from "./radio-group.js";
 import Range from "./range.js";
+import Search from "./search.js";
 import Select from "./select.js";
 import Switch from "./switch.js";
 import Textarea from "./textarea.js";
@@ -33,6 +34,7 @@ export default {
     ColorPicker,
     Switch,
     FileInput,
+    Search,
     NumberInput,
     DateInput,
     TimeInput,
