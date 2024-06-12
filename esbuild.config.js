@@ -97,7 +97,6 @@ if (isWatchMode) {
     };
 
     fs.readFile(filePath, (err, data) => {
-      console.log({ filePath });
       if (err) {
         fs.readFile(path.join(__dirname, "app", "index.html"), (err, data) => {
           if (err) {

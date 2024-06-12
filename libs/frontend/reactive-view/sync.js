@@ -58,15 +58,17 @@ export const defineSyncProperty = (instance, key, prop) => {
 };
 
 export const requestUpdateOnUrlChange = () => {
-  console.log({ syncKeyMap });
   syncKeyMap.forEach((instances, syncProp) => {
-    console.log("REQUEST UPDATE", syncProp);
+    const syncValue = typeof syncProp === "string" ? syncProp : syncProp.sync;
+
     if (
-      syncProp.sync &&
-      ["url", "hash", "querystring"].includes(syncProp.sync)
+      syncValue &&
+      (["url", "hash", "querystring"].includes(syncValue) ||
+        syncValue.endsWith("-url") ||
+        syncValue.endsWith("-hash") ||
+        syncValue.endsWith("-querystring"))
     ) {
       instances.forEach((instance) => {
-        console.log("REQUEST UPDATE");
         instance.requestUpdate();
       });
     }

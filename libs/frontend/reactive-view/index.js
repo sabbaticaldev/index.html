@@ -5,9 +5,12 @@ import {
   requestUpdateOnUrlChange,
   syncKeyMap,
 } from "./sync.js";
-import { getElementTheme } from "./theme.js";
+import { getElementTheme, applyTheme, applyClasses } from "./theme.js";
 window.addEventListener("popstate", requestUpdateOnUrlChange);
 export const instances = [];
+
+
+
 class ReactiveView extends LitElement {
   static _instancesUsingSync = syncKeyMap;
   constructor({ component }) {
@@ -78,32 +81,6 @@ class ReactiveView extends LitElement {
     const themedElements = this.shadowRoot.querySelectorAll("[data-theme]");
     const props = this.getProps();
 
-    const applyClasses = (elementTheme, el, keepOldClasses) => {
-      if (elementTheme && typeof elementTheme === "string") {
-        const classes = elementTheme.split(" ").filter(Boolean);
-        if (classes?.length) {
-          if (!keepOldClasses) el.className = "";
-          el.classList.add(...classes);
-        }
-      }
-    };
-
-    const applyTheme = (el, themeClassKey) => {
-      const dataProps = Object.fromEntries(
-        Array.from(el.attributes)
-          .filter(
-            (attr) =>
-              attr.name.startsWith("data-") && attr.name !== "data-theme",
-          )
-          .map((attr) => [attr.name.replace("data-", ""), attr.value || true]),
-      );
-      const elementTheme = getElementTheme(themeClassKey, {
-        ...dataProps,
-        ...props,
-      });
-
-      if (elementTheme) applyClasses(elementTheme, el);
-    };
 
     themedElements.forEach((el) => {
       const themeClassKey = el.getAttribute("data-theme");

@@ -340,3 +340,32 @@ export const getElementTheme = (element, props) => {
 
   return classes.join(" ") || "";
 };
+
+
+export const applyTheme = (el, themeClassKey) => {
+  const dataProps = Object.fromEntries(
+    Array.from(el.attributes)
+      .filter(
+        (attr) =>
+          attr.name.startsWith("data-") && attr.name !== "data-theme",
+      )
+      .map((attr) => [attr.name.replace("data-", ""), attr.value || true]),
+  );
+  const elementTheme = getElementTheme(themeClassKey, {
+    ...dataProps,
+    ...props,
+  });
+
+  if (elementTheme) applyClasses(elementTheme, el);
+};
+
+
+export const applyClasses = (elementTheme, el, keepOldClasses) => {
+  if (elementTheme && typeof elementTheme === "string") {
+    const classes = elementTheme.split(" ").filter(Boolean);
+    if (classes?.length) {
+      if (!keepOldClasses) el.className = "";
+      el.classList.add(...classes);
+    }
+  }
+};

@@ -49,6 +49,7 @@ export default {
         <input
           type="text"
           id="filled"
+          data-theme="uix-input"
           aria-describedby="filled_success_help"
           .value=${value || ""}
           ?autofocus=${autofocus}
@@ -59,7 +60,7 @@ export default {
           @keydown=${keydown}
           @change=${change}
           type=${type}
-          placeholder=" "
+          placeholder=${placeholder}
         />
         <label for="filled" data-theme="uix-input__label">
           ${placeholder}
@@ -68,27 +69,6 @@ export default {
     `;
   },
   theme: ({ cls, baseTheme }) => ({
-    "uix-input  ": {
-      _base: cls([
-        "block w-full appearance-none focus:outline-none focus:ring-0",
-        baseTheme.defaultTextColor,
-        baseTheme.borderStyles,
-        baseTheme.borderWidth,
-        baseTheme.borderRadius,
-      ]),
-      active: {
-        true: cls([baseTheme.activeTextColor, "border-blue-500"]),
-        false: cls([baseTheme.defaultTextColor, baseTheme.hoverBorder]),
-      },
-      variant: baseTheme.BaseVariants,
-      size: [baseTheme.SpacingSizes, baseTheme.TextSizes],
-    },
-    "uix-input__label": {
-      variant: baseTheme.BaseVariants,
-      _base: cls([
-        "absolute text-sm duration-300 transform -translate-y-4 scale-75 top-0.5 z-10 origin-[0] left-2.5",
-        "peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4",
-      ]),
-    },
+    
   }),
 };

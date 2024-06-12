@@ -18,7 +18,7 @@ now we need to refactor it
 
 
   for the icon use a lucide icon that express similar idea to the label, dont add the lucide- to the icon name, just the icon name directly
-  also create a icons.json with an array with all entries
+  for the href create it in the following format: /design/package-component were package is the name like form and the component is the component name like input so /design/form-input design/crud/crud-action etc
 `,
 
   responseFormat: "diff",

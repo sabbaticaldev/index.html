@@ -4,6 +4,7 @@ module.exports = {
     browser: true,
   },
   extends: ["eslint:recommended", "plugin:prettier/recommended"],
+  plugins: ["simple-import-sort", "prettier", "json"],
   overrides: [
     {
       files: ["*.test.js"],
@@ -27,12 +28,18 @@ module.exports = {
         sourceType: "script",
       },
     },
+    {
+      files: ["*.json"],
+      plugins: ["json"],
+      rules: {
+        "json/*": ["error"],
+      },
+    },
   ],
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: ["simple-import-sort", "prettier"],
   rules: {
     "linebreak-style": ["error", "unix"],
     quotes: ["error", "double"],
