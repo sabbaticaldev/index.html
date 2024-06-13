@@ -9,7 +9,13 @@
     "dev": "node esbuild.config.js --watch"
   },
   "devDependencies": {
-    "esbuild": "^0.21.3"
+    "esbuild": "^0.21.3",
+    "chokidar": "^3.5.3",
+    "esbuild-plugin-alias": "^0.2.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^8.10.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-simple-import-sort": "^10.0.0"
   },
   "dependencies": {
     "@unocss/runtime": "^0.60.3",

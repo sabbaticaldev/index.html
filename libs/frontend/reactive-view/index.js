@@ -23,7 +23,7 @@ const addThemeClasses = ({ tag, _theme: theme } = {} ) => {
   Object.entries(theme).forEach(([key, value = ""]) => {
     if (typeof value !== "string") return;    
     const classes = value.split(' ').map(className => key ? `${key}:${className}` : className);
-    UnoTheme[tag] = (UnoTheme[tag] || []).concat(classes);
+    UnoTheme[tag] = (UnoTheme[tag] || [tag]).concat(classes);
   });
 };
 
@@ -154,7 +154,7 @@ export function defineView({ key, component, style: globalStyle }) {
     static properties = getProperties(component.props);
     constructor() {
       super({ component });
-      if(Array.isArray(UnoTheme[tag]) && UnoTheme[tag].length > 0) this.classList.add(...UnoTheme[tag]);
+      this.classList.add(tag);
     }
   }
 

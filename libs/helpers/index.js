@@ -27,7 +27,6 @@ export { until } from "lit/directives/until.js";
 export { html as staticHtml } from "lit/static-html.js";
 export { unsafeStatic } from "lit/static-html.js";
 export function escapeHTML(html = "") {
-  console.log({html})
   return html
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -35,3 +34,11 @@ export function escapeHTML(html = "") {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
+export const genTheme = (attribute, options, handler) => {
+  const styles = {};
+  options.forEach(option => {
+    styles[`[&[${attribute}=${option}]]`] = handler(option);
+  });
+  return styles;
+};

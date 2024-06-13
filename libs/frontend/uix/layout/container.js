@@ -1,19 +1,17 @@
-import { html, T } from "helpers";
-
+import { html, T, genTheme } from "helpers";
+const alignItems = ['start', 'center', 'end', 'baseline', 'stretch'];
 const Container = {
   tag: "uix-container",
   props: {
     width: T.string({ defaultValue: "full" }),
     height: T.string({ defaultValue: "auto" }),
-    align: T.string({ defaultValue: "stretch" }),
-    flex: T.boolean({ defaultValue: true }),
+    "align-items": T.string({ defaultValue: "center" }),
     justify: T.string(),
     padding: T.string({ defaultValue: "4" }),
-    secondary: T.boolean({ defaultValue: false }),
+    secondary: T.boolean(),
     horizontal: T.boolean(),
     responsive: T.boolean(),
     reverse: T.boolean(),
-    droparea: T.boolean(),
     grow: T.boolean(),
     spacing: T.string({ defaultValue: "sm" }),
     gap: T.string({ defaultValue: "sm" }),
@@ -22,8 +20,15 @@ const Container = {
   },
   _theme: {
     "": "flex",
-    "[&:not([horizontal])]": "flex-col"
+    "[&:not([horizontal])]": "flex-col",
+    "[&:[rounded]]": "rounded-lg",
+    "[&[secondary]]": "bg-gray-600",
+    "[&[responsive]]": "md:flex-row md:items-center",
+    "[&[reverse]]": "flex-row-reverse",
+    "[&[grow]]": "flex-grow",
+    ...genTheme('align-items', alignItems, (entry) => `items-${entry} w-full`)
   },
+
   render() {
     return html`<slot></slot>`;
   },

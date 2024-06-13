@@ -13,10 +13,9 @@ window.__unocss = {
 };
 
 const getUnoGenerator = () => {
-  console.log(UnoTheme, Array.from(UnoTheme));
   const config = {
     defaults: {
-      safelist: Array.from(UnoTheme),
+      shortcuts:  UnoTheme,
       presets: [
         presetUno(),
         presetIcons({
