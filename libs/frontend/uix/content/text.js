@@ -1,59 +1,44 @@
-import { staticHtml, T, unsafeStatic } from "helpers";
+import { html, T, genTheme } from "helpers";
 
-const TAG_MAP = {
-  "4xl": "h1",
-  "3xl": "h2",
-  "2xl": "h2",
-  xl: "h2",
-  lg: "h3",
-  md: "h4",
-  sm: "h5",
-  xs: "h6",
+const TextColors = {
+  primary: "text-blue-500",
+  secondary: "text-gray-500",
+  success: "text-green-500",
+  danger: "text-red-500",
 };
 
-export default {
+const FontWeight = ["light", "normal", "bold"];
+const FontType = ["sans", "serif", "mono"];
+const LeadingSizes = ["tight", "normal", "loose"];
+const TrackingSizes = ["tighter", "normal", "wider"];
+const TextSizes = ["sm", "base", "lg", "xl", "2xl", "3xl", "4xl"];
+const TransformStyles = ["uppercase", "lowercase", "capitalize"];
+
+const Text = {
   tag: "uix-text",
   props: {
-    size: T.string({}),
+    size: T.string({ defaultValue: "base" }),
     variant: T.string({ defaultValue: "default" }),
     weight: T.string({ defaultValue: "" }),
     font: T.string({ defaultValue: "sans" }),
     transform: T.string(),
-    href: T.string(),
-    onclick: T.function(),
-    leading: T.string({}),
+    leading: T.string(),
+    tracking: T.string(),
   },
-  theme: ({
-    TextColors,
-    FontWeight,
-    FontType,
-    LeadingSizes,
-    TrackingSizes,
-    TextSizes,
-  }) => ({
-    "uix-text": {
-      _base: "",
-      variant: TextColors,
-      transform: {
-        uppercase: "uppercase",
-        lowercase: "lowercase",
-        capitalize: "capitalize",
-      },
-
-      weight: FontWeight,
-      font: FontType,
-      leading: LeadingSizes,
-      size: [LeadingSizes, TrackingSizes, TextSizes],
-    },
-  }),
+  _theme: {
+    ...genTheme('variant', Object.keys(TextColors), (entry) => TextColors[entry]),
+    ...genTheme('weight', FontWeight, (entry) => `font-${entry}`),
+    ...genTheme('font', FontType, (entry) => `font-${entry}`),
+    ...genTheme('leading', LeadingSizes, (entry) => `leading-${entry}`),
+    ...genTheme('size', TextSizes, (entry) => `text-${entry}`),
+    ...genTheme('tracking', TrackingSizes, (entry) => `tracking-${entry}`),
+    ...genTheme('transform', TransformStyles, (entry) => entry),
+  },
   render() {
-    const { size } = this;
-    const tag = TAG_MAP[size] || "p";
-
-    return staticHtml`
-      <${unsafeStatic(tag)}>
-        <slot></slot>
-      </${unsafeStatic(tag)}>
+    return html`
+      <slot></slot>
     `;
   },
 };
+
+export default Text;

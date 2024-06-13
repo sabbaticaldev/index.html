@@ -26,7 +26,7 @@ const Container = {
     "[&[responsive]]": "md:flex-row md:items-center",
     "[&[reverse]]": "flex-row-reverse",
     "[&[grow]]": "flex-grow",
-    ...genTheme('align-items', alignItems, (entry) => `items-${entry} w-full`)
+    ...genTheme('align-items', alignItems, (entry) => `items-${entry}`)
   },
 
   render() {

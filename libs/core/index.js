@@ -66,10 +66,10 @@ const loadAppFromBlob = async ({ app, style }, frontendOnly) => {
 // Function to load the app and register the service worker if available
 const loadApp = async ({ app, style }) => {
   const appFiles = loadFrontendFiles(app);
-  console.log({UnoTheme});
-  const safelist = Object.values(UnoTheme).flat();
+  const safelist = Object.values(UnoTheme).flat().join(" ");
+  
   const uno = getUnoGenerator(safelist);
-  const { css } = await uno.uno.generate(safelist, { preflights: true });  
+  const { css } = await uno.uno.generate(Object.keys(UnoTheme), { preflights: true });  
   if (!app) return console.error("DEBUG: App not found.");
   if (!isValidApp(app)) return console.error("DEBUG: App is invalid.", { app });
   if ("serviceWorker" in navigator) {
