@@ -1,15 +1,60 @@
 import { i18n, LitElement, TYPE_MAP } from "helpers";
-
 import {
   defineSyncProperty,
   requestUpdateOnUrlChange,
   syncKeyMap,
 } from "./sync.js";
-import { getElementTheme, applyTheme, applyClasses } from "./theme.js";
+
+import appKit from "../uix/app/package.js";
+import chatKit from "../uix/chat/package.js";
+import contentKit from "../uix/content/package.js";
+import crudKit from "../uix/crud/package.js";
+import datetimeKit from "../uix/datetime/package.js";
+import docsKit from "../uix/docs/package.js";
+import formKit from "../uix/form/package.js";
+import layoutKit from "../uix/layout/package.js";
+import navigationKit from "../uix/navigation/package.js";
+import pageKit from "../uix/page/package.js";
+
+export const UnoTheme = {};
+
+const addThemeClasses = ({ tag, _theme: theme } = {} ) => {
+  if (!theme) return;
+  Object.entries(theme).forEach(([key, value = ""]) => {
+    if (typeof value !== "string") return;    
+    const classes = value.split(' ').map(className => key ? `${key}:${className}` : className);
+    UnoTheme[tag] = (UnoTheme[tag] || []).concat(classes);
+  });
+};
+
+export const loadFrontendFiles = (app) => {
+  const packages = {
+    app,
+    appKit,
+    chatKit,
+    contentKit,
+    crudKit,
+    pageKit,
+    datetimeKit,
+    docsKit,
+    formKit,
+    layoutKit,
+    navigationKit,
+  };
+
+  const loadedPackages = Object.values(packages).flatMap(pkg => Object.values(pkg.views));
+
+  loadedPackages.forEach(component => {
+    if (component && component.tag && component._theme) {
+      addThemeClasses(component);
+    }
+  });
+  return loadedPackages;
+};
+
+
 window.addEventListener("popstate", requestUpdateOnUrlChange);
 export const instances = [];
-
-
 
 class ReactiveView extends LitElement {
   static _instancesUsingSync = syncKeyMap;
@@ -22,13 +67,14 @@ class ReactiveView extends LitElement {
     this.setupProperties(component.props);
     this.setupMessageHandler();
   }
+
   setupMessageHandler() {
     if (typeof window !== "undefined") {
       this.boundServiceWorkerMessageHandler =
         this.handleServiceWorkerMessage.bind(this);
       navigator.serviceWorker.addEventListener(
         "message",
-        this.boundServiceWorkerMessageHandler,
+        this.boundServiceWorkerMessageHandler
       );
     }
   }
@@ -41,7 +87,7 @@ class ReactiveView extends LitElement {
     const props = _props || this.component.props;
     if (!props) return;
     return Object.fromEntries(
-      Object.keys(props).map((prop) => [prop, this[prop]]),
+      Object.keys(props).map((prop) => [prop, this[prop]])
     );
   }
   initializeComponent(component) {
@@ -74,33 +120,17 @@ class ReactiveView extends LitElement {
     super.connectedCallback();
     this.component.connectedCallback?.bind(this)();
   }
-  // TODO: cache default theme so same elements dont need to create same theme
-  updated() {
-    super.updated();
-
-    const themedElements = this.shadowRoot.querySelectorAll("[data-theme]");
-    const props = this.getProps();
-
-
-    themedElements.forEach((el) => {
-      const themeClassKey = el.getAttribute("data-theme");
-      applyTheme(el, themeClassKey);
-    });
-
-    const mainElementTheme = getElementTheme(this.component.tag, props);
-    if (mainElementTheme) applyClasses(mainElementTheme, this, true);
-  }
 
   disconnectedCallback() {
     this.component.disconnectedCallback?.bind(this)();
     ReactiveView._instancesUsingSync.forEach((instances) =>
-      instances.delete(this),
+      instances.delete(this)
     );
     super.disconnectedCallback();
     if (typeof window !== "undefined") {
       navigator.serviceWorker.removeEventListener(
         "message",
-        this.boundServiceWorkerMessageHandler,
+        this.boundServiceWorkerMessageHandler
       );
     }
   }
@@ -124,27 +154,22 @@ export function defineView({ key, component, style: globalStyle }) {
     static properties = getProperties(component.props);
     constructor() {
       super({ component });
+      if(Array.isArray(UnoTheme[tag]) && UnoTheme[tag].length > 0) this.classList.add(...UnoTheme[tag]);
     }
   }
+
   if (!_tailwindBase) {
     _tailwindBase = new CSSStyleSheet();
     _tailwindBase.replaceSync(globalStyle);
   }
+
   View.styles = [
     _tailwindBase,
     ...(Array.isArray(component.style) ? component.style : [component.style]),
   ].filter(Boolean);
+
   customElements.define(tag, View);
   return [tag, View];
 }
-
-export const definePackage = ({ pkg, style }) => {
-  const views = Object.fromEntries(
-    Object.keys(pkg.views).map((key) =>
-      defineView({ key, component: pkg.views[key], style }),
-    ),
-  );
-  return { ...pkg, views };
-};
 
 export default ReactiveView;

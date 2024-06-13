@@ -26,7 +26,8 @@ export { unsafeHTML } from "lit/directives/unsafe-html.js";
 export { until } from "lit/directives/until.js";
 export { html as staticHtml } from "lit/static-html.js";
 export { unsafeStatic } from "lit/static-html.js";
-export function escapeHTML(html) {
+export function escapeHTML(html = "") {
+  console.log({html})
   return html
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

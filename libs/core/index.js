@@ -1,19 +1,9 @@
 import { startBackend } from "backend";
 import {
-  appKit,
-  chatKit,
-  contentKit,
-  crudKit,
-  datetimeKit,
   defineView,
-  docsKit,
-  extractSafelistFromTheme,
-  formKit,
   getUnoGenerator,
-  layoutKit,
-  loadTheme,
-  navigationKit,
-  pageKit,
+  UnoTheme,
+  loadFrontendFiles,
   reset,
 } from "frontend";
 
@@ -43,46 +33,19 @@ export const getUrlBlob = () => {
   return blob;
 };
 
-//TODO: change the gathering of the theme components to here from reactive-view
-export const loadFrontendFiles = (app) => {
-  const packages = {
-    app,
-    appKit,
-    chatKit,
-    contentKit,
-    crudKit,
-    pageKit,
-    datetimeKit,
-    docsKit,
-    formKit,
-    layoutKit,
-    navigationKit,
-  };
 
-  const loadedPackages = Object.keys(packages).reduce(
-    (acc, key) => {
-      const { views } = packages[key];
-      return { ...acc, views: { ...acc.views, ...views } };
-    },
-    { views: {} },
-  );
-  loadTheme(loadedPackages.views);
-  return loadedPackages;
-};
-
-export const startFrontend = ({ app, style }) => {
-  const { views } = app;
-  Object.entries(views).forEach(([tag, component]) => {
-    if (!component.tag) component.tag = tag;
+export const startFrontend = ({ app, components, style }) => {
+  console.log({style})
+  components.forEach((component) => {
     defineView({ component, style });
   });
 };
 
-const injectApp = async (app, style) => {
+const injectApp = async ({ app, components, style }) => {
   if (!app) throw new Error("Error: no App found");
   if (app.title) document.title = app.title;
 
-  const frontendState = startFrontend({ app, style });
+  const frontendState = startFrontend({ app, components, style });
   if (app.init) await app.init({ style, app });
   const styleEl = document.createElement("style");
   styleEl.textContent = reset;
@@ -102,11 +65,11 @@ const loadAppFromBlob = async ({ app, style }, frontendOnly) => {
 
 // Function to load the app and register the service worker if available
 const loadApp = async ({ app, style }) => {
-  const loadedApp = loadFrontendFiles(app);
-  const themeClasses = extractSafelistFromTheme(null, loadedApp.theme);
-  const uno = getUnoGenerator(themeClasses);
-  const { css } = await uno.uno.generate(themeClasses, { preflights: true });
-
+  const appFiles = loadFrontendFiles(app);
+  console.log({UnoTheme});
+  const safelist = Object.values(UnoTheme).flat();
+  const uno = getUnoGenerator(safelist);
+  const { css } = await uno.uno.generate(safelist, { preflights: true });  
   if (!app) return console.error("DEBUG: App not found.");
   if (!isValidApp(app)) return console.error("DEBUG: App is invalid.", { app });
   if ("serviceWorker" in navigator) {
@@ -124,9 +87,11 @@ const loadApp = async ({ app, style }) => {
       );
       console.info("ServiceWorker registration successful:", registration);
       setTimeout(async () => {
-        await injectApp(
-          loadedApp,
-          [reset, css, style].filter((s) => s).join(" "),
+        await injectApp( {
+          app,
+          components: appFiles,
+          style: [reset, css, style].filter((s) => s).join(" "),
+        }
         );
       }, 0);
     } catch (error) {

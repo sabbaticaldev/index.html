@@ -10,7 +10,7 @@ const Container = {
     justify: T.string(),
     padding: T.string({ defaultValue: "4" }),
     secondary: T.boolean({ defaultValue: false }),
-    vertical: T.boolean({ defaultValue: true }),
+    horizontal: T.boolean(),
     responsive: T.boolean(),
     reverse: T.boolean(),
     droparea: T.boolean(),
@@ -20,34 +20,12 @@ const Container = {
     wrap: T.string({ defaultValue: "nowrap" }),
     rounded: T.boolean(),
   },
-  theme: ({ baseTheme, SpacingSizes, JustifyContent, Gaps, WidthSizes }) => ({
-    "uix-container": {
-      _base: ({ secondary }) =>
-        `block h-auto min-h-screen ${
-          secondary
-            ? baseTheme.backgroundSecondaryColor
-            : baseTheme.backgroundColor
-        }`,
-      flex: { true: "flex" },
-      spacing: SpacingSizes,
-      grow: { true: "grow-1", false: "grow-0" },
-      gap: Gaps,
-      justify: JustifyContent,
-      vertical: { true: "flex-col" },
-      responsive: {
-        true: "lg:flex-col sm:flex-row",
-        false: "sm:flex-col lg:flex-row",
-      },
-      reverse: {
-        true: "flex-col-reverse",
-        false: "flex-row-reverse",
-      },
-
-      width: WidthSizes,
-    },
-  }),
+  _theme: {
+    "": "flex",
+    "[&:not([horizontal])]": "flex-col"
+  },
   render() {
-    return html`<slot></slot> `;
+    return html`<slot></slot>`;
   },
 };
 

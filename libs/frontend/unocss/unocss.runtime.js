@@ -4,6 +4,7 @@ import presetIcons from "https://esm.sh/@unocss/preset-icons/browser";
 import presetUno from "https://esm.sh/@unocss/preset-uno";
 import presetWebFonts from "https://esm.sh/@unocss/preset-web-fonts";
 import init from "https://esm.sh/@unocss/runtime";
+import { UnoTheme } from "../reactive-view/index.js";
 
 // pass unocss options
 // TODO Handle undefined
@@ -11,10 +12,11 @@ window.__unocss = {
   theme: window.__custom && window.__custom.theme ? window.__custom.theme : {},
 };
 
-const getUnoGenerator = (safelist) => {
+const getUnoGenerator = () => {
+  console.log(UnoTheme, Array.from(UnoTheme));
   const config = {
     defaults: {
-      safelist,
+      safelist: Array.from(UnoTheme),
       presets: [
         presetUno(),
         presetIcons({
