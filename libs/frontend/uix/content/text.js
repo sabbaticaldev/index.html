@@ -7,7 +7,19 @@ const TextColors = {
   danger: "text-red-500",
 };
 
-const FontWeight = ["light", "normal", "bold"];
+const baseVariants = {
+  thin: "thin",
+  extralight: "extralight",
+  light: "light",
+  normal: "normal",
+  medium: "medium",
+  semibold: "semibold",
+  bold: "bold",
+  extrabold: "extrabold",
+  black: "black",
+};
+
+const FontWeight = ["thin", "light", "normal", "semibold", "bold", "black"];
 const FontType = ["sans", "serif", "mono"];
 const LeadingSizes = ["tight", "normal", "loose"];
 const TrackingSizes = ["tighter", "normal", "wider"];

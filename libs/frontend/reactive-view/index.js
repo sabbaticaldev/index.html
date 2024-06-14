@@ -18,12 +18,18 @@ import pageKit from "../uix/page/package.js";
 
 export const UnoTheme = {};
 
-const addThemeClasses = ({ tag, _theme: theme } = {} ) => {
+const addThemeClasses = ({ tag, _theme: theme } = {}) => {
   if (!theme) return;
+  
   Object.entries(theme).forEach(([key, value = ""]) => {
-    if (typeof value !== "string") return;    
-    const classes = value.split(' ').map(className => key ? `${key}:${className}` : className);
-    UnoTheme[tag] = (UnoTheme[tag] || [tag]).concat(classes);
+    if (typeof value !== "string") return;
+
+    if (key.startsWith('.')) {
+      UnoTheme[key.substring(1)] = value;
+    } else {
+      const classes = !key ? value : value.split(' ').map(className => `${key}:${className}`).join(" ");
+      UnoTheme[tag] = UnoTheme[tag] ? `${UnoTheme[tag]} ${classes}` : classes;
+    }
   });
 };
 

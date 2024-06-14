@@ -15,11 +15,9 @@ export default {
     }),
   },
 
-  theme: {
-    "uix-accordion": "divide-y divide-gray-800 block text-left",
-    "uix-accordion-item": { _base: "px-4 pt-2", border: { true: "border-b" } },
-    "uix-accordion-item__header":
-      "flex justify-between items-center cursor-pointer",
+  _theme: {
+    "": "divide-y divide-gray-800 block text-left",
+    ".uix-accordion__summary": " list-none cursor-pointer block"
   },
   handleToggle(event, index) {
     const open = event.target.open;
@@ -39,32 +37,33 @@ export default {
     this.requestUpdate();
   },
   render() {
-    return html`<uix-list vertical gap="" spacing="">
+    return html`<uix-container padding="sm">
       ${this.items.map(
         (item, index) =>
           html`
             <details
-              data-theme="uix-accordion-item"
               ?open=${item.open}
               @toggle=${(e) => this.handleToggle(e, index)}
             >
-              <summary data-theme="uix-accordion-item__header">
-                <uix-text size="sm">
-                  <uix-list spacing="" align="center">
-                    ${item.icon
-                      ? html`<uix-icon name=${item.icon}></uix-icon>`
-                      : ""}
-                    ${item.label}
-                  </uix-list>
-                </uix-text>
-                <uix-icon
-                  name=${item.open ? "chevron-up" : "chevron-down"}
-                ></uix-icon>
+              <summary class="uix-accordion__summary">
+                <uix-container horizontal items="center" justify="between">
+                  <uix-text size="sm">
+                    <uix-container horizontal items="center">
+                      ${item.icon
+                        ? html`<uix-icon name=${item.icon}></uix-icon>`
+                        : ""}
+                      ${item.label}
+                    </uix-container>
+                  </uix-text>
+                  <uix-icon
+                    name=${item.open ? "chevron-up" : "chevron-down"}
+                  ></uix-icon>
+                </uix-container>
               </summary>
-              <uix-list vertical gap="" spacing="">${item.content}</uix-list>
+              <uix-container>${item.content}</uix-container>
             </details>
           `,
       )}
-    </uix-list> `;
+    </uix-container> `;
   },
 };
