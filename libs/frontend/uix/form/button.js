@@ -3,7 +3,7 @@ import { html, T, genTheme, defaultTheme, sizeMap, spacingMap, sizeArray } from 
 const Variants = {
   default: `bg-${defaultTheme.colors.default}-300 ${defaultTheme.defaultTextColor}`,
   primary: `bg-${defaultTheme.colors.primary} text-${defaultTheme.colors.button}`,
-  secondary: `bg-${defaultTheme.colors.secondary} text-${defaultTheme.secondaryTextColor}`,
+  secondary: `bg-${defaultTheme.colors.secondary} ${defaultTheme.secondaryTextColor}`,
   success: `bg-${defaultTheme.colors.success} text-${defaultTheme.colors.button}`,
   danger: `bg-${defaultTheme.colors.error} text-${defaultTheme.colors.button}`,
 };

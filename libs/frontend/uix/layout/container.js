@@ -42,6 +42,7 @@ const Container = {
     ...genTheme('padding', sizeKeys, (entry) => `p-${spacingMap[entry]}`),
     ...genTheme('spacing', sizeKeys, (entry) => `space-y-${spacingMap[entry]} space-x-${spacingMap[entry]}`),
     ...genTheme('gap', sizeKeys, (entry) => `gap-${spacingMap[entry]}`),
+    "[&[gap='stack']]": "-space-x-4",
     ...genTheme('wrap', ['nowrap', 'wrap', 'wrap-reverse'], (entry) => `flex-${entry}`),
   },
 

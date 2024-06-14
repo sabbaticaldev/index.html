@@ -13,7 +13,7 @@ const LeadingSizes = ["tight", "normal", "loose"];
 const TrackingSizes = ["tighter", "normal", "wider"];
 const TextSizes = ["xs", "sm", "base", "lg", "xl", "2xl", "3xl", "4xl"];
 const TransformStyles = ["uppercase", "lowercase", "capitalize"];
-
+const TextAlign = ["left", "center", "right", "start", "end", "justify"];
 const Text = {
   tag: "uix-text",
   props: {
@@ -21,17 +21,22 @@ const Text = {
     variant: T.string({ defaultValue: "default" }),
     weight: T.string({ defaultValue: "" }),
     font: T.string({ defaultValue: "sans" }),
+    align: T.string(),    
     transform: T.string(),
     leading: T.string(),
     tracking: T.string(),
     icon: T.string(),
   },
   _theme: {
+    "": "prose",
     ...genTheme('variant', Object.keys(TextColors), (entry) => TextColors[entry]),
     ...genTheme('weight', FontWeight, (entry) => `font-${entry}`),
     ...genTheme('font', FontType, (entry) => `font-${entry}`),
     ...genTheme('leading', LeadingSizes, (entry) => `leading-${entry}`),
+    "[&:not([size])]": "text-base",
     ...genTheme('size', TextSizes, (entry) => `text-${entry}`),
+    ...genTheme('halign', TextAlign, (entry) => `text-${entry}`),
+    ...genTheme('valign', TextAlign, (entry) => `text-${entry}`),
     ...genTheme('tracking', TrackingSizes, (entry) => `tracking-${entry}`),
     ...genTheme('transform', TransformStyles, (entry) => entry),
   },
