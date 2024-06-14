@@ -1,4 +1,4 @@
-import { html, T } from "helpers";
+import { html, T } from "helpers"; 
 
 const linkRender = (item) =>
   html`
@@ -23,7 +23,7 @@ const renderLabel = (item) => html` <uix-container
 const subNavbarRender = (item) =>
   item.variant === "accordion"
     ? accordionRender(item)
-    : html`
+    : html` 
         <uix-text size="xs" transform="uppercase">
           ${renderLabel(item)}
         </uix-text>
@@ -31,16 +31,16 @@ const subNavbarRender = (item) =>
       `;
 
 const accordionRender = (item) => html`
-  <uix-accordion
-    ?border=${item.border}
-    ?multiple=${item.multiple}
-    .items=${[
-      {
-        ...item,
-        content: item.items.map((item) => linkRender(item)),
-      },
-    ]}
-  ></uix-accordion>
+  <uix-accordion ?border=${item.border} ?multiple=${item.multiple}>
+    ${item.items.map((item) => html` <uix-accordion-item
+      label=${item.label}
+      icon=${item.icon}
+      ?open=${item.open}
+    >
+    ${linkRender(item)}
+    </uix-accordion-item>`)}
+
+  </uix-accordion>
 `;
 export default {
   tag: "uix-navbar",
@@ -83,8 +83,8 @@ export default {
     return html`<nav>
       <uix-container padding="sm">
         ${this.items.map((item) => {
-          if (item.items?.length) return subNavbarRender(item);
           if (item.href || item.onclick) return linkRender(item);
+          else return subNavbarRender(item);
         })}
       </uix-container>
     </nav> `;
