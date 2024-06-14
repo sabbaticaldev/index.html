@@ -7,23 +7,11 @@ const TextColors = {
   danger: "text-red-500",
 };
 
-const baseVariants = {
-  thin: "thin",
-  extralight: "extralight",
-  light: "light",
-  normal: "normal",
-  medium: "medium",
-  semibold: "semibold",
-  bold: "bold",
-  extrabold: "extrabold",
-  black: "black",
-};
-
 const FontWeight = ["thin", "light", "normal", "semibold", "bold", "black"];
 const FontType = ["sans", "serif", "mono"];
 const LeadingSizes = ["tight", "normal", "loose"];
 const TrackingSizes = ["tighter", "normal", "wider"];
-const TextSizes = ["sm", "base", "lg", "xl", "2xl", "3xl", "4xl"];
+const TextSizes = ["xs", "sm", "base", "lg", "xl", "2xl", "3xl", "4xl"];
 const TransformStyles = ["uppercase", "lowercase", "capitalize"];
 
 const Text = {
@@ -36,6 +24,7 @@ const Text = {
     transform: T.string(),
     leading: T.string(),
     tracking: T.string(),
+    icon: T.string(),
   },
   _theme: {
     ...genTheme('variant', Object.keys(TextColors), (entry) => TextColors[entry]),
@@ -48,6 +37,7 @@ const Text = {
   },
   render() {
     return html`
+      ${this.icon ? html`<uix-container horizontal  items="center" gap="sm"><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}
       <slot></slot>
     `;
   },

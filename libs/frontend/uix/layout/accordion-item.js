@@ -15,13 +15,8 @@ export default {
       <details ?open=${this.open}>
         <summary class="uix-accordion__summary">
           <uix-container horizontal items="center" justify="between">
-            <uix-text size="sm">
-              <uix-container horizontal items="center">
-                ${this.icon
-                  ? html`<uix-icon name=${this.icon}></uix-icon>`
-                  : ""}
+            <uix-text size="sm" icon=${this.icon}>
                 ${this.label}
-              </uix-container>
             </uix-text>
             <uix-icon
               name=${this.open ? "chevron-up" : "chevron-down"}

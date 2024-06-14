@@ -1,11 +1,8 @@
-import { html, T, genTheme, sizeMap, spacingMap, defaultTheme } from "helpers";
+import { html, T, genTheme, sizeMap, sizeArray, spacingMap, defaultTheme } from "helpers";
 
 const alignItems = ['start', 'center', 'end', 'baseline', 'stretch'];
-const widths = ['min', 'max', 'fit', 'screen', 'full', 'auto'];
-const widthSizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl'];
-const heights = ['min', 'max', 'fit', 'screen', 'full', 'auto'];
-const heightSizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl'];
 const justifyOptions = ['start', 'center', 'end', 'between', 'around', 'evenly'];
+const sizeKeys = Object.keys(sizeMap);
 const Container = {
   tag: "uix-container",
   props: {
@@ -33,18 +30,18 @@ const Container = {
     "[&[reverse]]": "flex-row-reverse",
     "[&[grow]]": "flex-grow",
     ...genTheme('items', alignItems, (entry) => `items-${entry}`),
-    ...genTheme('width', widths, (entry) => `w-${entry}`),
-    ...genTheme('width', widthSizes, (entry) => {
+    ...genTheme('width', sizeArray, (entry) => `w-${entry}`),
+    ...genTheme('width', sizeKeys, (entry) => {
       return "w-" + sizeMap[entry];
     }),
-    ...genTheme('height', heights, (entry) => `h-${entry}`),
-    ...genTheme('height', heightSizes, (entry) => {
+    ...genTheme('height', sizeArray, (entry) => `h-${entry}`),
+    ...genTheme('height', sizeKeys, (entry) => {
       return "h-"+ sizeMap[entry];
     }),
     ...genTheme('justify', justifyOptions, (entry) => `justify-${entry}`),
-    ...genTheme('padding', Object.keys(sizeMap), (entry) => `p-${spacingMap[entry]}`),
-    ...genTheme('spacing', Object.keys(sizeMap), (entry) => `space-y-${spacingMap[entry]} space-x-${spacingMap[entry]}`),
-    ...genTheme('gap', Object.keys(sizeMap), (entry) => `gap-${spacingMap[entry]}`),
+    ...genTheme('padding', sizeKeys, (entry) => `p-${spacingMap[entry]}`),
+    ...genTheme('spacing', sizeKeys, (entry) => `space-y-${spacingMap[entry]} space-x-${spacingMap[entry]}`),
+    ...genTheme('gap', sizeKeys, (entry) => `gap-${spacingMap[entry]}`),
     ...genTheme('wrap', ['nowrap', 'wrap', 'wrap-reverse'], (entry) => `flex-${entry}`),
   },
 
@@ -53,5 +50,4 @@ const Container = {
   },
 };
 
-console.log(Container.theme)
 export default Container;

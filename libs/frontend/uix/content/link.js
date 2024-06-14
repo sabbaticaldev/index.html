@@ -13,43 +13,18 @@ export default {
   props: {
     href: T.string(),
     onclick: T.function(),
-    size: T.string({ defaultValue: "md" }),
-    variant: T.string(),
-    weight: T.string(),
-    font: T.string({ defaultValue: "sans" }),
-    leading: T.string(),
+    icon: T.string(),
   },
-  theme: ({
-    TextColors,
-    FontWeight,
-    FontType,
-    TrackingSizes,
-    LeadingSizes,
-    TextSizes,
-  }) => ({
-    "uix-link": {
-      transform: {
-        uppercase: "uppercase",
-        lowercase: "lowercase",
-        capitalize: "capitalize",
-      },
-      weight: FontWeight,
-      font: FontType,
-      variant: TextColors,
-      size: [LeadingSizes, TrackingSizes, TextSizes],
-    },
-  }),
   render() {
     return this.href
       ? html`<a
           href=${this.href}
           @click=${this.onclick || defaultOnClick}
-          data-theme="uix-link"
-        >
-          <slot></slot>
+        >          
+        ${this.icon ? html`<uix-container horizontal gap="sm" items="center"><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}         
         </a>`
-      : html`<button @click=${this.onclick} data-theme="uix-link">
-          <slot></slot>
+      : html`<button @click=${this.onclick}>          
+          ${this.icon ? html`<uix-container horizontal><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}         
         </button>`;
   },
 };

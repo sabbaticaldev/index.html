@@ -67,9 +67,8 @@ class ReactiveView extends LitElement {
   constructor({ component }) {
     super();
     instances.push(this);
-    this.component = component;
     this._queryCache = {};
-    this.initializeComponent(component);
+    Object.assign(this, component);
     this.setupProperties(component.props);
     this.setupMessageHandler();
   }
@@ -90,27 +89,16 @@ class ReactiveView extends LitElement {
     }
   }
   getProps(_props) {
-    const props = _props || this.component.props;
+    const props = _props || this.props;
     if (!props) return;
     return Object.fromEntries(
       Object.keys(props).map((prop) => [prop, this[prop]])
     );
   }
-  initializeComponent(component) {
-    const { init: componentInit, ...litPropsAndEvents } = component;
-    componentInit?.(this);
-    Object.assign(this, litPropsAndEvents);
-  }
   setupProperties(props) {
     Object.entries(props || {}).forEach(([key, prop]) => {
       if (prop.defaultValue) {
         this[key] = prop.defaultValue;
-      }
-      if (!prop.readonly) {
-        const setterName = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
-        this[setterName] = (newValue) => {
-          this[key] = newValue;
-        };
       }
       if (prop.sync) defineSyncProperty(this, key, prop);
     });
@@ -122,13 +110,7 @@ class ReactiveView extends LitElement {
   qa(element) {
     return this.shadowRoot.querySelectorAll(element);
   }
-  connectedCallback() {
-    super.connectedCallback();
-    this.component.connectedCallback?.bind(this)();
-  }
-
   disconnectedCallback() {
-    this.component.disconnectedCallback?.bind(this)();
     ReactiveView._instancesUsingSync.forEach((instances) =>
       instances.delete(this)
     );
@@ -146,7 +128,7 @@ let _tailwindBase;
 const getProperties = (props) =>
   Object.keys(props || {}).reduce((acc, key) => {
     const value = props[key];
-    acc[key] = { ...value, type: TYPE_MAP[value.type] || TYPE_MAP.string };
+    acc[key] = { type: TYPE_MAP[value.type] || TYPE_MAP.string };
     return acc;
   }, {});
 

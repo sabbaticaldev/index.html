@@ -1,35 +1,40 @@
-import { html, T } from "helpers";
+import { html, T, defaultTheme, genTheme, spacingMap, sizeMap, sizeArray } from "helpers";
 
-export default {
+const BaseVariants = ["primary", "secondary", "success", "danger"];
+const shadowOptions = {
+  none: "shadow-none",
+  sm: "shadow-sm",
+  default: "shadow",
+  md: "shadow-md",
+  lg: "shadow-lg",
+  xl: "shadow-xl",
+  "2xl": "shadow-2xl",
+};
+const Card = {
   tag: "uix-card",
   props: {
-    variant: T.string(),
+    variant: T.string({ defaultValue: "default" }),
     spacing: T.string({ defaultValue: "md" }),
-    header: T.string(),
-    body: T.string(),
-    footer: T.string(),
+    shadow: T.string({ defaultValue: "default" }),
   },
-  theme: ({ BaseVariants, SpacingSizes, baseTheme }) => ({
-    "uix-card": {
-      _base: `block shadow rounded-md overflow-hidden ${baseTheme.cardBackgroundColor}`,
-      variant: BaseVariants,
-      spacing: SpacingSizes,
-    },
-    "uix-card__header": "px-4 py-2 border-b",
-    "uix-card__body": "p-4",
-    "uix-card__footer": "px-4 py-2 bg-gray-50 border-t",
-  }),
+  _theme: {
+    "": `${defaultTheme.borderRadius} ${defaultTheme.cardBackgroundColor} overflow-hidden block border`,
+    ...genTheme('variant', BaseVariants, (entry) => `${defaultTheme.reverseVariants.bgVariation}-${entry} ${defaultTheme.reverseVariants.textVariation}-${entry}`),
+    ...genTheme('padding', Object.keys(spacingMap), (entry) => `p-${spacingMap[entry]}`),
+    "[&:not([padding]]": spacingMap.md,
+    "[&:not([shadow])]": "shadow",
+    ...genTheme('shadow', Object.keys(shadowOptions), (entry) => shadowOptions[entry]),
+    "[&:not([size])]": ["p-" + spacingMap.sm, "text-sm"].join(" "),
+    ...genTheme('size', Object.keys(spacingMap).filter(entry => entry !== "md"), (entry) => `p-${spacingMap[entry]} text-${entry}`),
+    "[&:not([width])]": "w-" + sizeMap.md * 2,
+    ...genTheme('width', sizeArray, (entry) => `w-${entry}`),
+    ...genTheme('width', Object.keys(sizeMap), (entry) => "w-" + sizeMap[entry] * 2)
+  },
   render() {
     return html`
-      ${this.header &&
-      html` <div data-theme="uix-card__header">${this.header}</div> `}
-      ${this.body &&
-      html` <div data-theme="uix-card__body">${this.body}</div> `}
-
       <slot></slot>
-
-      ${this.footer &&
-      html` <div data-theme="uix-card__footer">${this.footer}</div> `}
     `;
   },
 };
+
+export default Card;

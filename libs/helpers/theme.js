@@ -16,7 +16,7 @@ export const defaultTheme = {
     backgroundSecondaryColor: "bg-gray-600",
     cardBackgroundColor: "bg-white",
     borderRadius: "rounded-md",
-    fontStyles: "font-bold leading-5 hover:leading-5",
+    fontStyles: "font-bold leading-5",
     textVariant: "700",
     defaultTextColor: "text-gray-700",
     secondaryTextColor: "text-gray-100",

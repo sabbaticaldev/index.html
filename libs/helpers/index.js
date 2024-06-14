@@ -57,12 +57,14 @@ export const spacingMap = {
 };
 
 export const sizeMap = {
-  xs: '20',  // 80px
-  sm: '40',  // 160px
-  md: '64',  // 256px
-  lg: '80',  // 320px
-  xl: '96',  // 384px
-  '2xl': '128', // 512px
-  '3xl': '160', // 640px
-  '4xl': '256' // 1024px
+  xs: '10',  
+  sm: '20',  
+  md: '40',  
+  lg: '64',  
+  xl: '80',  
+  '2xl': '96', 
+  '3xl': '128',
+  '4xl': '192'
 };
+
+export const sizeArray = ['min', 'max', 'fit', 'screen', 'full', 'auto'];
