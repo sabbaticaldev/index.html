@@ -1,4 +1,10 @@
-import { html, T } from "helpers";
+import { html, T, genTheme, defaultTheme } from "helpers";
+
+const TabsVariants = {
+  default: "border-gray-200 text-gray-500 hover:text-gray-700",
+  primary: `border-${defaultTheme.colors.primary}-500 text-${defaultTheme.colors.primary} hover:text-${defaultTheme.colors.primary}-dark`,
+  secondary: `border-${defaultTheme.colors.secondary}-500 text-${defaultTheme.colors.secondary} hover:text-${defaultTheme.colors.secondary}-dark`,
+};
 
 export default {
   tag: "uix-tabs",
@@ -8,64 +14,36 @@ export default {
     spacing: T.string({ defaultValue: "md" }),
     vertical: T.boolean(),
     full: T.boolean({ defaultValue: true }),
-    activeTab: T.string(),
-    items: T.array({
-      type: {
-        label: T.string(),
-        content: T.string(),
-      },
-    }),
+    activeTab: T.string(), 
   },
-  theme: ({ baseTheme, SpacingSizes, BaseVariants, cls }) => ({
-    "uix-tabs": {
-      _base: "flex border-b border-gray-200",
-      variant: baseTheme.BaseVariants,
-      spacing: SpacingSizes,
-      full: { true: "w-full h-full" },
-    },
-    "uix-tab": {
-      _base: cls([
-        "relative group",
-        baseTheme.flexCenter,
-        "p-2 -mb-px sm:px-4 -px-1 w-full h-full whitespace-nowrap focus:outline-none",
-        baseTheme.borderStyles,
-        baseTheme.borderWidth,
-      ]),
-      active: {
-        true: cls([baseTheme.activeTextColor, "border-blue-500"]),
-        false: cls([baseTheme.defaultTextColor, baseTheme.hoverBorder]),
-      },
-      variant: BaseVariants,
-      size: SpacingSizes,
-    },
-  }),
+  _theme: {    
+    "[&_:hover]": "text-blue-900",
+    "[&_[active]]": "text-red-900 bg-blue",
+    "[&_*]": "p-4",
+    ".uix-tabs__container": `border-b ${genTheme('variant', Object.keys(TabsVariants), (entry) => TabsVariants[entry], { string: true })}`,
+    ".uix-tab": `relative group p-2 -mb-px sm:px-4 w-full h-full whitespace-nowrap focus:outline-none ${defaultTheme.borderStyles} ${defaultTheme.borderWidth}`,
+    "[&:not([active])]:uix-tab": `text-gray-500 hover:text-gray-700`,
+    "[active].uix-tab": `text-blue-600 border-blue-500`,
+  },
+  connectedCallback() {
+    super.connectedCallback();
+  },
+  selectTab(e) {
+    this.qaSlot().map(e => e.removeAttribute("active"));
+    e.target.setAttribute("active", true);
+  },
   render() {
     return html`
-      <uix-list ?vertical=${!this.vertical}>
-        <uix-list
-          ?vertical=${this.vertical}
+        <uix-container
+          ?horizontal=${!this.vertical}
           spacing=${this.spacing}
-          ?full=${this.full}
-          data-theme="uix-tabs"
+          items="center"
+          justify="between"
+          class="uix-tabs__container"
           gap=${this.gap}
         >
-          ${this.items.map(
-            (tab) => html`
-              <button
-                role="tab"
-                ?active=${tab.active}
-                @click=${() => this.setActiveTab(tab.label)}
-                data-theme="uix-tab"
-              >
-                ${tab.label}
-              </button>
-            `,
-          )}
-        </uix-list>
-        ${this.items.map((tab) =>
-          tab.label === this.activeTab ? html` <div>${tab.content}</div> ` : "",
-        )}
-      </uix-list>
+          <slot @click=${this.selectTab}></slot>
+      </uix-container>      
     `;
   },
 };

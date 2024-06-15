@@ -47,6 +47,7 @@ const iconNames = [
   "message-circle",
   "message-square",
   "square",
+  "x",
   "minus",
   "monitor",
   "more-horizontal",

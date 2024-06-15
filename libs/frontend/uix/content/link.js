@@ -28,7 +28,7 @@ export default {
         ${this.icon ? html`<uix-container horizontal gap="sm" items="center"><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}         
         </a>`
       : html`<button @click=${this.onclick}>          
-          ${this.icon ? html`<uix-container horizontal><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}         
+          ${this.icon ? html`<uix-container horizontal items="center" gap="sm"><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}         
         </button>`;
   },
 };

@@ -42,7 +42,7 @@ const Text = {
   },
   render() {
     return html`
-      ${this.icon ? html`<uix-container horizontal  items="center" gap="sm"><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}
+      ${this.icon ? html`<uix-container horizontal items="center" gap="sm"><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}
     `;
   },
 };

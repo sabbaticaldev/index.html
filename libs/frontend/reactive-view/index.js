@@ -66,8 +66,7 @@ class ReactiveView extends LitElement {
   static _instancesUsingSync = syncKeyMap;
   constructor({ component }) {
     super();
-    instances.push(this);
-    this._queryCache = {};
+    instances.push(this);    
     Object.assign(this, component);
     this.setupProperties(component.props);
     this.setupMessageHandler();
@@ -104,11 +103,15 @@ class ReactiveView extends LitElement {
     }));
   }
   q(element) {
-    return (this._queryCache[element] ??=
-      this.shadowRoot.querySelector(element));
+    return this.shadowRoot.querySelector(element);
   }
   qa(element) {
     return this.shadowRoot.querySelectorAll(element);
+  }
+  qaSlot(tagName) {
+    const slot = this.q('slot');
+    const nodes = slot.assignedElements({ flatten: true });
+    return tagName ? nodes.filter(node => node.tagName.toLowerCase() === tagName.toLowerCase()) : nodes;
   }
   disconnectedCallback() {
     ReactiveView._instancesUsingSync.forEach((instances) =>

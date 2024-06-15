@@ -1,35 +1,39 @@
-import { html, T } from "helpers";
+import { html, T, genTheme, defaultTheme } from "helpers";
 
-const Pagination = {
+const PaginationVariants = {
+  default: "bg-white",
+  primary: `bg-${defaultTheme.colors.primary}-100`,
+  secondary: `bg-${defaultTheme.colors.secondary}-100`,
+};
+
+export default {
   tag: "uix-pagination",
   props: {
     totalResults: T.number(),
     currentPage: T.number(),
     resultsPerPage: T.number({ defaultValue: 10 }),
     onPageChange: T.function(),
+    variant: T.string({ defaultValue: "default" }),
+    size: T.string({ defaultValue: "md" }),
   },
-  theme: {
-    "uix-pagination__nav":
-      "flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4",
-    "uix-pagination__info":
-      "text-sm font-normal text-gray-500 dark:text-gray-400",
-    "uix-pagination__info-highlight":
-      "font-semibold text-gray-900 dark:text-white",
-    "uix-pagination__list": "inline-flex items-center space-x-1",
-    "uix-pagination__item": "px-3 py-1 rounded-md",
-    "uix-pagination__link":
-      "flex items-center justify-center text-sm leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700",
-    "uix-pagination__link--active":
-      "flex items-center justify-center p-2 text-sm leading-tight text-blue-600 bg-blue-50 border border-blue-300",
+  _theme: {
+    ".uix-pagination__nav": `space-y-3 md:space-y-0 p-4
+    ${genTheme('variant', Object.keys(PaginationVariants), (entry) => PaginationVariants[entry], { string: true })}`,
+    ".uix-pagination__info": "text-sm font-normal text-gray-500 dark:text-gray-400",
+    ".uix-pagination__info-highlight": "font-semibold text-gray-900 dark:text-white",
+    ".uix-pagination__list": "inline-flex items-center space-x-1",
+    ".uix-pagination__item": "px-3 py-1 rounded-md",
+    ".uix-pagination__link": "flex items-center justify-center text-sm leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700",
+    ".uix-pagination__link--active": "flex items-center justify-center p-2 text-sm leading-tight text-blue-600 bg-blue-50 border border-blue-300",
   },
   renderPageLink(page, label) {
     const isActive = page === this.currentPage;
     return html`
-      <li data-theme="uix-pagination__item">
+      <li class="uix-pagination__item">
         <a
           href="#"
-          data-theme=${`uix-pagination__link ${
-            isActive ? "uix-pagination__link-active" : ""
+          class=${`uix-pagination__link ${
+            isActive ? "uix-pagination__link--active" : ""
           }`}
           @click=${() => this.onPageChange(page)}
         >
@@ -39,7 +43,7 @@ const Pagination = {
     `;
   },
   render() {
-    const totalPageCount = Math.floor(this.totalResults / this.resultsPerPage);
+    const totalPageCount = Math.ceil(this.totalResults / this.resultsPerPage);
     const startItem = (this.currentPage - 1) * this.resultsPerPage + 1;
     const endItem = Math.min(
       startItem + this.resultsPerPage - 1,
@@ -80,24 +84,22 @@ const Pagination = {
     }
 
     return html`
-      <nav data-theme="uix-pagination__nav" aria-label="Table navigation">
-        <span data-theme="uix-pagination__info">
+      <uix-container items="center" justify="between" horizontal role="navigation" class="uix-pagination__nav" aria-label="Table navigation">
+        <uix-container horizontal class="uix-pagination__info">
           Showing
-          <span data-theme="uix-pagination__info-highlight"
+          <span class="uix-pagination__info-highlight"
             >${startItem}-${endItem}</span
           >
           of
-          <span data-theme="uix-pagination-info-highlight"
+          <span class="uix-pagination__info-highlight"
             >${this.totalResults}</span
           >
-        </span>
+        </uix-container>
 
-        <ul data-theme="uix-pagination__list">
+        <ul class="uix-pagination__list">
           ${pageLinks}
         </ul>
-      </nav>
+      </uix-container>
     `;
   },
 };
-
-export default Pagination;

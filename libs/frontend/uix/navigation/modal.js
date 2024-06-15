@@ -1,4 +1,4 @@
-import { css, html, T, genTheme, defaultTheme } from "helpers";
+import { css, html, T, genTheme, sizeMap, defaultTheme } from "helpers";
 
 const ModalVariants = {
   default: "bg-white",
@@ -12,6 +12,8 @@ export default {
     size: T.string({ defaultValue: "md" }),
     open: T.boolean({ defaultValue: false }),
     variant: T.string({ defaultValue: "default" }),
+    label: T.string(),
+    icon: T.string(),
   },
 
   style: css`
@@ -24,11 +26,9 @@ export default {
     if (this.parent) this.parent.hide = this.hide.bind(this);
   },
   _theme: {
-    ".uix-modal__dialog": `rounded-lg bg-white p-8 shadow-2xl min-w-[768px] min-h-[400px]`,
-    ".uix-modal__container": `relative rounded-lg p-6 shadow-lg 
-    ${genTheme('variant', Object.keys(ModalVariants), (entry) => ModalVariants[entry], { string: true })}`,
-    "[&:not([size])]": "max-w-lg",
-    ...genTheme('size', ["sm", "md", "lg", "xl"], (entry) => `max-w-${entry}`),
+    ".uix-modal__dialog": `${defaultTheme.borderRadius} p-4 shadow-2xl [&:not([size])]:w-full [&:not([size])]:h-screen
+    ${genTheme('size', ["sm", "md", "lg", "xl"], (entry) => `w-${sizeMap[entry]*2} min-h-${sizeMap[entry]} overflow-y-auto`, { string: true })} 
+    ${genTheme('variant', Object.keys(ModalVariants), (entry) => ModalVariants[entry], { string: true })}`,     
   },
   toggle() {
     this.open ? this.$modal.close() : this.$modal.showModal();
@@ -36,15 +36,22 @@ export default {
   },
   render() {
     return html`
-      <slot name="cta" class="uix-modal__dialog" @click=${this.toggle.bind(this)}></slot>
+      <slot name="cta" @click=${this.toggle.bind(this)}></slot>
       <dialog
         id="modal"
+        class="uix-modal__dialog"
         ?open=${this.open}
+        variant=${this.variant}
+        size=${this.size}
       >
-        <uix-container class="uix-modal__container" ?open=${this.open} @click=${(e) => e.stopPropagation()}>
-          <slot name="header"></slot>
-          <slot name="body"></slot>
-          <slot name="footer"></slot>
+        <uix-container ?open=${this.open} @click=${(e) => e.stopPropagation()}>          
+          <uix-container horizontal items="center" justify="between">
+            <uix-text size="lg" weight="semibold" icon=${this.icon}>
+              ${this.label}
+              </uix-text>
+            <uix-link .onclick=${this.toggle.bind(this)} icon="x"></uix-link>
+          </uix-container>
+          <slot></slot>
         </uix-container>
         </dialog>
       

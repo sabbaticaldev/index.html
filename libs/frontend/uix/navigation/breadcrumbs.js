@@ -11,12 +11,13 @@ const BreadcrumbVariants = {
 };
 
 const Breadcrumb = {
-  tag: "uix-breadcrumb",
+  tag: "uix-breadcrumbs",
   props: {
     variant: T.string({ defaultValue: "default" }),
   },
   _theme: {
     "": `flex items-center text-sm`,
+    "[&_*]": "p-4",
     ...genTheme('variant', Object.keys(BreadcrumbVariants), (entry) => BreadcrumbVariants[entry]),
   },
   render() {
