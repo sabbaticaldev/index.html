@@ -1,14 +1,23 @@
-import { html, ifDefined, T } from "helpers";
-
+import { html, ifDefined, T, genTheme, defaultTheme } from "helpers";
 import FormControls from "./form-controls.js";
 
-export default {
+const InputSizes = ["sm", "md", "lg", "xl"];
+const InputVariants = {
+  default: `${defaultTheme.defaultTextColor}`,
+  primary: `bg-${defaultTheme.colors.primary}-200 text-${defaultTheme.colors.primary}`,
+  secondary: `bg-${defaultTheme.colors.secondary}-200 text-${defaultTheme.colors.secondary}`,
+  success: `bg-${defaultTheme.colors.success}-200 text-${defaultTheme.colors.success}`,
+  danger: `bg-${defaultTheme.colors.error}-200 text-${defaultTheme.colors.error}`,
+};
+
+const Input = {
   tag: "uix-input",
   props: {
     autofocus: T.boolean(),
     value: T.string(),
     placeholder: T.string(),
     name: T.string(),
+    label: T.string(),
     disabled: T.boolean(),
     regex: T.string(),
     required: T.boolean(),
@@ -30,6 +39,14 @@ export default {
     size: T.string({ defaultValue: "md" }),
     keydown: T.function(),
   },
+  _theme: {
+    "": "block",
+    "[&:not([variant])]": InputVariants.default,
+    ...genTheme('variant', Object.keys(InputVariants), (entry) => InputVariants[entry]),
+    "[&:not([size])]": "p-3",
+    ...genTheme('size', InputSizes, (entry) => `p-${entry === 'sm' ? '2' : entry === 'md' ? '3' : entry === 'lg' ? '4' : '5'}`),
+    ".uix-input__label": "[&[required]]:after:content-['*'] after:text-red-600"
+  },
   ...FormControls("input"),
   render() {
     const {
@@ -38,6 +55,7 @@ export default {
       value,
       change,
       placeholder,
+      label,
       disabled,
       required,
       regex,
@@ -45,12 +63,13 @@ export default {
       keydown,
     } = this;
     return html`
-      <div class="relative">
+      <uix-container gap="xs">
+        <label for=${ifDefined(name)} ?required=${required} class="uix-input__label">
+          <uix-text transform="uppercase" size="xs">${label}</uix-text>
+        </label>
         <input
           type="text"
           id="filled"
-          data-theme="uix-input"
-          aria-describedby="filled_success_help"
           .value=${value || ""}
           ?autofocus=${autofocus}
           ?disabled=${disabled}
@@ -62,13 +81,9 @@ export default {
           type=${type}
           placeholder=${placeholder}
         />
-        <label for="filled" data-theme="uix-input__label">
-          ${placeholder}
-        </label>
-      </div>
+      </uix-container>
     `;
   },
-  theme: ({ cls, baseTheme }) => ({
-    
-  }),
 };
+
+export default Input;

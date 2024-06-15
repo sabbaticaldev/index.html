@@ -37,12 +37,13 @@ export function escapeHTML(html = "") {
     .replace(/'/g, "&#039;");
 }
 
-export const genTheme = (attribute, options, handler) => {
+export const genTheme = (attribute, options, handler, opts = {}) => {
+  const { string } = opts;
   const styles = {};
   options.forEach(option => {
     styles[`[&[${attribute}='${option}']]`] = handler(option);
   });
-  return styles;
+  return string ? Object.keys(styles).map(key => styles[key].split(" ").map(value => `${key}:${value}`)).flat().join(" ") : styles;
 };
 
 export const spacingMap = {

@@ -1,3 +1,16 @@
+
+import { html, T, genTheme, sizeMap, defaultTheme } from "helpers";
+
+const InputVariants = {
+  default: `checked:bg-${defaultTheme.colors.default}-600 checked:border-${defaultTheme.colors.default}-600`,
+  primary: `border-${defaultTheme.colors.primary}-300 checked:bg-${defaultTheme.colors.primary}-600 checked:border-${defaultTheme.colors.primary}-600`,
+  secondary: `border-${defaultTheme.colors.secondary}-300 checked:bg-${defaultTheme.colors.secondary}-600 checked:border-${defaultTheme.colors.secondary}-600`,
+  success: `border-${defaultTheme.colors.success}-300 checked:bg-${defaultTheme.colors.success}-600 checked:border-${defaultTheme.colors.success}-600`,
+  danger: `border-${defaultTheme.colors.error}-300 checked:bg-${defaultTheme.colors.error}-600 checked:border-${defaultTheme.colors.error}-600`,
+};
+
+const InputSizes = ["xs", "sm", "md", "lg", "xl"];
+
 const FormControls = (element) => ({
   reportValidity() {
     const validity = this.$input?.reportValidity();
@@ -46,6 +59,46 @@ const FormControls = (element) => ({
   formStateRestoreCallback(state) {
     this.$input.value = state;
   },
+  // Default Base Input
+
+
+  props: {
+    name: T.string(),
+    variant: T.string({ defaultValue: "default" }),
+    size: T.string({ defaultValue: "md" }),
+    checked: T.boolean(),
+    value: T.boolean(),
+    disabled: T.boolean(),
+    type: T.string({ defaultValue: "checkbox" }), // Default to checkbox, can be overridden
+    onchange: T.function()
+  },
+  _theme: {
+    "": "block",
+    ".uix-input__input": `before:content[''] border-gray-300 border-1 w-full h-full ${genTheme('variant', Object.keys(InputVariants), (entry) => InputVariants[entry], { string: true })}`,
+    "[&:not([size])]": "w-4 h-4",
+    ...genTheme('size', InputSizes, (entry) => ["w-" + sizeMap[entry]/4, "h-" + sizeMap[entry]/4].join(" ")),
+  },
+  _onchange(e) {
+    const { onchange } = this;
+    this.checked = e.target.checked;
+    onchange?.(e);
+  },
+  render() {
+    const { checked, disabled, name } = this;
+    return html`
+      <input
+        class="uix-input__input"
+        type=${element}
+        variant=${this.variant}
+        name=${name}
+        @change=${this._onchange}
+        ?checked=${checked}
+        ?disabled=${disabled}
+      />
+    `;
+  },
 });
 
 export default FormControls;
+
+

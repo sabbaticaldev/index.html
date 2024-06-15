@@ -7,7 +7,9 @@ const Variants = {
   success: `bg-${defaultTheme.colors.success} text-${defaultTheme.colors.button}`,
   danger: `bg-${defaultTheme.colors.error} text-${defaultTheme.colors.button}`,
 };
-
+const renderButtonContent = (icon) => {
+  return icon ? html`<uix-container horizontal  items="center" gap="sm"><uix-icon name=${icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`;
+}
 const Button = {
   tag: "uix-button",
   props: {
@@ -15,6 +17,7 @@ const Button = {
     width: T.string({ defaultValue: "sm" }),
     variant: T.string({ defaultValue: "default" }),
     type: T.string({ defaultValue: "button" }),
+    icon: T.string(),
     href: T.string(),
     click: T.function(),
   },
@@ -33,6 +36,7 @@ const Button = {
       ? html`
           <a href=${this.href}>
             <slot></slot>
+            ${renderButtonContent(this.icon)}
           </a>
         `
       : html`
@@ -40,7 +44,7 @@ const Button = {
             type=${this.type || "button"}
             @click=${(event) => this.click?.({ event, props: this })}
           >
-            <slot></slot>
+            ${renderButtonContent(this.icon)}
           </button>
         `;
   },
