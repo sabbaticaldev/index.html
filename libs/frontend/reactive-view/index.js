@@ -96,12 +96,12 @@ class ReactiveView extends LitElement {
     );
   }
   setupProperties(props) {
-    Object.entries(props || {}).forEach(([key, prop]) => {
+    Object.entries(props || {}).forEach((([key, prop]) => {
       if (prop.defaultValue) {
         this[key] = prop.defaultValue;
       }
       if (prop.sync) defineSyncProperty(this, key, prop);
-    });
+    }));
   }
   q(element) {
     return (this._queryCache[element] ??=

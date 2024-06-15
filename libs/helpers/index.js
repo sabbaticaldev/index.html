@@ -43,13 +43,14 @@ export const genTheme = (attribute, options, handler, opts = {}) => {
   options.forEach(option => {
     styles[`[&[${attribute}='${option}']]`] = handler(option);
   });
-  return string ? Object.keys(styles).map(key => styles[key].split(" ").map(value => `${key}:${value}`)).flat().join(" ") : styles;
+  return string ? Object.keys(styles).map(key => styles[key].split(" ").filter(Boolean).map(value => `${key}:${value}`)).flat().join(" ") : styles;
 };
 
 export const spacingMap = {
   xs: '1',  // corresponds to 0.25rem (4px)
   sm: '2',  // corresponds to 0.5rem (8px)
   md: '4',  // corresponds to 1rem (16px)
+  base: '4',
   lg: '6',  // corresponds to 1.5rem (24px)
   xl: '8',  // corresponds to 2rem (32px)
   '2xl': '10', // corresponds to 2.5rem (40px)
@@ -60,7 +61,8 @@ export const spacingMap = {
 export const sizeMap = {
   xs: '10',  
   sm: '20',  
-  md: '40',  
+  md: '40',
+  base: '40',
   lg: '64',  
   xl: '80',  
   '2xl': '96', 

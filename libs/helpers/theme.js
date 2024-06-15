@@ -9,8 +9,10 @@ export const defaultTheme = {
       info: "teal",
       success: "green",
       warning: "orange",
+      danger: "red",
       error: "red",
     },
+
     iconFontFamily: "lucide",
     backgroundColor: "bg-gray-100",
     backgroundSecondaryColor: "bg-gray-600",

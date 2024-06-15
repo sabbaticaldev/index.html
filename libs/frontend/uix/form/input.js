@@ -12,6 +12,7 @@ const InputVariants = {
 
 const Input = {
   tag: "uix-input",
+  ...FormControls("input"),
   props: {
     autofocus: T.boolean(),
     value: T.string(),
@@ -47,7 +48,6 @@ const Input = {
     ...genTheme('size', InputSizes, (entry) => `p-${entry === 'sm' ? '2' : entry === 'md' ? '3' : entry === 'lg' ? '4' : '5'}`),
     ".uix-input__label": "[&[required]]:after:content-['*'] after:text-red-600"
   },
-  ...FormControls("input"),
   render() {
     const {
       name,

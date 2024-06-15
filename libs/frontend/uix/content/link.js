@@ -1,4 +1,6 @@
-import { html, T } from "helpers";
+import { html, T, defaultTheme } from "helpers";
+import uixText from "./text.js";
+
 const defaultOnClick = (e) => {
   const link = e.currentTarget;
 
@@ -9,8 +11,10 @@ const defaultOnClick = (e) => {
   }
 };
 export default {
+  ...uixText,
   tag: "uix-link",
   props: {
+    ...uixText.props,
     href: T.string(),
     onclick: T.function(),
     icon: T.string(),

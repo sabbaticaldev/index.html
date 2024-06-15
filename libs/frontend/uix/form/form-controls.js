@@ -40,7 +40,7 @@ const FormControls = (element) => ({
   firstUpdated() {
     this._defaultValue = this.value;
     this._internals = this.attachInternals();
-    this.$input = this.q(element || "input");
+    this.$input = this.q(["select", "textarea"].includes(element) ? element : "input");
     if (this.$input) {
       this._internals.setValidity(
         this.$input.validity,
@@ -61,7 +61,6 @@ const FormControls = (element) => ({
   },
   // Default Base Input
 
-
   props: {
     name: T.string(),
     variant: T.string({ defaultValue: "default" }),
@@ -69,8 +68,7 @@ const FormControls = (element) => ({
     checked: T.boolean(),
     value: T.boolean(),
     disabled: T.boolean(),
-    type: T.string({ defaultValue: "checkbox" }), // Default to checkbox, can be overridden
-    onchange: T.function()
+    onchange: T.function(),
   },
   _theme: {
     "": "block",
@@ -80,16 +78,17 @@ const FormControls = (element) => ({
   },
   _onchange(e) {
     const { onchange } = this;
-    this.checked = e.target.checked;
+    this.checked = !this.checked;
+    this.$input.checked = this.checked;
     onchange?.(e);
   },
   render() {
     const { checked, disabled, name } = this;
+    console.log({checked});
     return html`
       <input
         class="uix-input__input"
         type=${element}
-        variant=${this.variant}
         name=${name}
         @change=${this._onchange}
         ?checked=${checked}

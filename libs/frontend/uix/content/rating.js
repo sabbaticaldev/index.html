@@ -1,5 +1,6 @@
-import { html, T } from "helpers";
-export default {
+import { html, T, genTheme } from "helpers";
+
+const Rating = {
   tag: "uix-rating",
   props: {
     value: T.number({ defaultValue: 0 }),
@@ -7,33 +8,30 @@ export default {
     readonly: T.boolean({ defaultValue: false }),
     change: T.function(),
   },
-  theme: {
-    "uix-rating": "flex items-center",
-    "uix-rating__star": () => ({
-      _base: "w-5 h-5 fill-current text-gray-300",
-      filled: {
-        true: "text-yellow-400",
-      },
-    }),
+  _theme: {
+    ".uix-rating__container": "[&_[filled]]:text-yellow",
+    ".uix-rating__star": "w-5 h-5",
   },
   render() {
-    const { max, readonly, change } = this;
+    const { value, max, readonly, change } = this;
 
     return html`
-      ${Array.from(
-        { length: max },
-        (_, index) => html`
-          <svg
-            data-theme="uix-rating__star"
-            viewBox="0 0 20 20"
-            @click=${() => !readonly && change(index + 1)}
-          >
-            <path
-              d="M10 1.667l2.583 5.25 5.75.833-4.166 4.084 1 5.833L10 15.25l-5.167 2.667 1-5.833L1.667 7.75l5.75-.833L10 1.667z"
-            />
-          </svg>
-        `,
-      )}
+      <uix-container horizontal class="uix-rating__container">
+        ${Array.from({ length: max }, (_, index) => {
+          const isFilled = index < value;
+          console.log({isFilled});
+          const isHalf = index + 0.5 === value;
+          return html`
+            <uix-icon
+              name=${isHalf ? "star-half" : "star"}
+              ?filled=${isFilled}
+              @click=${() => !readonly && change(index + 1)}
+            ></uix-icon>
+          `;
+        })}
+      </uix-container>
     `;
   },
 };
+
+export default Rating;
