@@ -25,7 +25,7 @@ export default {
   render() {
     return html`
       <div class="uix-dropdown">
-        <slot name="link" @click=${this.toggle} class="uix-dropdown__button"></slot>
+        <slot name="cta" @click=${this.toggle} class="uix-dropdown__button"></slot>
         ${this.open ? html`<div class="uix-dropdown__panel"><slot></slot></div>` : ""}
       </div>
     `;

@@ -84,7 +84,7 @@ const FormControls = (element) => ({
   },
   render() {
     const { checked, disabled, name } = this;
-    console.log({checked});
+    
     return html`
       <input
         class="uix-input__input"
