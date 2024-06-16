@@ -4,7 +4,7 @@ import presetUno from "https://esm.sh/@unocss/preset-uno";
 import presetWebFonts from "https://esm.sh/@unocss/preset-web-fonts";
 import presetTypography from "https://esm.sh/@unocss/preset-typography";
 import init from "https://esm.sh/@unocss/runtime";
-import { UnoTheme } from "../reactive-view/index.js";
+import { UnoTheme } from "../reactive-view/base.js";
 
 // pass unocss options
 // TODO Handle undefined

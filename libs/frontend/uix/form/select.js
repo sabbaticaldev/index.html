@@ -28,8 +28,7 @@ const Select = {
     ...genTheme('size', SelectSizes, (entry) => ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" ")),
   },
   render() {
-    const { name, options, value, change, variant, size } = this;
-    console.log({options}, this, this.name, this[name]);
+    const { name, options, value, change, variant, size } = this;    
     return html`
       <uix-container gap="xs">
         <select 
