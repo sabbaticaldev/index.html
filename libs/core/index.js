@@ -34,7 +34,7 @@ export const getUrlBlob = () => {
 };
 
 
-export const startFrontend = ({ app, components, style }) => {
+export const startFrontend = ({ components, style }) => {
   console.log({style})
   components.forEach((component) => {
     defineView({ component, style });
@@ -128,13 +128,9 @@ const environmentStrategies = {
 };
 
 // Bootstrap function to initialize the application based on the environment
-const bootstrap = async (environment = "development") => {
-  const strategy = environmentStrategies[environment];
-  if (strategy) {
-    await strategy();
-  } else {
-    console.error(`Unknown environment: ${JSON.stringify({ environment })}`);
-  }
+const bootstrap = async (environment) => {
+  const strategy = environmentStrategies[environment];  
+  await (strategy ? strategy() : environmentStrategies("development"));
 };
 
 export default bootstrap;
