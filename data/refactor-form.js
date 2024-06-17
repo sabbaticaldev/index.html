@@ -3,9 +3,9 @@ export default {
   contextSrc: "libs/frontend",
   taskPrompt: `
   We are creating a UI library based on Lit framework. We created our own format to create those components as you can se in the apps/design files and uix/ files.
-  we are refactoring the form components, lets review their current implementation, fix possible errors, add common features and mainly, add a good look and feel to the components using tailwind and following the current data-theme implementation
+  we are refactoring the form components, lets review their current implementation, fix possible errors, add common features and mainly, add a good look and feel to the components using tailwind and following the current class implementation
 
-  Dont import lit-css, use data-theme and the theme object to add style (tailwind classes)
+  Dont import lit-css, use class and the theme object to add style (tailwind classes)
   example:
 
   import { html, T } from "helpers";
@@ -39,7 +39,7 @@ export default {
     return html\`
       \${this.colors.map(
         (color) => html\`
-          <div data-theme="uix-color-picker__color-block">
+          <div class="uix-color-picker__color-block">
             <span
               @click=\${() =>
                 this.updateTheme({
@@ -49,10 +49,10 @@ export default {
                     [this.colorKey]: color,
                   },
                 })}
-              data-theme="uix-color-picker__color"
+              class="uix-color-picker__color"
               data-color=\${color}
             ></span>
-            <div data-theme="uix-color-picker__shades-container">
+            <div class="uix-color-picker__shades-container">
               \${Array.from({ length: 9 }, (_, i) => i + 1).map(
                 (shade) => html\`
                   <span
@@ -64,7 +64,7 @@ export default {
                           [this.colorKey]: color,
                         },
                       })}
-                    data-theme="uix-color-picker__shade"
+                    class="uix-color-picker__shade"
                     data-shade=\${shade}
                     data-color=\${color}
                   >

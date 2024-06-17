@@ -1,3 +1,4 @@
+import { ReactiveView } from "frontend";
 import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
 
 import FormControls from "./form-controls.js";
@@ -12,17 +13,21 @@ const SelectVariants = {
 
 const SelectSizes = ["xs", "sm", "md", "lg", "xl"];
 
-const Select = {
-  tag: "uix-select",
-  ...FormControls("select"),
-  props: {
-    options: T.array(),
-    value: T.string(),
-    variant: T.string({ defaultValue: "default" }),
-    size: T.string({ defaultValue: "md" }),
-    name: T.string(),
-  },
-  _theme: {
+const formControlsConfig = FormControls("select");
+
+class Select extends ReactiveView {
+  static get properties() {
+    return {
+      options: T.array(),
+      value: T.string(),
+      variant: T.string({ defaultValue: "default" }),
+      size: T.string({ defaultValue: "md" }),
+      name: T.string(),
+      ...formControlsConfig.props,
+    };
+  }
+
+  static theme = {
     "": "block",
     ".uix-select__input": `border-1 ${
       defaultTheme.borderRadius
@@ -32,33 +37,33 @@ const Select = {
       (entry) => SelectVariants[entry],
       { string: true },
     )}`,
-    //"[&:not([size])]": "w-4 h-4",
     ...genTheme("size", SelectSizes, (entry) =>
       ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" "),
     ),
-  },
+  };
+
   render() {
     const { name, options, value, change, variant, size } = this;
     return html`
-      <uix-container gap="xs">
-        <select
-          class="uix-select__input"
-          name=${name}
-          @change=${change}
-          data-theme="uix-select"
-          .value=${value || ""}
-          variant=${variant}
-          size=${size}
-        >
-          ${options?.map(
-            (option) =>
-              html`<option value=${option.value}>${option.label}</option>`,
-          ) || ""}
-          <slot></slot>
-        </select>
-      </uix-container>
+      <select
+        class="uix-select__input"
+        name=${name}
+        @change=${change}
+        class="uix-select"
+        .value=${value || ""}
+        variant=${variant}
+        size=${size}
+      >
+        ${options?.map(
+          (option) =>
+            html`<option value=${option.value}>${option.label}</option>`,
+        ) || ""}
+        <slot></slot>
+      </select>
     `;
-  },
-};
+  }
+}
 
-export default Select;
+Object.assign(Select, formControlsConfig);
+
+export default ReactiveView.define("uix-select", Select);

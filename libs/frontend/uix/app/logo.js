@@ -1,14 +1,18 @@
-import { html, T } from "helpers";
+import "../content/icon.js";
 
-export default {
-  tag: "uix-logo",
-  props: {
-    icon: T.string(),
-    name: T.string(),
-    iconImage: T.string(),
-    nameImage: T.string(),
-    image: T.string(),
-  },
+import { ReactiveView } from "frontend";
+import { html, T } from "helpers";
+class Logo extends ReactiveView {
+  static get properties() {
+    return {
+      icon: T.string(),
+      name: T.string(),
+      iconImage: T.string(),
+      nameImage: T.string(),
+      image: T.string(),
+    };
+  }
+
   render() {
     const { icon, name, iconImage, nameImage, image } = this;
 
@@ -28,5 +32,7 @@ export default {
               : ""}
           `}
     `;
-  },
-};
+  }
+}
+
+export default ReactiveView.define("uix-logo", Logo);

@@ -1,3 +1,7 @@
+import "../layout/container.js";
+import "../content/text.js";
+
+import { ReactiveView } from "frontend";
 import { defaultTheme, genTheme, html, ifDefined, T } from "helpers";
 
 import FormControls from "./form-controls.js";
@@ -11,37 +15,42 @@ const InputVariants = {
   danger: `bg-${defaultTheme.colors.error}-200 text-${defaultTheme.colors.error}`,
 };
 
-const Input = {
-  tag: "uix-input",
-  ...FormControls("input"),
-  props: {
-    autofocus: T.boolean(),
-    value: T.string(),
-    placeholder: T.string(),
-    name: T.string(),
-    label: T.string(),
-    disabled: T.boolean(),
-    regex: T.string(),
-    required: T.boolean(),
-    type: T.string({
-      defaultValue: "text",
-      enum: [
-        "text",
-        "password",
-        "email",
-        "number",
-        "decimal",
-        "search",
-        "tel",
-        "url",
-      ],
-    }),
-    maxLength: T.number(),
-    variant: T.string({ defaultValue: "default" }),
-    size: T.string({ defaultValue: "md" }),
-    keydown: T.function(),
-  },
-  _theme: {
+const formControlsConfig = FormControls("input");
+
+class Input extends ReactiveView {
+  static get properties() {
+    return {
+      autofocus: T.boolean(),
+      value: T.string(),
+      placeholder: T.string(),
+      name: T.string(),
+      label: T.string(),
+      disabled: T.boolean(),
+      regex: T.string(),
+      required: T.boolean(),
+      type: T.string({
+        defaultValue: "text",
+        enum: [
+          "text",
+          "password",
+          "email",
+          "number",
+          "decimal",
+          "search",
+          "tel",
+          "url",
+        ],
+      }),
+      maxLength: T.number(),
+      variant: T.string({ defaultValue: "default" }),
+      size: T.string({ defaultValue: "md" }),
+      keydown: T.function(),
+      change: T.function(),
+      ...formControlsConfig.props,
+    };
+  }
+
+  static theme = {
     "": "block",
     "[&:not([variant])]": InputVariants.default,
     ...genTheme(
@@ -64,8 +73,10 @@ const Input = {
             : "5"
         }`,
     ),
+    ".input": "border-1",
     ".uix-input__label": "[&[required]]:after:content-['*'] after:text-red-600",
-  },
+  };
+
   render() {
     const {
       name,
@@ -92,6 +103,7 @@ const Input = {
         <input
           type="text"
           id="filled"
+          class="input"
           .value=${value || ""}
           ?autofocus=${autofocus}
           ?disabled=${disabled}
@@ -105,7 +117,9 @@ const Input = {
         />
       </uix-container>
     `;
-  },
-};
+  }
+}
 
-export default Input;
+Object.assign(Input, formControlsConfig);
+
+export default ReactiveView.define("uix-input", Input);

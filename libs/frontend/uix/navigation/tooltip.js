@@ -1,3 +1,4 @@
+import { ReactiveView } from "frontend";
 import { genTheme, html, T } from "helpers";
 
 const TooltipVariants = {
@@ -8,19 +9,21 @@ const TooltipVariants = {
   danger: "bg-red-500 text-white",
 };
 
-const Tooltip = {
-  tag: "uix-tooltip",
-  props: {
-    spacing: T.string({ defaultValue: "md" }),
-    variant: T.string({ defaultValue: "default" }),
-    position: T.string({ defaultValue: "top" }),
-  },
-  _theme: {
+class Tooltip extends ReactiveView {
+  static get properties() {
+    return {
+      spacing: T.string({ defaultValue: "md" }),
+      variant: T.string({ defaultValue: "default" }),
+      position: T.string({ defaultValue: "top" }),
+    };
+  }
+
+  static theme = {
     ".uix-tooltip__container":
       "relative inline-block [&_[content]]:hover:block",
-    ".uix-tooltip__content": `absolute transform -translate-x-1/2 mt-2 transition-all duration-200 rounded p-2 text-xs  hidden
-    ${TooltipVariants.default}
-    ${genTheme(
+    ".uix-tooltip__content": `absolute transform -translate-x-1/2 mt-2 transition-all duration-200 rounded p-2 text-xs hidden ${
+      TooltipVariants.default
+    } ${genTheme(
       "variant",
       Object.keys(TooltipVariants),
       (entry) => TooltipVariants[entry],
@@ -31,7 +34,8 @@ const Tooltip = {
     "[&[position=right]]": "left-full top-1/2 transform -translate-y-1/2 mt-0",
     "[&[position=bottom]]": "top-full left-1/2 transform -translate-x-1/2 mt-2",
     "[&[position=left]]": "right-full top-1/2 transform -translate-y-1/2 mt-0",
-  },
+  };
+
   render() {
     return html`
       <div
@@ -45,7 +49,7 @@ const Tooltip = {
         </span>
       </div>
     `;
-  },
-};
+  }
+}
 
-export default Tooltip;
+export default ReactiveView.define("uix-tooltip", Tooltip);

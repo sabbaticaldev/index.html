@@ -16,16 +16,16 @@ export default {
   },
   render() {
     return html`
-      <form data-theme="uix-crud-search__form">
+      <form class="uix-crud-search__form">
         <label for="simple-search" class="sr-only">Search</label>
-        <div data-theme="uix-crud-search__input-container">
-          <div data-theme="uix-crud-search__input-icon">
+        <div class="uix-crud-search__input-container">
+          <div class="uix-crud-search__input-icon">
             <uix-icon name="search"></uix-icon>
           </div>
           <input
             type="text"
             id="simple-search"
-            data-theme="uix-crud-search__input"
+            class="uix-crud-search__input"
             placeholder="Search"
             required=""
           />

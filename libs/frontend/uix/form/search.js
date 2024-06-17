@@ -1,3 +1,4 @@
+import { ReactiveView } from "frontend";
 import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
 
 import FormControls from "./form-controls.js";
@@ -12,17 +13,21 @@ const SearchVariants = {
 
 const SearchSizes = ["xs", "sm", "md", "lg", "xl"];
 
-const Search = {
-  tag: "uix-search",
-  ...FormControls("search"),
-  props: {
-    placeholder: T.string({ defaultValue: "Search..." }),
-    search: T.function(),
-    variant: T.string({ defaultValue: "default" }),
-    size: T.string({ defaultValue: "md" }),
-    results: T.array({ defaultValue: [] }),
-  },
-  _theme: {
+const formControlsConfig = FormControls("search");
+
+class Search extends ReactiveView {
+  static get properties() {
+    return {
+      placeholder: T.string({ defaultValue: "Search..." }),
+      search: T.function(),
+      variant: T.string({ defaultValue: "default" }),
+      size: T.string({ defaultValue: "md" }),
+      results: T.array({ defaultValue: [] }),
+      ...formControlsConfig.props,
+    };
+  }
+
+  static theme = {
     "": "block relative",
     ".uix-search__input": `border-1 ${
       defaultTheme.borderRadius
@@ -36,7 +41,8 @@ const Search = {
       ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" "),
     ),
     ".uix-search__result-item": "p-2 hover:bg-gray-100 cursor-pointer",
-  },
+  };
+
   searchHandler(event) {
     const query = event.target.value;
     if (this.search) {
@@ -45,37 +51,39 @@ const Search = {
         this.requestUpdate();
       });
     }
-  },
+  }
+
   render() {
     const { results = [] } = this;
     return html`
-      <uix-container gap="xs">
-        <input
-          class="uix-search__input"
-          type="search"
-          placeholder=${this.placeholder}
-          @input=${this.searchHandler.bind(this)}
-          list="search-results"
-          variant=${this.variant}
-          size=${this.size}
-        />
-        <datalist id="search-results">
-          ${results?.map(
-            (result) =>
-              html`<option
-                class="uix-search__result-item"
-                value=${result}
-              ></option>`,
-          )}
-        </datalist>
-      </uix-container>
+      <input
+        class="uix-search__input"
+        type="search"
+        placeholder=${this.placeholder}
+        @input=${this.searchHandler.bind(this)}
+        list="search-results"
+        variant=${this.variant}
+        size=${this.size}
+      />
+      <datalist id="search-results">
+        ${results?.map(
+          (result) =>
+            html`<option
+              class="uix-search__result-item"
+              value=${result}
+            ></option>`,
+        )}
+      </datalist>
     `;
-  },
+  }
+
   selectResult(result) {
     const input = this.shadowRoot.querySelector(".uix-search__input");
     input.value = result;
     this.searchHandler({ target: input });
-  },
-};
+  }
+}
 
-export default Search;
+Object.assign(Search, formControlsConfig);
+
+export default ReactiveView.define("uix-search", Search);

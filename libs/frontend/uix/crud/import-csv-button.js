@@ -42,7 +42,7 @@ export default {
           style="display: none;"
           @change=${this.handleFileChange}
         />
-        <uix-list vertical>
+        <uix-container>
           <uix-text size="lg" weight="bold"
             >Select the matching CSV fields:</uix-text
           >
@@ -76,7 +76,7 @@ export default {
               },
             ]}
           ></uix-form>`}
-        </uix-list>
+        <uix-container>
       </uix-modal>
     `;
   },

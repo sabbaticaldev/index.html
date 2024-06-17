@@ -1,9 +1,6 @@
 import { TYPE_MAP } from "helpers";
 
 import ReactiveView from "./base.js";
-import { requestUpdateOnUrlChange } from "./sync.js";
-
-window.addEventListener("popstate", requestUpdateOnUrlChange);
 
 let _tailwindBase;
 const getProperties = (props) =>

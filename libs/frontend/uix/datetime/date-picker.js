@@ -18,12 +18,12 @@ export default {
       <uix-input
         type="text"
         .value=${this.value}
-        data-theme="uix-date-picker__input"
+        class="uix-date-picker__input"
         @focus=${() => this.setOpen(true)}
       ></uix-input>
       ${this.open &&
       html`
-        <div data-theme="uix-date-picker__calendar">
+        <div class="uix-date-picker__calendar">
           <uix-calendar
             .value=${this.value}
             .min=${this.min}

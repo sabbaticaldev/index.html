@@ -23,19 +23,19 @@ const sizeKeys = Object.keys(sizeMap);
 class Container extends ReactiveView {
   static get properties() {
     return {
-      width: T.string({ defaultValue: "full" }),
-      height: T.string({ defaultValue: "auto" }),
-      items: T.string({ defaultValue: "center" }),
-      justify: T.string({ defaultValue: "evenly" }),
-      padding: T.string({ defaultValue: "md" }),
+      width: T.string(),
+      height: T.string(),
+      items: T.string(),
+      justify: T.string(),
+      padding: T.string(),
       secondary: T.boolean(),
       horizontal: T.boolean(),
       responsive: T.boolean(),
       reverse: T.boolean(),
       grow: T.boolean(),
-      spacing: T.string({ defaultValue: "sm" }),
-      gap: T.string({ defaultValue: "sm" }),
-      wrap: T.string({ defaultValue: "nowrap" }),
+      spacing: T.string(),
+      gap: T.string(),
+      wrap: T.string(),
       rounded: T.boolean(),
     };
   }
@@ -73,7 +73,7 @@ class Container extends ReactiveView {
   };
 
   render() {
-    return html`testando <slot></slot>`;
+    return html`<slot></slot>`;
   }
 }
 

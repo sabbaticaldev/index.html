@@ -1,4 +1,6 @@
+import { ReactiveView } from "frontend";
 import { defaultTheme, genTheme, html, T } from "helpers";
+
 const iconNames = [
   "alert-triangle",
   "align-left",
@@ -84,22 +86,27 @@ const iconNames = [
   "wand",
   "x",
 ];
+console.log({ ReactiveView });
+class Icon extends ReactiveView {
+  static get properties() {
+    return {
+      name: T.string(),
+      size: T.string({ defaultValue: "" }),
+    };
+  }
 
-export default {
-  tag: "uix-icon",
-  props: {
-    name: T.string(),
-    size: T.string({ defaultValue: "" }),
-  },
-  _theme: {
+  static theme = {
     "": "block",
     ...genTheme(
       "name",
       iconNames,
       (entry) => `i-${defaultTheme.iconFontFamily}-${entry}`,
     ),
-  },
+  };
+
   render() {
-    return html`<i></i>`;
-  },
-};
+    return html`<i class=${this.size ? `i-${this.size}` : ""}></i>`;
+  }
+}
+
+export default ReactiveView.define("uix-icon", Icon);

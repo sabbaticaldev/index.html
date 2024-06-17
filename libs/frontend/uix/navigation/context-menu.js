@@ -48,8 +48,8 @@ const ContextMenu = {
           }, 0);
         }}
       ></slot>
-      <div data-theme="uix-context-menu__menu" ?hidden=${!this.open}>
-        <uix-list vertical><slot name="menu"></slot></uix-list>
+      <div class="uix-context-menu__menu" ?hidden=${!this.open}>
+        <uix-container><slot name="menu"></slot><uix-container>
       </div>
     `;
   },

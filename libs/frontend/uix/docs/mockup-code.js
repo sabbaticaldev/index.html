@@ -13,10 +13,10 @@ export default {
   },
   render() {
     return html`
-      <div data-theme="uix-mockup-code">
-        <pre data-theme="uix-mockup-code__pre">
+      <div class="uix-mockup-code">
+        <pre class="uix-mockup-code__pre">
           <code
-            data-theme="uix-mockup-code__code"
+            class="uix-mockup-code__code"
             class="language-${this.language}"
           >${this.code}</code>
         </pre>

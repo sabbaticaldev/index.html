@@ -7,7 +7,7 @@ export default {
     "uix-time": "whitespace-nowrap",
   },
   render() {
-    return html`<time data-theme="uix-time"
+    return html`<time class="uix-time"
       >${datetime.formatTime(this.timestamp)}</time
     >`;
   },

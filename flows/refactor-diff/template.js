@@ -98,14 +98,14 @@ Start by creating a new .git/COMMIT_EDITMSG (with the first line being: --- /dev
           render() {
             return html\`
               \${this.header &&
-              html\`<div data-theme="uix-card__header">\${this.header}</div> \`}
+              html\`<div class="uix-card__header">\${this.header}</div> \`}
               \${this.body &&
-              html\`<div data-theme="uix-card__body">\${this.body}</div> \`}
+              html\`<div class="uix-card__body">\${this.body}</div> \`}
         
               <slot></slot>
         
               \${this.footer &&
-              html\` <div data-theme="uix-card__footer">\${this.footer}</div> \`}
+              html\` <div class="uix-card__footer">\${this.footer}</div> \`}
             \`;
           },
         };
@@ -157,10 +157,10 @@ Start by creating a new .git/COMMIT_EDITMSG (with the first line being: --- /dev
        <slot></slot>
  
        \${this.footer &&
--      html\`<div data-theme="uix-card__footer">\${this.footer}</div> \`}
+-      html\`<div class="uix-card__footer">\${this.footer}</div> \`}
 +      html\`
 +        <div
-+          data-theme="uix-card__footer"
++          class="uix-card__footer"
 +          style=\${css\`
 +            background: gray;
 +          \`}

@@ -39,16 +39,15 @@ const buildTasks = [
   },
   {
     ...commonConfig,
-    entryPoints: ["libs/core/index.js"],
-    outfile: "app/dist/core.js",
-    external: ["unocss"],
-  },
-  {
-    ...commonConfig,
     format: "iife",
     target: ["es2017"],
     entryPoints: ["libs/backend/index.sw.js"],
     outfile: "app/dist/backend.sw.js",
+  },
+  {
+    ...commonConfig,
+    entryPoints: ["libs/backend/index.js"],
+    outfile: "app/dist/backend.js",
   },
 ];
 

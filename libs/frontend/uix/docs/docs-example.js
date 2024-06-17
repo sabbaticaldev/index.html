@@ -1,15 +1,19 @@
+import { ReactiveView } from "frontend";
 import { html, T } from "helpers";
 
-export default {
-  tag: "uix-docs-example",
-  props: {
-    code: T.string(),
-    demo: T.function(),
-  },
-  theme: {
-    "uix-docs-example__demo": "mb-4",
-    "uix-docs-example__code": "bg-gray-100 p-4 overflow-x-auto",
-  },
+class DocsExample extends ReactiveView {
+  static get properties() {
+    return {
+      code: T.string(),
+      demo: T.function(),
+    };
+  }
+
+  static theme = {
+    ".uix-docs-example__demo": "mb-4",
+    ".uix-docs-example__code": "bg-gray-100 p-4 overflow-x-auto",
+  };
+
   render() {
     return html`
       <div data-theme="uix-docs-example__demo">${this.demo()}</div>
@@ -19,5 +23,7 @@ export default {
         language="html"
       ></uix-code>
     `;
-  },
-};
+  }
+}
+
+export default ReactiveView.define("uix-docs-example", DocsExample);

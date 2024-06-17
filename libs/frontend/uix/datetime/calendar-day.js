@@ -22,8 +22,8 @@ export default {
     }),
   },
   render() {
-    return html` <button type="button" data-theme="uix-calendar-day">
-      <time datetime="2022-01-01" data-theme="uix-calendar-day__time"
+    return html` <button type="button" class="uix-calendar-day">
+      <time datetime="2022-01-01" class="uix-calendar-day__time"
         >${this.day}</time
       >
     </button>`;

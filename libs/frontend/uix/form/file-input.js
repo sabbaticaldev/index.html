@@ -1,3 +1,4 @@
+import { ReactiveView } from "frontend";
 import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
 
 import FormControls from "./form-controls.js";
@@ -12,22 +13,25 @@ const FileInputVariants = {
 
 const FileInputSizes = ["sm", "base", "lg", "xl"];
 
-const FileInput = {
-  tag: "uix-file-input",
-  ...FormControls("file"),
-  props: {
-    accept: T.string(),
-    multiple: T.boolean(),
-    variant: T.string({ defaultValue: "default" }),
-    size: T.string({ defaultValue: "md" }),
-    change: T.function(),
-  },
-  _theme: {
+const formControlsConfig = FormControls("file");
+
+class FileInput extends ReactiveView {
+  static get properties() {
+    return {
+      accept: T.string(),
+      multiple: T.boolean(),
+      variant: T.string({ defaultValue: "default" }),
+      size: T.string({ defaultValue: "md" }),
+      change: T.function(),
+      ...formControlsConfig.props,
+    };
+  }
+
+  static theme = {
     "": "block w-full appearance-none focus:outline-none",
-    ".uix-file-input__input": `flex h-10 w-full border px-3 py-2 
-    text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-    focus-visible:ring-2 focus-visible:ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 
-    ${defaultTheme.borderRadius} ${genTheme(
+    ".uix-file-input__input": `flex h-10 w-full border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+      defaultTheme.borderRadius
+    } ${genTheme(
       "variant",
       Object.keys(FileInputVariants),
       (entry) => FileInputVariants[entry],
@@ -37,20 +41,22 @@ const FileInput = {
       "w-" + sizeMap[entry],
       "text-" + entry,
     ]),
-  },
+  };
+
   render() {
-    const { accept, multiple, variant, change } = this;
     return html`
       <input
         class="uix-file-input__input"
         type="file"
-        accept=${accept}
-        ?multiple=${multiple}
-        variant=${variant}
-        @change=${change}
+        accept=${this.accept}
+        ?multiple=${this.multiple}
+        variant=${this.variant}
+        @change=${this.change}
       />
     `;
-  },
-};
+  }
+}
 
-export default FileInput;
+Object.assign(FileInput, formControlsConfig);
+
+export default ReactiveView.define("uix-file-input", FileInput);

@@ -1,5 +1,7 @@
-import { startBackend } from "backend";
-import { defineView, getUnoGenerator, ReactiveView, reset } from "frontend";
+import ReactiveView from "./reactive-view/base.js";
+import { defineView } from "./reactive-view/index.js";
+import reset from "./reset.txt";
+import getUnoGenerator from "./unocss/unocss.runtime.js";
 
 export const loadFrontendFiles = (app) => {
   const packages = {
@@ -92,21 +94,21 @@ const loadApp = async ({ app, style, backend }) => {
 };
 
 const environmentStrategies = {
-  production: async () => {
+  production: async (backend) => {
     const app = getUrlBlob();
-    if (app) await loadAppFromBlob({ app });
+    if (app) await loadAppFromBlob({ app, backend });
   },
-  staging: async () => {
+  staging: async (backend) => {
     const app = getUrlBlob();
-    if (app) await loadAppFromBlob({ app });
+    if (app) await loadAppFromBlob({ app, backend });
     window.addEventListener("hashchange", () => window.location.reload());
   },
-  preview: async () => {
+  preview: async (backend) => {
     const app = getUrlBlob();
-    if (app) await loadAppFromBlob({ app }, true);
+    if (app) await loadAppFromBlob({ app, backend }, true);
     window.addEventListener("hashchange", () => window.location.reload());
   },
-  development: async () => {
+  development: async (backend) => {
     const ws = new WebSocket("ws://localhost:4001");
     ws.addEventListener("message", (event) => {
       if (event.data === "refresh") {

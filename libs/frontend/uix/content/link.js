@@ -1,4 +1,8 @@
-import { defaultTheme, html, T } from "helpers";
+import "../layout/container.js";
+import "./icon.js";
+
+import { ReactiveView } from "frontend";
+import { html, T } from "helpers";
 
 import uixText from "./text.js";
 
@@ -11,15 +15,17 @@ const defaultOnClick = (e) => {
     window.dispatchEvent(new Event("popstate"));
   }
 };
-export default {
-  ...uixText,
-  tag: "uix-link",
-  props: {
-    ...uixText.props,
-    href: T.string(),
-    onclick: T.function(),
-    icon: T.string(),
-  },
+
+class Link extends ReactiveView {
+  static get properties() {
+    return {
+      ...uixText.properties,
+      href: T.string(),
+      onclick: T.function(),
+      icon: T.string(),
+    };
+  }
+
   render() {
     return this.href
       ? html`<a href=${this.href} @click=${this.onclick || defaultOnClick}>
@@ -36,5 +42,7 @@ export default {
               ></uix-container>`
             : html`<slot></slot>`}
         </button>`;
-  },
-};
+  }
+}
+
+export default ReactiveView.define("uix-link", Link);

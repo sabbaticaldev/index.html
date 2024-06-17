@@ -20,23 +20,22 @@ const PricingTable = {
   },
   render() {
     return html`
-      <uix-list>
+      <uix-container>
         ${this.plans.map(
           (plan) => html`
             <uix-card>
-              <uix-text data-theme="uix-pricing-plan__name" size="xl"
+              <uix-text class="uix-pricing-plan__name" size="xl"
                 >${plan.name}</uix-text
               >
-              <uix-text data-theme="uix-pricing-plan__price"
-                >${plan.price}</uix-text
-              >
+              <uix-text class="uix-pricing-plan__price">${plan.price}</uix-text>
               <uix-button @click=${plan.buttonClick}
                 >${plan.buttonText}</uix-button
               >
             </uix-card>
           `,
         )}
-      </uix-list>
+        <uix-container> </uix-container
+      ></uix-container>
     `;
   },
 };

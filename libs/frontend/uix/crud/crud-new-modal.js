@@ -20,12 +20,12 @@ export default {
           ? html`<uix-icon-button
               slot="button"
               icon=${icon}
-              data-theme="uix-crud-new-modal__icon"
+              class="uix-crud-new-modal__icon"
             ></uix-icon-button>`
           : html`<uix-button
               slot="button"
               variant="primary"
-              data-theme="uix-crud-new-modal__button"
+              class="uix-crud-new-modal__button"
               >+ new</uix-button
             >`}
         <uix-form

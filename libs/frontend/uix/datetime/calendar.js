@@ -13,7 +13,7 @@ export default {
   },
   render() {
     return html`
-      <div data-theme="uix-calendar">
+      <div class="uix-calendar">
         <uix-calendar-month
           month=${new Date(this.value).getMonth() + 1}
           year=${new Date(this.value).getFullYear()}

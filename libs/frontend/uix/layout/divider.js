@@ -5,13 +5,14 @@ class Divider extends ReactiveView {
   static get properties() {
     return {
       label: T.string(),
-      padding: T.string({ defaultValue: "md" }),
+      padding: T.string(),
     };
   }
 
   static theme = {
     "": "w-full block flex items-center",
-    ".uix-divider__border": "border-t border-gray-400 flex-grow",
+    ".uix-divider__border":
+      "h-px bg-gray-400 m-0 border-0 dark:bg-gray-700 flex-grow",
     ".uix-divider__label": "px-3 text-gray-800 font-bold text-2xl",
     ...genTheme(
       "padding",
@@ -22,11 +23,11 @@ class Divider extends ReactiveView {
 
   render() {
     return html`
-      <div class="uix-divider__border"></div>
+      <hr class="uix-divider__border" />
       ${this.label &&
       html`
         <div class="uix-divider__label">${this.label}</div>
-        <div class="uix-divider__border"></div>
+        <hr class="uix-divider__border" />
       `}
     `;
   }

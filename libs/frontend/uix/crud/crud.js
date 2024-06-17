@@ -16,7 +16,7 @@ export default {
   },
   render() {
     return html`
-      <div data-theme="uix-crud__actions">
+      <div class="uix-crud__actions">
         <uix-crud-search
           .model=${this.model}
           .setRows=${this.setRows}
@@ -29,7 +29,7 @@ export default {
           .ModelClass=${this.ModelClass}
         ></uix-crud-actions>
       </div>
-      <div data-theme="uix-crud__table">
+      <div class="uix-crud__table">
         <uix-crud-table
           .rows=${this.rows}
           .fields=${this.fields}

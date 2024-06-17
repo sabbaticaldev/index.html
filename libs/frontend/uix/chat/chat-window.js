@@ -1,17 +1,23 @@
-import { html, T } from "helpers";
+import "./chat-message.js";
+import "./chat-composer.js";
 
-const ChatWindow = {
-  tag: "uix-chat-window",
-  props: {
-    messages: T.array({ defaultValue: [] }),
-  },
-  theme: {
-    "uix-chat-window": "flex flex-col h-full",
-    "uix-chat-window__messages": "flex-grow overflow-y-auto p-4",
-  },
+import { ReactiveView } from "frontend";
+import { html, T } from "helpers";
+class ChatWindow extends ReactiveView {
+  static get properties() {
+    return {
+      messages: T.array({ defaultValue: [] }),
+    };
+  }
+
+  static theme = {
+    "": "flex flex-col h-full",
+    ".uix-chat-window__messages": "flex-grow overflow-y-auto p-4",
+  };
+
   render() {
     return html`
-      <div data-theme="uix-chat-window__messages">
+      <div class="uix-chat-window__messages">
         ${this.messages.map(
           (message) => html`
             <uix-chat-message
@@ -27,7 +33,7 @@ const ChatWindow = {
         .send=${() => {}}
       ></uix-chat-composer>
     `;
-  },
-};
+  }
+}
 
-export default ChatWindow;
+export default ReactiveView.define("uix-chat-window", ChatWindow);

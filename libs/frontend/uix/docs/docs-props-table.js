@@ -12,25 +12,25 @@ export default {
   },
   render() {
     return html`
-      <table data-theme="uix-docs-props-table">
+      <table class="uix-docs-props-table">
         <thead>
           <tr>
-            <th data-theme="uix-docs-props-table__header">Name</th>
-            <th data-theme="uix-docs-props-table__header">Type</th>
-            <th data-theme="uix-docs-props-table__header">Default</th>
-            <th data-theme="uix-docs-props-table__header">Description</th>
+            <th class="uix-docs-props-table__header">Name</th>
+            <th class="uix-docs-props-table__header">Type</th>
+            <th class="uix-docs-props-table__header">Default</th>
+            <th class="uix-docs-props-table__header">Description</th>
           </tr>
         </thead>
         <tbody>
           ${this.props.map(
             (prop) => html`
               <tr>
-                <td data-theme="uix-docs-props-table__cell">${prop.name}</td>
-                <td data-theme="uix-docs-props-table__cell">${prop.type}</td>
-                <td data-theme="uix-docs-props-table__cell">
+                <td class="uix-docs-props-table__cell">${prop.name}</td>
+                <td class="uix-docs-props-table__cell">${prop.type}</td>
+                <td class="uix-docs-props-table__cell">
                   ${prop.defaultValue}
                 </td>
-                <td data-theme="uix-docs-props-table__cell">
+                <td class="uix-docs-props-table__cell">
                   ${prop.description}
                 </td>
               </tr>

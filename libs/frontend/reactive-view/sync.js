@@ -2,21 +2,18 @@
 import { hash, querystring, stringToType, url } from "helpers";
 
 export const instances = [];
-const isServer = typeof localStorage === "undefined";
-const syncAdapters = isServer
-  ? {}
-  : { url, localStorage, sessionStorage, hash, querystring };
+const syncAdapters = { url, localStorage, sessionStorage, hash, querystring };
 export const syncKeyMap = new Map();
 
 const getSyncKey = (key, sync) => `${key}-${sync}`;
 
-const getValueFromSync = (prop, key) => {
+const getSyncValue = (prop, key) => {
   if (!syncAdapters[prop.sync]) return;
   const value = syncAdapters[prop.sync].getItem(prop.key || key);
   return value ? stringToType(value, prop) : prop.defaultValue;
 };
 
-const setValueInSync = (instance, key, newValue, prop) => {
+const setSyncValue = (instance, key, newValue, prop) => {
   if (!syncAdapters[prop.sync]) return;
   if (!prop.readonly) {
     const value = newValue
@@ -42,17 +39,15 @@ const setValueInSync = (instance, key, newValue, prop) => {
 
 export const defineSyncProperty = (instance, key, prop) => {
   const syncKey = getSyncKey(key, prop.sync);
-  const getValue = () => getValueFromSync(prop, key);
-  const setValue = (newValue) => setValueInSync(instance, key, newValue, prop);
-
   if (!syncKeyMap.has(syncKey)) {
     syncKeyMap.set(syncKey, new Set());
   }
   syncKeyMap.get(syncKey).add(instance);
-
   Object.defineProperty(instance, key, {
-    get: getValue,
-    set: setValue,
+    get: () => getSyncValue(prop, key),
+    set: (newValue) => {
+      setSyncValue(instance, key, newValue, prop);
+    },
     configurable: true,
   });
 };

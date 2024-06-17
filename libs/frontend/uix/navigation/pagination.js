@@ -1,3 +1,6 @@
+import "../layout/container.js";
+
+import { ReactiveView } from "frontend";
 import { defaultTheme, genTheme, html, T } from "helpers";
 
 const PaginationVariants = {
@@ -6,19 +9,20 @@ const PaginationVariants = {
   secondary: `bg-${defaultTheme.colors.secondary}-100`,
 };
 
-export default {
-  tag: "uix-pagination",
-  props: {
-    totalResults: T.number(),
-    currentPage: T.number(),
-    resultsPerPage: T.number({ defaultValue: 10 }),
-    onPageChange: T.function(),
-    variant: T.string({ defaultValue: "default" }),
-    size: T.string({ defaultValue: "md" }),
-  },
-  _theme: {
-    ".uix-pagination__nav": `space-y-3 md:space-y-0 p-4
-    ${genTheme(
+class Pagination extends ReactiveView {
+  static get properties() {
+    return {
+      totalResults: T.number(),
+      currentPage: T.number(),
+      resultsPerPage: T.number({ defaultValue: 10 }),
+      onPageChange: T.function(),
+      variant: T.string({ defaultValue: "default" }),
+      size: T.string({ defaultValue: "md" }),
+    };
+  }
+
+  static theme = {
+    ".uix-pagination__nav": `space-y-3 md:space-y-0 p-4 ${genTheme(
       "variant",
       Object.keys(PaginationVariants),
       (entry) => PaginationVariants[entry],
@@ -34,7 +38,8 @@ export default {
       "flex items-center justify-center text-sm leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700",
     ".uix-pagination__link--active":
       "flex items-center justify-center p-2 text-sm leading-tight text-blue-600 bg-blue-50 border border-blue-300",
-  },
+  };
+
   renderPageLink(page, label) {
     const isActive = page === this.currentPage;
     return html`
@@ -50,7 +55,8 @@ export default {
         </a>
       </li>
     `;
-  },
+  }
+
   render() {
     const totalPageCount = Math.ceil(this.totalResults / this.resultsPerPage);
     const startItem = (this.currentPage - 1) * this.resultsPerPage + 1;
@@ -117,5 +123,7 @@ export default {
         </ul>
       </uix-container>
     `;
-  },
-};
+  }
+}
+
+export default ReactiveView.define("uix-pagination", Pagination);

@@ -19,14 +19,14 @@ const Footer = {
   },
   render() {
     return html`
-      <uix-block data-theme="uix-footer__block">
+      <uix-container class="uix-footer__block">
         <uix-text>${this.copyright}</uix-text>
-        <uix-list data-theme="uix-footer__links">
+        <uix-container class="uix-footer__links">
           ${this.links.map(
             (link) => html`<uix-link href=${link.href}>${link.text}</uix-link>`,
           )}
-        </uix-list>
-      </uix-block>
+          <uix-container> </uix-container> </uix-container
+      ></uix-container>
     `;
   },
 };

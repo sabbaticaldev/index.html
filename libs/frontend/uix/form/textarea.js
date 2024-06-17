@@ -1,3 +1,4 @@
+import { ReactiveView } from "frontend";
 import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
 
 import FormControls from "./form-controls.js";
@@ -12,23 +13,27 @@ const TextareaVariants = {
 
 const TextareaSizes = ["sm", "md", "lg", "xl"];
 
-const Textarea = {
-  tag: "uix-textarea",
-  ...FormControls("textarea"),
-  props: {
-    value: T.string(),
-    placeholder: T.string(),
-    name: T.string(),
-    disabled: T.boolean(),
-    required: T.boolean(),
-    autofocus: T.boolean(),
-    rows: T.number({ defaultValue: 4 }),
-    variant: T.string({ defaultValue: "default" }),
-    size: T.string({ defaultValue: "md" }),
-    input: T.function(),
-    keydown: T.function(),
-  },
-  _theme: {
+const formControlsConfig = FormControls("textarea");
+
+class Textarea extends ReactiveView {
+  static get properties() {
+    return {
+      value: T.string(),
+      placeholder: T.string(),
+      name: T.string(),
+      disabled: T.boolean(),
+      required: T.boolean(),
+      autofocus: T.boolean(),
+      rows: T.number({ defaultValue: 4 }),
+      variant: T.string({ defaultValue: "default" }),
+      size: T.string({ defaultValue: "md" }),
+      input: T.function(),
+      keydown: T.function(),
+      ...formControlsConfig.props,
+    };
+  }
+
+  static theme = {
     "": "block w-full appearance-none focus:outline-none",
     ".uix-textarea__input": `border-1 w-full h-full block ${
       defaultTheme.borderRadius
@@ -42,7 +47,8 @@ const Textarea = {
     ...genTheme("size", TextareaSizes, (entry) =>
       ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" "),
     ),
-  },
+  };
+
   render() {
     const {
       autofocus,
@@ -65,14 +71,16 @@ const Textarea = {
         variant=${variant}
         ?autofocus=${autofocus}
         ?required=${required}
-        @input=${this.change}
+        @input=${this.input}
         @keydown=${keydown}
       >
         ${value}
       </textarea
       >
     `;
-  },
-};
+  }
+}
 
-export default Textarea;
+Object.assign(Textarea, formControlsConfig);
+
+export default ReactiveView.define("uix-textarea", Textarea);

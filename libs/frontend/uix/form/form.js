@@ -137,15 +137,16 @@ export default {
   renderField(row) {
     return Array.isArray(row)
       ? html`
-          <uix-list>
+          <uix-container>
             ${row.map(
               (field) => html`
-                <uix-block spacing="0" class="w-full">
+                <uix-container spacing="0" class="w-full">
                   ${renderField(field, this)}
-                </uix-block>
+                </uix-container>
               `,
             )}
-          </uix-list>
+            <uix-container> </uix-container
+          ></uix-container>
         `
       : renderField(row, this);
   },
@@ -153,27 +154,30 @@ export default {
     const { fields, actions, method, endpoint } = this;
     return html`
       <form class="m-0" method=${method} action=${endpoint}>
-        <uix-list gap="lg" vertical>
+        <uix-container gap="lg" vertical>
           ${fields.map((field) => this.renderField(field))}
-        </uix-list>
-        <uix-list>
-          ${actions
-            ? html`
-                <uix-list responsive gap="md" data-theme="uix-form-actions">
-                  ${actions.map(
-                    (action) => html`
-                      <uix-input
-                        type=${action.type}
-                        @click=${action.click}
-                        class=${action.class}
-                        value=${action.value}
-                      ></uix-input>
-                    `,
-                  )}
-                </uix-list>
-              `
-            : ""}
-        </uix-list>
+        <uix-container>
+        <uix-container>
+          ${
+            actions
+              ? html`
+                  <uix-container responsive gap="md" class="uix-form-actions">
+                    ${actions.map(
+                      (action) => html`
+                        <uix-input
+                          type=${action.type}
+                          @click=${action.click}
+                          class=${action.class}
+                          value=${action.value}
+                        ></uix-input>
+                      `,
+                    )}
+                    <uix-container> </uix-container
+                  ></uix-container>
+                `
+              : ""
+          }
+        <uix-container>
       </form>
     `;
   },

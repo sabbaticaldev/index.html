@@ -1,3 +1,4 @@
+import { ReactiveView } from "frontend";
 import { defaultTheme, genTheme, html, T } from "helpers";
 
 const DateInputVariants = {
@@ -10,17 +11,19 @@ const DateInputVariants = {
 
 const DateInputSizes = ["sm", "md", "lg", "xl"];
 
-const DateInput = {
-  tag: "uix-date-input",
-  props: {
-    value: T.string(),
-    min: T.string(),
-    max: T.string(),
-    variant: T.string({ defaultValue: "default" }),
-    size: T.string({ defaultValue: "md" }),
-    change: T.function(),
-  },
-  _theme: {
+class DateInput extends ReactiveView {
+  static get properties() {
+    return {
+      value: T.string(),
+      min: T.string(),
+      max: T.string(),
+      variant: T.string({ defaultValue: "default" }),
+      size: T.string({ defaultValue: "md" }),
+      change: T.function(),
+    };
+  }
+
+  static theme = {
     "": "block w-full",
     ".uix-date-input__input": `appearance-none ${
       defaultTheme.borderRadius
@@ -55,22 +58,22 @@ const DateInput = {
             : "5"
         }`,
     ),
-  },
+  };
+
   render() {
-    const { value, min, max, change, variant, size } = this;
     return html`
       <input
         class="uix-date-input__input"
         type="date"
-        value=${value}
-        min=${min}
-        max=${max}
-        @change=${change}
-        variant=${variant}
-        size=${size}
+        value=${this.value}
+        min=${this.min}
+        max=${this.max}
+        @change=${this.change}
+        variant=${this.variant}
+        size=${this.size}
       />
     `;
-  },
-};
+  }
+}
 
-export default DateInput;
+export default ReactiveView.define("uix-date-input", DateInput);

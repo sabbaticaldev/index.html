@@ -56,8 +56,8 @@ export default {
     const previousMonthDays = getDaysInMonth(this.month - 1, this.year);
 
     return html`
-      <uix-list vertical>
-        <div data-theme="uix-calendar-month__header">
+      <uix-container>
+        <div class="uix-calendar-month__header">
           <div>M</div>
           <div>T</div>
           <div>W</div>
@@ -66,7 +66,7 @@ export default {
           <div>S</div>
           <div>S</div>
         </div>
-        <div data-theme="uix-calendar-month__grid">
+        <div class="uix-calendar-month__grid">
           ${renderCalendarDays(
             [...Array(daysToPrepend)].map(
               (_, i) => previousMonthDays - daysToPrepend + i + 1,
@@ -81,7 +81,8 @@ export default {
             { month: this.month + 1, attributes: "next=true" },
           )}
         </div>
-      </uix-list>
+        <uix-container> </uix-container
+      ></uix-container>
     `;
   },
 };

@@ -15,13 +15,13 @@ const FeatureBlock = {
   render() {
     return html`
       <uix-icon
-        data-theme="uix-feature-block__icon"
+        class="uix-feature-block__icon"
         name=${this.icon}
       ></uix-icon>
-      <uix-text data-theme="uix-feature-block__title" size="xl"
+      <uix-text class="uix-feature-block__title" size="xl"
         >${this.title}</uix-text
       >
-      <uix-text data-theme="uix-feature-block__description"
+      <uix-text class="uix-feature-block__description"
         >${this.description}</uix-text
       >
     `;

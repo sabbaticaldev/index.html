@@ -1,52 +1,59 @@
-import { css, defaultTheme, genTheme, html, sizeMap, T } from "helpers";
+import "../layout/container.js";
+import "../content/text.js";
+import "../content/link.js";
 
+import { ReactiveView } from "frontend";
+import { css, defaultTheme, genTheme, html, sizeMap, T } from "helpers";
 const ModalVariants = {
   default: "bg-white",
   primary: `bg-${defaultTheme.colors.primary}-100`,
   secondary: `bg-${defaultTheme.colors.secondary}-100`,
 };
 
-export default {
-  tag: "uix-modal",
-  props: {
-    size: T.string({ defaultValue: "md" }),
-    open: T.boolean({ defaultValue: false }),
-    variant: T.string({ defaultValue: "default" }),
-    label: T.string(),
-    icon: T.string(),
-  },
+class Modal extends ReactiveView {
+  static get properties() {
+    return {
+      size: T.string({ defaultValue: "md" }),
+      open: T.boolean({ defaultValue: false }),
+      variant: T.string({ defaultValue: "default" }),
+      label: T.string(),
+      icon: T.string(),
+    };
+  }
 
-  style: css`
+  static styles = css`
     dialog::backdrop {
       background-color: rgba(0, 0, 0, 0.8);
     }
-  `,
-  firstUpdated() {
-    this.$modal = this.shadowRoot.querySelector("#modal");
-    if (this.parent) this.parent.hide = this.hide.bind(this);
-  },
-  _theme: {
+  `;
+
+  static theme = {
     ".uix-modal__dialog": `${
       defaultTheme.borderRadius
-    } p-4 shadow-2xl [&:not([size])]:w-full [&:not([size])]:h-screen
-    ${genTheme(
+    } p-4 shadow-2xl [&:not([size])]:w-full [&:not([size])]:h-screen ${genTheme(
       "size",
       ["sm", "md", "lg", "xl"],
       (entry) =>
         `w-${sizeMap[entry] * 2} min-h-${sizeMap[entry]} overflow-y-auto`,
       { string: true },
-    )} 
-    ${genTheme(
+    )} ${genTheme(
       "variant",
       Object.keys(ModalVariants),
       (entry) => ModalVariants[entry],
       { string: true },
     )}`,
-  },
+  };
+
+  firstUpdated() {
+    this.$modal = this.shadowRoot.querySelector("#modal");
+    if (this.parent) this.parent.hide = this.hide.bind(this);
+  }
+
   toggle() {
     this.open ? this.$modal.close() : this.$modal.showModal();
     this.open = !this.open;
-  },
+  }
+
   render() {
     return html`
       <slot name="cta" @click=${this.toggle.bind(this)}></slot>
@@ -68,5 +75,7 @@ export default {
         </uix-container>
       </dialog>
     `;
-  },
-};
+  }
+}
+
+export default ReactiveView.define("uix-modal", Modal);

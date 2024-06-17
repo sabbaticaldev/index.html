@@ -1,10 +1,6 @@
 import { LitElement } from "helpers";
 
-import { defineSyncProperty } from "./sync.js";
-
-export const UnoTheme = {};
-const _Components = {};
-
+import reset from "../reset.txt";
 import appKit from "../uix/app/package.js";
 import chatKit from "../uix/chat/package.js";
 import contentKit from "../uix/content/package.js";
@@ -15,6 +11,15 @@ import formKit from "../uix/form/package.js";
 import layoutKit from "../uix/layout/package.js";
 import navigationKit from "../uix/navigation/package.js";
 import pageKit from "../uix/page/package.js";
+import { defineSyncProperty, requestUpdateOnUrlChange } from "./sync.js";
+
+const resetCss = new CSSStyleSheet();
+resetCss.replaceSync(reset);
+
+window.addEventListener("popstate", requestUpdateOnUrlChange);
+
+export const UnoTheme = {};
+const _Components = {};
 const packages = {
   appKit,
   chatKit,
@@ -31,7 +36,7 @@ class ReactiveView extends LitElement {
   static UnoTheme = {};
   static _Components = {};
   static packages = packages;
-  constructor({ component } = {}) {
+  constructor({ component = {} } = {}) {
     super();
     Object.assign(this, component);
     const tag = this.constructor.tag || component.tag || this.tag;
@@ -79,19 +84,24 @@ class ReactiveView extends LitElement {
   }
 
   static install() {
-    Object.keys(_Components).forEach((tag) => {
-      const component = this._Components[tag];
-      const { css } = __unocss_runtime.uno.generate(tag, { preflights: true });
-      console.log({ css });
-      const style = new CSSStyleSheet();
-      style.replaceSync(css);
-      component.styles = [
-        style,
-        ...(Array.isArray(component.style)
-          ? component.style
-          : [component.style]),
-      ].filter(Boolean);
-
+    Object.keys(_Components).forEach(async (tag) => {
+      const component = _Components[tag];
+      if (!component) return;
+      component.tag = tag;
+      if (component.theme) {
+        const tags = [
+          tag,
+          ...Object.keys(component.theme)
+            .filter((tag) => tag[0] === ".")
+            .map((tag) => tag.substring(1)),
+        ];
+        const { css } = await window.__unocss_runtime.uno.generate(tags, {
+          preflights: false,
+        });
+        const style = new CSSStyleSheet();
+        style.replaceSync(css);
+        component.styles = [resetCss, style];
+      }
       customElements.define(tag, component);
     });
   }

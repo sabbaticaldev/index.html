@@ -1,5 +1,7 @@
-import { genTheme, html, T } from "helpers";
+import "../layout/container.js";
 
+import { ReactiveView } from "frontend";
+import { genTheme, html, T } from "helpers";
 const BreadcrumbVariants = {
   default: "",
   bordered: "border border-gray-300",
@@ -10,12 +12,14 @@ const BreadcrumbVariants = {
   small: "text-xs p-1",
 };
 
-const Breadcrumb = {
-  tag: "uix-breadcrumbs",
-  props: {
-    variant: T.string({ defaultValue: "default" }),
-  },
-  _theme: {
+class Breadcrumb extends ReactiveView {
+  static get properties() {
+    return {
+      variant: T.string({ defaultValue: "default" }),
+    };
+  }
+
+  static theme = {
     "": "flex items-center text-sm",
     "[&_*]": "p-4",
     ...genTheme(
@@ -23,19 +27,20 @@ const Breadcrumb = {
       Object.keys(BreadcrumbVariants),
       (entry) => BreadcrumbVariants[entry],
     ),
-  },
+  };
+
   render() {
     return html`
       <uix-container
         horizontal
         role="navigation"
         aria-label="Breadcrumb"
-        data-theme="uix-breadcrumb"
+        class="uix-breadcrumb"
       >
         <slot></slot>
       </uix-container>
     `;
-  },
-};
+  }
+}
 
-export default Breadcrumb;
+export default ReactiveView.define("uix-breadcrumbs", Breadcrumb);

@@ -1,18 +1,22 @@
-import { defaultTheme, genTheme, html, T } from "helpers";
+import "../layout/container.js";
 
+import { ReactiveView } from "frontend";
+import { defaultTheme, genTheme, html, T } from "helpers";
 const DropdownVariants = {
   default: "bg-white text-gray-700",
   primary: `bg-${defaultTheme.colors.primary}-500 text-white`,
   secondary: `bg-${defaultTheme.colors.secondary}-500 text-white`,
 };
 
-export default {
-  tag: "uix-dropdown",
-  props: {
-    open: T.boolean({ defaultValue: false }),
-    variant: T.string({ defaultValue: "default" }),
-  },
-  _theme: {
+class Dropdown extends ReactiveView {
+  static get properties() {
+    return {
+      open: T.boolean({ defaultValue: false }),
+      variant: T.string({ defaultValue: "default" }),
+    };
+  }
+
+  static theme = {
     "": "relative inline-block",
     "[&_uix-link]": "py-2 px-4",
     "[&:not([variant])]": DropdownVariants.default,
@@ -24,11 +28,13 @@ export default {
     ".uix-dropdown__button": "inline-flex items-center cursor-pointer",
     ".uix-dropdown__panel":
       "absolute right-0 mt-2 w-56 bg-white border scale-90 border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg z-10",
-  },
+  };
+
   firstUpdated() {
     this.toggle = this.toggle.bind(this);
     this.handleOutsideClick = this.handleOutsideClick.bind(this);
-  },
+  }
+
   toggle() {
     this.open = !this.open;
     if (this.open) {
@@ -36,7 +42,8 @@ export default {
     } else {
       document.removeEventListener("click", this.handleOutsideClick);
     }
-  },
+  }
+
   handleOutsideClick(event) {
     const path = event.composedPath();
     if (!path.includes(this)) {
@@ -44,7 +51,8 @@ export default {
       this.requestUpdate();
       document.removeEventListener("click", this.handleOutsideClick);
     }
-  },
+  }
+
   render() {
     return html`
       <slot
@@ -53,10 +61,12 @@ export default {
         class="uix-dropdown__button"
       ></slot>
       ${this.open
-        ? html`<uix-container class="uix-dropdown__panel"
-            ><slot></slot
-          ></uix-container>`
+        ? html`<uix-container class="uix-dropdown__panel">
+            <slot></slot>
+          </uix-container>`
         : ""}
     `;
-  },
-};
+  }
+}
+
+export default ReactiveView.define("uix-dropdown", Dropdown);

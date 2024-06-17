@@ -17,19 +17,21 @@ const FeatureList = {
   },
   render() {
     return html`
-      <uix-list data-theme="uix-feature-list">
+      <uix-container class="uix-feature-list">
         ${this.items.map(
           (item) => html`
-            <uix-list data-theme="uix-feature-list__item">
+            <uix-container class="uix-feature-list__item">
               <uix-icon
-                data-theme="uix-feature-list__icon"
+                class="uix-feature-list__icon"
                 name=${item.icon}
               ></uix-icon>
               <uix-text>${item.text}</uix-text>
-            </uix-list>
+              <uix-container> </uix-container
+            ></uix-container>
           `,
         )}
-      </uix-list>
+        <uix-container> </uix-container
+      ></uix-container>
     `;
   },
 };

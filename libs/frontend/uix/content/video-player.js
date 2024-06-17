@@ -1,19 +1,23 @@
-import { genTheme, html, T } from "helpers";
+import { ReactiveView } from "frontend";
+import { html, T } from "helpers";
 
-const VideoPlayer = {
-  tag: "uix-video-player",
-  props: {
-    src: T.string(),
-    poster: T.string(),
-    autoplay: T.boolean({ defaultValue: false }),
-    controls: T.boolean({ defaultValue: true }),
-    loop: T.boolean({ defaultValue: false }),
-    muted: T.boolean({ defaultValue: false }),
-  },
-  _theme: {
+class VideoPlayer extends ReactiveView {
+  static get properties() {
+    return {
+      src: T.string(),
+      poster: T.string(),
+      autoplay: T.boolean({ defaultValue: false }),
+      controls: T.boolean({ defaultValue: true }),
+      loop: T.boolean({ defaultValue: false }),
+      muted: T.boolean({ defaultValue: false }),
+    };
+  }
+
+  static theme = {
     "": "w-full h-auto rounded-lg shadow-lg overflow-hidden",
     ".uix-video-player__controls": "bg-gray-800 text-white p-2 rounded-b-lg",
-  },
+  };
+
   render() {
     const { src, poster, autoplay, controls, loop, muted } = this;
 
@@ -42,7 +46,7 @@ const VideoPlayer = {
           : ""}
       </div>
     `;
-  },
-};
+  }
+}
 
-export default VideoPlayer;
+export default ReactiveView.define("uix-video-player", VideoPlayer);

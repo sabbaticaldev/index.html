@@ -1,11 +1,16 @@
+import "../layout/container.js";
+
+import { ReactiveView } from "frontend";
 import { html, T } from "helpers";
 
-export default {
-  tag: "uix-router",
-  props: {
-    routes: T.array(),
-    currentRoute: T.string(),
-  },
+class Router extends ReactiveView {
+  static get properties() {
+    return {
+      routes: T.array(),
+      currentRoute: T.string(),
+    };
+  }
+
   render() {
     const { routes, currentRoute } = this;
 
@@ -13,6 +18,8 @@ export default {
 
     return routeItem
       ? html`${routeItem.component}`
-      : html`<uix-block>404: Page not found</uix-block>`;
-  },
-};
+      : html`<uix-container>404: Page not found</uix-container>`;
+  }
+}
+
+export default ReactiveView.define("uix-router", Router);
