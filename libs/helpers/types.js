@@ -78,7 +78,7 @@ export const T = {
 
   string: (options = {}) => ({
     type: TYPE_MAP["string"],
-    reflect: !options.sync,
+    reflect: true,
     defaultValue: options.defaultValue || "",
     enum: options.enum,
     ...options,

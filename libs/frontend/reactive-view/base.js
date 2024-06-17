@@ -1,47 +1,36 @@
 import { LitElement } from "helpers";
 
 import reset from "../reset.txt";
-import appKit from "../uix/app/package.js";
-import chatKit from "../uix/chat/package.js";
-import contentKit from "../uix/content/package.js";
-import crudKit from "../uix/crud/package.js";
-import datetimeKit from "../uix/datetime/package.js";
-import docsKit from "../uix/docs/package.js";
-import formKit from "../uix/form/package.js";
-import layoutKit from "../uix/layout/package.js";
-import navigationKit from "../uix/navigation/package.js";
-import pageKit from "../uix/page/package.js";
 import { defineSyncProperty, requestUpdateOnUrlChange } from "./sync.js";
+
+window.addEventListener("popstate", requestUpdateOnUrlChange);
+
+import unoRuntime from "../unocss/unocss.runtime.js";
 
 const resetCss = new CSSStyleSheet();
 resetCss.replaceSync(reset);
 
-window.addEventListener("popstate", requestUpdateOnUrlChange);
+export let UnoTheme = {};
+let _Components = {};
 
-export const UnoTheme = {};
-const _Components = {};
-const packages = {
-  appKit,
-  chatKit,
-  contentKit,
-  crudKit,
-  pageKit,
-  datetimeKit,
-  docsKit,
-  formKit,
-  layoutKit,
-  navigationKit,
-};
 class ReactiveView extends LitElement {
-  static UnoTheme = {};
-  static _Components = {};
-  static packages = packages;
-  constructor({ component = {} } = {}) {
+  // TODO: storing instances of ReactiveView should be optional
+  static instances = new Set();
+
+  constructor() {
     super();
-    Object.assign(this, component);
-    const tag = this.constructor.tag || component.tag || this.tag;
-    this.setupProperties(component.props || this.constructor.properties);
-    if (tag) this.classList.add(tag);
+    this.setupProperties(this.constructor.properties);
+    this.classList.add(this.constructor.tag);
+    ReactiveView.instances.add(this);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    ReactiveView.instances.delete(this);
+  }
+
+  static unoRuntime() {
+    return unoRuntime(UnoTheme);
   }
 
   getProps(_props) {
@@ -51,20 +40,24 @@ class ReactiveView extends LitElement {
       Object.keys(props).map((prop) => [prop, this[prop]]),
     );
   }
+
   setupProperties(props) {
     Object.entries(props || {}).forEach(([key, prop]) => {
-      if (prop.defaultValue) {
+      if (prop.sync) defineSyncProperty(this, key, prop);
+      else if (prop.defaultValue) {
         this[key] = prop.defaultValue;
       }
-      if (prop.sync) defineSyncProperty(this, key, prop);
     });
   }
+
   q(element) {
     return this.shadowRoot.querySelector(element);
   }
+
   qa(element) {
     return this.shadowRoot.querySelectorAll(element);
   }
+
   qaSlot(tagName) {
     const slot = this.q("slot");
     const nodes = slot.assignedElements({ flatten: true });
@@ -75,44 +68,54 @@ class ReactiveView extends LitElement {
       : nodes;
   }
 
+  updateStyles(stylesheet) {
+    this.shadowRoot.adoptedStyleSheets = [stylesheet];
+    this.requestUpdate();
+  }
+
   static define(tag, component) {
     if (_Components[tag]) return;
     _Components[tag] = component;
-    console.log({ _Components });
     if (component.theme)
-      ReactiveView.addThemeClasses({ tag, _theme: component.theme });
+      ReactiveView.addThemeClasses({ tag, theme: component.theme });
   }
 
-  static install() {
+  static async generateCss() {
+    const { css } = await window.__unocss_runtime.uno.generate(
+      Object.keys(UnoTheme),
+      {
+        preflights: false,
+      },
+    );
+    return css;
+  }
+
+  static async install(updateAllInstances = false) {
+    const css = await ReactiveView.generateCss();
+    const stylesheet = new CSSStyleSheet();
+    stylesheet.replaceSync([reset, css].join(" "));
     Object.keys(_Components).forEach(async (tag) => {
       const component = _Components[tag];
       if (!component) return;
       component.tag = tag;
-      if (component.theme) {
-        const tags = [
-          tag,
-          ...Object.keys(component.theme)
-            .filter((tag) => tag[0] === ".")
-            .map((tag) => tag.substring(1)),
-        ];
-        const { css } = await window.__unocss_runtime.uno.generate(tags, {
-          preflights: false,
-        });
-        const style = new CSSStyleSheet();
-        style.replaceSync(css);
-        component.styles = [resetCss, style];
-      }
-      customElements.define(tag, component);
+      component.styles = [stylesheet];
+      if (!customElements.get(tag)) customElements.define(tag, component);
     });
+
+    if (updateAllInstances) {
+      ReactiveView.instances.forEach((instance) => {
+        instance.updateStyles(stylesheet);
+      });
+    }
   }
 
-  static addThemeClasses = ({ tag, _theme: theme } = {}) => {
+  static addThemeClasses = ({ tag, theme } = {}) => {
     if (!theme) return;
     Object.entries(theme).forEach(([key, value = ""]) => {
       if (typeof value !== "string") return;
 
       if (key.startsWith(".")) {
-        ReactiveView.UnoTheme[key.substring(1)] = value;
+        UnoTheme[key.substring(1)] = value;
       } else {
         const classes = !key
           ? value
@@ -120,9 +123,7 @@ class ReactiveView extends LitElement {
               .split(" ")
               .map((className) => `${key}:${className}`)
               .join(" ");
-        ReactiveView.UnoTheme[tag] = ReactiveView.UnoTheme[tag]
-          ? `${ReactiveView.UnoTheme[tag]} ${classes}`
-          : classes;
+        UnoTheme[tag] = UnoTheme[tag] ? `${UnoTheme[tag]} ${classes}` : classes;
       }
     });
   };

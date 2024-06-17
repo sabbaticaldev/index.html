@@ -1,24 +1,5 @@
-import ReactiveView from "./reactive-view/base.js";
-import { defineView } from "./reactive-view/index.js";
+import ReactiveView, { UnoTheme } from "./reactive-view/base.js";
 import reset from "./reset.txt";
-import getUnoGenerator from "./unocss/unocss.runtime.js";
-
-export const loadFrontendFiles = (app) => {
-  const packages = {
-    app,
-    ...ReactiveView.packages,
-  };
-  console.log({ packages });
-  const loadedPackages = Object.values(packages).flatMap((pkg) =>
-    Object.values(pkg.views),
-  );
-  loadedPackages.forEach((component) => {
-    if (component && component.tag && component._theme) {
-      ReactiveView.addThemeClasses(component);
-    }
-  });
-  return loadedPackages;
-};
 
 export const getUrlBlob = () => {
   const extractedContent = decodeURIComponent(
@@ -29,24 +10,15 @@ export const getUrlBlob = () => {
   return blob;
 };
 
-export const startFrontend = ({ components, style }) => {
-  console.log({ style });
-  components.forEach((component) => {
-    defineView({ component, style });
-  });
-  ReactiveView.install(style);
-};
-
-const injectApp = async ({ app, components, style }) => {
+const injectApp = async ({ app, style }) => {
   if (!app) throw new Error("Error: no App found");
   if (app.title) document.title = app.title;
 
-  const frontendState = startFrontend({ app, components, style });
+  ReactiveView.install();
   if (app.init) await app.init({ style, app });
   const styleEl = document.createElement("style");
   styleEl.textContent = reset;
   document.head.append(styleEl);
-  return frontendState;
 };
 
 const loadAppFromBlob = async ({ app, style, backend }) => {
@@ -58,13 +30,8 @@ const loadAppFromBlob = async ({ app, style, backend }) => {
 };
 
 // Function to load the app and register the service worker if available
-const loadApp = async ({ app, style, backend }) => {
-  const appFiles = loadFrontendFiles(app);
-  const safelist = Object.values(ReactiveView.UnoTheme).flat().join(" ");
-  const uno = getUnoGenerator(safelist, ReactiveView.UnoTheme);
-  const { css } = await uno.uno.generate(Object.keys(ReactiveView.UnoTheme), {
-    preflights: true,
-  });
+const loadApp = async ({ app, backend }) => {
+  ReactiveView.unoRuntime(UnoTheme);
   if (!app) return console.error("DEBUG: App not found.");
   if (backend && "serviceWorker" in navigator) {
     try {
@@ -83,8 +50,6 @@ const loadApp = async ({ app, style, backend }) => {
       setTimeout(async () => {
         await injectApp({
           app,
-          components: appFiles,
-          style: [reset, css, style].filter((s) => s).join(" "),
         });
       }, 0);
     } catch (error) {
