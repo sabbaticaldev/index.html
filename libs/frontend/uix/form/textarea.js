@@ -1,4 +1,5 @@
-import { html, T, genTheme, defaultTheme, sizeMap } from "helpers";
+import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
+
 import FormControls from "./form-controls.js";
 
 const TextareaVariants = {
@@ -8,7 +9,6 @@ const TextareaVariants = {
   success: `bg-${defaultTheme.colors.success}-50 border-${defaultTheme.colors.success}-300 focus:ring focus:ring-${defaultTheme.colors.success}-200 focus:border-${defaultTheme.colors.success}-600`,
   danger: `bg-${defaultTheme.colors.error}-50 border-${defaultTheme.colors.error}-300 focus:ring focus:ring-${defaultTheme.colors.error}-200 focus:border-${defaultTheme.colors.error}-600`,
 };
-
 
 const TextareaSizes = ["sm", "md", "lg", "xl"];
 
@@ -30,9 +30,18 @@ const Textarea = {
   },
   _theme: {
     "": "block w-full appearance-none focus:outline-none",
-    ".uix-textarea__input": `border-1 w-full h-full block ${defaultTheme.borderRadius} ${genTheme('variant', Object.keys(TextareaVariants), (entry) => TextareaVariants[entry], { string: true })}`,
-    "[&:not([size])]": "p-3",    
-    ...genTheme('size', TextareaSizes, (entry) => ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" ")),
+    ".uix-textarea__input": `border-1 w-full h-full block ${
+      defaultTheme.borderRadius
+    } ${genTheme(
+      "variant",
+      Object.keys(TextareaVariants),
+      (entry) => TextareaVariants[entry],
+      { string: true },
+    )}`,
+    "[&:not([size])]": "p-3",
+    ...genTheme("size", TextareaSizes, (entry) =>
+      ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" "),
+    ),
   },
   render() {
     const {
@@ -60,7 +69,8 @@ const Textarea = {
         @keydown=${keydown}
       >
         ${value}
-      </textarea>
+      </textarea
+      >
     `;
   },
 };

@@ -1,4 +1,4 @@
-import { html, T, genTheme, defaultTheme } from "helpers";
+import { defaultTheme, genTheme, html, T } from "helpers";
 
 const PaginationVariants = {
   default: "bg-white",
@@ -18,13 +18,22 @@ export default {
   },
   _theme: {
     ".uix-pagination__nav": `space-y-3 md:space-y-0 p-4
-    ${genTheme('variant', Object.keys(PaginationVariants), (entry) => PaginationVariants[entry], { string: true })}`,
-    ".uix-pagination__info": "text-sm font-normal text-gray-500 dark:text-gray-400",
-    ".uix-pagination__info-highlight": "font-semibold text-gray-900 dark:text-white",
+    ${genTheme(
+      "variant",
+      Object.keys(PaginationVariants),
+      (entry) => PaginationVariants[entry],
+      { string: true },
+    )}`,
+    ".uix-pagination__info":
+      "text-sm font-normal text-gray-500 dark:text-gray-400",
+    ".uix-pagination__info-highlight":
+      "font-semibold text-gray-900 dark:text-white",
     ".uix-pagination__list": "inline-flex items-center space-x-1",
     ".uix-pagination__item": "px-3 py-1 rounded-md",
-    ".uix-pagination__link": "flex items-center justify-center text-sm leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700",
-    ".uix-pagination__link--active": "flex items-center justify-center p-2 text-sm leading-tight text-blue-600 bg-blue-50 border border-blue-300",
+    ".uix-pagination__link":
+      "flex items-center justify-center text-sm leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700",
+    ".uix-pagination__link--active":
+      "flex items-center justify-center p-2 text-sm leading-tight text-blue-600 bg-blue-50 border border-blue-300",
   },
   renderPageLink(page, label) {
     const isActive = page === this.currentPage;
@@ -84,7 +93,14 @@ export default {
     }
 
     return html`
-      <uix-container items="center" justify="between" horizontal role="navigation" class="uix-pagination__nav" aria-label="Table navigation">
+      <uix-container
+        items="center"
+        justify="between"
+        horizontal
+        role="navigation"
+        class="uix-pagination__nav"
+        aria-label="Table navigation"
+      >
         <uix-container horizontal class="uix-pagination__info">
           Showing
           <span class="uix-pagination__info-highlight"

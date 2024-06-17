@@ -1,4 +1,4 @@
-import { html, T, genTheme } from "helpers";
+import { genTheme, html, T } from "helpers";
 
 const BreadcrumbVariants = {
   default: "",
@@ -16,13 +16,22 @@ const Breadcrumb = {
     variant: T.string({ defaultValue: "default" }),
   },
   _theme: {
-    "": `flex items-center text-sm`,
+    "": "flex items-center text-sm",
     "[&_*]": "p-4",
-    ...genTheme('variant', Object.keys(BreadcrumbVariants), (entry) => BreadcrumbVariants[entry]),
+    ...genTheme(
+      "variant",
+      Object.keys(BreadcrumbVariants),
+      (entry) => BreadcrumbVariants[entry],
+    ),
   },
   render() {
     return html`
-      <uix-container horizontal role="navigation" aria-label="Breadcrumb" data-theme="uix-breadcrumb">
+      <uix-container
+        horizontal
+        role="navigation"
+        aria-label="Breadcrumb"
+        data-theme="uix-breadcrumb"
+      >
         <slot></slot>
       </uix-container>
     `;

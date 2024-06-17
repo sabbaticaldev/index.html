@@ -1,8 +1,23 @@
-import { html, T, genTheme, sizeMap, sizeArray, spacingMap, defaultTheme } from "helpers";
 import { ReactiveView } from "frontend";
+import {
+  defaultTheme,
+  genTheme,
+  html,
+  sizeArray,
+  sizeMap,
+  spacingMap,
+  T,
+} from "helpers";
 
-const alignItems = ['start', 'center', 'end', 'baseline', 'stretch'];
-const justifyOptions = ['start', 'center', 'end', 'between', 'around', 'evenly'];
+const alignItems = ["start", "center", "end", "baseline", "stretch"];
+const justifyOptions = [
+  "start",
+  "center",
+  "end",
+  "between",
+  "around",
+  "evenly",
+];
 const sizeKeys = Object.keys(sizeMap);
 
 class Container extends ReactiveView {
@@ -25,30 +40,41 @@ class Container extends ReactiveView {
     };
   }
 
-  _theme = {
+  static theme = {
     "": "flex",
     "[&:not([horizontal])]": "flex-col",
     "[&[rounded]]": defaultTheme.borderRadius,
-    "[&[secondary]]": [defaultTheme.backgroundSecondaryColor, defaultTheme.secondaryTextColor].join(" "),
+    "[&[secondary]]": [
+      defaultTheme.backgroundSecondaryColor,
+      defaultTheme.secondaryTextColor,
+    ].join(" "),
     "[&[responsive]]": "md:flex-row md:items-center",
     "[&[reverse]]": "flex-row-reverse",
     "[&[grow]]": "flex-grow",
-    ...genTheme('items', alignItems, (entry) => `items-${entry}`),
-    ...genTheme('width', sizeArray, (entry) => `w-${entry}`),
-    ...genTheme('width', sizeKeys, (entry) => `w-${sizeMap[entry]}`),
-    ...genTheme('height', sizeArray, (entry) => `h-${entry}`),
-    ...genTheme('height', sizeKeys, (entry) => `h-${sizeMap[entry]}`),
-    ...genTheme('justify', justifyOptions, (entry) => `justify-${entry}`),
-    ...genTheme('padding', sizeKeys, (entry) => `p-${spacingMap[entry]}`),
-    ...genTheme('spacing', sizeKeys, (entry) => `space-y-${spacingMap[entry]} space-x-${spacingMap[entry]}`),
-    ...genTheme('gap', sizeKeys, (entry) => `gap-${spacingMap[entry]}`),
+    ...genTheme("items", alignItems, (entry) => `items-${entry}`),
+    ...genTheme("width", sizeArray, (entry) => `w-${entry}`),
+    ...genTheme("width", sizeKeys, (entry) => `w-${sizeMap[entry]}`),
+    ...genTheme("height", sizeArray, (entry) => `h-${entry}`),
+    ...genTheme("height", sizeKeys, (entry) => `h-${sizeMap[entry]}`),
+    ...genTheme("justify", justifyOptions, (entry) => `justify-${entry}`),
+    ...genTheme("padding", sizeKeys, (entry) => `p-${spacingMap[entry]}`),
+    ...genTheme(
+      "spacing",
+      sizeKeys,
+      (entry) => `space-y-${spacingMap[entry]} space-x-${spacingMap[entry]}`,
+    ),
+    ...genTheme("gap", sizeKeys, (entry) => `gap-${spacingMap[entry]}`),
     "[&[gap='stack']]": "-space-x-4",
-    ...genTheme('wrap', ['nowrap', 'wrap', 'wrap-reverse'], (entry) => `flex-${entry}`),
+    ...genTheme(
+      "wrap",
+      ["nowrap", "wrap", "wrap-reverse"],
+      (entry) => `flex-${entry}`,
+    ),
   };
 
   render() {
-    return html`<slot></slot>`;
+    return html`testando <slot></slot>`;
   }
 }
 
-ReactiveView.define("uix-containser", Container);
+export default ReactiveView.define("uix-container", Container);

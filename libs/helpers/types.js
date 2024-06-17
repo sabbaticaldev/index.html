@@ -71,14 +71,14 @@ export const stringToType = (value, typeDefinition) => {
 export const T = {
   boolean: (options = {}) => ({
     type: TYPE_MAP["boolean"],
-    reflect: true,
+    reflect: !options.sync,
     defaultValue: !!options.defaultValue || false,
     ...options,
   }),
 
   string: (options = {}) => ({
     type: TYPE_MAP["string"],
-    reflect: true,
+    reflect: !options.sync,
     defaultValue: options.defaultValue || "",
     enum: options.enum,
     ...options,
@@ -86,7 +86,7 @@ export const T = {
 
   array: (options = {}) => ({
     type: TYPE_MAP["array"],
-    reflect: true,
+    reflect: !options.sync,
     defaultValue: options.defaultValue || [],
     itemType: options.type,
     ...options,
@@ -94,28 +94,28 @@ export const T = {
 
   number: (options = {}) => ({
     type: TYPE_MAP["number"],
-    reflect: true,
+    reflect: !options.sync,
     defaultValue: options.defaultValue || undefined,
     ...options,
   }),
 
   date: (options = {}) => ({
     type: TYPE_MAP["date"],
-    reflect: true,
+    reflect: !options.sync,
     defaultValue: options.defaultValue || undefined,
     ...options,
   }),
 
   function: (options = {}) => ({
     type: TYPE_MAP["function"],
-    reflect: true,
+    reflect: !options.sync,
     defaultValue: options.defaultValue || undefined,
     ...options,
   }),
 
   object: (options = {}) => ({
     type: TYPE_MAP["object"],
-    reflect: true,
+    reflect: !options.sync,
     defaultValue: options.defaultValue || undefined,
     objectType: options.type,
     ...options,

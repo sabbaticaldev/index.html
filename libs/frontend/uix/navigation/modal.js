@@ -1,4 +1,4 @@
-import { css, html, T, genTheme, sizeMap, defaultTheme } from "helpers";
+import { css, defaultTheme, genTheme, html, sizeMap, T } from "helpers";
 
 const ModalVariants = {
   default: "bg-white",
@@ -26,9 +26,22 @@ export default {
     if (this.parent) this.parent.hide = this.hide.bind(this);
   },
   _theme: {
-    ".uix-modal__dialog": `${defaultTheme.borderRadius} p-4 shadow-2xl [&:not([size])]:w-full [&:not([size])]:h-screen
-    ${genTheme('size', ["sm", "md", "lg", "xl"], (entry) => `w-${sizeMap[entry]*2} min-h-${sizeMap[entry]} overflow-y-auto`, { string: true })} 
-    ${genTheme('variant', Object.keys(ModalVariants), (entry) => ModalVariants[entry], { string: true })}`,     
+    ".uix-modal__dialog": `${
+      defaultTheme.borderRadius
+    } p-4 shadow-2xl [&:not([size])]:w-full [&:not([size])]:h-screen
+    ${genTheme(
+      "size",
+      ["sm", "md", "lg", "xl"],
+      (entry) =>
+        `w-${sizeMap[entry] * 2} min-h-${sizeMap[entry]} overflow-y-auto`,
+      { string: true },
+    )} 
+    ${genTheme(
+      "variant",
+      Object.keys(ModalVariants),
+      (entry) => ModalVariants[entry],
+      { string: true },
+    )}`,
   },
   toggle() {
     this.open ? this.$modal.close() : this.$modal.showModal();
@@ -44,17 +57,16 @@ export default {
         variant=${this.variant}
         size=${this.size}
       >
-        <uix-container ?open=${this.open} @click=${(e) => e.stopPropagation()}>          
+        <uix-container ?open=${this.open} @click=${(e) => e.stopPropagation()}>
           <uix-container horizontal items="center" justify="between">
             <uix-text size="lg" weight="semibold" icon=${this.icon}>
               ${this.label}
-              </uix-text>
+            </uix-text>
             <uix-link .onclick=${this.toggle.bind(this)} icon="x"></uix-link>
           </uix-container>
           <slot></slot>
         </uix-container>
-        </dialog>
-      
+      </dialog>
     `;
   },
 };

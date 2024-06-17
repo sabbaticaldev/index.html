@@ -73,9 +73,9 @@ const entries = (table) =>
   tableOperation(table, "readonly", (store) =>
     store.getAll && store.getAllKeys
       ? Promise.all([
-        promisifyRequest(store.getAllKeys()),
-        promisifyRequest(store.getAll()),
-      ]).then(([keys, values]) => keys.map((key, i) => [key, values[i]]))
+          promisifyRequest(store.getAllKeys()),
+          promisifyRequest(store.getAll()),
+        ]).then(([keys, values]) => keys.map((key, i) => [key, values[i]]))
       : iterateCursor(store.openCursor(), processEntries),
   ).then((result) => {
     result.__proto__ = Array.prototype;

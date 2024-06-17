@@ -1,5 +1,5 @@
+import { defaultTheme, genTheme, html, T } from "helpers";
 
-import { html, T, genTheme, defaultTheme } from "helpers";
 import FormControls from "./form-controls.js";
 
 const RangeVariants = {
@@ -25,10 +25,31 @@ const Range = {
   },
   _theme: {
     "": "block",
-    ".uix-range__input": `appearance-none w-full h-4 rounded-full cursor-pointer ${RangeVariants.default} ${genTheme('variant', Object.keys(RangeVariants), (entry) => RangeVariants[entry], { string: true })}`,
+    ".uix-range__input": `appearance-none w-full h-4 rounded-full cursor-pointer ${
+      RangeVariants.default
+    } ${genTheme(
+      "variant",
+      Object.keys(RangeVariants),
+      (entry) => RangeVariants[entry],
+      { string: true },
+    )}`,
     "[&:not([size])]": "h-2",
-    ...genTheme('size', RangeSizes, (entry) => `h-${entry === 'sm' ? '1' : entry === 'md' ? '2' : entry === 'lg' ? '3' : '4'}`),
-    "uix-range__labels": "-mt-2 flex w-full justify-between text-sm text-gray-600",
+    ...genTheme(
+      "size",
+      RangeSizes,
+      (entry) =>
+        `h-${
+          entry === "sm"
+            ? "1"
+            : entry === "md"
+            ? "2"
+            : entry === "lg"
+            ? "3"
+            : "4"
+        }`,
+    ),
+    "uix-range__labels":
+      "-mt-2 flex w-full justify-between text-sm text-gray-600",
   },
   change(e) {
     const newValue = e.target.value;
@@ -53,25 +74,27 @@ const Range = {
           value=${value?.[0]}
           data-index="0"
         />
-        ${value && !isSingleValue &&
-        html`
-          <input
-            class="uix-range__input"
-            type="range"
-            @input=${this.change}
-            min=${min}
-            max=${max}
-            step=${step}
-            variant=${variant}
-            value=${value[1]}
-            data-index="1"
-            style="background: linear-gradient(to right, #E5E7EB 0%, #E5E7EB ${(value[0] /
-              max) *
-            100}%, #3B82F6 ${(value[0] / max) * 100}%, #3B82F6 ${(value[1] /
-              max) *
-            100}%, #E5E7EB ${(value[1] / max) * 100}%, #E5E7EB 100%);"
-          />
-        ` || ""}
+        ${(value &&
+          !isSingleValue &&
+          html`
+            <input
+              class="uix-range__input"
+              type="range"
+              @input=${this.change}
+              min=${min}
+              max=${max}
+              step=${step}
+              variant=${variant}
+              value=${value[1]}
+              data-index="1"
+              style="background: linear-gradient(to right, #E5E7EB 0%, #E5E7EB ${(value[0] /
+                max) *
+              100}%, #3B82F6 ${(value[0] / max) * 100}%, #3B82F6 ${(value[1] /
+                max) *
+              100}%, #E5E7EB ${(value[1] / max) * 100}%, #E5E7EB 100%);"
+            />
+          `) ||
+        ""}
       </div>
       <div class="uix-range__labels">
         <span>${min}</span>

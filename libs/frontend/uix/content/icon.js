@@ -1,4 +1,4 @@
-import { html, T, genTheme, defaultTheme } from "helpers";
+import { defaultTheme, genTheme, html, T } from "helpers";
 const iconNames = [
   "alert-triangle",
   "align-left",
@@ -68,7 +68,7 @@ const iconNames = [
   "sidebar",
   "sliders",
   "smile",
-  "smartphone",  
+  "smartphone",
   "star",
   "sun",
   "table",
@@ -93,7 +93,11 @@ export default {
   },
   _theme: {
     "": "block",
-    ...genTheme('name', iconNames, (entry) => `i-${defaultTheme.iconFontFamily}-${entry}`)
+    ...genTheme(
+      "name",
+      iconNames,
+      (entry) => `i-${defaultTheme.iconFontFamily}-${entry}`,
+    ),
   },
   render() {
     return html`<i></i>`;

@@ -1,5 +1,4 @@
-
-import { html, T, genTheme, sizeMap, defaultTheme } from "helpers";
+import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
 
 const InputVariants = {
   default: `checked:bg-${defaultTheme.colors.default}-600 checked:border-${defaultTheme.colors.default}-600`,
@@ -40,7 +39,9 @@ const FormControls = (element) => ({
   firstUpdated() {
     this._defaultValue = this.value;
     this._internals = this.attachInternals();
-    this.$input = this.q(["select", "textarea"].includes(element) ? element : "input");
+    this.$input = this.q(
+      ["select", "textarea"].includes(element) ? element : "input",
+    );
     if (this.$input) {
       this._internals.setValidity(
         this.$input.validity,
@@ -72,9 +73,16 @@ const FormControls = (element) => ({
   },
   _theme: {
     "": "block",
-    ".uix-input__input": `before:content[''] border-gray-300 border-1 w-full h-full ${genTheme('variant', Object.keys(InputVariants), (entry) => InputVariants[entry], { string: true })}`,
+    ".uix-input__input": `before:content[''] border-gray-300 border-1 w-full h-full ${genTheme(
+      "variant",
+      Object.keys(InputVariants),
+      (entry) => InputVariants[entry],
+      { string: true },
+    )}`,
     "[&:not([size])]": "w-4 h-4",
-    ...genTheme('size', InputSizes, (entry) => ["w-" + sizeMap[entry]/4, "h-" + sizeMap[entry]/4].join(" ")),
+    ...genTheme("size", InputSizes, (entry) =>
+      ["w-" + sizeMap[entry] / 4, "h-" + sizeMap[entry] / 4].join(" "),
+    ),
   },
   _onchange(e) {
     const { onchange } = this;
@@ -84,7 +92,7 @@ const FormControls = (element) => ({
   },
   render() {
     const { checked, disabled, name } = this;
-    
+
     return html`
       <input
         class="uix-input__input"
@@ -99,5 +107,3 @@ const FormControls = (element) => ({
 });
 
 export default FormControls;
-
-

@@ -1,4 +1,5 @@
-import { html, T, defaultTheme } from "helpers";
+import { defaultTheme, html, T } from "helpers";
+
 import uixText from "./text.js";
 
 const defaultOnClick = (e) => {
@@ -21,14 +22,19 @@ export default {
   },
   render() {
     return this.href
-      ? html`<a
-          href=${this.href}
-          @click=${this.onclick || defaultOnClick}
-        >          
-        ${this.icon ? html`<uix-container horizontal gap="sm" items="center"><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}         
+      ? html`<a href=${this.href} @click=${this.onclick || defaultOnClick}>
+          ${this.icon
+            ? html`<uix-container horizontal gap="sm" items="center"
+                ><uix-icon name=${this.icon}></uix-icon><slot></slot
+              ></uix-container>`
+            : html`<slot></slot>`}
         </a>`
-      : html`<button @click=${this.onclick}>          
-          ${this.icon ? html`<uix-container horizontal items="center" gap="sm"><uix-icon name=${this.icon}></uix-icon><slot></slot></uix-container>` : html`<slot></slot>`}         
+      : html`<button @click=${this.onclick}>
+          ${this.icon
+            ? html`<uix-container horizontal items="center" gap="sm"
+                ><uix-icon name=${this.icon}></uix-icon><slot></slot
+              ></uix-container>`
+            : html`<slot></slot>`}
         </button>`;
   },
 };

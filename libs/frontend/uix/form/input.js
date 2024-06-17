@@ -1,4 +1,5 @@
-import { html, ifDefined, T, genTheme, defaultTheme } from "helpers";
+import { defaultTheme, genTheme, html, ifDefined, T } from "helpers";
+
 import FormControls from "./form-controls.js";
 
 const InputSizes = ["sm", "md", "lg", "xl"];
@@ -43,10 +44,27 @@ const Input = {
   _theme: {
     "": "block",
     "[&:not([variant])]": InputVariants.default,
-    ...genTheme('variant', Object.keys(InputVariants), (entry) => InputVariants[entry]),
+    ...genTheme(
+      "variant",
+      Object.keys(InputVariants),
+      (entry) => InputVariants[entry],
+    ),
     "[&:not([size])]": "p-3",
-    ...genTheme('size', InputSizes, (entry) => `p-${entry === 'sm' ? '2' : entry === 'md' ? '3' : entry === 'lg' ? '4' : '5'}`),
-    ".uix-input__label": "[&[required]]:after:content-['*'] after:text-red-600"
+    ...genTheme(
+      "size",
+      InputSizes,
+      (entry) =>
+        `p-${
+          entry === "sm"
+            ? "2"
+            : entry === "md"
+            ? "3"
+            : entry === "lg"
+            ? "4"
+            : "5"
+        }`,
+    ),
+    ".uix-input__label": "[&[required]]:after:content-['*'] after:text-red-600",
   },
   render() {
     const {
@@ -64,7 +82,11 @@ const Input = {
     } = this;
     return html`
       <uix-container gap="xs">
-        <label for=${ifDefined(name)} ?required=${required} class="uix-input__label">
+        <label
+          for=${ifDefined(name)}
+          ?required=${required}
+          class="uix-input__label"
+        >
           <uix-text transform="uppercase" size="xs">${label}</uix-text>
         </label>
         <input

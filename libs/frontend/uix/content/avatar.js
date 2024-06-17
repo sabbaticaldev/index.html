@@ -1,4 +1,4 @@
-import { html, T, genTheme, defaultTheme, sizeMap } from "helpers";
+import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
 
 const AvatarSizes = ["xs", "sm", "md", "lg", "xl", "2xl"];
 const AvatarVariants = {
@@ -35,20 +35,36 @@ const Avatar = {
   _theme: {
     "": "block overflow-hidden ring-offset-2 justify-center flex items-center",
     "[&:not([variant])]": AvatarVariants.default,
-    ...genTheme('variant', Object.keys(AvatarVariants), (entry) => AvatarVariants[entry]),
+    ...genTheme(
+      "variant",
+      Object.keys(AvatarVariants),
+      (entry) => AvatarVariants[entry],
+    ),
     "[&:not([size])]": "w-10 h-10",
-    ...genTheme('size', AvatarSizes, (entry) => `w-${sizeMap[entry]/2} h-${sizeMap[entry]/2}`),
-    ...genTheme('rounded', RoundedOptions, (entry) => entry),
+    ...genTheme(
+      "size",
+      AvatarSizes,
+      (entry) => `w-${sizeMap[entry] / 2} h-${sizeMap[entry] / 2}`,
+    ),
+    ...genTheme("rounded", RoundedOptions, (entry) => entry),
     "[&:not([rounded])]": "rounded-full",
-    "[&[presence=online]]:before": "absolute bottom-0 right-0 block w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full",
-    "[&[presence=offline]]:before": "absolute bottom-0 right-0 block w-2.5 h-2.5 bg-gray-500 border-2 border-white rounded-full",
+    "[&[presence=online]]:before":
+      "absolute bottom-0 right-0 block w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full",
+    "[&[presence=offline]]:before":
+      "absolute bottom-0 right-0 block w-2.5 h-2.5 bg-gray-500 border-2 border-white rounded-full",
     "[&[ring]]": "ring-2 ring-offset-2",
-    ...genTheme('variant', Object.keys(AvatarVariants), (entry) => `ring-${defaultTheme.colors[entry]}`),
-    ".uix-avatar__label": ""
+    ...genTheme(
+      "variant",
+      Object.keys(AvatarVariants),
+      (entry) => `ring-${defaultTheme.colors[entry]}`,
+    ),
+    ".uix-avatar__label": "",
   },
   render() {
     return html`
-      ${this.src ? html`<img src=${this.src} style="width: 100%;" alt=${this.alt} />` : html`<uix-text weight="bold" size="xs"><slot></slot></uix-text>`}
+      ${this.src
+        ? html`<img src=${this.src} style="width: 100%;" alt=${this.alt} />`
+        : html`<uix-text weight="bold" size="xs"><slot></slot></uix-text>`}
     `;
   },
 };

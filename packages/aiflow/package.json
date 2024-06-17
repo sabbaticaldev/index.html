@@ -23,9 +23,6 @@
       "git add"
     ]
   },
-  "resolutions": {
-    "@types/node": "18.19.33"
-  },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.556.0",
     "@inquirer/prompts": "^5.0.5",
@@ -37,7 +34,8 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^5.4.5",
-    "jest": "^29.5.0"
+    "eslint-plugin-json": "^4.0.0",
+    "jest": "^29.5.0",
+    "typescript": "^5.4.5"
   }
 }

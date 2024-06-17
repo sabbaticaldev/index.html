@@ -1,4 +1,5 @@
-import { html, T, genTheme, defaultTheme, sizeMap } from "helpers";
+import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
+
 import FormControls from "./form-controls.js";
 
 const SelectVariants = {
@@ -23,23 +24,36 @@ const Select = {
   },
   _theme: {
     "": "block",
-    ".uix-select__input": `border-1 ${defaultTheme.borderRadius} w-full h-full ${genTheme('variant', Object.keys(SelectVariants), (entry) => SelectVariants[entry], { string: true })}`,
+    ".uix-select__input": `border-1 ${
+      defaultTheme.borderRadius
+    } w-full h-full ${genTheme(
+      "variant",
+      Object.keys(SelectVariants),
+      (entry) => SelectVariants[entry],
+      { string: true },
+    )}`,
     //"[&:not([size])]": "w-4 h-4",
-    ...genTheme('size', SelectSizes, (entry) => ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" ")),
+    ...genTheme("size", SelectSizes, (entry) =>
+      ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" "),
+    ),
   },
   render() {
-    const { name, options, value, change, variant, size } = this;    
+    const { name, options, value, change, variant, size } = this;
     return html`
       <uix-container gap="xs">
-        <select 
-          class="uix-select__input" 
-          name=${name} 
-          @change=${change} 
-          data-theme="uix-select" 
-          .value=${value || ""} 
-          variant=${variant} 
-          size=${size}>
-          ${options?.map((option) => html`<option value=${option.value}>${option.label}</option>`) || ""}
+        <select
+          class="uix-select__input"
+          name=${name}
+          @change=${change}
+          data-theme="uix-select"
+          .value=${value || ""}
+          variant=${variant}
+          size=${size}
+        >
+          ${options?.map(
+            (option) =>
+              html`<option value=${option.value}>${option.label}</option>`,
+          ) || ""}
           <slot></slot>
         </select>
       </uix-container>

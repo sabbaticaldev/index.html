@@ -12,12 +12,8 @@ const Testimonial = {
   render() {
     return html`
       <uix-card>
-        <uix-text data-theme="uix-testimonial__quote"
-          >${this.quote}</uix-text
-        >
-        <uix-text data-theme="uix-testimonial__author"
-          >${this.author}</uix-text
-        >
+        <uix-text data-theme="uix-testimonial__quote">${this.quote}</uix-text>
+        <uix-text data-theme="uix-testimonial__author">${this.author}</uix-text>
       </uix-card>
     `;
   },

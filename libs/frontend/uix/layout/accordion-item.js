@@ -8,16 +8,14 @@ export default {
     open: T.boolean({ defaultValue: false }),
   },
   _theme: {
-    ".uix-accordion__summary": " list-none cursor-pointer block"
+    ".uix-accordion__summary": " list-none cursor-pointer block",
   },
   render() {
     return html`
       <details ?open=${this.open}>
         <summary class="uix-accordion__summary">
           <uix-container horizontal items="center" justify="between">
-            <uix-text size="sm" icon=${this.icon}>
-                ${this.label}
-            </uix-text>
+            <uix-text size="sm" icon=${this.icon}> ${this.label} </uix-text>
             <uix-icon
               name=${this.open ? "chevron-up" : "chevron-down"}
             ></uix-icon>
@@ -28,5 +26,5 @@ export default {
         </uix-container>
       </details>
     `;
-  }
+  },
 };

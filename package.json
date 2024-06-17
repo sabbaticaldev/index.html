@@ -24,6 +24,7 @@
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-json": "^4.0.0",
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
@@ -43,8 +44,6 @@
     ]
   },
   "dependencies": {
-    "aiflow": "workspace:*",
-    "@julr/unocss-preset-forms": "workspace:*",
     "@mapbox/polyline": "^1.2.1",
     "@octokit/rest": "^20.1.1",
     "@unocss/preset-web-fonts": "^0.60.3",

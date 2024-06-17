@@ -1,4 +1,4 @@
-import { html, T, genTheme, defaultTheme, sizeMap } from "helpers";
+import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
 
 const BadgeVariants = {
   default: `text-${defaultTheme.colors.default}-50 bg-${defaultTheme.colors.default}`,
@@ -19,8 +19,14 @@ const Badge = {
   },
   _theme: {
     "": `flex items-center font-semibold mr-2 p-1 rounded text-xs ${BadgeVariants.default}`,
-    ...genTheme('variant', Object.keys(BadgeVariants), (entry) => BadgeVariants[entry]),
-    ...genTheme('size', BadgeSizes, (entry) => ["w-" + sizeMap[entry]/2, "text-" + entry].join(" ")),
+    ...genTheme(
+      "variant",
+      Object.keys(BadgeVariants),
+      (entry) => BadgeVariants[entry],
+    ),
+    ...genTheme("size", BadgeSizes, (entry) =>
+      ["w-" + sizeMap[entry] / 2, "text-" + entry].join(" "),
+    ),
   },
   render() {
     return html`

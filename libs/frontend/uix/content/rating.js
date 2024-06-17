@@ -1,4 +1,4 @@
-import { html, T, genTheme } from "helpers";
+import { genTheme, html, T } from "helpers";
 
 const Rating = {
   tag: "uix-rating",
@@ -19,7 +19,7 @@ const Rating = {
       <uix-container horizontal class="uix-rating__container">
         ${Array.from({ length: max }, (_, index) => {
           const isFilled = index < value;
-          console.log({isFilled});
+          console.log({ isFilled });
           const isHalf = index + 0.5 === value;
           return html`
             <uix-icon

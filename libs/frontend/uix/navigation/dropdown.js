@@ -1,4 +1,4 @@
-import { html, T, genTheme, defaultTheme } from "helpers";
+import { defaultTheme, genTheme, html, T } from "helpers";
 
 const DropdownVariants = {
   default: "bg-white text-gray-700",
@@ -16,9 +16,14 @@ export default {
     "": "relative inline-block",
     "[&_uix-link]": "py-2 px-4",
     "[&:not([variant])]": DropdownVariants.default,
-    ...genTheme('variant', Object.keys(DropdownVariants), (entry) => DropdownVariants[entry]),
+    ...genTheme(
+      "variant",
+      Object.keys(DropdownVariants),
+      (entry) => DropdownVariants[entry],
+    ),
     ".uix-dropdown__button": "inline-flex items-center cursor-pointer",
-    ".uix-dropdown__panel": "absolute right-0 mt-2 w-56 bg-white border scale-90 border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg z-10",
+    ".uix-dropdown__panel":
+      "absolute right-0 mt-2 w-56 bg-white border scale-90 border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg z-10",
   },
   firstUpdated() {
     this.toggle = this.toggle.bind(this);
@@ -27,9 +32,9 @@ export default {
   toggle() {
     this.open = !this.open;
     if (this.open) {
-      document.addEventListener('click', this.handleOutsideClick);
+      document.addEventListener("click", this.handleOutsideClick);
     } else {
-      document.removeEventListener('click', this.handleOutsideClick);
+      document.removeEventListener("click", this.handleOutsideClick);
     }
   },
   handleOutsideClick(event) {
@@ -37,14 +42,21 @@ export default {
     if (!path.includes(this)) {
       this.open = false;
       this.requestUpdate();
-      document.removeEventListener('click', this.handleOutsideClick);
+      document.removeEventListener("click", this.handleOutsideClick);
     }
   },
   render() {
     return html`
-        <slot name="cta" @click=${this.toggle} class="uix-dropdown__button"></slot>
-        ${this.open ? html`<uix-container class="uix-dropdown__panel"><slot></slot></uix-container>` : ""}
+      <slot
+        name="cta"
+        @click=${this.toggle}
+        class="uix-dropdown__button"
+      ></slot>
+      ${this.open
+        ? html`<uix-container class="uix-dropdown__panel"
+            ><slot></slot
+          ></uix-container>`
+        : ""}
     `;
   },
 };
-

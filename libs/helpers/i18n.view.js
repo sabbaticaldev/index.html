@@ -53,12 +53,12 @@ export default {
       </div>
       <div
         class="dropdown-content bg-base-200 text-base-content rounded-box top-px mt-12 -ml-6 w-40 overflow-y-auto shadow ${dropdown
-    ? "dropdown-open"
-    : "hidden"}"
+          ? "dropdown-open"
+          : "hidden"}"
       >
         <ul class="menu menu-sm gap-1" tabindex="0">
           ${Object.entries(languages).map(
-    ([code, name]) => html` <li>
+            ([code, name]) => html` <li>
               <button
                 class=${language === code ? "active" : ""}
                 @click=${() => handleLanguageChange(code)}

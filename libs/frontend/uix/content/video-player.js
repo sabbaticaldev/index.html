@@ -1,4 +1,4 @@
-import { html, T, genTheme } from "helpers";
+import { genTheme, html, T } from "helpers";
 
 const VideoPlayer = {
   tag: "uix-video-player",

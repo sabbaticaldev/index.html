@@ -1,4 +1,4 @@
-import { html, T, genTheme, defaultTheme } from "helpers";
+import { defaultTheme, genTheme, html, T } from "helpers";
 
 const DateInputVariants = {
   default: `bg-${defaultTheme.colors.default}-100 border-${defaultTheme.colors.default}-300 ${defaultTheme.defaultTextColor}`,
@@ -22,9 +22,39 @@ const DateInput = {
   },
   _theme: {
     "": "block w-full",
-    ".uix-date-input__input": `appearance-none ${defaultTheme.borderRadius} rounded-md focus:outline-none focus:ring-2 focus:ring-${defaultTheme.colors.primary}-500 ${genTheme('variant', Object.keys(DateInputVariants), (entry) => DateInputVariants[entry], { string: true })}`,
+    ".uix-date-input__input": `appearance-none ${
+      defaultTheme.borderRadius
+    } rounded-md focus:outline-none focus:ring-2 focus:ring-${
+      defaultTheme.colors.primary
+    }-500 ${genTheme(
+      "variant",
+      Object.keys(DateInputVariants),
+      (entry) => DateInputVariants[entry],
+      { string: true },
+    )}`,
     "[&:not([size])]": "py-2 px-3",
-    ...genTheme('size', DateInputSizes, (entry) => `py-${entry === 'sm' ? '1' : entry === 'md' ? '2' : entry === 'lg' ? '3' : '4'} px-${entry === 'sm' ? '2' : entry === 'md' ? '3' : entry === 'lg' ? '4' : '5'}`),
+    ...genTheme(
+      "size",
+      DateInputSizes,
+      (entry) =>
+        `py-${
+          entry === "sm"
+            ? "1"
+            : entry === "md"
+            ? "2"
+            : entry === "lg"
+            ? "3"
+            : "4"
+        } px-${
+          entry === "sm"
+            ? "2"
+            : entry === "md"
+            ? "3"
+            : entry === "lg"
+            ? "4"
+            : "5"
+        }`,
+    ),
   },
   render() {
     const { value, min, max, change, variant, size } = this;

@@ -1,4 +1,5 @@
-import { html, T, genTheme, defaultTheme, sizeMap } from "helpers";
+import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
+
 import FormControls from "./form-controls.js";
 
 const FileInputVariants = {
@@ -26,8 +27,16 @@ const FileInput = {
     ".uix-file-input__input": `flex h-10 w-full border px-3 py-2 
     text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
     focus-visible:ring-2 focus-visible:ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 
-    ${defaultTheme.borderRadius} ${genTheme('variant', Object.keys(FileInputVariants), (entry) => FileInputVariants[entry], { string: true })}`,    
-    ...genTheme('size', FileInputSizes, (entry) => ["w-" + sizeMap[entry], "text-"+entry]),
+    ${defaultTheme.borderRadius} ${genTheme(
+      "variant",
+      Object.keys(FileInputVariants),
+      (entry) => FileInputVariants[entry],
+      { string: true },
+    )}`,
+    ...genTheme("size", FileInputSizes, (entry) => [
+      "w-" + sizeMap[entry],
+      "text-" + entry,
+    ]),
   },
   render() {
     const { accept, multiple, variant, change } = this;

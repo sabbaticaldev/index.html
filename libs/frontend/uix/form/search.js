@@ -1,4 +1,5 @@
-import { html, T, genTheme, defaultTheme, sizeMap } from "helpers";
+import { defaultTheme, genTheme, html, sizeMap, T } from "helpers";
+
 import FormControls from "./form-controls.js";
 
 const SearchVariants = {
@@ -23,15 +24,23 @@ const Search = {
   },
   _theme: {
     "": "block relative",
-    ".uix-search__input": `border-1 ${defaultTheme.borderRadius} w-full h-full ${genTheme('variant', Object.keys(SearchVariants), (entry) => SearchVariants[entry], { string: true })}`,
-    ...genTheme('size', SearchSizes, (entry) => ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" ")),
-    ".result-item": "p-2 hover:bg-gray-100 cursor-pointer",
-    ".result-item:hover": "bg-gray-100",
+    ".uix-search__input": `border-1 ${
+      defaultTheme.borderRadius
+    } w-full h-full ${genTheme(
+      "variant",
+      Object.keys(SearchVariants),
+      (entry) => SearchVariants[entry],
+      { string: true },
+    )}`,
+    ...genTheme("size", SearchSizes, (entry) =>
+      ["w-" + sizeMap[entry], "h-" + sizeMap[entry]].join(" "),
+    ),
+    ".uix-search__result-item": "p-2 hover:bg-gray-100 cursor-pointer",
   },
   searchHandler(event) {
     const query = event.target.value;
     if (this.search) {
-      this.search(query).then(results => {
+      this.search(query).then((results) => {
         this.results = results;
         this.requestUpdate();
       });
@@ -51,13 +60,19 @@ const Search = {
           size=${this.size}
         />
         <datalist id="search-results">
-          ${results?.map(result => html`<option class="result-item" value=${result}></option>`)}
+          ${results?.map(
+            (result) =>
+              html`<option
+                class="uix-search__result-item"
+                value=${result}
+              ></option>`,
+          )}
         </datalist>
       </uix-container>
     `;
   },
   selectResult(result) {
-    const input = this.shadowRoot.querySelector('.uix-search__input');
+    const input = this.shadowRoot.querySelector(".uix-search__input");
     input.value = result;
     this.searchHandler({ target: input });
   },
