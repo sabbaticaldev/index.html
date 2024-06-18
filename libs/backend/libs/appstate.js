@@ -60,6 +60,9 @@ export const workspaceModelDefinition = {
   models: {
     type: "object",
   },
+  imported: {
+    type: "boolean",
+  },
   version: {
     type: "number",
   },
@@ -73,10 +76,10 @@ const initializeDatabase = async ({
   models = {},
   version = 1,
 }) => {
+  console.log("INitialize");
   const stores = await createDatabase(dbName, Object.keys(models), version);
   ReactiveRecord.stores = stores;
   ReactiveRecord.models = models;
-  console.log("APP STATE ", { models });
 };
 
 const importData = async ({ app, data = {} }) => {
@@ -105,7 +108,6 @@ const createAppEntry = async (models, version) => {
   ReactiveRecord.appId = timestamp;
   const appEntry = {
     id: "default",
-    models,
     version,
     timestamp,
     migrationTimestamp: 0, // Initial migration timestamp set to 0
@@ -115,38 +117,39 @@ const createAppEntry = async (models, version) => {
   return appEntry;
 };
 
-export const startBackend = async ({ app, env } = {}) => {
-  console.log("INIT APP");
-  const isSW = !("serviceWorker" in navigator);
-  if ("serviceWorker" in navigator) {
-    try {
-      await navigator.serviceWorker.register("/service-worker.js", {
-        scope: "/",
-      });
-    } catch (error) {
-      console.error("Error loading service-worker", { error });
-    }
-  }
+export const startDatabase = async ({
+  models: userModels,
+  version = 1,
+  data = {},
+  timestamp: AppTimestamp,
+  env = "development",
+} = {}) => {
+  const timestamp = AppTimestamp ?? Date.now();
   const dbName = "default";
-  const models = { app: workspaceModelDefinition, ...(app.models || {}) };
-  const version = app.version || 1;
-  const { data = {} } = app;
-
-  if (!isSW) {
-    await initializeDatabase({ dbName, models, version });
-    const app = await getApp();
-    if (app) {
-      console.log("Existing app entry found:", app);
-      ReactiveRecord.appId = app.timestamp;
-      importData({ data, app });
-      return app;
-    }
-    return await createAppEntry(models, version);
-  } else {
-    await initializeDatabase({ dbName, models, version });
-  }
-  ReactiveRecord.appId = app.timestamp;
+  const models = { app: workspaceModelDefinition, ...(userModels || {}) };
+  console.log({ models });
+  await initializeDatabase({ dbName, models, version });
+  let app = await getApp();
+  if (app) {
+    console.log("Existing app entry found:", app);
+    ReactiveRecord.appId = timestamp;
+    return app;
+  } else app = await createAppEntry(models, version);
+  if (!app.imported) importData({ data, app });
+  ReactiveRecord.appId = timestamp;
 };
+
+export const startBackend = async () => {
+  try {
+    await navigator.serviceWorker.register("/service-worker.js", {
+      scope: "/",
+      type: "module",
+    });
+  } catch (error) {
+    console.error("Error loading service-worker", { error });
+  }
+};
+
 self.addEventListener("message", (event) => {
   const message = event.data;
   // Broadcast the message to all clients

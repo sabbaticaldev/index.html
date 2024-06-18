@@ -33,8 +33,6 @@ const buildTasks = [
   },
   {
     ...commonConfig,
-    format: "iife",
-    target: ["es2017"],
     entryPoints: ["libs/backend/index.sw.js"],
     outfile: "app/dist/backend.sw.js",
   },
