@@ -74,7 +74,7 @@ Start by creating a new .git/COMMIT_EDITMSG (with the first line being: --- /dev
   exampleInput: [
     {
       contextSrc: {
-        "libs/frontend/uix/layout/card.js": `import { html, T } from "helpers";
+        "libs/frontend/uix/layout/card.js": `import { html, T } from "frontend";
 
         export default {
           tag: "uix-card",
@@ -148,8 +148,8 @@ Start by creating a new .git/COMMIT_EDITMSG (with the first line being: --- /dev
 --- libs/frontend/uix/layout/card.js
 +++ libs/frontend/uix/layout/card.js
 @@ -1,4 +1,4 @@
--import { html, T } from "helpers";
-+import { css, html, T } from "helpers";
+-import { html, T } from "frontend";
++import { css, html, T } from "frontend";
   
  export default {
    tag: "uix-card",

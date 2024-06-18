@@ -115,8 +115,18 @@ const createAppEntry = async (models, version) => {
   return appEntry;
 };
 
-export const startBackend = async (app, isSW = false) => {
+export const startBackend = async ({ app, env } = {}) => {
   console.log("INIT APP");
+  const isSW = !("serviceWorker" in navigator);
+  if ("serviceWorker" in navigator) {
+    try {
+      await navigator.serviceWorker.register("/service-worker.js", {
+        scope: "/",
+      });
+    } catch (error) {
+      console.error("Error loading service-worker", { error });
+    }
+  }
   const dbName = "default";
   const models = { app: workspaceModelDefinition, ...(app.models || {}) };
   const version = app.version || 1;

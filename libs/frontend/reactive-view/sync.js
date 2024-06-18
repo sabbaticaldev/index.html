@@ -1,8 +1,11 @@
 // sync.js
-import { hash, querystring, stringToType, url } from "helpers";
+import hash from "../helpers/hash.js";
+import querystring from "../helpers/querystring.js";
+import { stringToType } from "../helpers/types.js";
+import url from "../helpers/url.js";
 
 export const instances = [];
-const syncAdapters = { url, localStorage, sessionStorage, hash, querystring };
+const syncAdapters = { localStorage, sessionStorage, url, hash, querystring };
 export const syncKeyMap = new Map();
 
 const getSyncKey = (key, sync) => `${key}-${sync}`;

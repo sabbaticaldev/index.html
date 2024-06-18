@@ -20,7 +20,6 @@ const commonConfig = {
   plugins: [
     alias({
       frontend: path.resolve(__dirname, "libs/frontend/index.js"),
-      helpers: path.resolve(__dirname, "libs/helpers/index.js"),
       backend: path.resolve(__dirname, "libs/backend/index.js"),
     }),
   ],
@@ -31,11 +30,6 @@ const buildTasks = [
     ...commonConfig,
     entryPoints: ["libs/frontend/index.js"],
     outfile: "app/dist/frontend.js",
-  },
-  {
-    ...commonConfig,
-    entryPoints: ["libs/helpers/index.js"],
-    outfile: "app/dist/helpers.js",
   },
   {
     ...commonConfig,

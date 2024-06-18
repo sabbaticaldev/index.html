@@ -8,7 +8,7 @@ export default {
   Dont import lit-css, use class and the theme object to add style (tailwind classes)
   example:
 
-  import { html, T } from "helpers";
+  import { html, T } from "frontend";
 
 export default {
   tag: "uix-color-picker",

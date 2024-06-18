@@ -1,4 +1,4 @@
-import { LitElement } from "helpers";
+import { LitElement } from "lit";
 
 import reset from "../reset.txt";
 import { defineSyncProperty, requestUpdateOnUrlChange } from "./sync.js";
