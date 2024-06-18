@@ -1,10 +1,10 @@
+import "./index-html.js";
+
 import ReactiveView, { UnoTheme } from "./reactive-view/base.js";
 import reset from "./reset.txt";
-
 const frontend = async ({ app, style }) => {
   if (!app) throw new Error("Error: no App found");
   if (app.title) document.title = app.title;
-
   if (app.init) await app.init({ style, app });
   const styleEl = document.createElement("style");
   styleEl.textContent = reset;
@@ -29,7 +29,21 @@ const bootstrap = async ({ app, env, backend }) => {
       }
     });
   }
+  if (backend) startSW();
   return loadApp({ app, backend });
+};
+
+export const startSW = async () => {
+  try {
+    console.log("Service Worker starting.");
+    await navigator.serviceWorker.register("/service-worker.js", {
+      scope: "/",
+      type: "module",
+    });
+    console.log("Service Worker started.");
+  } catch (error) {
+    console.error("Error loading service-worker", { error });
+  }
 };
 
 export default bootstrap;

@@ -4,7 +4,7 @@ module.exports = {
     browser: true,
   },
   extends: ["eslint:recommended", "plugin:prettier/recommended"],
-  plugins: ["simple-import-sort", "prettier", "json"],
+  plugins: ["simple-import-sort", "prettier", "json", "html"],
   overrides: [
     {
       files: ["*.test.js"],
@@ -33,6 +33,13 @@ module.exports = {
       plugins: ["json"],
       rules: {
         "json/*": ["error"],
+      },
+    },
+    {
+      files: ["*.html"],
+      plugins: ["html"],
+      settings: {
+        "html/report-bad-indent": "error",
       },
     },
   ],

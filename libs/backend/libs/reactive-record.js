@@ -119,7 +119,6 @@ const getPrimaryKey = (properties) => {
 
 const generateEntries = (modelName, { _userId, id: _id, ...value }) => {
   const appId = ReactiveRecord.appId;
-  console.log({ model: ReactiveRecord.models, modelName });
   const primaryKey = getPrimaryKey(ReactiveRecord.models[modelName]);
   const newId = _userId
     ? `${_id}-${_userId}`
@@ -291,9 +290,8 @@ const getEntries = async (modelName, key, opts = {}) => {
 };
 
 const ReactiveRecord = {
-  async add(modelName, value, opts = {}) {
-    const { newId, entries } = generateEntries(modelName, value);
-    console.log({ modelName, value, opts });
+  async add(modelName, record, opts = {}) {
+    const { newId, entries } = generateEntries(modelName, record);
     await setEntries(modelName, entries, opts);
     return newId;
   },

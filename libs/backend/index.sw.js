@@ -19,6 +19,17 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(Promise.all([self.clients.claim(), initializeBackend()]));
 });
 
+self.addEventListener("message", (event) => {
+  const message = event.data;
+  self.clients
+    .matchAll({ includeUncontrolled: true, type: "window" })
+    .then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage(message);
+      });
+    });
+});
+
 self.addEventListener("message", messageHandler({ P2P, requestUpdate }));
 
 self.addEventListener("fetch", async (event) => {

@@ -33,18 +33,6 @@ class ReactiveView extends LitElement {
     return unoRuntime(UnoTheme);
   }
 
-  static props(properties) {
-    Object.keys(properties).forEach((key) => {
-      const prop = properties[key];
-      if (prop.sync)
-        prop.hasChanged = (oldValue, newValue) => {
-          console.log({ oldValue, newValue });
-          return oldValue !== newValue;
-        };
-    });
-    return properties;
-  }
-
   getProps(_props) {
     const props = _props || this.props;
     if (!props) return;
@@ -69,14 +57,13 @@ class ReactiveView extends LitElement {
   qa(element) {
     return this.shadowRoot.querySelectorAll(element);
   }
-
-  qaSlot(tagName) {
-    const slot = this.q("slot");
-    const nodes = slot.assignedElements({ flatten: true });
-    return tagName
-      ? nodes.filter(
-          (node) => node.tagName.toLowerCase() === tagName.toLowerCase(),
-        )
+  qaSlot({ tag, slot: namedSlot } = {}) {
+    const slot = namedSlot
+      ? this.q(`slot[name="${namedSlot}"]`)
+      : this.q("slot");
+    const nodes = slot ? slot.assignedElements({ flatten: true }) : [];
+    return tag
+      ? nodes.filter((node) => node.tagName.toLowerCase() === tag.toLowerCase())
       : nodes;
   }
 
@@ -90,6 +77,7 @@ class ReactiveView extends LitElement {
     _Components[tag] = component;
     if (component.theme)
       ReactiveView.addThemeClasses({ tag, theme: component.theme });
+    return component;
   }
 
   static async generateCss() {

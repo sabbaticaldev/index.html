@@ -1,14 +1,10 @@
-import {
-  messageHandler,
-  requestUpdate,
-  startBackend,
-} from "./libs/appstate.js";
+import { messageHandler, requestUpdate } from "./libs/appstate.js";
 import { BOOL_TABLE } from "./libs/constants.js";
 import idbAdapter from "./libs/indexeddb.js";
 import ReactiveRecord from "./libs/reactive-record.js";
 export { extractPathParams } from "./libs/utils.js";
 
-export { messageHandler, requestUpdate, startBackend };
+export { messageHandler, requestUpdate };
 
 export const fetchDataFromDB = async (appId, models) => {
   const dataPromises = models.map(async (model) => {

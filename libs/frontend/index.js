@@ -68,4 +68,5 @@ export const sizeMap = {
   "4xl": "192",
 };
 
+export const sizeKeys = Object.keys(sizeMap);
 export const sizeArray = ["min", "max", "fit", "screen", "full", "auto"];

@@ -124,10 +124,10 @@ export const startDatabase = async ({
   timestamp: AppTimestamp,
   env = "development",
 } = {}) => {
+  if (env === "development") console.log("Starting app in development mode");
   const timestamp = AppTimestamp ?? Date.now();
   const dbName = "default";
   const models = { app: workspaceModelDefinition, ...(userModels || {}) };
-  console.log({ models });
   await initializeDatabase({ dbName, models, version });
   let app = await getApp();
   if (app) {
@@ -138,29 +138,6 @@ export const startDatabase = async ({
   if (!app.imported) importData({ data, app });
   ReactiveRecord.appId = timestamp;
 };
-
-export const startBackend = async () => {
-  try {
-    await navigator.serviceWorker.register("/service-worker.js", {
-      scope: "/",
-      type: "module",
-    });
-  } catch (error) {
-    console.error("Error loading service-worker", { error });
-  }
-};
-
-self.addEventListener("message", (event) => {
-  const message = event.data;
-  // Broadcast the message to all clients
-  self.clients
-    .matchAll({ includeUncontrolled: true, type: "window" })
-    .then((clients) => {
-      clients.forEach((client) => {
-        client.postMessage(message);
-      });
-    });
-});
 
 export const messageHandler =
   ({ requestUpdate, P2P }) =>

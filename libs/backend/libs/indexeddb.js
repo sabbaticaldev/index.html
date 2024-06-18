@@ -156,7 +156,6 @@ const setLastOp = async (key, value, { db, propKey }) => {
 export { get, getItem, remove, set, setLastOp, update };
 
 const createStore = (dbName = "bootstrapp", storeName = "kv") => {
-  console.log({ storeName });
   const request = indexedDB.open(dbName);
   request.onupgradeneeded = () => request.result.createObjectStore(storeName);
   const dbp = promisifyRequest(request);
@@ -167,7 +166,6 @@ const createStore = (dbName = "bootstrapp", storeName = "kv") => {
 };
 
 export const getApp = async (dbName = "default", store = "app") => {
-  console.log("get app and initialize wrong");
   const db = createStore(dbName, store);
   const appData = await entries(db);
 
@@ -181,15 +179,11 @@ export const getApp = async (dbName = "default", store = "app") => {
 
 export const createDatabase = (dbName = "_app", storeNames = [], version = 1) =>
   new Promise((resolve, reject) => {
-    console.log({ storeNames, version });
     const request = indexedDB.open(dbName, version);
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-      console.log("upgrade needed");
       storeNames.forEach((storeName) => {
-        console.log("creating ", storeName);
         if (!db.objectStoreNames.contains(storeName)) {
-          console.log("creating ", storeName);
           db.createObjectStore(storeName);
         }
       });
