@@ -18,17 +18,27 @@ export const defineSyncProperty = (instance, key, prop) => {
   if (!syncKeyMap.has(syncKey)) {
     syncKeyMap.set(syncKey, new Set());
   }
+  instance.constructor.properties[key].hasChanged = (newValue, oldValue) => {
+    const value = syncAdapters[prop.sync].getItem(key);
+    if (newValue !== value) {
+      syncAdapters[prop.sync].setItem(key, newValue);
+    }
+    return oldValue !== newValue;
+  };
+
   const value = getSyncValue(prop, key);
   instance[key] = value;
   syncKeyMap.get(syncKey).add(instance);
 };
 
+// TODO: sessionStorage and localStorage isnt syncing when changing - it should sync not in one tab but in other tabs/windows
 export const requestUpdateOnUrlChange = () => {
   syncKeyMap.forEach((instances, syncProp) => {
     const [key, syncType] = syncProp.split("-");
     if (syncProp && ["url", "hash", "querystring"].includes(syncType)) {
+      const value = syncAdapters[syncType].getItem(key);
       instances.forEach((instance) => {
-        instance[key] = syncAdapters[syncType].getItem(key);
+        if (instance[key] !== value) instance[key] = value;
       });
     }
   });

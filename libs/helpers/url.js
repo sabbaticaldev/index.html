@@ -32,6 +32,7 @@ export default {
     const pathParams = parseUrl();
     pathParams[key] = value;
     updateUrl(pathParams);
+    window.dispatchEvent(new Event("popstate"));
     return { key };
   },
   removeItem: (key) => {

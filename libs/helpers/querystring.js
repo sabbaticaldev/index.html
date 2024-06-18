@@ -12,6 +12,7 @@ export default {
       "",
       `${window.location.pathname}?${params}`,
     );
+    window.dispatchEvent(new Event("popstate"));
     return { key };
   },
   removeItem: (key) => {

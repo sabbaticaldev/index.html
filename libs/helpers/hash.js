@@ -20,6 +20,7 @@ const hashUrl = {
     const params = getHashParams();
     params.set(key, value);
     setHashParams(params);
+    window.dispatchEvent(new Event("popstate"));
     return { key };
   },
 

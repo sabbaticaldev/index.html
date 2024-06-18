@@ -33,6 +33,18 @@ class ReactiveView extends LitElement {
     return unoRuntime(UnoTheme);
   }
 
+  static props(properties) {
+    Object.keys(properties).forEach((key) => {
+      const prop = properties[key];
+      if (prop.sync)
+        prop.hasChanged = (oldValue, newValue) => {
+          console.log({ oldValue, newValue });
+          return oldValue !== newValue;
+        };
+    });
+    return properties;
+  }
+
   getProps(_props) {
     const props = _props || this.props;
     if (!props) return;
