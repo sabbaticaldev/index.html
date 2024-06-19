@@ -52,14 +52,14 @@ class Tabs extends ReactiveView {
       );
 
       if (activeTab) activeTab.setAttribute("active", true);
-      if (activeContent) activeContent.style.display = "block";
+      if (activeContent) activeContent.style.display = "flex";
     } else {
       if (!tabId || !tabs.some((tab) => tab.getAttribute("id") === tabId)) {
         const firstTab = tabs[0];
         const firstContent = contents[0];
 
         if (firstTab) firstTab.setAttribute("active", true);
-        if (firstContent) firstContent.style.display = "block";
+        if (firstContent) firstContent.style.display = "flex";
       }
     }
   }
