@@ -2,7 +2,7 @@
 import polyline from "@mapbox/polyline";
 const { decode: polylineDecode } = polyline;
 import { MAP_TYPES } from "../../constants.js";
-import { fetchMapImage } from "../../utils.js";
+import { fetchMapImage } from "../../utils/maps.js";
 
 export default {
   fetchMapImage: async ({ lat, lng, zoom, size, apiKey, mapType }) => {

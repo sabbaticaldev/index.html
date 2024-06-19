@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<script type="importmap">
+  {
+    "imports": {
+      "frontend": "/dist/frontend.js"
+    }
+  }
+</script>
+<html lang="en" un-cloak>
+  <head>
+    <style>
+      [un-cloak] {
+        display: none;
+      }
+    </style>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0"
+    />
+    <meta name="view-transition" content="same-origin" />
+    <meta name="description" content="Bootstrapp" />
+    <script type="module">
+      import "/uix/layout/accordion.js";
+      import "/uix/layout/accordion-item.js";
+      import "/uix/layout/card.js";
+      import "/uix/layout/container.js";
+      import "/uix/layout/divider.js";
+      import "/uix/form/range.js";
+      import "/uix/form/input.js";
+      import "/uix/form/button.js";
+      import "/uix/content/text.js";
+      import "/uix/content/link.js";
+      import "/uix/navigation/tabs.js";
+      import "./components/community-board.js";
+      import "./components/community-form.js";
+      import "./components/community-item.js";
+      import "./components/group-board.js";
+      import "./components/group-form.js";
+      import "./components/group-item.js";
+      import "./components/tag-board.js";
+      import "./components/tag-form.js";
+
+      import { bootstrap } from "frontend";
+      bootstrap({
+        app: { title: "WhatsApp Community & Group Manager" },
+        env: "development",
+        backend: true,
+      });
+    </script>
+  </head>
+
+  <body>
+    <index-html>
+      <uix-container max-resolution="lg" gap="lg">
+        <uix-container horizontal justify="evenly" items="center" padding="lg">
+          <uix-text size="4xl">AllForTraveler</uix-text>
+        </uix-container>
+        <uix-tabs>
+          <uix-link label="groups" tab="tab-groups">groups</uix-link>
+          <uix-link label="communities" tab="tab-communities">communities</uix-link>
+          <uix-link label="tags" tab="tab-tags">tags</uix-link>
+          <uix-container slot="content" id="tab-groups" gap="lg">
+            <app-group-form></app-group-form>
+            <app-tag-board></app-tag-board>
+            <app-group-board></app-group-board></uix-container>
+          <uix-container slot="content" id="tab-communities" gap="lg">
+            <app-community-form></app-community-form>
+            <app-tag-board></app-tag-board>
+            <app-community-board></app-community-board></uix-container>
+          <uix-container slot="content" id="tab-tags" gap="lg">
+            <app-tag-form></app-tag-form>
+            <app-tag-board></app-tag-board>
+          </uix-container>
+        </uix-tabs>
+      </uix-container>      
+    </index-html>
+  </body>
+</html>

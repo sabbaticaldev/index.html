@@ -6,8 +6,7 @@ import {
   useMultiFileAuthState,
 } from "@whiskeysockets/baileys";
 
-import { sleep } from "../../utils.js";
-
+export { sleep } from "aiflow/utils/sleep.js";
 const store = makeInMemoryStore({});
 store.readFromFile(".baileys/store.json");
 setInterval(() => {

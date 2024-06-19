@@ -1,11 +1,9 @@
-import { LLM } from "aiflow/utils/llm.js";
+import { executeTasks } from "aiflow/utils/tasks.js";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import ogs from "open-graph-scraper";
 import path from "path";
 
-import { processGroupInfo } from "../services/llm/tasks/whatsapp.js";
 import { connectToWhatsApp } from "../services/whatsapp/index.js";
-import { executeTasks } from "../utils.js";
 
 const DATA_FOLDER = "./app/apps/allfortraveler/data/";
 
@@ -53,7 +51,6 @@ const processGroup = async (inviteUrl, sock) => {
 const processGroupInvite = async (url) => {
   const sock = await connectToWhatsApp({ keepAlive: true });
   const outputPath = path.join(DATA_FOLDER, "groupData.json");
-  const llmPath = path.join(DATA_FOLDER, "llm.json");
   const deps = {};
 
   const tasks = [
@@ -68,18 +65,6 @@ const processGroupInvite = async (url) => {
       filePath: outputPath,
       dependencies: ["ogData"],
       key: "groupData",
-    },
-    {
-      description: "LLM post generation",
-      filePath: llmPath,
-      key: "llm",
-      dependencies: ["instagram"],
-      operation: async () => {
-        const llm = LLM("bedrock");
-        const groupInfo = await processGroupInfo(llm, deps);
-        writeFile(llmPath, JSON.stringify(groupInfo));
-        return groupInfo;
-      },
     },
     {
       description: "Create Group",

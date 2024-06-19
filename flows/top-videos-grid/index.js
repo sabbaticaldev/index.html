@@ -9,7 +9,7 @@ import {
   sendWhatsAppMessage,
 } from "../../server/services/whatsapp/index.js";
 import settings from "../../server/settings.js";
-import { executeTasks } from "../../server/utils.js";
+export { executeTasks } from "aiflow/utils/tasks.js";
 
 const deps = {};
 

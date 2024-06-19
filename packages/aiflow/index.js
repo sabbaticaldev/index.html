@@ -3,13 +3,15 @@
  * @module index
  */
 import { FLOWS_DIR } from "./constants.js";
+import * as fileUtils from "./engines/node/fs.js";
 import settings from "./settings.js";
 import { askQuestions, executeSelectedCommand } from "./utils/cli.js";
-import * as fileUtils from "./engines/node/fs.js";
 import { executeTasks } from "./utils/tasks.js";
-  
+
 export const start = async () => {
-  const commands = await fileUtils.readDir(fileUtils.joinPath(settings.__dirname, FLOWS_DIR));
+  const commands = await fileUtils.readDir(
+    fileUtils.joinPath(settings.__dirname, FLOWS_DIR),
+  );
   const [, , providedCommand, providedInput] = process.argv;
   const selectedCommand = commands.includes(providedCommand)
     ? providedCommand

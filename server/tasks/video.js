@@ -7,7 +7,7 @@ import {
   sendWhatsAppMessage,
 } from "../services/whatsapp/index.js";
 import settings from "../settings.js";
-import { executeTasks } from "../utils.js";
+export { executeTasks } from "aiflow/utils/tasks.js";
 
 const deps = {};
 
