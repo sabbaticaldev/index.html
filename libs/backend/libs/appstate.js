@@ -1,85 +1,14 @@
 import { createDatabase, getApp } from "./indexeddb.js";
 import ReactiveRecord from "./reactive-record.js";
-
-let models = {};
-
-export const events = {
-  stateChange: async (data, { source }) => {
-    if (!self.clients) return;
-    const clients = await self.clients.matchAll({
-      includeUncontrolled: true,
-      type: "window",
-    });
-    clients.forEach((client) => {
-      if (client !== source) {
-        client.postMessage(data);
-      }
-    });
-  },
-  INIT_BACKEND: async (data, { source }) => {
-    source.postMessage({
-      type: "BACKEND_INITIALIZED",
-    });
-  },
-  PAGE_BUILDER_UPDATE_PAGE: async (data, { P2P }) => {
-    const { title, url } = data;
-    const TabsModel = models.tabs;
-    const tabs = await TabsModel.getMany();
-    const updateTabs = tabs
-      .filter((tab) => tab.title === title)
-      .map((tab) => ({ ...tab, url }));
-    TabsModel.editMany(updateTabs);
-    P2P.execute((client) => {
-      if (client.url.includes(url.split("#")[0])) {
-        client.navigate(url);
-      }
-    });
-  },
-  SYNC_DATA: async (data, { requestUpdate }) => {
-    const { data: syncData } = data;
-    for (let [modelName, entries] of Object.entries(syncData)) {
-      const model = models[modelName];
-      if (model) model?.setMany(entries);
-    }
-    requestUpdate();
-  },
-  REQUEST_UPDATE: async (data, { requestUpdate }) => {
-    const { store } = data || {};
-    requestUpdate(store);
-  },
-};
-
+import { T } from "./types.js";
 export let appId;
 export let api;
 
-export const workspaceModelDefinition = {
-  timestamp: {
-    type: "number",
-    primary: true,
-  },
-  models: {
-    type: "object",
-  },
-  imported: {
-    type: "boolean",
-  },
-  version: {
-    type: "number",
-  },
-  migrationTimestamp: {
-    type: "number",
-  },
-};
-
-const initializeDatabase = async ({
-  dbName = "default",
-  models = {},
-  version = 1,
-}) => {
-  console.log("INitialize");
-  const stores = await createDatabase(dbName, Object.keys(models), version);
-  ReactiveRecord.stores = stores;
-  ReactiveRecord.models = models;
+const workspaceModelDefinition = {
+  timestamp: T.number({ primary: true }),
+  imported: T.boolean(),
+  version: T.number(),
+  migrationTimestamp: T.number(),
 };
 
 const importData = async ({ app, data = {} }) => {
@@ -128,7 +57,10 @@ export const startDatabase = async ({
   const timestamp = AppTimestamp ?? Date.now();
   const dbName = "default";
   const models = { app: workspaceModelDefinition, ...(userModels || {}) };
-  await initializeDatabase({ dbName, models, version });
+
+  const stores = await createDatabase(dbName, Object.keys(models), version);
+  ReactiveRecord.stores = stores;
+  ReactiveRecord.models = models;
   let app = await getApp();
   if (app) {
     console.log("Existing app entry found:", app);
@@ -138,7 +70,7 @@ export const startDatabase = async ({
   if (!app.imported) importData({ data, app });
   ReactiveRecord.appId = timestamp;
 };
-
+const events = {};
 export const messageHandler =
   ({ requestUpdate, P2P }) =>
   async (event) => {
@@ -158,9 +90,11 @@ export const messageHandler =
     }
   };
 
-export const requestUpdate = () =>
+export const requestUpdate = (store) =>
   self.clients
     .matchAll()
     .then((clients) =>
-      clients.forEach((client) => client.postMessage("REQUEST_UPDATE")),
+      clients.forEach((client) =>
+        client.postMessage("REQUEST_UPDATE", { store }),
+      ),
     );

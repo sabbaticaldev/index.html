@@ -1,12 +1,10 @@
 import { LitElement } from "lit";
 
+import events from "../events.js";
 import reset from "../reset.txt";
-import { defineSyncProperty, requestUpdateOnUrlChange } from "./sync.js";
-
-window.addEventListener("popstate", requestUpdateOnUrlChange);
-
 import unoRuntime from "../unocss/unocss.runtime.js";
-
+import { defineSyncProperty, requestUpdateOnUrlChange } from "./sync.js";
+window.addEventListener("popstate", requestUpdateOnUrlChange);
 const resetCss = new CSSStyleSheet();
 resetCss.replaceSync(reset);
 
@@ -16,12 +14,37 @@ let _Components = {};
 class ReactiveView extends LitElement {
   // TODO: storing instances of ReactiveView should be optional
   static instances = new Set();
-
+  events = events;
   constructor() {
     super();
     this.setupProperties(this.constructor.properties);
     this.classList.add(this.constructor.tag);
     ReactiveView.instances.add(this);
+
+    if (typeof window !== "undefined") {
+      this.boundServiceWorkerMessageHandler =
+        this.handleServiceWorkerMessage.bind(this);
+      navigator.serviceWorker.addEventListener(
+        "message",
+        this.boundServiceWorkerMessageHandler,
+      );
+    }
+  }
+
+  // Handler for service worker messages
+  handleServiceWorkerMessage(event) {
+    const { type, ...data } = event.data || {};
+    const key = type || event.data;
+    if (key && this.events[key]) {
+      const params = {
+        source: event.source,
+        instance: this,
+        P2P: {},
+      };
+      const fn = this.events[key];
+      fn.bind(this);
+      fn(data, params);
+    }
   }
 
   disconnectedCallback() {

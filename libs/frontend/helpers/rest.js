@@ -1,11 +1,14 @@
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 500;
+
 function formatEndpoint(endpoint) {
   if (!endpoint.startsWith("http")) {
-    return `/api/${endpoint}`.replace("//", "/");
+    return `/api/${endpoint}`.replace(/\/+/g, "/");
   }
   return endpoint;
 }
 
-export async function handleResponse(response) {
+async function handleResponse(response) {
   if (!response.ok) {
     const message = `An error has occurred: ${response.statusText}`;
     throw new Error(message);
@@ -18,47 +21,60 @@ export async function handleResponse(response) {
   return JSON.parse(text);
 }
 
+async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
+  try {
+    const response = await fetch(url, options);
+    return await handleResponse(response);
+  } catch (error) {
+    if (retries > 0) {
+      console.log("Error fetching, trying again");
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw error;
+  }
+}
+
 export async function get(endpoint, params) {
   if (!endpoint) return;
-  let url = endpoint;
+  let url = formatEndpoint(endpoint);
   if (params) {
     const queryString = new URLSearchParams(params).toString();
     url += `?${queryString}`;
   }
-  const response = await fetch(formatEndpoint(url));
-  return handleResponse(response);
+  return fetchWithRetry(url);
 }
 
 export async function post(endpoint, params) {
   if (!endpoint) return;
-  const response = await fetch(formatEndpoint(endpoint), {
+  const options = {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(params),
-  });
-  return handleResponse(response);
+  };
+  return fetchWithRetry(formatEndpoint(endpoint), options);
 }
 
 export async function patch(endpoint, updates) {
   if (!endpoint) return;
-  const response = await fetch(formatEndpoint(endpoint), {
+  const options = {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(updates),
-  });
-  return handleResponse(response);
+  };
+  return fetchWithRetry(formatEndpoint(endpoint), options);
 }
 
 export async function remove(endpoint) {
   if (!endpoint) return;
-  const response = await fetch(formatEndpoint(endpoint), {
+  const options = {
     method: "DELETE",
-  });
-  return handleResponse(response);
+  };
+  return fetchWithRetry(formatEndpoint(endpoint), options);
 }
 
 export default { remove, patch, post, get };

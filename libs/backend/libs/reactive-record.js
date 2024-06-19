@@ -53,7 +53,7 @@ async function updateManyRelationship(params) {
 const ensureArray = (v) => (Array.isArray(v) ? v : [v]).filter((v) => !!v);
 const extractId = (v) => (Array.isArray(v) ? v : [null, v]);
 
-export async function unsetRelation(
+async function unsetRelation(
   relatedModelName,
   id,
   prevId,

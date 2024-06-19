@@ -68,5 +68,17 @@ export const sizeMap = {
   "4xl": "192",
 };
 
+export const widthMap = {
+  xs: "w-[320px]",
+  sm: "w-[640px]",
+  md: "w-[768px]",
+  lg: "w-[1024px]",
+  xl: "w-[1280px]",
+  "2xl": "w-[1536px]",
+  "3xl": "w-[1920px]",
+  "4xl": "w-[2560px]",
+  full: "w-full",
+};
+
 export const sizeKeys = Object.keys(sizeMap);
 export const sizeArray = ["min", "max", "fit", "screen", "full", "auto"];
