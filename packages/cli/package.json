@@ -1,10 +1,10 @@
 {
-    "name": "serve-assets",
-    "version": "1.0.0",
-    "description": "Serve assets using a simple HTTP server",
+    "name": "@index.html/cli",
+    "version": "0.1.0",
+    "description": "index.html CLI tool",
     "main": "index.js",
     "bin": {
-      "index-html": "./bin/index-html"
+      "index.html": "./bin/index-html"
     },
     "scripts": {
       "start": "node index.js"
