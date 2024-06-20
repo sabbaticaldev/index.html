@@ -19,3 +19,4 @@ auth_info_baileys/*
 downloads/*
 code/
 .env
+docs/.idx/

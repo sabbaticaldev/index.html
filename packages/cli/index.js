@@ -1,19 +1,49 @@
 import chokidar from "chokidar";
 import fs from "fs";
 import http from "http";
+import https from "https";
 import path from "path";
 import { fileURLToPath } from "url";
 import WebSocket, { WebSocketServer } from "ws";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
-const uixDir = path.join(__dirname, "../uix");
+import { generateCertificates } from "./ssl.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const args = process.argv.slice(2);
+const useHttps = args.includes("--https");
+const hostArgIndex = args.indexOf("--host");
+const host = hostArgIndex !== -1 ? args[hostArgIndex + 1] : "localhost";
+const port = process.env.SERVER_PORT || 4000;
+const debugPort = parseInt(port) + 1;
+
+const rootDir = args.find((arg) => !arg.startsWith("--")) || process.cwd();
+const uixDir = path.join(__dirname, "../uix");
 const frontendDir = path.join(__dirname, "../frontend");
 const backendDir = path.join(__dirname, "../backend");
 const serviceWorkerPath = path.join(__dirname, "../backend/service-worker.js");
 
-const server = http.createServer((req, res) => {
+let server;
+let serverOptions;
+
+if (useHttps) {
+  const { keyPath, certPath } = generateCertificates(rootDir);
+
+  console.log(`Using SSL key at: ${keyPath}`);
+  console.log(`Using SSL certificate at: ${certPath}`);
+
+  serverOptions = {
+    key: fs.readFileSync(keyPath),
+    cert: fs.readFileSync(certPath),
+  };
+
+  server = https.createServer(serverOptions, requestHandler);
+} else {
+  server = http.createServer(requestHandler);
+}
+
+function requestHandler(req, res) {
   let filePath;
 
   if (req.url.startsWith("/uix/")) {
@@ -30,8 +60,26 @@ const server = http.createServer((req, res) => {
       rootDir,
       safeSuffix === "/" ? "index.html" : safeSuffix,
     );
+
+    // If the requested file is /models.js and it doesn't exist, try /backend/models.js
+    if (req.url === "/models.js") {
+      fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+          console.log("/models.js not found, trying /backend/models.js");
+          filePath = path.join(backendDir, "models.js");
+          serveFile(filePath, res);
+        } else {
+          serveFile(filePath, res);
+        }
+      });
+      return; // Exit early to avoid reading the file immediately
+    }
   }
 
+  serveFile(filePath, res);
+}
+
+function serveFile(filePath, res) {
   const ext = path.extname(filePath).toLowerCase();
   const mimeTypes = {
     ".html": "text/html",
@@ -79,16 +127,19 @@ const server = http.createServer((req, res) => {
       res.end(data);
     }
   });
-});
+}
 
-const wss = new WebSocketServer({ port: 4001 });
+const wss = new WebSocketServer({ port: debugPort });
+
 wss.on("connection", () => {
   console.log("Client connected");
 });
 
-server.listen(4000, () => {
+server.listen(port, host, () => {
   console.log(
-    `Server running at http://localhost:4000, serving directory: ${rootDir}`,
+    `Server running at ${
+      useHttps ? "https" : "http"
+    }://${host}:${port}, serving directory: ${rootDir}`,
   );
 });
 

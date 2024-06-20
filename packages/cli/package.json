@@ -1,18 +1,18 @@
 {
-    "name": "@index.html/cli",
-    "version": "0.1.0",
-    "description": "index.html CLI tool",
-    "main": "index.js",
-    "bin": {
-      "index.html": "./bin/index-html"
-    },
-    "scripts": {
-      "start": "node index.js"
-    },
-    "dependencies": {
-      "chokidar": "^3.5.2",
-      "ws": "^8.4.0"
-    },
-    "type": "module"
-  }
-  
+  "name": "@index.html/cli",
+  "version": "0.1.0",
+  "description": "index.html CLI tool",
+  "main": "index.js",
+  "bin": {
+    "index.html": "./bin/index-html"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "chokidar": "^3.5.2",
+    "node-forge": "^1.3.1",
+    "ws": "^8.4.0"
+  },
+  "type": "module"
+}
