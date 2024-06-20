@@ -1,7 +1,6 @@
 import "../navigation/pagination.js";
 
-import { ReactiveView } from "frontend";
-import { html, T } from "frontend";
+import { html, ReactiveView, T } from "frontend";
 
 class Table extends ReactiveView {
   static get properties() {
@@ -19,6 +18,7 @@ class Table extends ReactiveView {
   }
 
   static theme = {
+    "": "w-full",
     ".uix-table__table":
       "w-full text-sm text-left text-gray-500 dark:text-gray-400",
     ".uix-table__header":
@@ -39,11 +39,9 @@ class Table extends ReactiveView {
     const rowElements = this.paginatedRows().map(
       (row) =>
         html`<tr>
-          ${Array.isArray(row)
-            ? row
-            : Object.values(row).map(
-                (cell) => html`<td class="uix-table__cell">${cell}</td>`,
-              )}
+          ${(Array.isArray(row) ? row : Object.values(row)).map(
+            (cell) => html`<td class="uix-table__cell">${cell}</td>`,
+          )}
         </tr>`,
     );
 

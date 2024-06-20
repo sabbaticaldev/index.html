@@ -1,7 +1,6 @@
 import "../layout/container.js";
 
-import { ReactiveView } from "frontend";
-import { defaultTheme, genTheme, html, T } from "frontend";
+import { defaultTheme, genTheme, html, ReactiveView, T } from "frontend";
 
 const PaginationVariants = {
   default: "bg-white",
@@ -49,7 +48,10 @@ class Pagination extends ReactiveView {
           class=${`uix-pagination__link ${
             isActive ? "uix-pagination__link--active" : ""
           }`}
-          @click=${() => this.onPageChange(page)}
+          @click=${(e) => {
+            e.preventDefault();
+            this.onPageChange(page);
+          }}
         >
           ${label || page}
         </a>
@@ -65,6 +67,8 @@ class Pagination extends ReactiveView {
       this.totalResults,
     );
     const visiblePages = 5;
+    const pages = [];
+
     let startPage = Math.max(
       1,
       this.currentPage - Math.floor(visiblePages / 2),
@@ -75,39 +79,29 @@ class Pagination extends ReactiveView {
       startPage = Math.max(1, endPage - visiblePages + 1);
     }
 
-    const pageLinks = [];
-    if (this.currentPage > 1) {
-      pageLinks.push(this.renderPageLink(this.currentPage - 1, "Previous"));
-    }
-    if (startPage > 1) {
-      pageLinks.push(this.renderPageLink(1));
-      if (startPage > 2) {
-        pageLinks.push(this.renderPageLink(startPage - 1, "..."));
-      }
-    }
     for (let page = startPage; page <= endPage; page++) {
-      pageLinks.push(this.renderPageLink(page));
-    }
-    if (endPage < totalPageCount) {
-      if (endPage < totalPageCount - 1) {
-        pageLinks.push(this.renderPageLink(endPage + 1, "..."));
-      }
-      pageLinks.push(this.renderPageLink(totalPageCount));
-    }
-    if (this.currentPage < totalPageCount) {
-      pageLinks.push(this.renderPageLink(this.currentPage + 1, "Next"));
+      pages.push(this.renderPageLink(page));
     }
 
     return html`
       <uix-container
-        items="center"
-        justify="between"
-        horizontal
-        role="navigation"
         class="uix-pagination__nav"
-        aria-label="Table navigation"
+        role="navigation"
+        items="center"
+        aria-label="Pagination"
       >
-        <uix-container horizontal class="uix-pagination__info">
+        ${pages.length > 1
+          ? html`<ul class="uix-pagination__list">
+              ${this.currentPage > 1
+                ? this.renderPageLink(this.currentPage - 1, "Previous")
+                : ""}
+              ${pages}
+              ${this.currentPage < totalPageCount
+                ? this.renderPageLink(this.currentPage + 1, "Next")
+                : ""}
+            </ul>`
+          : null}
+        <div class="uix-pagination__info">
           Showing
           <span class="uix-pagination__info-highlight"
             >${startItem}-${endItem}</span
@@ -116,11 +110,7 @@ class Pagination extends ReactiveView {
           <span class="uix-pagination__info-highlight"
             >${this.totalResults}</span
           >
-        </uix-container>
-
-        <ul class="uix-pagination__list">
-          ${pageLinks}
-        </ul>
+        </div>
       </uix-container>
     `;
   }

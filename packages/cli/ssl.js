@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import fs from "fs";
+import https from "https";
 import path from "path";
 
 function generateCertificates(baseDir) {
@@ -42,4 +43,16 @@ function generateCertificates(baseDir) {
   return { keyPath, certPath };
 }
 
-export { generateCertificates };
+export function createHttpsServer(rootDir, requestHandler) {
+  const { keyPath, certPath } = generateCertificates(rootDir);
+
+  console.log(`Using SSL key at: ${keyPath}`);
+  console.log(`Using SSL certificate at: ${certPath}`);
+
+  const serverOptions = {
+    key: fs.readFileSync(keyPath),
+    cert: fs.readFileSync(certPath),
+  };
+
+  return https.createServer(serverOptions, requestHandler);
+}

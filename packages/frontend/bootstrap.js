@@ -15,7 +15,13 @@ const loadApp = async ({ app }) => {
 // Bootstrap function to initialize the application based on the environment
 const bootstrap = async ({ app, env, backend }) => {
   if (env === "development") {
-    const ws = new WebSocket("ws://localhost:4001");
+    const currentPort = window.location.port;
+    const debugPort = parseInt(currentPort, 10) + 1;
+    const wsUrl = `${window.location.protocol === "https:" ? "wss" : "ws"}://${
+      window.location.hostname
+    }:${debugPort}`;
+    const ws = new WebSocket(wsUrl);
+
     ws.addEventListener("message", (event) => {
       if (event.data === "refresh") {
         console.log("DEBUG: Received refresh request");

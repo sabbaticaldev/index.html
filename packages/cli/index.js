@@ -1,12 +1,11 @@
 import chokidar from "chokidar";
 import fs from "fs";
 import http from "http";
-import https from "https";
 import path from "path";
 import { fileURLToPath } from "url";
 import WebSocket, { WebSocketServer } from "ws";
 
-import { generateCertificates } from "./ssl.js";
+import { createHttpsServer } from "./ssl.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,67 +14,83 @@ const args = process.argv.slice(2);
 const useHttps = args.includes("--https");
 const hostArgIndex = args.indexOf("--host");
 const host = hostArgIndex !== -1 ? args[hostArgIndex + 1] : "localhost";
-const port = process.env.SERVER_PORT || 4000;
-const debugPort = parseInt(port) + 1;
+const SERVER_PORT = process.env.SERVER_PORT || 1313;
+const DEBUG_PORT = parseInt(SERVER_PORT) + 1;
 
 const rootDir = args.find((arg) => !arg.startsWith("--")) || process.cwd();
 const uixDir = path.join(__dirname, "../uix");
 const frontendDir = path.join(__dirname, "../frontend");
 const backendDir = path.join(__dirname, "../backend");
-const serviceWorkerPath = path.join(__dirname, "../backend/service-worker.js");
+const adminDir = path.join(__dirname, "../admin");
+
+const urlMappings = {
+  "/uix/": uixDir,
+  "/frontend/": frontendDir,
+  "/backend/": backendDir,
+  "/admin/": adminDir,
+};
+
+const specialCases = [
+  { url: "/models.js", fallbackDir: backendDir },
+  { url: "/favicon.ico", fallbackDir: frontendDir },
+  {
+    url: "/service-worker.js",
+    fallbackPath: path.join(__dirname, "../backend/service-worker.js"),
+  },
+  { url: "/admin.html", redirectTo: "/admin/index.html" },
+];
 
 let server;
-let serverOptions;
 
 if (useHttps) {
-  const { keyPath, certPath } = generateCertificates(rootDir);
-
-  console.log(`Using SSL key at: ${keyPath}`);
-  console.log(`Using SSL certificate at: ${certPath}`);
-
-  serverOptions = {
-    key: fs.readFileSync(keyPath),
-    cert: fs.readFileSync(certPath),
-  };
-
-  server = https.createServer(serverOptions, requestHandler);
+  server = createHttpsServer(rootDir, requestHandler);
 } else {
   server = http.createServer(requestHandler);
 }
 
 function requestHandler(req, res) {
-  let filePath;
+  const safeSuffix = path.normalize(req.url).replace(/^(\.\.[/\\])+/, "");
+  const matchedCase = specialCases.find((sc) => req.url === sc.url);
 
-  if (req.url.startsWith("/uix/")) {
-    filePath = path.join(uixDir, req.url.substring(5));
-  } else if (req.url.startsWith("/frontend/")) {
-    filePath = path.join(frontendDir, req.url.substring(10));
-  } else if (req.url.startsWith("/backend/")) {
-    filePath = path.join(backendDir, req.url.substring(9));
-  } else if (req.url.endsWith("/service-worker.js")) {
-    filePath = serviceWorkerPath;
-  } else {
-    const safeSuffix = path.normalize(req.url).replace(/^(\.\.[/\\])+/, "");
-    filePath = path.join(
-      rootDir,
-      safeSuffix === "/" ? "index.html" : safeSuffix,
-    );
+  if (matchedCase) {
+    if (matchedCase.redirectTo) {
+      const redirectPath = path.join(adminDir, "index.html");
+      serveFile(redirectPath, res);
+      return;
+    }
 
-    // If the requested file is /models.js and it doesn't exist, try /backend/models.js
-    if (req.url === "/models.js") {
-      fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-          console.log("/models.js not found, trying /backend/models.js");
-          filePath = path.join(backendDir, "models.js");
-          serveFile(filePath, res);
+    let filePath = path.join(rootDir, safeSuffix);
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        if (matchedCase.fallbackDir) {
+          console.log(
+            `${req.url} not found, trying ${matchedCase.fallbackDir}${req.url}`,
+          );
+          filePath = path.join(matchedCase.fallbackDir, req.url);
         } else {
-          serveFile(filePath, res);
+          console.log(
+            `${req.url} not found, using ${matchedCase.fallbackPath}`,
+          );
+          filePath = matchedCase.fallbackPath;
         }
-      });
-      return; // Exit early to avoid reading the file immediately
+        serveFile(filePath, res);
+      } else {
+        serveFile(filePath, res);
+      }
+    });
+    return;
+  }
+
+  let filePath;
+  for (const [prefix, dir] of Object.entries(urlMappings)) {
+    if (req.url.startsWith(prefix)) {
+      filePath = path.join(dir, req.url.slice(prefix.length));
+      serveFile(filePath, res);
+      return;
     }
   }
 
+  filePath = path.join(rootDir, safeSuffix === "/" ? "index.html" : safeSuffix);
   serveFile(filePath, res);
 }
 
@@ -101,8 +116,6 @@ function serveFile(filePath, res) {
     ".wasm": "application/wasm",
   };
 
-  console.log(`Request for ${filePath}`);
-
   fs.readFile(filePath, (err, data) => {
     if (err) {
       console.error(`Error reading file: ${filePath}`, err);
@@ -120,7 +133,6 @@ function serveFile(filePath, res) {
         }
       });
     } else {
-      console.log(`Serving ${filePath}`);
       res.writeHead(200, {
         "Content-Type": mimeTypes[ext] || "application/octet-stream",
       });
@@ -129,31 +141,21 @@ function serveFile(filePath, res) {
   });
 }
 
-const wss = new WebSocketServer({ port: debugPort });
+const wss = new WebSocketServer({ port: DEBUG_PORT });
 
 wss.on("connection", () => {
   console.log("Client connected");
 });
 
-server.listen(port, host, () => {
+server.listen(SERVER_PORT, host, () => {
   console.log(
     `Server running at ${
       useHttps ? "https" : "http"
-    }://${host}:${port}, serving directory: ${rootDir}`,
+    }://${host}:${SERVER_PORT}, serving directory: ${rootDir}`,
   );
 });
 
-const watcher = chokidar.watch([rootDir, uixDir, frontendDir, backendDir], {
-  ignored: [
-    /.baileys/,
-    /node_modules/,
-    /.git/,
-    /\.map$/,
-    /\.db$/,
-    /\.db-journal$/,
-    /baileys_store\.json$/,
-  ],
-});
+const watcher = chokidar.watch([rootDir, uixDir, frontendDir, backendDir]);
 
 watcher.on("change", (filePath) => {
   console.log(`File ${filePath} has been changed. Refreshing...`);
