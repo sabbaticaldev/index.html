@@ -10,19 +10,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "chokidar": "^3.5.3",
-    "esbuild": "^0.19.5",
-    "esbuild-plugin-alias": "^0.2.1",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-html": "^8.1.1",
     "eslint-plugin-json": "^4.0.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-simple-import-sort": "^10.0.0",
-    "http-server": "^14.1.1",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
-    "nodemon": "^3.1.0",
     "prettier": "^2.8.8",
     "ws": "^8.14.2"
   },
@@ -36,7 +31,5 @@
       "prettier --write",
       "git add"
     ]
-  },
-  "dependencies": {
   }
 }

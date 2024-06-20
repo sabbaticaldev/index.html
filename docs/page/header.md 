@@ -1,0 +1,30 @@
+# Header
+
+A component for displaying a page header with a logo and navigation items.
+
+## Props
+
+| Prop     | Type   | Default | Description                           |
+|----------|--------|---------|---------------------------------------|
+| logo     | string |         | The text or image to use for the logo |
+| navItems | array  | []      | An array of navigation items to display |
+
+### Navigation Item
+
+| Prop | Type   | Default | Description               |
+|------|--------|---------|---------------------------|
+| text | string |         | The text of the nav item  |
+| href | string |         | The URL of the nav item   |
+
+## Example
+
+```html
+<uix-header
+  logo="My App"  
+  :navItems="[
+    { text: 'Home', href: '/' },
+    { text: 'About', href: '/about' },
+    { text: 'Contact', href: '/contact' }
+  ]"
+></uix-header>
+```

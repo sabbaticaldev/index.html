@@ -1,0 +1,149 @@
+[
+  {
+    "label": "UI Kit",
+    "icon": "box",
+    "items": [
+      {
+        "label": "layout",
+        "icon": "layout",
+        "variant": "accordion",
+        "items": [
+          {"label": "accordion", "icon": "chevrons-right", "href": "/design/layout--accordion"},
+          {"label": "card", "icon": "credit-card", "href": "/design/layout--card"},
+          {"label": "container", "icon": "box", "href": "/design/layout--container"},
+          {"label": "divider", "icon": "minus", "href": "/design/layout--divider"}
+        ]
+      },
+      {
+        "label": "form",
+        "open": true,
+        "icon": "edit",
+        "variant": "accordion",
+        "items": [
+          {"label": "form", "icon": "edit", "href": "/design/form--form"},
+          {"label": "button", "icon": "star", "href": "/design/form--button"},
+          {"label": "input", "icon": "hash", "href": "/design/form--input"},
+          {"label": "checkbox", "icon": "check-square", "href": "/design/form--checkbox"},
+          {"label": "radio", "icon": "circle", "href": "/design/form--radio"},
+          {"label": "select", "icon": "chevron-down", "href": "/design/form--select"},
+          {"label": "textarea", "icon": "align-left", "href": "/design/form--textarea"},
+          {"label": "range", "icon": "sliders", "href": "/design/form--range"},
+          {"label": "date-input", "icon": "calendar", "href": "/design/form--date-input"},
+          {"label": "file-input", "icon": "paperclip", "href": "/design/form--file-input"},
+          {"label": "search", "icon": "search", "href": "/design/form--search"},
+          {"label": "color-picker", "icon": "droplet", "href": "/design/form--color-picker"}
+        ]
+      },
+      {
+        "label": "content",
+        "icon": "file-text",
+        "variant": "accordion",
+        "items": [
+          {"label": "avatar", "icon": "user", "href": "/design/content--avatar"},
+          {"label": "avatar-group", "icon": "users", "href": "/design/content--avatar-group"},
+          {"label": "badge", "icon": "tag", "href": "/design/content--badge"},
+          {"label": "code", "icon": "code", "href": "/design/content--code"},
+          {"label": "icon", "icon": "star", "href": "/design/content--icon"},
+          {"label": "link", "icon": "link", "href": "/design/content--link"},
+          {"label": "text", "icon": "type", "href": "/design/content--text"},
+          {"label": "rating", "icon": "star", "href": "/design/content--rating"},
+          {"label": "video-player", "icon": "video", "href": "/design/content--video-player"},
+          {"label": "table", "icon": "table", "href": "/design/content--table"},
+          {"label": "media", "icon": "image", "href": "/design/layout--media"},
+          {"label": "grid", "icon": "grid", "href": "/design/layout--grid"},
+          {"label": "list", "icon": "list", "href": "/design/layout--list"}
+        ]
+      },
+      {
+        "label": "navigation",
+        "icon": "navigation",
+        "variant": "accordion",
+        "items": [
+          {"label": "breadcrumbs", "icon": "chevrons-right", "href": "/design/navigation--breadcrumbs"},
+          {"label": "context-menu", "icon": "more-vertical", "href": "/design/navigation--context-menu"},
+          {"label": "dropdown", "icon": "chevron-down", "href": "/design/navigation--dropdown"},
+          {"label": "modal", "icon": "square", "href": "/design/navigation--modal"},
+          {"label": "pagination", "icon": "chevrons-right", "href": "/design/navigation--pagination"},          
+          {"label": "tabs", "icon": "more-horizontal", "href": "/design/navigation--tabs"},
+          {"label": "tooltip", "icon": "message-circle", "href": "/design/navigation--tooltip"}
+        ]
+      }
+    ]
+  },
+  {
+    "label": "app",
+    "icon": "smartphone",
+    "items": [
+      {
+        "label": "app",
+        "icon": "feather",
+        "variant": "accordion",
+        "items": [
+          {"label": "app-shell", "icon": "box", "href": "/design/app--app-shell"},
+          {"label": "logo", "icon": "feather", "href": "/design/app--logo"},
+          {"label": "router", "icon": "repeat", "href": "/design/app--router"}
+        ]
+      },
+      {
+        "label": "crud",
+        "variant": "accordion",
+        "icon": "database",
+        "items": [
+          {"label": "crud", "icon": "database", "href": "/design/crud--crud"},
+          {"label": "crud-actions", "icon": "settings", "href": "/design/crud--crud-actions"},
+          {"label": "crud-detail", "icon": "file-text", "href": "/design/crud--crud-detail"},
+          {"label": "crud-form", "icon": "edit", "href": "/design/crud-crud--form"},
+          {"label": "crud-new-modal", "icon": "plus-circle", "href": "/design/crud--crud-new-modal"},
+          {"label": "crud-search", "icon": "search", "href": "/design/crud-crud--search"},
+          {"label": "crud-table", "icon": "table", "href": "/design/crud--crud-table"},
+          {"label": "import-csv-button", "icon": "upload", "href": "/design/crud--import-csv-button"}
+        ]
+      },
+      {
+        "label": "datetime",
+        "icon": "calendar",
+        "variant": "accordion",
+        "items": [
+          {"label": "calendar", "icon": "calendar", "href": "/design/datetime--calendar"},
+          {"label": "calendar-day", "icon": "sun", "href": "/design/datetime--calendar-day"},
+          {"label": "calendar-month", "icon": "calendar", "href": "/design/datetime--calendar-month"},
+          {"label": "date-picker", "icon": "calendar", "href": "/design/datetime--date-picker"},
+          {"label": "time", "icon": "clock", "href": "/design/datetime--time"}
+        ]
+      },
+      {
+        "label": "chat",
+        "icon": "message-square",
+        "variant": "accordion",
+        "items": [
+          {"label": "chat-card", "icon": "message-square", "href": "/design/chat--chat-card"},
+          {"label": "chat-composer", "icon": "edit", "href": "/design/chat-chat--composer"},
+          {"label": "chat-message", "icon": "message-circle", "href": "/design/chat--chat-message"},
+          {"label": "chat-window", "icon": "message-square", "href": "/design/chat--chat-window"}
+        ]
+      }
+    ]
+  },
+  {
+    "label": "page",
+    "icon": "message-square",
+    "items": [
+      {
+        "label": "blocks",
+        "icon": "file-text",
+        "variant": "accordion",
+        "items": [
+          {"label": "feature-block", "icon": "star", "href": "/design/page--feature-block"},
+          {"label": "feature-list", "icon": "list", "href": "/design/page--feature-list"},
+          {"label": "footer", "icon": "layout", "href": "/design/page--footer"},
+          {"label": "header", "icon": "layout", "href": "/design/page--header"},
+          {"label": "hero", "icon": "star", "href": "/design/page--hero"},
+          {"label": "pricing-table", "icon": "credit-card", "href": "/design/page--pricing-table"},
+          {"label": "router", "icon": "repeat", "href": "/design/page--router"},
+          {"label": "stats", "icon": "bar-chart", "href": "/design/page--stats"},
+          {"label": "testimonial", "icon": "message-circle", "href": "/design/page--testimonial"}
+        ]
+      }
+    ]
+  }
+]

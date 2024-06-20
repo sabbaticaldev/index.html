@@ -7,7 +7,7 @@ import WebSocket, { WebSocketServer } from "ws";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
-const uixDir = path.join(__dirname, "uix");
+const uixDir = path.join(__dirname, "../uix");
 const distDir = path.join(__dirname, "dist");
 
 const server = http.createServer((req, res) => {
@@ -18,7 +18,7 @@ const server = http.createServer((req, res) => {
   } else if (req.url.startsWith("/dist/")) {
     filePath = path.join(distDir, req.url.substring(6));
   } else {
-    const safeSuffix = path.normalize(req.url).replace(/^(\.\.[\/\\])+/, "");
+    const safeSuffix = path.normalize(req.url).replace(/^(\.\.[/\\])+/, "");
     filePath = path.join(
       rootDir,
       safeSuffix === "/" ? "index.html" : safeSuffix,

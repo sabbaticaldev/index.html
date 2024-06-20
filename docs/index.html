@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<script type="importmap">
+  {
+    "imports": {
+      "frontend": "/dist/frontend.js"
+    }
+  }
+</script>
+<html lang="en" style="width: 100%; height: 100%">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bootstrapp</title>
+
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0"
+    />
+    <meta name="view-transition" content="same-origin" />
+    <meta name="description" content="Bootstrapp" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="PWA Starter" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module">
+      import { bootstrap } from "frontend";
+
+      import app from "/app.js";
+      bootstrap({ env: "development", app });
+    </script>
+  </head>
+
+  <body style="width: 100%; height: 100%">
+    <app-index></app-index>
+  </body>
+</html>
+<script>
+</script>
