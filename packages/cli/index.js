@@ -8,15 +8,22 @@ import WebSocket, { WebSocketServer } from "ws";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 const uixDir = path.join(__dirname, "../uix");
-const distDir = path.join(__dirname, "dist");
+
+const frontendDir = path.join(__dirname, "../frontend");
+const backendDir = path.join(__dirname, "../backend");
+const serviceWorkerPath = path.join(__dirname, "../backend/service-worker.js");
 
 const server = http.createServer((req, res) => {
   let filePath;
 
   if (req.url.startsWith("/uix/")) {
     filePath = path.join(uixDir, req.url.substring(5));
-  } else if (req.url.startsWith("/dist/")) {
-    filePath = path.join(distDir, req.url.substring(6));
+  } else if (req.url.startsWith("/frontend/")) {
+    filePath = path.join(frontendDir, req.url.substring(10));
+  } else if (req.url.startsWith("/backend/")) {
+    filePath = path.join(backendDir, req.url.substring(9));
+  } else if (req.url.endsWith("/service-worker.js")) {
+    filePath = serviceWorkerPath;
   } else {
     const safeSuffix = path.normalize(req.url).replace(/^(\.\.[/\\])+/, "");
     filePath = path.join(
@@ -30,6 +37,7 @@ const server = http.createServer((req, res) => {
     ".html": "text/html",
     ".js": "application/javascript",
     ".css": "text/css",
+    ".txt": "text/plain",
     ".json": "application/json",
     ".png": "image/png",
     ".jpg": "image/jpg",
@@ -84,7 +92,7 @@ server.listen(4000, () => {
   );
 });
 
-const watcher = chokidar.watch([rootDir, uixDir, distDir], {
+const watcher = chokidar.watch([rootDir, uixDir, frontendDir, backendDir], {
   ignored: [
     /.baileys/,
     /node_modules/,

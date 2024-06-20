@@ -6,15 +6,15 @@ export * as File from "./helpers/file.js";
 export { get, patch, post, remove } from "./helpers/rest.js";
 export { defaultTheme } from "./helpers/theme.js";
 export { stringToType, T, TYPE_MAP } from "./helpers/types.js";
+export { css, html, LitElement } from "./libs/lit.js";
+export { ifDefined } from "./libs/lit.js";
+export { createRef, ref } from "./libs/lit.js";
+export { repeat } from "./libs/lit.js";
+export { unsafeHTML } from "./libs/lit.js";
+export { until } from "./libs/lit.js";
+export { html as staticHtml } from "./libs/lit.js";
+export { unsafeStatic } from "./libs/lit.js";
 export { default as ReactiveView } from "./reactive-view/base.js";
-export { css, html, LitElement } from "lit";
-export { ifDefined } from "lit/directives/if-defined.js";
-export { createRef, ref } from "lit/directives/ref.js";
-export { repeat } from "lit/directives/repeat.js";
-export { unsafeHTML } from "lit/directives/unsafe-html.js";
-export { until } from "lit/directives/until.js";
-export { html as staticHtml } from "lit/static-html.js";
-export { unsafeStatic } from "lit/static-html.js";
 
 export function escapeHTML(html = "") {
   return html

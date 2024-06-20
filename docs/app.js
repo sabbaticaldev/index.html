@@ -31,7 +31,7 @@ const commonColors = [
 
 const greyColors = ["gray", "zinc", "true-gray", "warm-gray", "blue-gray"];
 
-const sections = await (await fetch("/design/components.json")).json();
+const sections = await (await fetch("/components.json")).json();
 
 const renderer = new marked.Renderer();
 renderer.code = function (code) {
@@ -49,7 +49,7 @@ class AppIndex extends ReactiveView {
   loadMarkdown() {
     const componentPath = this.design.split("--");
     if (!componentPath.length === 2) return;
-    fetch(`/design/${componentPath.join("/")}.md`).then((response) => {
+    fetch(`/${componentPath.join("/")}.md`).then((response) => {
       import(["/uix", ...componentPath].join("/") + ".js").then(() => {
         ReactiveView.unoRuntime();
         ReactiveView.install(true);

@@ -1,14 +1,8 @@
 import "./index-html.js";
 
 import ReactiveView, { UnoTheme } from "./reactive-view/base.js";
-import reset from "./reset.txt";
-const frontend = async ({ app, style }) => {
-  if (!app) throw new Error("Error: no App found");
-  if (app.title) document.title = app.title;
-  if (app.init) await app.init({ style, app });
-  const styleEl = document.createElement("style");
-  styleEl.textContent = reset;
-  document.head.append(styleEl);
+
+const frontend = async () => {
   ReactiveView.install();
 };
 // Function to load the app and register the service worker if available
