@@ -19,11 +19,15 @@ class Table extends ReactiveView {
 
   static theme = {
     "": "w-full",
-    ".uix-table__table":
-      "w-full text-sm text-left text-gray-500 dark:text-gray-400",
-    ".uix-table__header":
-      "p-3 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400",
-    ".uix-table__cell": "px-3 py-2 text-xs",
+    ".uix-table__container":
+      "w-full text-sm text-left text-gray-500 dark:text-gray-400 table",
+    ".uix-table__header-group":
+      "bg-gray-50 dark:bg-gray-700 table-header-group",
+    "[&_>*]": "p-3 text-xs text-gray-700 uppercase table-cell",
+    ".uix-table__row-group":
+      "divide-y divide-gray-200 dark:divide-gray-600 table-row-group",
+    ".uix-table__row": "table-row",
+    ".uix-table__cell": "px-3 py-2 text-xs table-cell",
   };
 
   setCurrentPage(page) {
@@ -32,30 +36,25 @@ class Table extends ReactiveView {
   }
 
   render() {
-    const headerElements = this.headers.map(
-      (header) =>
-        html`<th scope="col" class="uix-table__header">${header}</th>`,
-    );
     const rowElements = this.paginatedRows().map(
       (row) =>
-        html`<tr>
+        html`<div class="uix-table__row" role="row">
           ${(Array.isArray(row) ? row : Object.values(row)).map(
-            (cell) => html`<td class="uix-table__cell">${cell}</td>`,
+            (cell) =>
+              html`<div class="uix-table__cell" role="cell">${cell}</div>`,
           )}
-        </tr>`,
+        </div>`,
     );
 
     return html`
-      <table class="uix-table__table">
-        <thead>
-          <tr>
-            ${headerElements}
-          </tr>
-        </thead>
-        <tbody>
-          ${rowElements}
-        </tbody>
-      </table>
+      <div class="uix-table__container" role="table">
+        <div class="uix-table__header-group" role="rowgroup">
+          <div class="uix-table__row" role="row">
+            <slot role="columnheader" name="header"></slot>
+          </div>
+        </div>
+        <div class="uix-table__row-group" role="rowgroup">${rowElements}</div>
+      </div>
       <uix-pagination
         totalResults=${this.rows.length}
         currentPage=${this.currentPage}

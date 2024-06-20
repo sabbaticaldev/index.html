@@ -57,7 +57,7 @@ class Container extends ReactiveView {
     ...genTheme(
       "max-resolution",
       Object.keys(widthMap),
-      (entry) => `${widthMap[entry]} m-auto`,
+      (entry) => `max-${widthMap[entry]} m-auto overflow-hidden`,
     ),
     ...genTheme("width", sizeArray, (entry) => `w-${entry}`),
     ...genTheme("width", sizeKeys, (entry) => `w-${sizeMap[entry]}`),

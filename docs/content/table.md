@@ -33,11 +33,14 @@ The `uix-table` component is a versatile table component that supports paginatio
 <uix-table
   headers='["Name", "Age", "Occupation"]'
   rows='[["John Doe", 28, "Engineer"], ["Jane Smith", 34, "Designer"], ["Sam Green", 45, "Manager"]]'
-></uix-table>
+>
+<uix-text slot="header">Name</uix-text>
+<uix-text slot="header">Age</uix-text>
+<uix-text slot="header">Occupation</uix-text>
+</uix-table>
 ```
 ```code
 <uix-table
-  headers='["Name", "Age", "Occupation"]'
   rows='[["John Doe", 28, "Engineer"], ["Jane Smith", 34, "Designer"], ["Sam Green", 45, "Manager"]]'
 ></uix-table>
 ```
@@ -45,21 +48,30 @@ The `uix-table` component is a versatile table component that supports paginatio
 ### Table with Objects as Rows
 ```html
 <uix-table
-  headers='["Name", "Age", "Occupation"]'
-  rows='[{"name": "John Doe", "age": 28, "occupation": "Engineer"}, {"name": "Jane Smith", "age": 34, "occupation": "Designer"}, {"name": "Sam Green", "age": 45, "occupation": "Manager"}]'
-></uix-table>
+  rows='[{"name": "John Doe", "age": 28, "occupation": "Engineer"}, 
+        {"name": "Jane Smith", "age": 34, "occupation": "Designer"},
+        {"name": "Sam Green", "age": 45, "occupation": "Manager"}]'
+>
+<uix-text slot="header">Name</uix-text>
+<uix-text slot="header">Age</uix-text>
+<uix-text slot="header">Occupation</uix-text>
+</uix-table>
 ```
 ```code
 <uix-table
-  headers='["Name", "Age", "Occupation"]'
-  rows='[{"name": "John Doe", "age": 28, "occupation": "Engineer"}, {"name": "Jane Smith", "age": 34, "occupation": "Designer"}, {"name": "Sam Green", "age": 45, "occupation": "Manager"}]'
-></uix-table>
+  rows='[{"name": "John Doe", "age": 28, "occupation": "Engineer"}, 
+        {"name": "Jane Smith", "age": 34, "occupation": "Designer"},
+        {"name": "Sam Green", "age": 45, "occupation": "Manager"}]'
+>
+<uix-text slot="header">Name</uix-text>
+<uix-text slot="header">Age</uix-text>
+<uix-text slot="header">Occupation</uix-text>
+</uix-table>
 ```
 
 ### Paginated Table
 ```html
 <uix-table
-  headers='["Name", "Age", "Occupation"]'
   rows='[
     ["John Doe", 28, "Engineer"],
     ["Jane Smith", 34, "Designer"],
@@ -72,12 +84,15 @@ The `uix-table` component is a versatile table component that supports paginatio
     ["Tom Orange", 27, "Writer"],
     ["Emma Red", 32, "Architect"]
   ]'
-  resultsPerPage="5"
-></uix-table>
+  resultsPerPage="3"
+>
+<uix-text slot="header">Name</uix-text>
+<uix-text slot="header">Age</uix-text>
+<uix-text slot="header">Occupation</uix-text>
+</uix-table>
 ```
 ```code
 <uix-table
-  headers='["Name", "Age", "Occupation"]'
   rows='[
     ["John Doe", 28, "Engineer"],
     ["Jane Smith", 34, "Designer"],
@@ -90,7 +105,7 @@ The `uix-table` component is a versatile table component that supports paginatio
     ["Tom Orange", 27, "Writer"],
     ["Emma Red", 32, "Architect"]
   ]'
-  resultsPerPage="5"
+  resultsPerPage="3"
 ></uix-table>
 ```
 

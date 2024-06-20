@@ -115,7 +115,7 @@ class AppIndex extends ReactiveView {
                 )}`,
             )}
           </uix-container>
-          <uix-container grow padding="md">
+          <uix-container grow padding="md" max-resolution="lg">
             ${unsafeHTML(marked(markdown, { renderer }))}
           </uix-container>
           <app-design-menu></app-design-menu>
