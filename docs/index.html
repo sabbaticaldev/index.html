@@ -8,6 +8,9 @@
 </script>
 <html lang="en" style="width: 100%; height: 100%">
   <head>
+    <style>
+      :not(:defined) { display: none; }
+    </style>
     <meta charset="utf-8" />
     <title>Index.html</title>
     <link href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css" rel="stylesheet" type="text/css">
@@ -26,15 +29,36 @@
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script type="module">
-      import { bootstrap } from "frontend";
+        import "/uix/layout/accordion.js";
+        import "/uix/layout/accordion-item.js";
+        import "/uix/layout/card.js";
+        import "/uix/layout/container.js";
+        import "/uix/layout/divider.js";
+        import "/uix/form/range.js";
+        import "/uix/form/button.js";
+        import "/uix/content/text.js";
+        import "/uix/content/link.js";
+        import "/uix/app/logo.js";
+        import "/app-navbar.js";
+        import "/app-content.js";
+        import "/app-design-menu.js";
 
-      import app from "/app.js";
-      bootstrap({ env: "development", app });
+        import { bootstrap, T } from "frontend";
+        window.T = T;
+        bootstrap({ env: "development", backend: true });
     </script>
   </head>
 
   <body style="width: 100%; height: 100%">
-    <app-index></app-index>
+    <index-html>
+      <uix-container>
+        <uix-container horizontal>
+            <app-navbar></app-navbar>
+          <app-content></app-content>
+          <app-design-menu></app-design-menu>
+        </uix-container>
+      </uix-container>
+    </index-html>
   </body>
 </html>
 <script>

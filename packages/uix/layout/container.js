@@ -19,6 +19,8 @@ const justifyOptions = [
   "around",
   "evenly",
 ];
+
+const positions = ["sticky", "fixed", "static", "absolute", "relative"];
 const sizeKeys = Object.keys(sizeMap);
 
 class Container extends ReactiveView {
@@ -63,6 +65,7 @@ class Container extends ReactiveView {
     ...genTheme("width", sizeKeys, (entry) => `w-${sizeMap[entry]}`),
     ...genTheme("height", sizeArray, (entry) => `h-${entry}`),
     ...genTheme("height", sizeKeys, (entry) => `h-${sizeMap[entry]}`),
+    ...genTheme("position", positions, (entry) => entry),
     ...genTheme("justify", justifyOptions, (entry) => `justify-${entry}`),
     ...genTheme("padding", sizeKeys, (entry) => `p-${spacingMap[entry]}`),
     ...genTheme(

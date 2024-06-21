@@ -1,19 +1,11 @@
 import "./index-html.js";
 
+import models from "/models.js";
+self.models = models;
+
 import ReactiveView, { UnoTheme } from "./reactive-view/base.js";
 
-const frontend = async () => {
-  ReactiveView.install();
-};
-// Function to load the app and register the service worker if available
-const loadApp = async ({ app }) => {
-  if (!app) return console.error("DEBUG: App not found.");
-  ReactiveView.unoRuntime(UnoTheme);
-  frontend({ app });
-};
-
-// Bootstrap function to initialize the application based on the environment
-const bootstrap = async ({ app, env, backend }) => {
+const bootstrap = async ({ env, backend }) => {
   if (env === "development") {
     const currentPort = window.location.port;
     const debugPort = parseInt(currentPort, 10) + 1;
@@ -30,7 +22,9 @@ const bootstrap = async ({ app, env, backend }) => {
     });
   }
   if (backend) startSW();
-  return loadApp({ app, backend });
+
+  ReactiveView.unoRuntime(UnoTheme);
+  ReactiveView.install();
 };
 
 export const startSW = async () => {

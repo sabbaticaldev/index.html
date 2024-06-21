@@ -83,7 +83,7 @@ class ReactiveView extends LitElement {
   qaSlot({ tag, slot: namedSlot } = {}) {
     const slot = namedSlot
       ? this.q(`slot[name="${namedSlot}"]`)
-      : this.q("slot");
+      : this.q("slot:not([name])");
     const nodes = slot ? slot.assignedElements({ flatten: true }) : [];
     return tag
       ? nodes.filter((node) => node.tagName.toLowerCase() === tag.toLowerCase())

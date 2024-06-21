@@ -3,6 +3,17 @@ import { startDatabase } from "./libs/appstate.js";
 import { T } from "./libs/types.js";
 
 self.T = T;
+
+// Cache name
+const CACHE_NAME = "external-resources-cache";
+
+// List of domains to cache
+const CACHE_DOMAINS = [
+  "https://esm.sh/",
+  "https://cdn.jsdelivr.net/",
+  "https://unpkg.com/",
+];
+
 // Fetch app data from IndexedDB and start the backend
 const initializeBackend = async () => {
   console.log("start backend in service worker");
@@ -32,11 +43,29 @@ self.addEventListener("message", (event) => {
 
 self.addEventListener("message", messageHandler({ P2P, requestUpdate }));
 
-self.addEventListener("fetch", async (event) => {
+self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
-  event.respondWith(
-    url.pathname.startsWith("/api")
-      ? handleFetch({ event, url })
-      : fetch(event.request),
-  );
+
+  if (CACHE_DOMAINS.some((domain) => url.href.startsWith(domain))) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+
+          return fetch(event.request).then((networkResponse) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
+        });
+      }),
+    );
+  } else {
+    event.respondWith(
+      url.pathname.startsWith("/api")
+        ? handleFetch({ event, url })
+        : fetch(event.request),
+    );
+  }
 });

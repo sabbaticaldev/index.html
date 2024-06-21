@@ -11,9 +11,9 @@ const PaginationVariants = {
 class Pagination extends ReactiveView {
   static get properties() {
     return {
-      totalResults: T.number(),
+      count: T.number(),
       currentPage: T.number(),
-      resultsPerPage: T.number({ defaultValue: 10 }),
+      perPage: T.number({ defaultValue: 10 }),
       onPageChange: T.function(),
       variant: T.string({ defaultValue: "default" }),
       size: T.string({ defaultValue: "md" }),
@@ -60,12 +60,9 @@ class Pagination extends ReactiveView {
   }
 
   render() {
-    const totalPageCount = Math.ceil(this.totalResults / this.resultsPerPage);
-    const startItem = (this.currentPage - 1) * this.resultsPerPage + 1;
-    const endItem = Math.min(
-      startItem + this.resultsPerPage - 1,
-      this.totalResults,
-    );
+    const totalPageCount = Math.ceil(this.count / this.perPage);
+    const startItem = (this.currentPage - 1) * this.perPage + 1;
+    const endItem = Math.min(startItem + this.perPage - 1, this.count);
     const visiblePages = 5;
     const pages = [];
 
@@ -90,6 +87,14 @@ class Pagination extends ReactiveView {
         items="center"
         aria-label="Pagination"
       >
+        <div class="uix-pagination__info">
+          Showing
+          <span class="uix-pagination__info-highlight"
+            >${startItem}-${endItem}</span
+          >
+          of
+          <span class="uix-pagination__info-highlight">${this.count}</span>
+        </div>
         ${pages.length > 1
           ? html`<ul class="uix-pagination__list">
               ${this.currentPage > 1
@@ -101,16 +106,6 @@ class Pagination extends ReactiveView {
                 : ""}
             </ul>`
           : null}
-        <div class="uix-pagination__info">
-          Showing
-          <span class="uix-pagination__info-highlight"
-            >${startItem}-${endItem}</span
-          >
-          of
-          <span class="uix-pagination__info-highlight"
-            >${this.totalResults}</span
-          >
-        </div>
       </uix-container>
     `;
   }

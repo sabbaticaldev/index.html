@@ -7,30 +7,27 @@ class Logo extends ReactiveView {
     return {
       icon: T.string(),
       name: T.string(),
-      iconImage: T.string(),
-      nameImage: T.string(),
+      logo: T.string(),
       image: T.string(),
     };
   }
+  static theme = {
+    "": "cursor-default",
+    ".uix-logo__asset": "w-8 h-8",
+  };
 
   render() {
-    const { icon, name, iconImage, nameImage, image } = this;
+    const { icon, name, logo } = this;
 
     return html`
-      ${image
-        ? html`<img src=${image} alt=${name} />`
-        : html`
-            ${iconImage
-              ? html`<img src=${iconImage} alt="" />`
-              : icon
-              ? html`<uix-icon name=${icon}></uix-icon>`
-              : ""}
-            ${nameImage
-              ? html`<img src=${nameImage} alt=${name} />`
-              : name
-              ? html`<span>${name}</span>`
-              : ""}
-          `}
+      <uix-container horizontal gap="sm" items="center">
+        <uix-container class="uix-logo__asset">
+          ${logo ? html`<img src=${logo} alt=${name} />` : ""}
+          ${icon ? html`<uix-icon name=${icon}></uix-icon>` : ""}
+        </uix-container>
+        <slot name="image"> </slot>
+        <slot></slot>
+      </uix-container>
     `;
   }
 }

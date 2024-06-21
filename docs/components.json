@@ -95,7 +95,6 @@
           {"label": "crud-form", "icon": "edit", "href": "/design/crud-crud--form"},
           {"label": "crud-new-modal", "icon": "plus-circle", "href": "/design/crud--crud-new-modal"},
           {"label": "crud-search", "icon": "search", "href": "/design/crud-crud--search"},
-          {"label": "crud-table", "icon": "table", "href": "/design/crud--crud-table"},
           {"label": "import-csv-button", "icon": "upload", "href": "/design/crud--import-csv-button"}
         ]
       },

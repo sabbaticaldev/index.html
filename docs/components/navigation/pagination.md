@@ -11,7 +11,7 @@ The `uix-pagination` component is used to create a pagination control for naviga
 |----------------|-----------|-------------|-----------------------------------------------------|
 | `totalResults` | `number`  | `0`         | The total number of results to paginate through.    |
 | `currentPage`  | `number`  | `1`         | The current page number.                            |
-| `resultsPerPage` | `number`| `10`        | The number of results per page.                     |
+| `perPage` | `number`| `10`        | The number of results per page.                     |
 | `onPageChange` | `function`| `null`      | Function to call when the page is changed.          |
 | `variant`      | `string`  | `default`   | The visual style variant of the pagination.         |
 | `size`         | `string`  | `md`        | The size of the pagination control.                 |
@@ -23,7 +23,7 @@ The `uix-pagination` component is used to create a pagination control for naviga
 <uix-pagination
   totalResults="100"
   currentPage="1"
-  resultsPerPage="10"
+  perPage="10"
   onPageChange=${(page) => console.log("Page changed to:", page)}
 ></uix-pagination>
 ```
@@ -33,7 +33,7 @@ The `uix-pagination` component is used to create a pagination control for naviga
 <uix-pagination
   totalResults="100"
   currentPage="1"
-  resultsPerPage="10"
+  perPage="10"
   variant="primary"
   onPageChange=${(page) => console.log("Page changed to:", page)}
 ></uix-pagination>
@@ -41,7 +41,7 @@ The `uix-pagination` component is used to create a pagination control for naviga
 <uix-pagination
   totalResults="100"
   currentPage="1"
-  resultsPerPage="10"
+  perPage="10"
   variant="secondary"
   onPageChange=${(page) => console.log("Page changed to:", page)}
 ></uix-pagination>
@@ -52,7 +52,7 @@ The `uix-pagination` component is used to create a pagination control for naviga
 <uix-pagination
   totalResults="100"
   currentPage="1"
-  resultsPerPage="10"
+  perPage="10"
   size="sm"
   onPageChange=${(page) => console.log("Page changed to:", page)}
 ></uix-pagination>
@@ -60,7 +60,7 @@ The `uix-pagination` component is used to create a pagination control for naviga
 <uix-pagination
   totalResults="100"
   currentPage="1"
-  resultsPerPage="10"
+  perPage="10"
   size="lg"
   onPageChange=${(page) => console.log("Page changed to:", page)}
 ></uix-pagination>

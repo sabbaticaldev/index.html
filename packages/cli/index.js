@@ -128,6 +128,7 @@ function serveFile(filePath, res) {
           console.warn(
             `File not found: ${filePath}. Serving index.html instead.`,
           );
+          console.log("Serving " + filePath);
           res.writeHead(200, { "Content-Type": "text/html" });
           res.end(data);
         }
